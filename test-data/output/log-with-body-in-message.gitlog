@@ -1,0 +1,17 @@
+§§§67bfd68§§§2021-06-08§§§gquadrati§§§gquadrati§§§2021-06-08§§§Merge remote-tracking branch 'origin/master' into IP-205§§§19145c3
+§§§f763728§§§2021-06-07§§§gquadrati§§§GitHub§§§2021-06-07§§§[#IP-205] Add getCertificate endpoint (#803)§§§19145c2
+25	0	src/__mocks__/user_mock.ts
+9	0	src/__tests__/api-specs.test.ts
+5	0	src/__tests__/app.test.ts
+1	0	src/__tests__/services-api.test.ts
+45	2	src/app.ts
+22	0	src/clients/eucovidcert.client.ts
+14	0	src/config.ts
+143	0	src/controllers/__tests__/eucovidcertController.test.ts
+51	0	src/controllers/eucovidcertController.ts
+3	0	src/server.ts
+86	0	src/services/__tests__/eucovidcertService.test.ts
+75	0	src/services/eucovidcertService.ts
+
+§§§d8c276d§§§2021-06-04§§§AleDore§§§AleDore§§§2021-06-04§§§register geo subpath only while CGN FF is enabled§§§19145c1
+9	9	src/app.ts

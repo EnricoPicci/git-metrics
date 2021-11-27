@@ -1,0 +1,3918 @@
+§§§d04abaa§§§2021-09-29§§§Matteo Boschi§§§Matteo Boschi§§§2021-09-29§§§refactoring§§§f9eca44
+2	2	src/types/__tests__/parameters.test.ts
+
+§§§f9eca44§§§2021-09-29§§§Matteo Boschi§§§Matteo Boschi§§§2021-09-29§§§remove useless file§§§b9396c2
+0	25	src/__tests__/qrCode.ts
+
+§§§b9396c2§§§2021-09-29§§§Matteo Boschi§§§Matteo Boschi§§§2021-09-29§§§fixes§§§fced6bd
+25	0	src/__tests__/qrCode.ts
+2	2	src/controllers/messagesController.ts
+36	0	src/types/__tests__/parameters.test.ts
+
+§§§7757be5§§§2021-09-28§§§Michael Disaro§§§GitHub§§§2021-09-28§§§[#IP-362] Messages pagination (#830)§§§1b9a8c3
+100	2	src/controllers/__tests__/messagesController.test.ts
+18	3	src/controllers/messagesController.ts
+13	5	src/services/__tests__/messagesService.test.ts
+14	6	src/services/messagesService.ts
+14	0	src/types/parameters.ts
+
+§§§bcc8050§§§2021-09-23§§§pasqualespica§§§GitHub§§§2021-09-23§§§[PAG-754] upd pagopa-proxy service with new detail_v2 response (#828)§§§9403a8d
+3	1	src/services/__tests__/pagoPAProxyService.test.ts
+9	3	src/services/pagoPAProxyService.ts
+38	0	src/utils/responses.ts
+
+§§§b3e189d§§§2021-09-20§§§Daniele Manni§§§Daniele Manni§§§2021-09-20§§§[#IP-209, #IP-216] Refactory unit test, remove duplicated code§§§e3a1862
+11	4	src/__mocks__/user_mock.ts
+3	5	src/controllers/__tests__/authenticationController.test.ts
+5	29	src/controllers/__tests__/bonusController.test.ts
+0	1	src/controllers/__tests__/cgnController.test.ts
+1	23	src/controllers/__tests__/messagesController.test.ts
+0	3	src/controllers/__tests__/notificationController.test.ts
+10	35	src/controllers/__tests__/pagoPAController.test.ts
+0	2	src/controllers/__tests__/profileController.test.ts
+1	23	src/controllers/__tests__/serviceController.test.ts
+0	3	src/controllers/__tests__/sessionController.test.ts
+1	34	src/controllers/__tests__/ssoController.test.ts
+0	3	src/controllers/__tests__/supportController.test.ts
+1	25	src/controllers/__tests__/userDataProcessingController.test.ts
+0	3	src/controllers/__tests__/userMetadataController.test.ts
+1	21	src/services/__tests__/bonusService.test.ts
+1	2	src/services/__tests__/cgnService.test.ts
+11	32	src/services/__tests__/messagesService.test.ts
+0	3	src/services/__tests__/profileService.test.ts
+0	2	src/services/__tests__/redisSessionStorage.test.ts
+0	2	src/services/__tests__/redisUserMetadataStorage.test.ts
+4	25	src/services/__tests__/userDataProcessingService.test.ts
+0	2	src/types/__tests__/profile.test.ts
+7	26	src/types/__tests__/user.test.ts
+
+§§§e3a1862§§§2021-09-20§§§Daniele Manni§§§Daniele Manni§§§2021-09-20§§§[#IP-209, #IP-316] Remove address and phone number, add dateOfBirth§§§ecb7905
+2	9	src/config.ts
+0	1	src/controllers/pagoPAController.ts
+1	0	src/strategies/localStrategy.ts
+0	1	src/types/profile.ts
+3	8	src/types/user.ts
+
+§§§bc6fd65§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§fixed lint errors§§§40274fa
+1	1	src/services/cgnService.ts
+1	1	src/services/messagesService.ts
+1	1	src/services/notificationService.ts
+2	2	src/services/profileService.ts
+
+§§§40274fa§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update usersLoginLogService.ts§§§3a693e4
+1	1	src/services/__tests__/usersLoginLogService.test.ts
+2	2	src/services/usersLoginLogService.ts
+
+§§§3a693e4§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update userMetadataController.ts§§§fda1934
+1	1	src/controllers/__tests__/userMetadataController.test.ts
+10	10	src/controllers/userMetadataController.ts
+
+§§§fda1934§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update userDataProcessingService.ts§§§97c9f84
+1	1	src/services/__tests__/userDataProcessingService.test.ts
+7	3	src/services/userDataProcessingService.ts
+
+§§§97c9f84§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update userDataPRocessingController.ts§§§a9afac8
+10	9	src/controllers/__tests__/userDataProcessingController.test.ts
+1	1	src/controllers/userDataProcessingController.ts
+
+§§§a9afac8§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update user.ts§§§51dc3c4
+18	18	src/types/__tests__/user.test.ts
+54	38	src/types/user.ts
+
+§§§51dc3c4§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update user_mock.ts§§§c6875b6
+1	1	src/__mocks__/user_mock.ts
+
+§§§c6875b6§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update tokenService.ts§§§01bb743
+33	36	src/services/__tests__/tokenService.test.ts
+39	31	src/services/tokenService.ts
+
+§§§01bb743§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update token.ts§§§9980d15
+1	1	src/types/token.ts
+
+§§§9980d15§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update supportController.ts§§§412524a
+4	4	src/controllers/__tests__/supportController.test.ts
+12	12	src/controllers/supportController.ts
+
+§§§412524a§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update strategies.ts§§§aebd269
+9	3	src/utils/strategies.ts
+
+§§§aebd269§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update ssoController.ts§§§149a8b5
+1	1	src/controllers/__tests__/ssoController.test.ts
+1	1	src/controllers/ssoController.ts
+
+§§§149a8b5§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update spid.ts§§§357d290
+29	22	src/utils/spid.ts
+
+§§§357d290§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update sessionLockController.ts§§§cdf842a
+20	15	src/controllers/__tests__/sessionLockController.test.ts
+73	59	src/controllers/sessionLockController.ts
+
+§§§cdf842a§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update sessionController.ts§§§b69f526
+14	12	src/controllers/sessionController.ts
+
+§§§b69f526§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update servicesController.ts§§§c3c4d64
+6	2	src/controllers/__tests__/sessionController.test.ts
+1	1	src/controllers/servicesController.ts
+
+§§§c3c4d64§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update services-api.ts§§§e1874ff
+4	4	src/__tests__/services-api.test.ts
+
+§§§e1874ff§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update serviceController.ts§§§d71c22f
+3	3	src/controllers/__tests__/serviceController.test.ts
+
+§§§d71c22f§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update server.ts§§§14c5085
+33	21	src/server.ts
+
+§§§14c5085§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update responses.ts§§§943d1fd
+9	8	src/utils/responses.ts
+
+§§§943d1fd§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update redisUserMetadataStorage.ts§§§65d6c5a
+1	1	src/services/__tests__/redisUserMetadataStorage.test.ts
+18	17	src/services/redisUserMetadataStorage.ts
+
+§§§65d6c5a§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update redisStorageUtils.ts§§§36609de
+12	11	src/services/redisStorageUtils.ts
+
+§§§36609de§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update redisSessionStorage.ts§§§81de432
+143	108	src/services/__tests__/redisSessionStorage.test.ts
+212	191	src/services/redisSessionStorage.ts
+
+§§§81de432§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update qrcode.ts§§§d1ab3f5
+27	21	src/utils/qrcode.ts
+
+§§§d1ab3f5§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update profileService.ts§§§22bb6cf
+1	1	src/services/__tests__/profileService.test.ts
+12	7	src/services/profileService.ts
+
+§§§22bb6cf§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update profileController.ts§§§5a74f4f
+12	11	src/controllers/__tests__/profileController.test.ts
+1	1	src/controllers/profileController.ts
+
+§§§5a74f4f§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update profile.ts§§§6cb9247
+8	8	src/types/__tests__/profile.test.ts
+7	3	src/types/profile.ts
+
+§§§6cb9247§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update pagoPAProxyService.ts§§§4be4436
+10	6	src/services/__tests__/pagoPAProxyService.test.ts
+1	1	src/services/pagoPAProxyService.ts
+
+§§§4be4436§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update pagopaPAPRoxyController.ts§§§19393ae
+1	1	src/controllers/__tests__/pagoPAProxyController.test.ts
+1	1	src/controllers/pagoPAProxyController.ts
+
+§§§19393ae§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update pagopPAController.ts§§§c9ae9ce
+6	8	src/controllers/__tests__/pagoPAController.test.ts
+66	73	src/controllers/pagoPAController.ts
+
+§§§c9ae9ce§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update package.ts§§§27f7734
+15	5	src/utils/package.ts
+
+§§§27f7734§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update notificationService.ts§§§b95a3d4
+6	5	src/services/__tests__/notificationService.test.ts
+10	4	src/services/notificationService.ts
+
+§§§b95a3d4§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update notificationController.ts§§§2a280a1
+24	20	src/controllers/__tests__/notificationController.test.ts
+18	16	src/controllers/notificationController.ts
+
+§§§2a280a1§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update mitVoucherController.ts§§§a67804a
+5	5	src/controllers/__tests__/mitVoucherController.test.ts
+20	15	src/controllers/mitVoucherController.ts
+
+§§§a67804a§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update messagesService.ts§§§637676e
+2	2	src/services/__tests__/messagesService.test.ts
+17	12	src/services/messagesService.ts
+
+§§§637676e§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update messageController.ts§§§fc31f03
+2	2	src/controllers/__tests__/messagesController.test.ts
+1	1	src/controllers/messagesController.ts
+
+§§§fc31f03§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update localStrategy.ts§§§f77101b
+1	1	src/strategies/localStrategy.ts
+
+§§§f77101b§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update localStrategy.ts§§§d8a3647
+1	1	src/services/ISessionStorage.ts
+
+§§§d8a3647§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update IDPEntityDescriptor.ts§§§4279991
+2	2	src/types/IDPEntityDescriptor.ts
+
+§§§4279991§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update getErrorCodeFromResponse.ts§§§d3ed2a8
+17	13	src/utils/getErrorCodeFromResponse.ts
+
+§§§d3ed2a8§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update express.ts§§§8649e60
+1	1	src/utils/express.ts
+1	1	src/utils/middleware/express.ts
+
+§§§8649e60§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update errorsFormatter.ts§§§3c123ec
+2	2	src/utils/errorsFormatter.ts
+
+§§§3c123ec§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update dueDate.ts§§§6b97292
+2	2	src/utils/middleware/dueDate.ts
+
+§§§6b97292§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update date.ts§§§d12c519
+1	1	src/utils/__tests__/date.test.ts
+
+§§§d12c519§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update config.ts§§§bc98dc5
+234	172	src/config.ts
+
+§§§bc98dc5§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update cidrs.ts§§§ed86036
+1	1	src/utils/cidrs.ts
+
+§§§ed86036§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update checkIP.ts§§§a9ab6a6
+14	10	src/utils/middleware/checkIP.ts
+
+§§§a9ab6a6§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update cgnService.ts§§§a0d0856
+243	266	src/services/__tests__/cgnService.test.ts
+11	6	src/services/cgnService.ts
+
+§§§a0d0856§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update cgnController.ts§§§efa19d1
+160	58	src/controllers/__tests__/cgnController.test.ts
+2	2	src/controllers/cgnController.ts
+
+§§§efa19d1§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update bonusService.ts§§§b0b2fb6
+1	1	src/services/__tests__/bonusService.test.ts
+15	16	src/services/bonusService.ts
+
+§§§b0b2fb6§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update bonusControler.ts§§§8dcc4e6
+2	2	src/controllers/__tests__/bonusController.test.ts
+2	2	src/controllers/bonusController.ts
+
+§§§8dcc4e6§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update bearerSessionTokenStrategy.ts§§§edc7511
+7	5	src/strategies/bearerSessionTokenStrategy.ts
+
+§§§edc7511§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update barcode.ts§§§dcd8033
+8	6	src/utils/__tests__/barcode.test.ts
+28	28	src/utils/barcode.ts
+
+§§§dcd8033§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update autenticationController.ts§§§74cf574
+32	30	src/controllers/__tests__/authenticationController.test.ts
+64	54	src/controllers/authenticationController.ts
+
+§§§74cf574§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update attachments.ts§§§4c1a118
+16	10	src/utils/attachments.ts
+
+§§§4c1a118§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update appinsights.ts§§§33a0c15
+1	1	src/utils/appinsights.ts
+
+§§§33a0c15§§§2021-09-13§§§fabriziopapi§§§fabriziopapi§§§2021-09-13§§§update app.ts§§§a6e3f0e
+6	9	src/__tests__/app.test.ts
+239	217	src/app.ts
+
+§§§62d1e96§§§2021-09-10§§§fabriziopapi§§§fabriziopapi§§§2021-09-10§§§Merge remote-tracking branch 'origin/master' into IP-331--migrate-fp-ts§§§53a7eab 8c6c145
+§§§53a7eab§§§2021-09-10§§§fabriziopapi§§§fabriziopapi§§§2021-09-10§§§update notification.ts§§§399ebaf
+2	2	src/types/notification.ts
+
+§§§028d20d§§§2021-09-03§§§gquadrati§§§GitHub§§§2021-09-03§§§Update api_notification.yaml to latest fn-commons definitions (#825)§§§8838c04
+2	1	src/services/__tests__/notificationService.test.ts
+
+§§§86d91e0§§§2021-08-17§§§gquadrati§§§GitHub§§§2021-08-17§§§[#IP-325] Upgrade typescript to v4.3.5 (#821)§§§5c1cdfd
+1	5	src/types/notification.ts
+
+§§§869755f§§§2021-08-16§§§Michael Disaro§§§GitHub§§§2021-08-16§§§Merge branch 'master' into cgn_operator_search_api_integration§§§b4226a1 5c1cdfd
+§§§c167923§§§2021-07-13§§§Alessio Dore§§§GitHub§§§2021-07-13§§§better Mit Voucher token typing (#819)§§§faed707
+1	1	src/controllers/__tests__/mitVoucherController.test.ts
+6	5	src/controllers/mitVoucherController.ts
+
+§§§0cebc3a§§§2021-07-13§§§Alessio Dore§§§GitHub§§§2021-07-13§§§[#ISV-29] Enable Mit Voucher Jwt Token (#807)§§§c981c06
+8	3	src/__tests__/app.test.ts
+1	0	src/__tests__/services-api.test.ts
+37	2	src/app.ts
+49	0	src/config.ts
+65	0	src/controllers/__tests__/mitVoucherController.test.ts
+54	0	src/controllers/mitVoucherController.ts
+3	0	src/server.ts
+38	0	src/services/__tests__/tokenService.test.ts
+32	0	src/services/tokenService.ts
+
+§§§7c74fd1§§§2021-07-05§§§gquadrati§§§GitHub§§§2021-07-05§§§[#IP-271]  Add Upsert Service Preferences endpoint (#818)§§§7110306
+9	0	src/app.ts
+29	0	src/controllers/servicesController.ts
+91	3	src/services/__tests__/messagesService.test.ts
+54	0	src/services/messagesService.ts
+
+§§§7110306§§§2021-07-05§§§gquadrati§§§GitHub§§§2021-07-05§§§[#IP-272]  Add GetServicePreference endpoint (#817)§§§423498b
+9	0	src/app.ts
+35	0	src/controllers/servicesController.ts
+88	1	src/services/__tests__/messagesService.test.ts
+60	0	src/services/messagesService.ts
+1	1	src/types/__tests__/profile.test.ts
+
+§§§423498b§§§2021-07-05§§§Daniele Manni§§§GitHub§§§2021-07-05§§§[#IP-263] Update API specs for Service opt-in (#816)§§§0e0f743
+6	0	src/controllers/__tests__/pagoPAController.test.ts
+6	0	src/controllers/__tests__/profileController.test.ts
+15	11	src/services/__tests__/profileService.test.ts
+7	0	src/types/__tests__/profile.test.ts
+1	0	src/types/profile.ts
+
+§§§cba421d§§§2021-06-23§§§Emanuele De Cupis§§§GitHub§§§2021-06-23§§§Add delay when updating an installation id (#810)§§§20cbc0a
+15	2	src/controllers/notificationController.ts
+
+§§§20cbc0a§§§2021-06-14§§§Pasquale De Vita§§§GitHub§§§2021-06-14§§§[#IP-122] Reduce log data ingestion (#795)§§§b3b5839
+1	1	src/config.ts
+
+§§§04fbb27§§§2021-06-14§§§gquadrati§§§GitHub§§§2021-06-14§§§[#P-235] Handle ProblemJson from fn-eucovidcert and return it (#808)§§§93a1e3f
+6	6	src/controllers/__tests__/eucovidcertController.test.ts
+17	9	src/services/__tests__/eucovidcertService.test.ts
+42	4	src/services/eucovidcertService.ts
+
+§§§b4226a1§§§2021-06-09§§§AleDore§§§AleDore§§§2021-06-09§§§Rebase§§§2f922e8 93a1e3f
+§§§2f922e8§§§2021-06-09§§§AleDore§§§AleDore§§§2021-06-09§§§adding cache for CGN merchant detail§§§4be5da1
+15	1	src/app.ts
+10	0	src/config.ts
+
+§§§67bfd68§§§2021-06-08§§§gquadrati§§§gquadrati§§§2021-06-08§§§Merge remote-tracking branch 'origin/master' into IP-205--getCertificate-endpoint-using-sdk§§§dba366b 93a1e3f
+§§§f763728§§§2021-06-07§§§gquadrati§§§GitHub§§§2021-06-07§§§[#IP-205] Add getCertificate endpoint (#803)§§§47c9c34
+25	0	src/__mocks__/user_mock.ts
+9	0	src/__tests__/api-specs.test.ts
+5	0	src/__tests__/app.test.ts
+1	0	src/__tests__/services-api.test.ts
+45	2	src/app.ts
+22	0	src/clients/eucovidcert.client.ts
+14	0	src/config.ts
+143	0	src/controllers/__tests__/eucovidcertController.test.ts
+51	0	src/controllers/eucovidcertController.ts
+3	0	src/server.ts
+86	0	src/services/__tests__/eucovidcertService.test.ts
+75	0	src/services/eucovidcertService.ts
+
+§§§d8c276d§§§2021-06-04§§§AleDore§§§AleDore§§§2021-06-04§§§register geo subpath only while CGN FF is enabled§§§6431727
+9	9	src/app.ts
+
+§§§6431727§§§2021-06-01§§§AleDore§§§AleDore§§§2021-06-01§§§refactor for multiple host path within openapi3 Here specs§§§80d797f
+43	5	src/clients/here.ts
+8	4	src/config.ts
+9	25	src/controllers/__tests__/geoController.test.ts
+37	31	src/services/__tests__/geoService.test.ts
+13	7	src/services/geoService.ts
+
+§§§80d797f§§§2021-06-01§§§AleDore§§§AleDore§§§2021-06-01§§§here api client refactor due to different base paths§§§6677448
+8	2	src/app.ts
+19	2	src/config.ts
+22	22	src/services/__tests__/geoService.test.ts
+8	4	src/services/geoService.ts
+
+§§§c6c0325§§§2021-06-01§§§gquadrati§§§gquadrati§§§2021-06-01§§§moved to api_eucovidcert.yaml generation§§§bb41a3d
+1	1	src/__tests__/api-specs.test.ts
+
+§§§bb41a3d§§§2021-06-01§§§gquadrati§§§gquadrati§§§2021-06-01§§§switch to client sdk usage§§§2424a31
+1	0	src/__tests__/services-api.test.ts
+4	1	src/clients/eucovidcert.client.ts
+1	1	src/controllers/__tests__/eucovidcertController.test.ts
+2	1	src/controllers/eucovidcertController.ts
+1	1	src/services/__tests__/eucovidcertService.test.ts
+1	1	src/services/eucovidcertService.ts
+
+§§§c8193f5§§§2021-05-31§§§AleDore§§§AleDore§§§2021-05-31§§§fix tests§§§10dd785
+10	9	src/controllers/__tests__/cgnOperatorController.test.ts
+
+§§§2424a31§§§2021-05-31§§§gquadrati§§§gquadrati§§§2021-05-31§§§New eucovidcert endopoint§§§c602ea0
+9	0	src/__tests__/api-specs.test.ts
+5	0	src/__tests__/app.test.ts
+45	2	src/app.ts
+14	0	src/config.ts
+3	0	src/server.ts
+
+§§§a3cadb1§§§2021-05-31§§§AleDore§§§AleDore§§§2021-05-31§§§upgrade io-functions-cgn-operator-search version§§§ed4664a
+9	3	src/clients/cgn-operator-search.ts
+4	0	src/config.ts
+
+§§§6677448§§§2021-05-31§§§AleDore§§§AleDore§§§2021-05-31§§§Fix GeoController constructor params§§§f131ccd
+9	3	src/app.ts
+
+§§§f131ccd§§§2021-05-31§§§AleDore§§§AleDore§§§2021-05-31§§§Fix config assertion§§§0979bb4
+5	0	src/__tests__/app.test.ts
+1	0	src/__tests__/services-api.test.ts
+
+§§§ed4664a§§§2021-05-31§§§AleDore§§§AleDore§§§2021-05-31§§§fix config assertion§§§0e8cb8c
+4	0	src/__tests__/app.test.ts
+1	0	src/__tests__/services-api.test.ts
+
+§§§0e8cb8c§§§2021-05-31§§§AleDore§§§AleDore§§§2021-05-31§§§Add cgn-operator-search APIs§§§8de8b9d
+56	2	src/app.ts
+19	0	src/clients/cgn-operator-search.ts
+12	0	src/config.ts
+259	0	src/controllers/__tests__/cgnOperatorController.test.ts
+86	0	src/controllers/cgnOperatorController.ts
+3	0	src/server.ts
+274	0	src/services/__tests__/cgnOperatorSearchService.test.ts
+125	0	src/services/cgnOperatorSearchService.ts
+
+§§§c602ea0§§§2021-05-28§§§gquadrati§§§gquadrati§§§2021-05-28§§§Add eucovidcert Controller§§§6f72c02
+140	0	src/controllers/__tests__/eucovidcertController.test.ts
+46	0	src/controllers/eucovidcertController.ts
+
+§§§6f72c02§§§2021-05-28§§§gquadrati§§§gquadrati§§§2021-05-28§§§Add eucovidcert client and service§§§2d598e6
+25	0	src/__mocks__/user_mock.ts
+22	0	src/clients/eucovidcert.client.ts
+85	0	src/services/__tests__/eucovidcertService.test.ts
+68	0	src/services/eucovidcertService.ts
+
+§§§0979bb4§§§2021-05-25§§§AleDore§§§AleDore§§§2021-05-25§§§Here geolocation API integration§§§8de8b9d
+47	2	src/app.ts
+15	0	src/clients/here.ts
+15	0	src/config.ts
+289	0	src/controllers/__tests__/geoController.test.ts
+87	0	src/controllers/geoController.ts
+3	0	src/server.ts
+401	0	src/services/__tests__/geoService.test.ts
+182	0	src/services/geoService.ts
+
+§§§79569b2§§§2021-04-16§§§Pasquale De Vita§§§GitHub§§§2021-04-16§§§Update app.ts§§§ed04960
+3	0	src/app.ts
+
+§§§02f59d5§§§2021-04-09§§§Michael Disaro§§§Michael Disaro§§§2021-04-09§§§Merge branch 'ip-83-check-headers-middleware' of https://github.com/pagopa/io-backend into ip-83-check-headers-middleware§§§3fada5b fa0ef54
+§§§3fada5b§§§2021-04-09§§§Michael Disaro§§§Michael Disaro§§§2021-04-09§§§cleaned a useless map to void, added comments§§§6404d83
+16	3	src/utils/middleware/checkHeaders.ts
+
+§§§fa0ef54§§§2021-04-06§§§Michael Disaro§§§GitHub§§§2021-04-06§§§Merge branch 'master' into ip-83-check-headers-middleware§§§6404d83 ed04960
+§§§6404d83§§§2021-04-06§§§Michael Disaro§§§Michael Disaro§§§2021-04-06§§§fixed Express import with express§§§adc60ff
+1	1	src/utils/middleware/__tests__/checkHeaders.test.ts
+1	1	src/utils/middleware/checkHeaders.ts
+
+§§§adc60ff§§§2021-04-01§§§Michael Disaro§§§Michael Disaro§§§2021-04-01§§§IP-83 Transparent middleware that check headers and log warnings to reveal incoherent requests. Now it's applied at the application level.§§§402427d
+18	0	src/app.ts
+400	0	src/utils/middleware/__tests__/checkHeaders.test.ts
+101	0	src/utils/middleware/checkHeaders.ts
+
+§§§94cb5ef§§§2021-03-23§§§Alessio Dore§§§GitHub§§§2021-03-23§§§[#177137914] Add Allowed Test Fiscal Codes (#785)§§§402427d
+6	2	src/app.ts
+9	1	src/config.ts
+124	24	src/controllers/__tests__/cgnController.test.ts
+73	10	src/controllers/cgnController.ts
+25	0	src/types/commons.ts
+
+§§§3f4e116§§§2021-02-08§§§Daniele Manni§§§Daniele Manni§§§2021-03-09§§§[#176595075] Use generic http or https agent from ts-commons§§§5064549
+2	2	src/app.ts
+16	23	src/config.ts
+4	4	src/controllers/authenticationController.ts
+2	2	src/controllers/bonusController.ts
+1	1	src/controllers/messagesController.ts
+1	1	src/controllers/notificationController.ts
+2	2	src/controllers/pagoPAController.ts
+1	1	src/controllers/pagoPAProxyController.ts
+1	1	src/controllers/profileController.ts
+1	1	src/controllers/servicesController.ts
+1	1	src/controllers/sessionController.ts
+3	3	src/controllers/sessionLockController.ts
+1	1	src/controllers/ssoController.ts
+1	1	src/controllers/supportController.ts
+1	1	src/controllers/userDataProcessingController.ts
+1	1	src/controllers/userMetadataController.ts
+1	1	src/server.ts
+1	1	src/services/ISessionStorage.ts
+2	2	src/services/bonusService.ts
+1	1	src/services/messagesService.ts
+1	1	src/services/notificationService.ts
+1	1	src/services/pagoPAProxyService.ts
+2	2	src/services/profileService.ts
+2	2	src/services/redisSessionStorage.ts
+2	2	src/services/redisUserMetadataStorage.ts
+2	2	src/services/tokenService.ts
+1	1	src/services/userDataProcessingService.ts
+2	2	src/services/usersLoginLogService.ts
+1	1	src/strategies/localStrategy.ts
+1	1	src/types/IDPEntityDescriptor.ts
+2	2	src/types/notification.ts
+1	1	src/types/profile.ts
+1	1	src/types/token.ts
+3	3	src/types/user.ts
+1	1	src/utils/appinsights.ts
+1	1	src/utils/cidrs.ts
+2	2	src/utils/errorsFormatter.ts
+1	1	src/utils/express.ts
+2	2	src/utils/middleware/checkIP.ts
+2	2	src/utils/middleware/dueDate.ts
+1	1	src/utils/middleware/express.ts
+2	2	src/utils/responses.ts
+3	3	src/utils/spid.ts
+
+§§§5064549§§§2021-01-22§§§Daniele Manni§§§Daniele Manni§§§2021-03-09§§§[#176595075] Fix linter error§§§5ef5294
+5	1	src/config.ts
+
+§§§5ef5294§§§2021-01-21§§§Daniele Manni§§§Daniele Manni§§§2021-03-09§§§[#176595075] Rename vars§§§013708e
+7	6	src/config.ts
+
+§§§013708e§§§2021-01-21§§§Daniele Manni§§§Daniele Manni§§§2021-03-09§§§[#176595075] Add HTTPS fetch for API and Bonus client§§§402427d
+11	4	src/config.ts
+
+§§§edae84a§§§2021-03-05§§§gquadrati§§§gquadrati§§§2021-03-05§§§merge master§§§7c4d24a
+2	0	src/controllers/__tests__/cgnController.test.ts
+1	0	src/controllers/cgnController.ts
+2	6	src/services/__tests__/cgnService.test.ts
+1	0	src/services/cgnService.ts
+
+§§§7c4d24a§§§2021-03-05§§§gquadrati§§§gquadrati§§§2021-03-05§§§merge master§§§22c3f22 402427d
+§§§1e81c6d§§§2021-03-05§§§Emanuele De Cupis§§§Emanuele De Cupis§§§2021-03-05§§§use CGN SDK§§§402427d
+1	1	src/clients/cgn.ts
+33	24	src/controllers/__tests__/cgnController.test.ts
+3	3	src/controllers/cgnController.ts
+242	265	src/services/__tests__/cgnService.test.ts
+6	6	src/services/cgnService.ts
+
+§§§402427d§§§2021-03-03§§§Alessio Dore§§§GitHub§§§2021-03-03§§§[#175761529] Add CGN generate OTP API (#787)§§§ef8b656
+6	0	src/app.ts
+66	1	src/controllers/__tests__/cgnController.test.ts
+13	0	src/controllers/cgnController.ts
+111	1	src/services/__tests__/cgnService.test.ts
+35	2	src/services/cgnService.ts
+
+§§§22c3f22§§§2021-03-02§§§gquadrati§§§gquadrati§§§2021-03-02§§§[#177119268] io-fn-cgn using client SDK§§§ed38902
+1	1	src/clients/cgn.ts
+3	3	src/controllers/__tests__/cgnController.test.ts
+3	3	src/controllers/cgnController.ts
+1	1	src/services/__tests__/cgnService.test.ts
+5	5	src/services/cgnService.ts
+
+§§§ed38902§§§2021-02-25§§§Alessio Dore§§§GitHub§§§2021-02-25§§§[#177081289] Add proper response statuses (#784)§§§fec621c
+1	0	src/controllers/cgnController.ts
+28	0	src/services/__tests__/cgnService.test.ts
+7	0	src/services/cgnService.ts
+
+§§§242e03b§§§2021-02-23§§§Alessio Dore§§§GitHub§§§2021-02-23§§§[#176924316] Add EYCA activation API (#780)§§§309cf52
+18	0	src/app.ts
+121	2	src/controllers/__tests__/cgnController.test.ts
+29	0	src/controllers/cgnController.ts
+236	0	src/services/__tests__/cgnService.test.ts
+84	2	src/services/cgnService.ts
+
+§§§309cf52§§§2021-02-23§§§gquadrati§§§GitHub§§§2021-02-23§§§[#177017837] added getEycaStatus api (#781)§§§ba4d7ab
+6	0	src/app.ts
+62	0	src/controllers/__tests__/cgnController.test.ts
+14	0	src/controllers/cgnController.ts
+105	0	src/services/__tests__/cgnService.test.ts
+34	0	src/services/cgnService.ts
+
+§§§ba4d7ab§§§2021-02-16§§§Alessio Dore§§§GitHub§§§2021-02-16§§§[#176782168] CGN Api specs refactor (#778)§§§1e93b99
+4	4	src/controllers/__tests__/cgnController.test.ts
+2	2	src/controllers/cgnController.ts
+3	3	src/services/__tests__/cgnService.test.ts
+2	2	src/services/cgnService.ts
+
+§§§30c7ee6§§§2021-02-11§§§Alessio Dore§§§GitHub§§§2021-02-11§§§[#175761632] Add CGN Activation API (#771)§§§989ca4e
+6	0	src/app.ts
+124	2	src/controllers/__tests__/cgnController.test.ts
+35	3	src/controllers/cgnController.ts
+247	15	src/services/__tests__/cgnService.test.ts
+3	16	src/services/bonusService.ts
+97	16	src/services/cgnService.ts
+4	0	src/utils/errorsFormatter.ts
+10	0	src/utils/responses.ts
+
+§§§989ca4e§§§2021-02-11§§§Alessio Dore§§§GitHub§§§2021-02-11§§§[#175896908] add get cgn status api (#751)§§§40e25d5
+5	0	src/__tests__/app.test.ts
+1	0	src/__tests__/services-api.test.ts
+48	14	src/app.ts
+22	0	src/clients/cgn.ts
+11	0	src/config.ts
+112	0	src/controllers/__tests__/cgnController.test.ts
+34	0	src/controllers/cgnController.ts
+3	0	src/server.ts
+138	0	src/services/__tests__/cgnService.test.ts
+71	0	src/services/cgnService.ts
+
+§§§925e59f§§§2021-01-22§§§Daniele Manni§§§GitHub§§§2021-01-22§§§[#174416949] Replace tslint with eslint (#752)§§§6367908
+0	1	src/@types/passport-auth-token/index.d.ts
+0	2	src/__mocks__/request.ts
+0	2	src/__mocks__/response.ts
+81	75	src/app.ts
+1	2	src/clients/api.ts
+1	2	src/clients/bonus.ts
+1	2	src/clients/pagopa.ts
+10	15	src/config.ts
+1	1	src/controllers/__tests__/notificationController.test.ts
+5	6	src/controllers/authenticationController.ts
+0	3	src/controllers/bonusController.ts
+1	3	src/controllers/messagesController.ts
+4	4	src/controllers/notificationController.ts
+1	2	src/controllers/pagoPAController.ts
+10	15	src/controllers/pagoPAProxyController.ts
+0	4	src/controllers/profileController.ts
+0	1	src/controllers/servicesController.ts
+3	4	src/controllers/sessionController.ts
+7	6	src/controllers/sessionLockController.ts
+4	4	src/controllers/supportController.ts
+0	3	src/controllers/userDataProcessingController.ts
+1	3	src/controllers/userMetadataController.ts
+5	4	src/server.ts
+5	5	src/services/IPagoPAClientFactory.ts
+2	2	src/services/apiClientFactory.ts
+8	13	src/services/bonusService.ts
+1	4	src/services/messagesService.ts
+3	3	src/services/notificationService.ts
+4	5	src/services/pagoPAClientFactory.ts
+6	9	src/services/pagoPAProxyService.ts
+5	10	src/services/profileService.ts
+58	49	src/services/redisSessionStorage.ts
+1	1	src/services/redisStorageUtils.ts
+1	1	src/services/redisUserMetadataStorage.ts
+2	1	src/services/tokenService.ts
+0	3	src/services/userDataProcessingService.ts
+1	1	src/services/usersLoginLogService.ts
+3	4	src/strategies/urlTokenStrategy.ts
+6	7	src/types/profile.ts
+26	27	src/types/user.ts
+21	21	src/utils/appinsights.ts
+3	4	src/utils/attachments.ts
+2	2	src/utils/barcode.ts
+1	1	src/utils/bwipjs-svg.ts
+3	1	src/utils/cidrs.ts
+0	1	src/utils/container.ts
+5	10	src/utils/date.ts
+1	0	src/utils/errorsFormatter.ts
+3	3	src/utils/express.ts
+4	6	src/utils/getErrorCodeFromResponse.ts
+2	2	src/utils/gracefulShutdown.ts
+1	3	src/utils/logger.ts
+3	4	src/utils/messages.ts
+3	4	src/utils/middleware/checkIP.ts
+1	0	src/utils/middleware/express.ts
+5	5	src/utils/package.ts
+11	7	src/utils/qrcode.ts
+13	8	src/utils/responses.ts
+4	8	src/utils/spid.ts
+2	2	src/utils/strategies.ts
+
+§§§6367908§§§2021-01-22§§§Daniele Manni§§§GitHub§§§2021-01-22§§§[#176255952] Log startup and spid config time (#745)§§§39c4764
+19	2	src/app.ts
+16	1	src/server.ts
+19	0	src/utils/appinsights.ts
+7	0	src/utils/timer.ts
+
+§§§03ad020§§§2021-01-19§§§Emanuele De Cupis§§§GitHub§§§2021-01-19§§§[#176559282] [#176559344] Fix wrong definition on pagopa api and public api specifications (#758)§§§f523227
+2	2	src/controllers/authenticationController.ts
+
+§§§392ac57§§§2021-01-13§§§Emanuele De Cupis§§§GitHub§§§2021-01-13§§§[#176458169] Remove unused code path for bonus activation (#755)§§§38e6575
+6	17	src/app.ts
+0	12	src/config.ts
+0	111	src/controllers/__tests__/bonusController.test.ts
+2	51	src/controllers/bonusController.ts
+0	238	src/services/__tests__/bonusService.test.ts
+1	123	src/services/bonusService.ts
+13	0	src/utils/express.ts
+9	0	src/utils/responses.ts
+
+§§§cbc11b2§§§2021-01-12§§§Emanuele De Cupis§§§Emanuele De Cupis§§§2021-01-12§§§fix§§§4c359a5
+1	4	src/config.ts
+
+§§§4c359a5§§§2021-01-12§§§Emanuele De Cupis§§§Emanuele De Cupis§§§2021-01-12§§§use different date format§§§38e6575
+5	2	src/config.ts
+
+§§§38e6575§§§2021-01-03§§§Danilo Spinelli§§§GitHub§§§2021-01-03§§§[#176314485] Use x-client-ip for internal calls (#749)§§§68269da
+5	3	src/utils/middleware/checkIP.ts
+
+§§§268df34§§§2020-12-31§§§gquadrati§§§gquadrati§§§2020-12-31§§§added tests for toExpressHandlerWithUser§§§7c1695a
+6	86	src/controllers/__tests__/profileController.test.ts
+118	0	src/utils/__tests__/express.test.ts
+1	3	src/utils/express.ts
+
+§§§7c1695a§§§2020-12-31§§§gquadrati§§§gquadrati§§§2020-12-31§§§proposal: create a toExpressHandlerWithUser that decode user and pass it to controllers that need it§§§68269da
+5	5	src/app.ts
+21	31	src/controllers/profileController.ts
+22	0	src/utils/express.ts
+
+§§§8923801§§§2020-12-31§§§gquadrati§§§gquadrati§§§2020-12-31§§§fixed lint and test by moving back handlers into controllers§§§65e9674
+3	4	src/app.ts
+11	4	src/controllers/IBackendController.ts
+25	4	src/controllers/profileController.ts
+
+§§§65e9674§§§2020-12-31§§§gquadrati§§§gquadrati§§§2020-12-31§§§switched to Router for handling paths§§§525cdf7
+4	1	src/app.ts
+4	12	src/controllers/IBackendController.ts
+10	32	src/controllers/profileController.ts
+
+§§§d06ce3b§§§2020-12-30§§§Danilo Spinelli§§§GitHub§§§2020-12-30§§§[#176314485] Fix source IP parsing (#748)§§§1a27996
+9	2	src/utils/middleware/checkIP.ts
+
+§§§525cdf7§§§2020-12-29§§§gquadrati§§§gquadrati§§§2020-12-29§§§added comment to setupRouting method§§§edbdfa4
+3	1	src/controllers/IBackendController.ts
+6	0	src/controllers/profileController.ts
+
+§§§edbdfa4§§§2020-12-29§§§gquadrati§§§gquadrati§§§2020-12-29§§§changed from any to unknown§§§9ca834b
+3	4	src/controllers/IBackendController.ts
+1	3	src/controllers/profileController.ts
+
+§§§fd02b3a§§§2020-12-29§§§Emanuele De Cupis§§§GitHub§§§2020-12-29§§§[#176257846] Disable bonus requests at a given date (#747)§§§792eddf
+8	2	src/app.ts
+12	0	src/config.ts
+61	0	src/utils/middleware/__tests__/dueDate.test.ts
+36	0	src/utils/middleware/dueDate.ts
+
+§§§9ca834b§§§2020-12-29§§§gquadrati§§§gquadrati§§§2020-12-29§§§lint check ok§§§ccdc66d
+10	1	src/controllers/IBackendController.ts
+11	6	src/controllers/profileController.ts
+
+§§§ccdc66d§§§2020-12-29§§§gquadrati§§§gquadrati§§§2020-12-29§§§removed comment§§§989046f
+0	2	src/controllers/profileController.ts
+
+§§§989046f§§§2020-12-28§§§gquadrati§§§gquadrati§§§2020-12-28§§§proposal: move routing within controllers§§§792eddf
+1	26	src/app.ts
+11	0	src/controllers/IBackendController.ts
+36	1	src/controllers/profileController.ts
+
+§§§42f29c2§§§2020-12-14§§§Daniele Manni§§§GitHub§§§2020-12-14§§§[#173792786] Spid Level Whitelist (#744)§§§0247f6a
+30	2	src/config.ts
+5	0	src/types/spidLevel.ts
+
+§§§0247f6a§§§2020-12-13§§§Danilo Spinelli§§§GitHub§§§2020-12-13§§§[#176077315] Get client ip from x-forwarded-for header (#742)§§§1347dbe
+2	1	src/__tests__/app.test.ts
+4	3	src/utils/middleware/checkIP.ts
+
+§§§8781289§§§2020-12-09§§§AleDore§§§AleDore§§§2020-12-09§§§[#176068662] Refactor over review§§§5ae6b95
+6	1	src/app.ts
+9	14	src/config.ts
+34	12	src/controllers/__tests__/profileController.test.ts
+7	4	src/controllers/profileController.ts
+3	3	src/services/ISessionStorage.ts
+6	6	src/services/__tests__/redisSessionStorage.test.ts
+3	3	src/services/redisSessionStorage.ts
+
+§§§5ae6b95§§§2020-12-09§§§AleDore§§§AleDore§§§2020-12-09§§§[#176068662] Refactor and fix§§§5839dfa
+2	2	src/config.ts
+1	4	src/controllers/__tests__/profileController.test.ts
+3	5	src/controllers/profileController.ts
+5	1	src/services/redisSessionStorage.ts
+
+§§§5839dfa§§§2020-12-09§§§AleDore§§§AleDore§§§2020-12-09§§§[#176068662] Add lock on email validation process§§§1347dbe
+15	1	src/config.ts
+6	1	src/controllers/__tests__/profileController.test.ts
+65	4	src/controllers/profileController.ts
+10	0	src/services/ISessionStorage.ts
+55	0	src/services/__tests__/redisSessionStorage.test.ts
+43	0	src/services/redisSessionStorage.ts
+
+§§§1347dbe§§§2020-12-07§§§Daniele Manni§§§GitHub§§§2020-12-07§§§[#175971735] Add notice email redis cache (#738)§§§1a22b50
+10	2	src/app.ts
+6	0	src/config.ts
+114	4	src/controllers/__tests__/pagoPAController.test.ts
+60	10	src/controllers/__tests__/profileController.test.ts
+76	16	src/controllers/pagoPAController.ts
+9	3	src/controllers/profileController.ts
+12	1	src/services/ISessionStorage.ts
+102	1	src/services/__tests__/redisSessionStorage.test.ts
+86	1	src/services/redisSessionStorage.ts
+
+§§§3798aaf§§§2020-12-06§§§danilo spinelli§§§danilo spinelli§§§2020-12-06§§§Merge branch 'master' into add-ip-info§§§ea834a1 1a22b50
+§§§d5a9c7e§§§2020-12-06§§§danilo spinelli§§§danilo spinelli§§§2020-12-06§§§hotfix: log source ip§§§19b4136
+3	0	src/utils/middleware/checkIP.ts
+
+§§§e7d065a§§§2020-12-06§§§danilo spinelli§§§danilo spinelli§§§2020-12-06§§§hotfix: removed cloud role in application insights§§§8572951
+2	5	src/server.ts
+
+§§§ea834a1§§§2020-12-06§§§danilo spinelli§§§danilo spinelli§§§2020-12-06§§§Add ip to info endpoint§§§8572951
+6	3	src/app.ts
+
+§§§44ccb7c§§§2020-12-05§§§Francesco Persico§§§Francesco Persico§§§2020-12-05§§§Add EMERGENCY_MODE§§§68ea91c
+9	1	src/app.ts
+4	0	src/config.ts
+
+§§§68ea91c§§§2020-12-05§§§danilo spinelli§§§danilo spinelli§§§2020-12-05§§§hotfix: revert 401 to 501 / change node process count§§§c3636f2
+1	1	src/utils/strategies.ts
+
+§§§9bfaec3§§§2020-12-05§§§Danilo Spinelli§§§GitHub§§§2020-12-05§§§Revert changes on passport strategy (#733)§§§853667b
+1	1	src/utils/strategies.ts
+
+§§§08e37de§§§2020-10-27§§§Daniele Manni§§§danilo spinelli§§§2020-12-05§§§[#175072065] staticContentMiddleware become a middleware function§§§52ee814
+33	27	src/app.ts
+
+§§§52ee814§§§2020-10-27§§§Daniele Manni§§§danilo spinelli§§§2020-12-05§§§[#175072065] Remove DISABLE_BODY_PARSER env variables§§§7dba4e6
+2	1	StartBackend/index.ts
+8	4	src/__tests__/app.test.ts
+2	1	src/__tests__/services-api.test.ts
+6	6	src/app.ts
+0	6	src/config.ts
+2	1	src/server.ts
+
+§§§7dba4e6§§§2020-10-20§§§Daniele Manni§§§danilo spinelli§§§2020-12-05§§§[#175072065] Use an existing url for test X_FORWARDED_PROTO_HEADER§§§3ae06ab
+1	1	src/__tests__/app.test.ts
+
+§§§3ae06ab§§§2020-10-20§§§Daniele Manni§§§danilo spinelli§§§2020-12-05§§§[#175072065] Fix test on success unlockUserSession§§§a4fb41a
+1	3	src/controllers/__tests__/sessionLockController.test.ts
+
+§§§a4fb41a§§§2020-12-05§§§danilo spinelli§§§danilo spinelli§§§2020-12-05§§§merged master§§§61cb35a
+104	0	StartBackend/index.ts
+37	7	src/app.ts
+6	0	src/config.ts
+
+§§§d2316d8§§§2020-12-04§§§Danilo Spinelli§§§GitHub§§§2020-12-04§§§[#176003320] Return 500 instead of 401 on system errors (#728)§§§2ddafb0
+1	1	src/utils/strategies.ts
+
+§§§26ccedf§§§2020-11-20§§§Alessio Dore§§§GitHub§§§2020-11-20§§§[#175679733] Rename GetSupport Token endpoint (#727)§§§a13fdeb
+1	1	src/app.ts
+
+§§§a13fdeb§§§2020-11-20§§§Alessio Dore§§§GitHub§§§2020-11-20§§§[#175679733] Add GetSupportToken API (#726)§§§95de2e8
+11	0	src/app.ts
+33	1	src/config.ts
+92	0	src/controllers/__tests__/supportController.test.ts
+52	0	src/controllers/supportController.ts
+1	1	src/services/__tests__/bonusService.test.ts
+65	0	src/services/__tests__/tokenService.test.ts
+0	24	src/services/__tests__/tokenService.ts
+34	0	src/services/tokenService.ts
+6	0	src/utils/errorsFormatter.ts
+
+§§§07f66d5§§§2020-11-02§§§Emanuele De Cupis§§§GitHub§§§2020-11-02§§§[#175434645] Proxy abort user data processing (#724)§§§6a7a1d8
+9	0	src/app.ts
+26	0	src/controllers/userDataProcessingController.ts
+39	0	src/services/userDataProcessingService.ts
+
+§§§fa0147d§§§2020-10-27§§§Emanuele De Cupis§§§GitHub§§§2020-10-27§§§[#174877080] Upgrade to italia-utils 5.x (#711)§§§8028b3d
+13	228	src/clients/api.ts
+13	157	src/clients/bonus.ts
+6	53	src/clients/pagopa.ts
+2	2	src/controllers/__tests__/bonusController.test.ts
+7	7	src/services/__tests__/bonusService.test.ts
+18	16	src/services/__tests__/messagesService.test.ts
+17	15	src/services/__tests__/pagoPAProxyService.test.ts
+23	23	src/services/__tests__/profileService.test.ts
+12	12	src/services/__tests__/userDataProcessingService.test.ts
+5	5	src/services/bonusService.ts
+3	3	src/services/messagesService.ts
+3	3	src/services/pagoPAProxyService.ts
+8	8	src/services/profileService.ts
+4	4	src/services/userDataProcessingService.ts
+2	2	src/types/profile.ts
+
+§§§0fa3c70§§§2020-10-07§§§Daniele Manni§§§GitHub§§§2020-10-07§§§[#175146179] Fix user-identity spec and add logout spec (#721)§§§7e1db7b
+4	4	src/app.ts
+1	1	src/controllers/__tests__/authenticationController.test.ts
+2	2	src/controllers/authenticationController.ts
+3	3	src/types/user.ts
+
+§§§19d1e18§§§2020-10-05§§§Daniele Manni§§§GitHub§§§2020-10-05§§§[#175097052] getUser for BPD send name and surname (#719)§§§aaaaa0f
+3	1	src/controllers/__tests__/ssoController.test.ts
+3	1	src/controllers/ssoController.ts
+
+§§§229d217§§§2020-10-01§§§Daniele Manni§§§GitHub§§§2020-10-01§§§[#174710289] Add SPID/CIE events tracking (#715)§§§d61e107
+15	1	src/app.ts
+1	0	src/server.ts
+
+§§§4f5b609§§§2020-09-29§§§Daniele Manni§§§GitHub§§§2020-09-29§§§[#174819389] Update USERSESSIONS set on logout (#717)§§§6e09751
+15	2	src/services/__tests__/redisSessionStorage.test.ts
+13	0	src/services/redisSessionStorage.ts
+
+§§§08d06d4§§§2020-09-28§§§Daniele Manni§§§GitHub§§§2020-09-28§§§[#175012093] Bugfix Register.it downcase Fiscal Code (#716)§§§9c25d77
+1	1	src/types/user.ts
+
+§§§cb3be8e§§§2020-09-28§§§AleDore§§§AleDore§§§2020-09-28§§§services api without bearer token§§§9c25d77
+0	2	src/app.ts
+
+§§§9c25d77§§§2020-09-28§§§Daniele Manni§§§GitHub§§§2020-09-28§§§[#174620451] Remove old PagoPAUser, getUser returns always a ExtendedPagoPAUser (#713)§§§96fa518
+2	95	src/controllers/__tests__/pagoPAController.test.ts
+28	73	src/controllers/pagoPAController.ts
+
+§§§0b85e2e§§§2020-09-24§§§Daniele Manni§§§GitHub§§§2020-09-24§§§[#174749913] Remove age validation from getUserForBPD (#714)§§§33c172e
+0	45	src/controllers/__tests__/ssoController.test.ts
+5	24	src/controllers/ssoController.ts
+
+§§§33c172e§§§2020-09-24§§§Daniele Manni§§§GitHub§§§2020-09-24§§§[#174749913] Add getUser for BPD (#712)§§§48da669
+9	0	src/__tests__/app.test.ts
+2	0	src/__tests__/services-api.test.ts
+34	2	src/app.ts
+14	0	src/config.ts
+83	4	src/controllers/__tests__/ssoController.test.ts
+41	1	src/controllers/ssoController.ts
+5	0	src/server.ts
+13	1	src/services/ISessionStorage.ts
+27	2	src/services/redisSessionStorage.ts
+47	0	src/strategies/bearerBPDTokenStrategy.ts
+1	1	src/utils/responses.ts
+
+§§§48da669§§§2020-09-22§§§Daniele Manni§§§GitHub§§§2020-09-22§§§[#174819389] Fix listSessions with only user active session (#710)§§§0b24e5d
+4	13	src/controllers/__tests__/authenticationController.test.ts
+17	6	src/controllers/__tests__/sessionController.test.ts
+1	8	src/controllers/authenticationController.ts
+2	12	src/services/ISessionStorage.ts
+80	29	src/services/__tests__/redisSessionStorage.test.ts
+137	104	src/services/redisSessionStorage.ts
+4	0	src/types/commons.ts
+
+§§§652015c§§§2020-09-15§§§Daniele Manni§§§GitHub§§§2020-09-15§§§[#174749917] Create bpdToken and update getSession (#709)§§§5f50825
+9	2	src/controllers/__tests__/authenticationController.test.ts
+13	2	src/controllers/__tests__/sessionController.test.ts
+13	2	src/controllers/authenticationController.ts
+17	9	src/controllers/sessionController.ts
+11	5	src/services/ISessionStorage.ts
+140	221	src/services/__tests__/redisSessionStorage.test.ts
+82	110	src/services/redisSessionStorage.ts
+3	1	src/types/__tests__/user.test.ts
+6	0	src/types/token.ts
+14	3	src/types/user.ts
+
+§§§54cf722§§§2020-09-12§§§Daniele Manni§§§GitHub§§§2020-09-12§§§[#174621326] Add getUser endpoint for MyPortal (#705)§§§a0e42b0
+9	0	src/__tests__/app.test.ts
+2	0	src/__tests__/services-api.test.ts
+34	1	src/app.ts
+14	0	src/config.ts
+82	0	src/controllers/__tests__/ssoController.test.ts
+37	0	src/controllers/ssoController.ts
+5	0	src/server.ts
+7	0	src/services/ISessionStorage.ts
+190	0	src/services/__tests__/redisSessionStorage.test.ts
+35	4	src/services/redisSessionStorage.ts
+47	0	src/strategies/bearerMyPortalTokenStrategy.ts
+
+§§§a0e42b0§§§2020-09-11§§§Daniele Manni§§§GitHub§§§2020-09-11§§§[#174621860] Generate myportal_token (#703)§§§6721c62
+4	1	src/app.ts
+29	2	src/controllers/__tests__/authenticationController.test.ts
+45	2	src/controllers/__tests__/sessionController.test.ts
+9	3	src/controllers/authenticationController.ts
+52	9	src/controllers/sessionController.ts
+10	4	src/services/ISessionStorage.ts
+95	14	src/services/__tests__/redisSessionStorage.test.ts
+166	28	src/services/redisSessionStorage.ts
+3	1	src/types/__tests__/user.test.ts
+6	0	src/types/token.ts
+22	6	src/types/user.ts
+
+§§§d5295b5§§§2020-08-31§§§Daniele Manni§§§GitHub§§§2020-08-31§§§[#174575321] Fix base path of test-login (#701)§§§3ef02bf
+1	1	src/app.ts
+
+§§§eac7309§§§2020-08-19§§§Emanuele De Cupis§§§Emanuele De Cupis§§§2020-08-19§§§implementing io-utils v5§§§3ef02bf
+6	227	src/clients/api.ts
+6	156	src/clients/bonus.ts
+2	2	src/clients/pagopa.ts
+6	6	src/controllers/__tests__/bonusController.test.ts
+3	3	src/controllers/bonusController.ts
+6	6	src/services/__tests__/bonusService.test.ts
+8	8	src/services/bonusService.ts
+3	3	src/services/messagesService.ts
+2	2	src/services/pagoPAProxyService.ts
+6	6	src/services/profileService.ts
+3	3	src/services/userDataProcessingService.ts
+1	1	src/types/profile.ts
+1	1	src/utils/qrcode.ts
+
+§§§d090b2f§§§2020-08-16§§§Danilo Spinelli§§§GitHub§§§2020-08-16§§§Fix CIE invalid date format (#699)§§§48f53c5
+12	0	src/services/__tests__/profileService.test.ts
+6	3	src/types/profile.ts
+3	1	src/types/user.ts
+12	1	src/utils/__tests__/date.test.ts
+10	1	src/utils/date.ts
+
+§§§48f53c5§§§2020-08-07§§§Daniele Manni§§§GitHub§§§2020-08-07§§§[#174229710] newApp use TaskEither, add some tests (#698)§§§8cb3da6
+70	20	src/__tests__/app.test.ts
+125	112	src/app.ts
+1	0	src/server.ts
+
+§§§8cb3da6§§§2020-08-07§§§Daniele Manni§§§GitHub§§§2020-08-07§§§[#174212137] Test login with ResponseSuccessJson (#697)§§§869ff2a
+1	1	src/app.ts
+1	1	src/config.ts
+55	0	src/controllers/__tests__/authenticationController.test.ts
+51	1	src/controllers/authenticationController.ts
+
+§§§869ff2a§§§2020-07-27§§§Francesco Persico§§§GitHub§§§2020-07-27§§§[#174006044] Log users logins (#695)§§§c2f87c2
+5	0	src/__tests__/app.test.ts
+21	1	src/app.ts
+8	0	src/config.ts
+11	0	src/controllers/__tests__/authenticationController.test.ts
+15	1	src/controllers/authenticationController.ts
+34	0	src/services/__tests__/usersLoginLogService.test.ts
+41	0	src/services/usersLoginLogService.ts
+
+§§§c2f87c2§§§2020-07-27§§§Danilo Spinelli§§§GitHub§§§2020-07-27§§§Fix controller method (#696)§§§9a143ca
+1	1	src/app.ts
+
+§§§6a1a727§§§2020-07-20§§§Emanuele De Cupis§§§GitHub§§§2020-07-20§§§[#172884867] Add lock / unlock session APIs to be used during user delete (#691)§§§e4e5834
+2	0	src/__tests__/app.test.ts
+1	0	src/__tests__/services-api.test.ts
+47	0	src/app.ts
+12	0	src/config.ts
+203	0	src/controllers/__tests__/sessionLockController.test.ts
+117	0	src/controllers/sessionLockController.ts
+2	0	src/server.ts
+149	33	src/services/__tests__/redisSessionStorage.test.ts
+154	2	src/services/redisSessionStorage.ts
+19	0	src/services/redisUserMetadataStorage.ts
+
+§§§e7d20b3§§§2020-07-15§§§AleDore§§§GitHub§§§2020-07-15§§§[#173768306] Change adult check HTTP response on DSU eligibility check (#692)§§§eebb907
+2	2	src/controllers/bonusController.ts
+1	1	src/services/__tests__/bonusService.test.ts
+4	4	src/services/bonusService.ts
+9	6	src/utils/responses.ts
+
+§§§1d5548f§§§2020-07-02§§§Daniele Manni§§§Daniele Manni§§§2020-07-06§§§Send soggettoPagatore field to the attiva pagopa proxy endpoint§§§676b28c
+42	3	src/controllers/__tests__/pagoPAProxyController.test.ts
+18	8	src/controllers/pagoPAProxyController.ts
+
+§§§325726e§§§2020-07-01§§§Danilo Spinelli§§§GitHub§§§2020-07-01§§§[#173605507] Fix invalid PNG (#689)§§§1495879
+18	7	src/utils/qrcode.ts
+
+§§§2f7a29d§§§2020-06-30§§§Daniele Manni§§§Daniele Manni§§§2020-06-30§§§[#173561820] Add test check for deleteInstallationAsync inside acs method§§§09b4a66
+14	0	src/controllers/__tests__/authenticationController.test.ts
+
+§§§09b4a66§§§2020-06-30§§§Daniele Manni§§§Daniele Manni§§§2020-06-30§§§[#173561820] Delete device installation on user logout§§§1495879
+5	0	src/controllers/__tests__/authenticationController.test.ts
+23	17	src/controllers/authenticationController.ts
+
+§§§b5e5a13§§§2020-06-27§§§AleDore§§§GitHub§§§2020-06-27§§§[#173535710] Adult check by extracting date of birth from fiscalCode data (#687)§§§3f0c829
+3	2	src/services/__tests__/bonusService.test.ts
+5	5	src/services/bonusService.ts
+25	1	src/utils/__tests__/date.test.ts
+63	0	src/utils/date.ts
+
+§§§472eccd§§§2020-06-26§§§AleDore§§§GitHub§§§2020-06-26§§§[#173530790] Adult Check on startBonusEligibilityCheck (#686)§§§70098da
+5	1	src/controllers/bonusController.ts
+27	0	src/services/__tests__/bonusService.test.ts
+18	0	src/services/bonusService.ts
+22	0	src/utils/__tests__/date.test.ts
+12	0	src/utils/date.ts
+22	0	src/utils/responses.ts
+
+§§§34667f8§§§2020-06-25§§§Danilo Spinelli§§§GitHub§§§2020-06-25§§§[#173509483] Align backend bonus API specs (#685)§§§bb66144
+1	1	src/clients/bonus.ts
+2	3	src/controllers/bonusController.ts
+2	3	src/services/bonusService.ts
+
+§§§7a965ea§§§2020-06-18§§§Danilo Spinelli§§§GitHub§§§2020-06-18§§§[#173394559] Add fill black into bonus qrcode (#683)§§§adf3d1e
+4	0	src/services/__tests__/bonusService.test.ts
+5	1	src/utils/qrcode.ts
+
+§§§28f8f1d§§§2020-06-15§§§Matteo Boschi§§§GitHub§§§2020-06-15§§§Remove useless refs from bonus API specification (#682)§§§b1f2361
+6	9	src/controllers/__tests__/bonusController.test.ts
+6	9	src/services/__tests__/bonusService.test.ts
+
+§§§b266d82§§§2020-06-12§§§Danilo Spinelli§§§GitHub§§§2020-06-12§§§Fix call to bonus API (#680)§§§aaa1c7c
+2	2	src/app.ts
+1	1	src/clients/bonus.ts
+14	1	src/config.ts
+
+§§§8757139§§§2020-06-11§§§Danilo Spinelli§§§GitHub§§§2020-06-11§§§[#173284346] align bonus specs (#679)§§§177fc9c
+1	0	src/clients/bonus.ts
+17	10	src/controllers/__tests__/bonusController.test.ts
+1	1	src/controllers/bonusController.ts
+20	12	src/services/__tests__/bonusService.test.ts
+3	6	src/services/bonusService.ts
+
+§§§df48cde§§§2020-06-11§§§Danilo Spinelli§§§GitHub§§§2020-06-11§§§[#173079501] add qrcode to bonus (#677)§§§902249f
+2	2	src/controllers/bonusController.ts
+33	2	src/services/__tests__/bonusService.test.ts
+17	5	src/services/bonusService.ts
+48	0	src/utils/qrcode.ts
+
+§§§902249f§§§2020-06-11§§§Danilo Spinelli§§§GitHub§§§2020-06-11§§§[#173284346] align bonus API specs (#678)§§§45f75fd
+3	0	src/controllers/bonusController.ts
+9	0	src/services/bonusService.ts
+
+§§§45f75fd§§§2020-06-11§§§danilo spinelli§§§danilo spinelli§§§2020-06-11§§§fix test§§§fdd742c
+2	2	src/services/__tests__/bonusService.test.ts
+
+§§§fdd742c§§§2020-06-11§§§danilo spinelli§§§danilo spinelli§§§2020-06-11§§§hotfix: align bonus controller to specs§§§04a5256
+1	0	src/controllers/bonusController.ts
+17	18	src/services/bonusService.ts
+
+§§§3e7d35e§§§2020-06-09§§§Danilo Spinelli§§§GitHub§§§2020-06-09§§§align api specs to io-functions-bonus (#676)§§§9f3e22d
+1	5	src/controllers/__tests__/bonusController.test.ts
+
+§§§59ed705§§§2020-06-07§§§danilo spinelli§§§danilo spinelli§§§2020-06-07§§§hotfix: align tolatest version of  bonus api§§§f5a96d4
+4	4	src/controllers/__tests__/bonusController.test.ts
+4	6	src/services/__tests__/bonusService.test.ts
+
+§§§17e4e34§§§2020-06-04§§§danilo spinelli§§§danilo spinelli§§§2020-06-04§§§Merge branch 'master' of https://github.com/pagopa/io-backend into try-fix-installtions§§§05f1d83 e9fb66a
+§§§e9fb66a§§§2020-06-04§§§danilo spinelli§§§danilo spinelli§§§2020-06-04§§§hotfix: align bonus specs to new api§§§16007b1
+2	1	src/controllers/__tests__/bonusController.test.ts
+
+§§§05f1d83§§§2020-06-04§§§Danilo Spinelli§§§GitHub§§§2020-06-04§§§Merge branch 'master' into try-fix-installtions§§§730f4d6 16007b1
+§§§730f4d6§§§2020-06-04§§§danilo spinelli§§§danilo spinelli§§§2020-06-04§§§[#173182873] await on installation promise§§§baee160
+18	17	src/controllers/notificationController.ts
+2	9	src/services/__tests__/notificationService.test.ts
+
+§§§baee160§§§2020-06-04§§§danilo spinelli§§§danilo spinelli§§§2020-06-04§§§[##173182873] wait for notification installation promise§§§c99a333
+12	12	src/controllers/notificationController.ts
+2	9	src/services/notificationService.ts
+
+§§§16007b1§§§2020-06-03§§§Emanuele De Cupis§§§GitHub§§§2020-06-03§§§[#173034992] Add endpoint to get bonuses for user (#672)§§§4e8235c
+6	0	src/app.ts
+20	0	src/clients/bonus.ts
+66	0	src/controllers/__tests__/bonusController.test.ts
+19	0	src/controllers/bonusController.ts
+102	0	src/services/__tests__/bonusService.test.ts
+39	0	src/services/bonusService.ts
+
+§§§4e8235c§§§2020-06-03§§§Emanuele De Cupis§§§GitHub§§§2020-06-03§§§[#173017550] start activation procedure (#670)§§§c45d73a
+9	0	src/app.ts
+29	0	src/clients/bonus.ts
+55	0	src/controllers/__tests__/bonusController.test.ts
+21	0	src/controllers/bonusController.ts
+107	1	src/services/__tests__/bonusService.test.ts
+49	0	src/services/bonusService.ts
+
+§§§c45d73a§§§2020-06-03§§§Emanuele De Cupis§§§GitHub§§§2020-06-03§§§[#173017529] Add bonus activation detail endpoint (#671)§§§c99a333
+11	3	src/__mocks__/request.ts
+9	0	src/app.ts
+24	32	src/clients/bonus.ts
+131	5	src/controllers/__tests__/bonusController.test.ts
+33	0	src/controllers/bonusController.ts
+100	9	src/services/__tests__/bonusService.test.ts
+56	7	src/services/bonusService.ts
+
+§§§f8037ad§§§2020-06-03§§§Emanuele De Cupis§§§Emanuele De Cupis§§§2020-06-03§§§refactor tests§§§24fdf14
+11	3	src/__mocks__/request.ts
+52	26	src/controllers/__tests__/bonusController.test.ts
+
+§§§24fdf14§§§2020-06-03§§§Emanuele De Cupis§§§Emanuele De Cupis§§§2020-06-03§§§implemented getLatestBonusActivationById§§§81b7bd7
+9	0	src/app.ts
+24	32	src/clients/bonus.ts
+103	3	src/controllers/__tests__/bonusController.test.ts
+33	0	src/controllers/bonusController.ts
+100	9	src/services/__tests__/bonusService.test.ts
+55	7	src/services/bonusService.ts
+
+§§§81b7bd7§§§2020-06-03§§§Emanuele De Cupis§§§Emanuele De Cupis§§§2020-06-03§§§fix wrong test§§§c99a333
+3	3	src/services/__tests__/bonusService.test.ts
+
+§§§c99a333§§§2020-06-02§§§Emanuele De Cupis§§§GitHub§§§2020-06-02§§§[#173017441] implement getBonusEligibilityCheck method (#666)§§§38a8ea6
+6	0	src/app.ts
+67	5	src/clients/bonus.ts
+64	0	src/controllers/__tests__/bonusController.test.ts
+26	1	src/controllers/bonusController.ts
+111	6	src/services/__tests__/bonusService.test.ts
+74	3	src/services/bonusService.ts
+
+§§§c001fbb§§§2020-06-01§§§Danilo Spinelli§§§GitHub§§§2020-06-01§§§[#173081682] align Bonus API specs to functions (#667)§§§b91e7cb
+1	4	src/controllers/__tests__/bonusController.test.ts
+2	3	src/controllers/bonusController.ts
+3	7	src/services/__tests__/bonusService.test.ts
+5	9	src/services/bonusService.ts
+
+§§§d5d43e2§§§2020-05-31§§§Danilo Spinelli§§§GitHub§§§2020-05-31§§§[#173098243] add bonus feature flag (#664)§§§5f172e4
+9	6	src/app.ts
+3	0	src/config.ts
+
+§§§5f172e4§§§2020-05-29§§§Emanuele De Cupis§§§GitHub§§§2020-05-29§§§[#173017550] start bonus eligibility check (#663)§§§2aa3996
+18	16	src/__tests__/app.test.ts
+9	8	src/__tests__/services-api.test.ts
+92	37	src/app.ts
+2	1	src/config.ts
+117	0	src/controllers/__tests__/bonusController.test.ts
+38	0	src/controllers/bonusController.ts
+10	7	src/server.ts
+131	0	src/services/__tests__/bonusService.test.ts
+59	0	src/services/bonusService.ts
+
+§§§2aa3996§§§2020-05-29§§§Emanuele De Cupis§§§GitHub§§§2020-05-29§§§[#173035929] code generation + bonus client (#659)§§§72eb03a
+64	0	src/clients/bonus.ts
+11	3	src/config.ts
+
+§§§4ffedd8§§§2020-05-28§§§Federico Feroldi§§§GitHub§§§2020-05-28§§§Makes a bunch of async operation parallel in acs (#662)§§§4d2f892
+2	2	src/controllers/__tests__/authenticationController.test.ts
+54	33	src/controllers/authenticationController.ts
+
+§§§4d2f892§§§2020-05-28§§§Federico Feroldi§§§GitHub§§§2020-05-28§§§Makes token generation async and parallel (#661)§§§d4cd8e6
+2	1	src/controllers/__tests__/authenticationController.test.ts
+18	10	src/controllers/authenticationController.ts
+13	3	src/services/__tests__/tokenService.ts
+11	2	src/services/tokenService.ts
+
+§§§d4cd8e6§§§2020-05-27§§§Federico Feroldi§§§GitHub§§§2020-05-27§§§Properly validate the SPID payload (#660)§§§6c1015c
+22	6	src/types/user.ts
+
+§§§712526e§§§2020-05-23§§§Daniele Manni§§§GitHub§§§2020-05-23§§§[#172407010] Queue Storage to send message for notificationhub actions (#647)§§§605a67d
+7	4	src/app.ts
+8	6	src/config.ts
+2	2	src/controllers/authenticationController.ts
+96	87	src/services/__tests__/notificationService.test.ts
+70	114	src/services/notificationService.ts
+2	49	src/types/notification.ts
+4	0	src/utils/messages.ts
+2	3	src/utils/spid.ts
+
+§§§605a67d§§§2020-05-21§§§Danilo Spinelli§§§GitHub§§§2020-05-21§§§fix docker env to work aside functions (#654)§§§97ad602
+0	4	src/config.ts
+
+§§§97ad602§§§2020-05-21§§§Daniele Manni§§§GitHub§§§2020-05-21§§§[#172376369] Add password login for reviewers and integration tests (#650)§§§45d38d4
+19	1	src/app.ts
+14	0	src/config.ts
+8	5	src/controllers/__tests__/authenticationController.test.ts
+8	2	src/controllers/authenticationController.ts
+0	1	src/controllers/userDataProcessingController.ts
+1	0	src/services/__tests__/profileService.test.ts
+34	0	src/strategies/localStrategy.ts
+1	0	src/types/__tests__/profile.test.ts
+8	1	src/utils/appinsights.ts
+
+§§§b228406§§§2020-05-20§§§AleDore§§§AleDore§§§2020-05-20§§§add is test profile check on new profile§§§679d4a9
+4	2	src/controllers/__tests__/authenticationController.test.ts
+4	2	src/controllers/authenticationController.ts
+
+§§§b27ffcf§§§2020-05-20§§§Danilo Spinelli§§§GitHub§§§2020-05-20§§§Merge branch 'master' into 172376369-reviewer-login§§§05732b1 45d38d4
+§§§05732b1§§§2020-05-20§§§danilo spinelli§§§danilo spinelli§§§2020-05-20§§§removed unused option§§§d0eda64
+0	1	src/app.ts
+
+§§§d0eda64§§§2020-05-20§§§danilo spinelli§§§danilo spinelli§§§2020-05-20§§§fixes§§§11dbdea
+5	2	src/app.ts
+1	1	src/strategies/localStrategy.ts
+
+§§§11dbdea§§§2020-05-20§§§danilo spinelli§§§danilo spinelli§§§2020-05-20§§§small refactor§§§a1fa369
+4	7	src/config.ts
+
+§§§45d38d4§§§2020-05-20§§§AleDore§§§GitHub§§§2020-05-20§§§[#172885142] block blacklisted users (#652)§§§720b5a5
+38	6	src/controllers/__tests__/authenticationController.test.ts
+2	0	src/controllers/__tests__/sessionController.test.ts
+18	1	src/controllers/authenticationController.ts
+5	0	src/services/ISessionStorage.ts
+2	0	src/services/__tests__/redisSessionStorage.test.ts
+17	0	src/services/redisSessionStorage.ts
+
+§§§285a435§§§2020-05-20§§§danilo spinelli§§§danilo spinelli§§§2020-05-20§§§make environment variable optional§§§b11cff3
+11	13	src/app.ts
+10	6	src/config.ts
+7	8	src/strategies/localStrategy.ts
+
+§§§88825c2§§§2020-05-15§§§AleDore§§§GitHub§§§2020-05-15§§§[#172693963] - UserDataProcessing transient statuses management (#651)§§§9e5c5c3
+2	0	src/controllers/userDataProcessingController.ts
+22	0	src/services/__tests__/userDataProcessingService.test.ts
+9	0	src/services/userDataProcessingService.ts
+
+§§§b11cff3§§§2020-05-06§§§Daniele Manni§§§Daniele Manni§§§2020-05-06§§§[#172376369] Optional TEST_LOGIN_FISCAL_CODES§§§48b864c
+10	8	src/config.ts
+9	2	src/strategies/localStrategy.ts
+
+§§§48b864c§§§2020-05-05§§§Daniele Manni§§§Daniele Manni§§§2020-05-05§§§[#172376369] TEST_LOGIN_FISCAL_CODES and routes spec fixes§§§5b5210f
+3	3	src/app.ts
+2	2	src/config.ts
+2	2	src/strategies/localStrategy.ts
+
+§§§ae8ddaf§§§2020-05-05§§§Daniele Manni§§§Daniele Manni§§§2020-05-05§§§[#172376369] new entrypoint for static password login§§§be481ad
+17	0	src/app.ts
+12	1	src/config.ts
+25	0	src/strategies/localStrategy.ts
+
+§§§063705f§§§2020-05-04§§§AleDore§§§GitHub§§§2020-05-04§§§[#172331475] Barcode generation on Receipt Prescription Data (#648)§§§7ce9658
+94	0	src/@types/bwip-js/index.d.ts
+5	0	src/config.ts
+2	2	src/controllers/messagesController.ts
+52	14	src/services/__tests__/messagesService.test.ts
+27	8	src/services/messagesService.ts
+21	0	src/utils/__tests__/barcode.test.ts
+47	0	src/utils/attachments.ts
+73	0	src/utils/barcode.ts
+316	0	src/utils/bwipjs-svg.ts
+
+§§§86d011c§§§2020-04-20§§§Danilo Spinelli§§§GitHub§§§2020-04-20§§§make calls to notification hub async (fire & forget) (#644)§§§30f7365
+17	9	src/controllers/authenticationController.ts
+16	11	src/controllers/notificationController.ts
+
+§§§db0b851§§§2020-04-19§§§Danilo Spinelli§§§GitHub§§§2020-04-19§§§[#172397257] make application insights configurable (#643)§§§7bdb5e9
+3	0	src/config.ts
+13	12	src/server.ts
+0	105	src/utils/__tests__/appinsights.test.ts
+6	74	src/utils/appinsights.ts
+
+§§§83c9cd2§§§2020-04-16§§§Federico Feroldi§§§GitHub§§§2020-04-16§§§Adds tracking of unique users in application insights (#641)§§§3cdc591
+2	2	src/app.ts
+30	13	src/utils/appinsights.ts
+
+§§§3cdc591§§§2020-04-16§§§Federico Feroldi§§§GitHub§§§2020-04-16§§§Fixes tracking of user sessions in appinsights (#640)§§§6c037bd
+1	1	src/utils/appinsights.ts
+
+§§§04e1c2f§§§2020-04-15§§§Danilo Spinelli§§§GitHub§§§2020-04-15§§§[#172328755] make pagopa client https only (#639)§§§717ba4a
+5	1	src/config.ts
+
+§§§717ba4a§§§2020-04-15§§§Federico Feroldi§§§GitHub§§§2020-04-15§§§Adds session tracking to application insights (#638)§§§fffaf52
+6	2	src/app.ts
+14	1	src/controllers/authenticationController.ts
+4	3	src/services/tokenService.ts
+11	3	src/strategies/bearerSessionTokenStrategy.ts
+3	1	src/types/__tests__/user.test.ts
+4	1	src/types/user.ts
+54	0	src/utils/appinsights.ts
+
+§§§63f585f§§§2020-04-09§§§Danilo Spinelli§§§GitHub§§§2020-04-09§§§[#172248390] invert keepalive condition§§§9a52efe
+2	2	src/server.ts
+
+§§§c694b18§§§2020-04-08§§§Danilo Spinelli§§§GitHub§§§2020-04-08§§§[#169692181] fix profile service conflict api response (#634)§§§bbeaf16
+2	2	src/controllers/__tests__/authenticationController.test.ts
+15	9	src/controllers/authenticationController.ts
+2	0	src/controllers/profileController.ts
+28	0	src/services/__tests__/profileService.test.ts
+14	0	src/services/profileService.ts
+
+§§§bbeaf16§§§2020-04-07§§§Daniele Manni§§§GitHub§§§2020-04-07§§§[#172038263] Add Express Error Middleware, catch passport exceptions (#632)§§§0d54465
+8	2	src/app.ts
+14	20	src/strategies/bearerSessionTokenStrategy.ts
+14	20	src/strategies/bearerWalletTokenStrategy.ts
+21	0	src/utils/middleware/express.ts
+27	0	src/utils/strategies.ts
+
+§§§0d54465§§§2020-04-07§§§Daniele Manni§§§GitHub§§§2020-04-07§§§[#172124299] Fix obfuscate token and access_token (#633)§§§18942d6
+1	1	src/app.ts
+
+§§§2527969§§§2020-04-07§§§Danilo Spinelli§§§GitHub§§§2020-04-07§§§[#172179161] refactor keepalive (#631)§§§d7e8915
+4	64	src/config.ts
+9	6	src/server.ts
+
+§§§d7e8915§§§2020-04-07§§§Danilo Spinelli§§§GitHub§§§2020-04-07§§§[#170944582] removed (#630)§§§aaed7ff
+0	108	src/__tests__/server.test.ts
+
+§§§add58ab§§§2020-04-07§§§danilo.spinelli§§§danilo.spinelli§§§2020-04-07§§§remove unused envs§§§d81c40b
+0	45	src/__tests__/server.test.ts
+
+§§§d81c40b§§§2020-04-06§§§AleDore§§§AleDore§§§2020-04-06§§§refactor due to unit test purpose§§§aaed7ff
+51	50	src/__tests__/server.test.ts
+
+§§§aaed7ff§§§2020-04-06§§§danilo.spinelli§§§danilo.spinelli§§§2020-04-06§§§[#172124428]  hotfix: appinsights https agent§§§c5ee47a
+1	1	src/utils/appinsights.ts
+
+§§§4ef97f0§§§2020-04-02§§§Federico Feroldi§§§GitHub§§§2020-04-02§§§[#172124428] Adds option to enable keepalive in fetch client (#628)§§§8c20453
+44	35	src/config.ts
+10	1	src/server.ts
+4	4	src/services/apiClientFactory.ts
+17	8	src/services/pagoPAClientFactory.ts
+14	1	src/utils/appinsights.ts
+
+§§§21a7813§§§2020-04-02§§§Federico Feroldi§§§GitHub§§§2020-04-02§§§[#172124428] Adds option to enable keepalive in fetch client (#627)§§§9ce6ac4
+60	1	src/config.ts
+14	2	src/services/apiClientFactory.ts
+
+§§§1d87bba§§§2020-04-02§§§Daniele Manni§§§GitHub§§§2020-04-02§§§[#172037511] Move REDIS client and SessionStorage into app (#625)§§§3e8d2eb
+25	6	src/app.ts
+1	41	src/config.ts
+
+§§§654b356§§§2020-03-31§§§Danilo Spinelli§§§GitHub§§§2020-03-31§§§[#172067300] log SPID assertions on response only (#624)§§§037d43a
+8	8	src/app.ts
+15	14	src/utils/__tests__/spid.test.ts
+24	24	src/utils/spid.ts
+
+§§§500adf6§§§2020-03-30§§§Francesco Persico§§§GitHub§§§2020-03-30§§§[#172059189] Change pagopaproxyprod envvar name (#623)§§§6f817dd
+2	2	src/config.ts
+9	9	src/controllers/__tests__/pagoPAProxyController.test.ts
+1	1	src/services/__tests__/pagoPAProxyService.test.ts
+2	2	src/services/pagoPAClientFactory.ts
+
+§§§7dd5841§§§2020-03-30§§§Daniele Manni§§§GitHub§§§2020-03-30§§§[#172051710] Remove ALLOW_MULTIPLE_SESSIONS option (#622)§§§20574eb
+1	4	src/app.ts
+1	10	src/config.ts
+3	14	src/controllers/__tests__/authenticationController.test.ts
+3	15	src/controllers/__tests__/notificationController.test.ts
+2	6	src/controllers/__tests__/sessionController.test.ts
+9	12	src/controllers/notificationController.ts
+9	25	src/services/__tests__/notificationService.test.ts
+1	39	src/services/__tests__/redisSessionStorage.test.ts
+16	44	src/services/notificationService.ts
+3	6	src/services/redisSessionStorage.ts
+
+§§§20574eb§§§2020-03-30§§§Danilo Spinelli§§§GitHub§§§2020-03-30§§§[#168929351] fix installatioid to last device (#621)§§§ad95cef
+5	3	src/services/__tests__/notificationService.test.ts
+7	1	src/services/notificationService.ts
+
+§§§0aefd34§§§2020-03-30§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-30§§§hotfix: linting§§§771574f
+1	0	src/app.ts
+
+§§§e8fa64f§§§2020-03-29§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-29§§§hotfix: authentication strategy for logout§§§bb466ec
+3	1	src/app.ts
+
+§§§45f1c6b§§§2020-03-29§§§Danilo Spinelli§§§GitHub§§§2020-03-29§§§[#172042254] allow multiple CIDR(s) or IP(s) in checkIP middleware (#620)§§§390cedd
+0	10	src/@types/range_check/index.d.ts
+4	4	src/__tests__/app.test.ts
+2	2	src/__tests__/server.test.ts
+2	2	src/__tests__/services-api.test.ts
+4	4	src/app.ts
+24	34	src/config.ts
+35	0	src/utils/__tests__/cidrs.test.ts
+17	0	src/utils/cidrs.ts
+3	2	src/utils/middleware/checkIP.ts
+
+§§§6570a71§§§2020-03-29§§§Danilo Spinelli§§§GitHub§§§2020-03-29§§§[#172041089] use different passport strategies (#619)§§§41b2b04
+30	23	src/app.ts
+9	6	src/config.ts
+12	32	src/strategies/{bearerTokenStrategy.ts => bearerSessionTokenStrategy.ts}
+53	0	src/strategies/bearerWalletTokenStrategy.ts
+
+§§§4aa0fe4§§§2020-03-28§§§Danilo Spinelli§§§GitHub§§§2020-03-28§§§[#172038183] fix exception during notify (#617)§§§be5ceba
+59	0	src/controllers/__tests__/notificationController.test.ts
+37	35	src/controllers/notificationController.ts
+
+§§§cd89cbe§§§2020-03-28§§§Danilo Spinelli§§§GitHub§§§2020-03-28§§§[#172037528] fix import from config during tests (#616)§§§1f30214
+7	1	src/app.ts
+9	5	src/controllers/__tests__/notificationController.test.ts
+9	7	src/controllers/notificationController.ts
+
+§§§96deb4b§§§2020-03-28§§§Danilo Spinelli§§§GitHub§§§2020-03-28§§§[#171916455] accept notifications without content (#615)§§§252755f
+5	0	src/config.ts
+60	37	src/controllers/__tests__/notificationController.test.ts
+40	26	src/controllers/notificationController.ts
+6	3	src/services/__tests__/notificationService.test.ts
+9	3	src/services/notificationService.ts
+
+§§§252755f§§§2020-03-27§§§Daniele Manni§§§GitHub§§§2020-03-27§§§[#168929351] Single Intallation per user (#614)§§§24c8e47
+5	0	src/__tests__/app.test.ts
+5	0	src/__tests__/server.test.ts
+5	0	src/__tests__/services-api.test.ts
+19	7	src/app.ts
+1	1	src/config.ts
+24	2	src/controllers/__tests__/authenticationController.test.ts
+14	3	src/controllers/__tests__/notificationController.test.ts
+13	1	src/controllers/authenticationController.ts
+16	7	src/services/__tests__/notificationService.test.ts
+92	50	src/services/notificationService.ts
+
+§§§abf8441§§§2020-03-25§§§AleDore§§§GitHub§§§2020-03-25§§§[#158818736] add callback to store SAML (SPID/CIE) request and responses (#611)§§§5f11d95
+2	0	src/__tests__/app.test.ts
+2	0	src/__tests__/server.test.ts
+2	0	src/__tests__/services-api.test.ts
+23	15	src/app.ts
+6	0	src/config.ts
+132	0	src/utils/__mocks__/spid.ts
+97	0	src/utils/__tests__/spid.test.ts
+151	0	src/utils/spid.ts
+
+§§§2b31fab§§§2020-03-19§§§Daniele Manni§§§GitHub§§§2020-03-19§§§[#171877614] Remove refresh IDP metadata endpoint (#610)§§§d5f5873
+0	22	src/__tests__/app.test.ts
+0	16	src/app.ts
+0	25	src/controllers/__tests__/idpMetadataController.test.ts
+0	21	src/controllers/idpMetadataController.ts
+
+§§§d5f5873§§§2020-03-19§§§Daniele Manni§§§GitHub§§§2020-03-19§§§[#171839291] Refresh of IDP Metadata on interval (#609)§§§a054776
+17	0	src/app.ts
+11	0	src/config.ts
+
+§§§b166993§§§2020-03-17§§§Daniele Manni§§§GitHub§§§2020-03-17§§§[#171833480] Optional SPID_TESTENV_URL without default (#608)§§§2e64356
+5	4	src/config.ts
+
+§§§4eb76d6§§§2020-03-16§§§Daniele Manni§§§GitHub§§§2020-03-16§§§[#171706038] API for manual refresh idps metadata (#603)§§§aa1af7c
+22	0	src/__tests__/app.test.ts
+24	4	src/app.ts
+1	14	src/config.ts
+25	0	src/controllers/__tests__/idpMetadataController.test.ts
+21	0	src/controllers/idpMetadataController.ts
+
+§§§aa1af7c§§§2020-03-13§§§Francesco Persico§§§GitHub§§§2020-03-13§§§[#171784821] Allow socket pipe for http/s server (#602)§§§dd2fe55
+1	4	src/config.ts
+
+§§§dd2fe55§§§2020-03-13§§§Francesco Persico§§§GitHub§§§2020-03-13§§§[#171784425] Use info to log app service assigned port (#601)§§§0c5cbfd
+1	1	src/config.ts
+
+§§§0c5cbfd§§§2020-03-13§§§Francesco Persico§§§GitHub§§§2020-03-13§§§[#171784425] Log app service assigned port (#600)§§§31ef352
+1	0	src/config.ts
+
+§§§31ef352§§§2020-03-13§§§Francesco Persico§§§GitHub§§§2020-03-13§§§[#171784225] Add log before starting http/https server (#599)§§§e142abf
+2	0	src/server.ts
+
+§§§6ece961§§§2020-03-12§§§Danilo Spinelli§§§GitHub§§§2020-03-12§§§[#171772077] fix env variables i nconfig (#598)§§§2d785e3
+2	2	src/config.ts
+
+§§§006d258§§§2020-03-10§§§Daniele Manni§§§GitHub§§§2020-03-10§§§[#171703313] SAML certs and Startup IDP metadata from ENV (#595)§§§502cba5
+16	7	src/__tests__/app.test.ts
+15	7	src/app.ts
+29	9	src/config.ts
+3	0	src/types/commons.ts
+
+§§§7d52c3f§§§2020-03-07§§§Danilo Spinelli§§§GitHub§§§2020-03-07§§§[#171683935] remove unused endpoint (#593)§§§e77cf85
+0	9	src/app.ts
+0	20	src/clients/api.ts
+1	66	src/controllers/__tests__/serviceController.test.ts
+0	15	src/controllers/servicesController.ts
+1	82	src/services/__tests__/messagesService.test.ts
+0	28	src/services/messagesService.ts
+
+§§§44b66aa§§§2020-03-04§§§Danilo Spinelli§§§GitHub§§§2020-03-04§§§[#171622618] fix metadata refresh timeout (#591)§§§994364e
+13	12	src/config.ts
+
+§§§1c7276e§§§2020-03-04§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-04§§§[#171622618] fix refresh timeout§§§7906d67
+13	12	src/config.ts
+
+§§§7906d67§§§2020-03-04§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-04§§§fix import order§§§a39e438
+1	1	src/app.ts
+
+§§§a39e438§§§2020-03-04§§§Danilo Spinelli§§§GitHub§§§2020-03-04§§§Merge branch 'master' into 155244960-rate-limit§§§025b028 994364e
+§§§994364e§§§2020-03-04§§§AleDore§§§GitHub§§§2020-03-04§§§[#171211343] Adds user-data-processing API (#584)§§§a025cec
+33	2	src/app.ts
+42	2	src/clients/api.ts
+269	0	src/controllers/__tests__/userDataProcessingController.test.ts
+76	0	src/controllers/userDataProcessingController.ts
+243	0	src/services/__tests__/userDataProcessingService.test.ts
+89	0	src/services/userDataProcessingService.ts
+
+§§§cef4a66§§§2020-03-04§§§Danilo Spinelli§§§GitHub§§§2020-03-04§§§Merge branch 'master' into 155244960-rate-limit§§§8edca44 d00f303
+§§§d00f303§§§2020-03-04§§§Daniele Manni§§§GitHub§§§2020-03-04§§§[#171550422] Add ENV var for CIE metadata download (#589)§§§775afce
+2	0	src/config.ts
+
+§§§8edca44§§§2020-03-04§§§Danilo Spinelli§§§GitHub§§§2020-03-04§§§Merge branch 'master' into 155244960-rate-limit§§§7438f2c 775afce
+§§§7438f2c§§§2020-03-04§§§Danilo Spinelli§§§GitHub§§§2020-03-04§§§Update src/utils/middleware/rateLimiter.ts§§§3040a41
+4	0	src/utils/middleware/rateLimiter.ts
+
+§§§32e864f§§§2020-03-03§§§Daniele Manni§§§GitHub§§§2020-03-03§§§[#171467326] Upgrade io-spid-commons to v.2.5.0 (#588)§§§3221f4d
+13	2	src/config.ts
+
+§§§dc20a0f§§§2020-03-03§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-03§§§expand rate limiter points§§§4072eca
+2	2	src/config.ts
+0	1	src/utils/middleware/rateLimiter.ts
+
+§§§4072eca§§§2020-03-03§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-03§§§adds tests§§§7d986aa
+38	0	src/utils/middleware/__tests__/rateLimiter.test.ts
+37	34	src/utils/middleware/rateLimiter.ts
+
+§§§7d986aa§§§2020-03-03§§§Danilo Spinelli§§§GitHub§§§2020-03-03§§§Update src/utils/middleware/rateLimiter.ts§§§c6c0ac2
+13	1	src/utils/middleware/rateLimiter.ts
+
+§§§c6c0ac2§§§2020-03-02§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-02§§§fix tests§§§20f4311
+14	9	src/app.ts
+
+§§§20f4311§§§2020-03-02§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-02§§§fix tests§§§b96597d
+4	3	src/app.ts
+10	0	src/config.ts
+
+§§§b96597d§§§2020-03-02§§§danilo.spinelli§§§danilo.spinelli§§§2020-03-02§§§[#155244960] add rate limiter§§§883698e
+19	0	src/app.ts
+29	0	src/utils/middleware/rateLimiter.ts
+
+§§§89c4b31§§§2020-02-19§§§Danilo Spinelli§§§GitHub§§§2020-02-19§§§[#171332737] integrate new io-spid-commons (#581)§§§442a9d8
+0	24	src/@types/spid-passport/index.d.ts
+0	9	src/@types/x509/index.d.ts
+7	3	src/__tests__/app.test.ts
+0	98	src/__tests__/loadSpidStrategy.test.ts
+32	60	src/app.ts
+64	53	src/config.ts
+2	6	src/controllers/__tests__/authenticationController.test.ts
+1	3	src/controllers/authenticationController.ts
+1	1	src/types/__tests__/user.test.ts
+1	5	src/types/issuer.ts
+1	1	src/types/user.ts
+
+§§§95db041§§§2020-02-19§§§danilo.spinelli§§§danilo.spinelli§§§2020-02-19§§§fix: chaining§§§06cd88f
+4	4	src/app.ts
+
+§§§06cd88f§§§2020-02-19§§§danilo.spinelli§§§danilo.spinelli§§§2020-02-19§§§chore: refactor§§§c6e47be
+6	1	src/app.ts
+0	2	src/config.ts
+
+§§§c6e47be§§§2020-02-18§§§danilo.spinelli§§§danilo.spinelli§§§2020-02-18§§§[#171332737] integrate new io-spid-commons§§§442a9d8
+0	24	src/@types/spid-passport/index.d.ts
+0	9	src/@types/x509/index.d.ts
+7	3	src/__tests__/app.test.ts
+0	98	src/__tests__/loadSpidStrategy.test.ts
+27	60	src/app.ts
+66	53	src/config.ts
+2	6	src/controllers/__tests__/authenticationController.test.ts
+1	3	src/controllers/authenticationController.ts
+1	1	src/types/__tests__/user.test.ts
+1	5	src/types/issuer.ts
+1	1	src/types/user.ts
+
+§§§7679f2d§§§2020-01-29§§§Danilo Spinelli§§§GitHub§§§2020-01-29§§§[#167064659] set-metadata-optimistic-lock (naming) (#579)§§§6df6a4f
+8	8	src/services/redisUserMetadataStorage.ts
+
+§§§6df6a4f§§§2020-01-29§§§Daniele Manni§§§Daniele Manni§§§2020-01-29§§§[#167064659] Remove useless mutex during reset redis client lock§§§cc102ae
+3	10	src/services/redisUserMetadataStorage.ts
+
+§§§cc102ae§§§2020-01-28§§§Daniele Manni§§§Daniele Manni§§§2020-01-29§§§[#167064659] Use functional programming into RedisUserMetadataStorage.set§§§8326e46
+29	2	src/services/__tests__/redisUserMetadataStorage.test.ts
+70	66	src/services/redisUserMetadataStorage.ts
+
+§§§8326e46§§§2020-01-28§§§Daniele Manni§§§Daniele Manni§§§2020-01-29§§§[#167064659] Mutex to create duplicated client only when needed§§§08acc50
+39	8	src/services/redisUserMetadataStorage.ts
+
+§§§08acc50§§§2020-01-28§§§Daniele Manni§§§Daniele Manni§§§2020-01-29§§§[#167064659] Disconnect duplicated client§§§6844715
+4	0	src/services/redisUserMetadataStorage.ts
+
+§§§6844715§§§2020-01-24§§§Daniele Manni§§§Daniele Manni§§§2020-01-29§§§[#167064659] Add refence for optimistic lock on different redis client§§§3c73277
+1	1	src/services/redisUserMetadataStorage.ts
+
+§§§3c73277§§§2020-01-23§§§Daniele Manni§§§Daniele Manni§§§2020-01-29§§§[#167064659] Optimistic lock on update user metadata§§§71dc3e3
+58	5	src/services/__tests__/redisUserMetadataStorage.test.ts
+40	10	src/services/redisUserMetadataStorage.ts
+
+§§§71dc3e3§§§2020-01-28§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-28§§§[#170333051] Use io-spid-commons for spid login implementation (#576)§§§856e643
+1	34	src/__tests__/app.test.ts
+71	44	src/__tests__/loadSpidStrategy.test.ts
+39	183	src/app.ts
+38	15	src/config.ts
+0	167	src/controllers/__tests__/authenticationController.test.ts
+12	23	src/controllers/authenticationController.ts
+0	171	src/strategies/spidStrategy.ts
+0	433	src/utils/__tests__/idpLoader.test.ts
+0	60	src/utils/__tests__/saml.test.ts
+0	112	src/utils/idpLoader.ts
+0	17	src/utils/saml.ts
+
+§§§34282a4§§§2020-01-20§§§Daniele Manni§§§Daniele Manni§§§2020-01-20§§§[#168453950] use date-fns and functional style§§§9b0ca7c
+15	2	src/controllers/__tests__/authenticationController.test.ts
+4	4	src/controllers/authenticationController.ts
+10	22	src/utils/__tests__/date.test.ts
+10	32	src/utils/date.ts
+
+§§§9b0ca7c§§§2020-01-17§§§Daniele Manni§§§Daniele Manni§§§2020-01-17§§§[#168453950] Adult check at login if dateOfBirth is provided§§§cf84665
+23	0	src/controllers/__tests__/authenticationController.test.ts
+17	1	src/controllers/authenticationController.ts
+34	0	src/utils/__tests__/date.test.ts
+34	0	src/utils/date.ts
+22	0	src/utils/responses.ts
+
+§§§cf84665§§§2020-01-17§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-17§§§[#170259398] Add new API getUser for PagoPA with Extended infos (#557)§§§ef1899e
+1	0	src/__mocks__/request.ts
+11	3	src/app.ts
+190	5	src/controllers/__tests__/pagoPAController.test.ts
+83	10	src/controllers/pagoPAController.ts
+
+§§§ef1899e§§§2020-01-15§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-15§§§[#170699667] Update npm dependencies (#574)§§§a25179f
+3	1	src/__tests__/app.test.ts
+3	1	src/__tests__/loadSpidStrategy.test.ts
+1	3	src/__tests__/server.test.ts
+2	2	src/app.ts
+2	2	src/clients/api.ts
+2	6	src/services/__tests__/notificationService.test.ts
+47	57	src/services/messagesService.ts
+2	6	src/services/notificationService.ts
+44	53	src/services/pagoPAProxyService.ts
+18	24	src/services/profileService.ts
+4	4	src/services/redisSessionStorage.ts
+34	31	src/strategies/bearerTokenStrategy.ts
+2	2	src/types/profile.ts
+10	12	src/types/user.ts
+4	2	src/utils/__tests__/appinsights.test.ts
+2	3	src/utils/__tests__/idpLoader.test.ts
+4	5	src/utils/getErrorCodeFromResponse.ts
+12	17	src/utils/idpLoader.ts
+5	1	src/utils/package.ts
+
+§§§a25179f§§§2020-01-14§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-14§§§[#16986208] Change ServerInfo interface with different versions for ios and android (#573)§§§6d191c4
+18	5	src/app.ts
+10	0	src/utils/package.ts
+
+§§§6d191c4§§§2020-01-14§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-14§§§[#166734445] Remove awilix (#520)§§§9b04185
+1	1	src/@types/redis-clustr/index.d.ts
+16	16	src/__tests__/app.test.ts
+21	23	src/__tests__/loadSpidStrategy.test.ts
+6	0	src/__tests__/server.test.ts
+16	17	src/__tests__/services-api.test.ts
+133	84	src/app.ts
+259	0	src/config.ts
+0	475	src/container.ts
+2	3	src/controllers/authenticationController.ts
+22	26	src/server.ts
+3	5	src/strategies/bearerTokenStrategy.ts
+2	1	src/strategies/urlTokenStrategy.ts
+32	0	src/utils/container.ts
+34	0	src/utils/redis.ts
+
+§§§9b04185§§§2020-01-14§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-14§§§[#170332978] Add Spid Validator IDP (#558)§§§8dc5470
+4	0	src/container.ts
+2	1	src/controllers/__tests__/authenticationController.test.ts
+14	6	src/strategies/spidStrategy.ts
+2	1	src/utils/__tests__/idpLoader.test.ts
+
+§§§ccc730e§§§2020-01-10§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-10§§§[#168726815] Invalidate old wallet token on new login (#527)§§§36cb31f
+36	7	src/services/__tests__/redisSessionStorage.test.ts
+46	22	src/services/redisSessionStorage.ts
+
+§§§36cb31f§§§2020-01-10§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-10§§§[#168779317] add User Identity get API (#502)§§§b1dfb66
+6	0	src/app.ts
+60	3	src/controllers/__tests__/authenticationController.test.ts
+27	0	src/controllers/authenticationController.ts
+22	0	src/types/user.ts
+
+§§§b1dfb66§§§2020-01-10§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-10§§§[#169862087] Add info to handle PagoPA compatibility for mobile app (#565)§§§a573bbc
+4	2	src/app.ts
+
+§§§a573bbc§§§2020-01-10§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-10§§§[#170231555] send always SpidEmail to PagoPA, test for pagoPaController (#556)§§§6d1e663
+88	0	src/controllers/__tests__/pagoPAController.test.ts
+7	37	src/controllers/pagoPAController.ts
+
+§§§637bde1§§§2020-01-10§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-10§§§[#169289920] Change definitions to support CIE login (#555)§§§5ccb6a5
+6	4	src/controllers/pagoPAController.ts
+1	0	src/types/profile.ts
+6	3	src/types/user.ts
+
+§§§5ccb6a5§§§2020-01-10§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-10§§§[#169288535] Unique user's session can be disabled (#519)§§§dffd277
+9	0	src/container.ts
+3	1	src/controllers/__tests__/authenticationController.test.ts
+2	1	src/controllers/__tests__/notificationController.test.ts
+6	1	src/controllers/__tests__/sessionController.test.ts
+40	1	src/services/__tests__/redisSessionStorage.test.ts
+6	3	src/services/redisSessionStorage.ts
+
+§§§dffd277§§§2020-01-10§§§Daniele Manni§§§Danilo Spinelli§§§2020-01-10§§§[#168929351] Generic Push notification when user has no active session (#511)§§§0ec1f5d
+67	2	src/controllers/__tests__/notificationController.test.ts
+30	2	src/controllers/notificationController.ts
+119	1	src/services/__tests__/redisSessionStorage.test.ts
+8	4	src/services/notificationService.ts
+71	45	src/services/redisSessionStorage.ts
+
+§§§c7c8d7c§§§2019-12-17§§§Daniele Manni§§§Francesco Persico§§§2019-12-17§§§[#169700602] Remove AuthenticatedProfile (#538)§§§fb3da15
+4	13	src/controllers/__tests__/profileController.test.ts
+7	17	src/controllers/pagoPAController.ts
+5	7	src/controllers/profileController.ts
+19	15	src/types/__tests__/profile.test.ts
+10	24	src/types/profile.ts
+
+§§§fb3da15§§§2019-12-17§§§Daniele Manni§§§Francesco Persico§§§2019-12-17§§§[#169836230] Add required APNS headers to send notification (#544)§§§e67a1e4
+12	2	src/services/__tests__/notificationService.test.ts
+9	0	src/services/notificationService.ts
+14	0	src/types/notification.ts
+
+§§§705862a§§§2019-12-03§§§Daniele Manni§§§Daniele Manni§§§2019-12-03§§§[#169601727] re-add field mobile_phone into PagoPAUser§§§0de7560
+1	0	src/controllers/__tests__/pagoPAController.test.ts
+1	0	src/controllers/pagoPAController.ts
+
+§§§7f6c382§§§2019-11-25§§§Daniele Manni§§§GitHub§§§2019-11-25§§§Merge branch 'master' into 169601727-validated-email-for-pagopa§§§60c2624 4b957ee
+§§§8760282§§§2019-11-22§§§Francesco Persico§§§GitHub§§§2019-11-22§§§[#169809736] Use custom decoder for startEmailValidationProcess (#545)§§§26e2660
+28	2	src/clients/api.ts
+
+§§§36c6725§§§2019-11-18§§§Daniele Manni§§§Francesco Persico§§§2019-11-18§§§[#169809736] Forward API to start email validation process (#542)§§§e629248
+9	0	src/app.ts
+21	0	src/clients/api.ts
+31	0	src/controllers/__tests__/profileController.test.ts
+18	0	src/controllers/profileController.ts
+63	6	src/services/__tests__/profileService.test.ts
+31	0	src/services/profileService.ts
+
+§§§e629248§§§2019-11-18§§§Daniele Manni§§§Francesco Persico§§§2019-11-18§§§[#169289920] Update openapi profile definition (#541)§§§4ef852a
+9	1	src/controllers/__tests__/profileController.test.ts
+15	8	src/services/__tests__/profileService.test.ts
+4	0	src/types/__tests__/profile.test.ts
+
+§§§60c2624§§§2019-11-13§§§Daniele Manni§§§GitHub§§§2019-11-13§§§Merge branch 'master' into 169601727-validated-email-for-pagopa§§§f10e8a0 b2bc762
+§§§b2bc762§§§2019-11-12§§§Daniele Manni§§§Francesco Persico§§§2019-11-12§§§[#166824380] Propagate available_notification_channels service metadata (#536)§§§4db6582
+2	0	src/controllers/__tests__/serviceController.test.ts
+
+§§§8cc21bb§§§2019-11-12§§§Daniele Manni§§§Daniele Manni§§§2019-11-12§§§[#169601727] validated email for pagoPA getUser, remove mobile_phone§§§4db6582
+167	0	src/controllers/__tests__/pagoPAController.test.ts
+7	5	src/controllers/pagoPAController.ts
+
+§§§e9ebe2b§§§2019-11-11§§§Daniele Manni§§§Francesco Persico§§§2019-11-11§§§[#166672369] Forward is_email_enabled field into InitializedProfile (#512)§§§3bab423
+6	1	src/types/__tests__/profile.test.ts
+2	0	src/types/profile.ts
+
+§§§8978603§§§2019-11-04§§§Daniele Manni§§§Francesco Persico§§§2019-11-04§§§[#168821515] Change spec for POST profile to Profile Interface (#530)§§§49df9b7
+2	2	src/controllers/profileController.ts
+4	3	src/services/profileService.ts
+
+§§§f4d1f27§§§2019-11-04§§§Daniele Manni§§§Francesco Persico§§§2019-11-04§§§[#168821515] Add spec for isEmailVerified into profile (#529)§§§c600457
+1	0	src/types/profile.ts
+
+§§§88c64cc§§§2019-11-04§§§Daniele Manni§§§Francesco Persico§§§2019-11-04§§§[#168821515] Create a Profile into the API during the Auth process (#507)§§§e20e54a
+1	1	src/app.ts
+25	9	src/clients/api.ts
+148	5	src/controllers/__tests__/authenticationController.test.ts
+55	16	src/controllers/__tests__/profileController.test.ts
+31	1	src/controllers/authenticationController.ts
+13	1	src/controllers/pagoPAController.ts
+11	4	src/controllers/profileController.ts
+78	31	src/services/__tests__/profileService.test.ts
+38	11	src/services/profileService.ts
+24	0	src/types/profile.ts
+2	2	src/types/user.ts
+
+§§§e20e54a§§§2019-10-29§§§Daniele Manni§§§Francesco Persico§§§2019-10-29§§§[#168726455] fix 500 error when logout is called (#518)§§§2dc9042
+21	41	src/services/__tests__/redisSessionStorage.test.ts
+2	2	src/services/redisSessionStorage.ts
+0	1	src/services/redisStorageUtils.ts
+1	3	src/utils/errorsFormatter.ts
+
+§§§2dc9042§§§2019-10-28§§§Daniele Manni§§§Francesco Persico§§§2019-10-28§§§[#168779334] New API to get user profile from the functions (#504)§§§d506516
+6	0	src/app.ts
+60	0	src/controllers/__tests__/profileController.test.ts
+17	0	src/controllers/profileController.ts
+68	1	src/services/__tests__/profileService.test.ts
+40	0	src/services/profileService.ts
+
+§§§f7c538e§§§2019-10-08§§§Daniele Manni§§§Federico Feroldi§§§2019-10-08§§§[#168982311] Set Context app version inside TelemetryClient (#508)§§§b49f4d9
+7	7	src/app.ts
+8	1	src/utils/__tests__/appinsights.test.ts
+12	0	src/utils/appinsights.ts
+17	0	src/utils/package.ts
+
+§§§ee8dc8b§§§2019-10-07§§§Daniele Manni§§§Federico Feroldi§§§2019-10-07§§§[#158143202] App Insights to monitor API performance (#503)§§§813a56a
+20	1	src/server.ts
+96	0	src/utils/__tests__/appinsights.test.ts
+62	0	src/utils/appinsights.ts
+
+§§§b4edca3§§§2019-09-23§§§Daniele Manni§§§Federico Feroldi§§§2019-09-23§§§[#161862749] add issuer info on spid auth errors logs (#494)§§§8246097
+11	2	src/app.ts
+60	0	src/utils/__tests__/saml.test.ts
+17	0	src/utils/saml.ts
+
+§§§8246097§§§2019-09-18§§§Daniele Manni§§§Federico Feroldi§§§2019-09-18§§§[#165307029] On new login, invalidate existing sessions (#492)§§§7f574be
+32	15	src/services/__tests__/redisSessionStorage.test.ts
+42	36	src/services/redisSessionStorage.ts
+
+§§§6861243§§§2019-09-17§§§Daniele Manni§§§Federico Feroldi§§§2019-09-17§§§[#166785497] Better RedisSessionStorage Errors logging (#471)§§§eed1b79
+3	2	src/services/ISessionStorage.ts
+199	38	src/services/__tests__/redisSessionStorage.test.ts
+58	34	src/services/redisSessionStorage.ts
+5	2	src/services/redisStorageUtils.ts
+8	4	src/strategies/bearerTokenStrategy.ts
+16	0	src/utils/errorsFormatter.ts
+
+§§§eed1b79§§§2019-09-12§§§dependabot-preview[bot]§§§Federico Feroldi§§§2019-09-12§§§Bump typescript from 3.4.5 to 3.6.2 (#475)§§§9e172d7
+1	1	src/__tests__/server.test.ts
+
+§§§af611b6§§§2019-09-12§§§Daniele Manni§§§Daniele Manni§§§2019-09-12§§§[#166734445] remove comment about /metadata refresh scenario§§§bf581da
+0	1	src/app.ts
+
+§§§bf581da§§§2019-09-12§§§Daniele Manni§§§Daniele Manni§§§2019-09-12§§§[#166734445] remove useless currentSpidStrategy variable§§§87370a8
+1	4	src/app.ts
+
+§§§87370a8§§§2019-09-09§§§Daniele Manni§§§Daniele Manni§§§2019-09-09§§§[#166734445] fix lint error§§§7aebb53
+1	1	src/__tests__/loadSpidStrategy.test.ts
+
+§§§7aebb53§§§2019-09-09§§§Daniele Manni§§§Daniele Manni§§§2019-09-09§§§[#166734445] use instance of SpidStrategy instead of a Promise of it§§§5650e7f
+10	7	src/__tests__/app.test.ts
+14	13	src/__tests__/loadSpidStrategy.test.ts
+12	14	src/app.ts
+2	3	src/controllers/authenticationController.ts
+
+§§§3617709§§§2019-09-06§§§Federico Feroldi§§§GitHub§§§2019-09-06§§§Merge branch 'master' into 166584723-bug-pagopa-getpaymentinfo§§§35258de e37ea44
+§§§e37ea44§§§2019-09-06§§§Daniele Manni§§§Federico Feroldi§§§2019-09-06§§§[#166672369] update new functions api specs, fix tests with is_email_enabled (#478)§§§a49af64
+1	0	src/controllers/__tests__/profileController.test.ts
+1	0	src/services/__tests__/profileService.test.ts
+1	0	src/types/__tests__/profile.test.ts
+
+§§§35258de§§§2019-09-06§§§Daniele Manni§§§Daniele Manni§§§2019-09-06§§§[#166584723] rename it name, use only disable-next-line for lint rules§§§ed0314a
+3	3	src/services/__tests__/pagoPAProxyService.test.ts
+
+§§§5650e7f§§§2019-09-06§§§Daniele Manni§§§Daniele Manni§§§2019-09-06§§§[#166734445] rename SPID_STRATEGY global variable to currentSpidStrategy§§§acedf9a
+2	2	src/__tests__/app.test.ts
+1	1	src/__tests__/loadSpidStrategy.test.ts
+8	6	src/app.ts
+1	2	src/server.ts
+
+§§§ed0314a§§§2019-09-05§§§Daniele Manni§§§Daniele Manni§§§2019-09-05§§§[#166584723] add test for PaymentProblemJson response decode§§§04626f2
+25	2	src/services/__tests__/pagoPAProxyService.test.ts
+
+§§§b71f911§§§2019-08-29§§§Davide Chiabrero§§§Federico Feroldi§§§2019-08-29§§§[#166152893] Gracefully shutdown on SIGTERM and SIGINT  (#431)§§§2129f7c
+97	0	src/__tests__/server.test.ts
+23	0	src/server.ts
+22	0	src/utils/gracefulShutdown.ts
+
+§§§8d58dd4§§§2019-08-23§§§Federico Feroldi§§§GitHub§§§2019-08-23§§§[#168080600] Adds Functions auth header (#472)§§§a885457
+5	5	src/clients/api.ts
+
+§§§acedf9a§§§2019-08-22§§§Daniele Manni§§§Daniele Manni§§§2019-08-22§§§[#166734445] remove global variables used inside functions§§§5f081d3
+74	27	src/app.ts
+
+§§§5f081d3§§§2019-08-22§§§Daniele Manni§§§Daniele Manni§§§2019-08-22§§§[#166734445] remove controllers from static contrainer§§§001f45a
+5	9	src/__tests__/app.test.ts
+2	6	src/__tests__/loadSpidStrategy.test.ts
+41	32	src/app.ts
+15	131	src/container.ts
+1	1	src/server.ts
+2	2	src/strategies/bearerTokenStrategy.ts
+
+§§§001f45a§§§2019-07-30§§§Daniele Manni§§§Daniele Manni§§§2019-07-30§§§[#166734445] move AuthorizationController creation into container instead on app.ts§§§a403c74
+3	9	src/app.ts
+20	7	src/container.ts
+
+§§§33c6536§§§2019-07-25§§§Daniele Manni§§§Daniele Manni§§§2019-07-25§§§[#166734445] add strong typings to awilix container§§§6707896
+2	2	src/__tests__/app.test.ts
+3	3	src/__tests__/loadSpidStrategy.test.ts
+4	3	src/__tests__/services-api.test.ts
+15	9	src/app.ts
+197	133	src/container.ts
+9	16	src/server.ts
+
+§§§a403c74§§§2019-07-24§§§Daniele Manni§§§Daniele Manni§§§2019-07-24§§§[#166734445] mock redis utils for tests§§§9dbf2c3
+1	0	src/__tests__/app.test.ts
+1	0	src/__tests__/loadSpidStrategy.test.ts
+1	0	src/__tests__/services-api.test.ts
+5	33	src/container.ts
+36	0	src/utils/redis.ts
+
+§§§f804f29§§§2019-07-24§§§Daniele Manni§§§Daniele Manni§§§2019-07-24§§§[#166734445] refactoring container and awilix complete removal§§§3b5f933
+1	1	src/@types/redis-clustr/index.d.ts
+4	4	src/__tests__/app.test.ts
+3	3	src/__tests__/loadSpidStrategy.test.ts
+4	2	src/__tests__/services-api.test.ts
+21	21	src/app.ts
+162	209	src/container.ts
+17	12	src/server.ts
+2	2	src/strategies/bearerTokenStrategy.ts
+2	1	src/strategies/urlTokenStrategy.ts
+32	0	src/utils/container.ts
+
+§§§3b5f933§§§2019-07-23§§§Daniele Manni§§§Daniele Manni§§§2019-07-23§§§[#166734445] fix lint on app.ts§§§fb7614b
+1	1	src/app.ts
+
+§§§fb7614b§§§2019-07-23§§§Daniele Manni§§§Daniele Manni§§§2019-07-23§§§[#166734445] new Static Container needed for awilix removal§§§6707896
+17	17	src/__tests__/app.test.ts
+12	12	src/__tests__/loadSpidStrategy.test.ts
+14	17	src/__tests__/services-api.test.ts
+34	41	src/app.ts
+258	177	src/container.ts
+7	14	src/server.ts
+
+§§§14ebfd9§§§2019-07-20§§§Matteo Boschi§§§Federico Feroldi§§§2019-07-20§§§[#167174987] upgrade spid-passport dependency v1.1.7 (#460)§§§e37cadd
+22	22	src/controllers/__tests__/authenticationController.test.ts
+
+§§§e37cadd§§§2019-07-17§§§Daniele Manni§§§Federico Feroldi§§§2019-07-17§§§[#158104939] re-init sessioninfo and sessioninfoset if token is missing (#444)§§§ba000c4
+37	3	src/services/__tests__/redisSessionStorage.test.ts
+73	54	src/services/redisSessionStorage.ts
+15	1	src/services/redisStorageUtils.ts
+
+§§§f4b8e63§§§2019-07-15§§§Daniele Manni§§§Federico Feroldi§§§2019-07-15§§§[#167270217] Min app version support in API (#458)§§§8f3e068
+12	0	src/__tests__/app.test.ts
+6	0	src/app.ts
+
+§§§8f3e068§§§2019-07-15§§§Daniele Manni§§§Federico Feroldi§§§2019-07-15§§§[#166999390] add cache control on /service/:id and /services APIs (#454)§§§35d5975
+135	0	src/__tests__/services-api.test.ts
+16	0	src/app.ts
+13	0	src/container.ts
+
+§§§4394920§§§2019-07-15§§§Daniele Manni§§§Daniele Manni§§§2019-07-15§§§[#166999390] add APICACHE_DEBUG env var to configure debug mode§§§c30fc7f
+3	1	src/app.ts
+
+§§§c30fc7f§§§2019-07-15§§§Daniele Manni§§§Daniele Manni§§§2019-07-15§§§[#166999390] add cache to /services route§§§4265cba
+1	0	src/app.ts
+
+§§§4265cba§§§2019-07-15§§§Daniele Manni§§§Daniele Manni§§§2019-07-15§§§[#166999390] add tests for cache on services§§§91aaf31
+135	0	src/__tests__/services-api.test.ts
+
+§§§91aaf31§§§2019-07-15§§§Daniele Manni§§§Daniele Manni§§§2019-07-15§§§[#166999390] bugfix cachingMiddleware return the middleware§§§ddeacff
+2	2	src/app.ts
+
+§§§ddeacff§§§2019-07-12§§§Daniele Manni§§§Daniele Manni§§§2019-07-12§§§[#166999390] fix linter error§§§4e2f145
+2	2	src/app.ts
+
+§§§35d5975§§§2019-07-12§§§Edigio§§§Federico Feroldi§§§2019-07-12§§§[#167199639] Fixed metadata service provider (#455)§§§8b8e032
+6	6	src/controllers/__tests__/authenticationController.test.ts
+
+§§§4e2f145§§§2019-07-12§§§Daniele Manni§§§Daniele Manni§§§2019-07-12§§§[#166999390] add ENV var for cache duration and update README§§§3ea8ef2
+5	2	src/app.ts
+13	0	src/container.ts
+
+§§§3ea8ef2§§§2019-07-12§§§Daniele Manni§§§Daniele Manni§§§2019-07-12§§§[#166999390] remove unusefull requests util§§§da6dbf4
+0	55	src/utils/requests.ts
+
+§§§da6dbf4§§§2019-07-12§§§Daniele Manni§§§Daniele Manni§§§2019-07-12§§§[#166999390] change implementation with apicache§§§87e0eb9
+0	1	src/__tests__/app.test.ts
+0	1	src/__tests__/loadSpidStrategy.test.ts
+10	6	src/app.ts
+0	128	src/cache/servicesCacheController.ts
+0	6	src/container.ts
+
+§§§87e0eb9§§§2019-07-11§§§Daniele Manni§§§Daniele Manni§§§2019-07-12§§§[#166999390] add comments to requests util library§§§744439c
+10	0	src/utils/requests.ts
+
+§§§744439c§§§2019-07-11§§§Daniele Manni§§§Daniele Manni§§§2019-07-12§§§[#166999390] add cache control on service/:id api call§§§8b8e032
+1	0	src/__tests__/app.test.ts
+1	0	src/__tests__/loadSpidStrategy.test.ts
+6	0	src/app.ts
+128	0	src/cache/servicesCacheController.ts
+6	0	src/container.ts
+45	0	src/utils/requests.ts
+
+§§§8b8e032§§§2019-07-11§§§Daniele Manni§§§Federico Feroldi§§§2019-07-11§§§[#166734366] change toExpressHandler interface (#445)§§§a7fdfed
+41	124	src/app.ts
+13	16	src/utils/express.ts
+
+§§§9655c64§§§2019-07-09§§§Daniele Manni§§§Federico Feroldi§§§2019-07-09§§§[#167119660] add function for logs x509 cert expiration (#447)§§§678d6f1
+9	0	src/@types/x509/index.d.ts
+1	0	src/controllers/__tests__/authenticationController.test.ts
+30	0	src/strategies/spidStrategy.ts
+
+§§§6d3732d§§§2019-07-09§§§Federico Feroldi§§§GitHub§§§2019-07-09§§§[#167164430] Update SPID org metadata (#450)§§§92ab132
+4	4	src/controllers/__tests__/authenticationController.test.ts
+4	3	src/strategies/spidStrategy.ts
+
+§§§92ab132§§§2019-07-09§§§Daniele Manni§§§Federico Feroldi§§§2019-07-09§§§[#167165248] add IResponseErrorConflict on upsertMetadata (#449)§§§227cef2
+2	2	src/controllers/__tests__/userMetadataController.test.ts
+5	5	src/controllers/userMetadataController.ts
+
+§§§ff5fc58§§§2019-07-09§§§Daniele Manni§§§Federico Feroldi§§§2019-07-09§§§[#166739839] User Metadata API (#440)§§§b83e8f1
+1	0	src/__tests__/app.test.ts
+1	0	src/__tests__/loadSpidStrategy.test.ts
+32	1	src/app.ts
+15	0	src/container.ts
+205	0	src/controllers/__tests__/userMetadataController.test.ts
+88	0	src/controllers/userMetadataController.ts
+22	0	src/services/IUserMetadataStorage.ts
+191	0	src/services/__tests__/redisUserMetadataStorage.test.ts
+7	34	src/services/redisSessionStorage.ts
+37	0	src/services/redisStorageUtils.ts
+111	0	src/services/redisUserMetadataStorage.ts
+19	0	src/utils/responses.ts
+
+§§§10c1bbf§§§2019-07-08§§§Federico Feroldi§§§GitHub§§§2019-07-08§§§Fixes metadata in tests (#448)§§§831c9ce
+5	5	src/controllers/__tests__/authenticationController.test.ts
+
+§§§4028ac2§§§2019-07-05§§§Daniele Manni§§§Federico Feroldi§§§2019-07-05§§§[#167072976] Add SAML cert for Servizi CIE (#443)§§§037b918
+9	0	src/strategies/spidStrategy.ts
+
+§§§e43a996§§§2019-07-04§§§Daniele Manni§§§Federico Feroldi§§§2019-07-04§§§[#158104939] Get user sessions list (#432)§§§d43167f
+12	0	src/app.ts
+48	5	src/controllers/__tests__/sessionController.test.ts
+23	0	src/controllers/sessionController.ts
+195	20	src/services/__tests__/redisSessionStorage.test.ts
+222	24	src/services/redisSessionStorage.ts
+
+§§§d43167f§§§2019-07-04§§§Daniele Manni§§§Federico Feroldi§§§2019-07-04§§§[#166429876] don't update idp metadata if new download/parse fails (#436)§§§4574ae3
+12	0	src/@types/spid-passport/index.d.ts
+107	84	src/__tests__/app.test.ts
+70	0	src/__tests__/loadSpidStrategy.test.ts
+86	31	src/app.ts
+
+§§§88d6694§§§2019-06-24§§§Edigio§§§Edigio§§§2019-06-24§§§[#166090151] Fixed bad endpoint§§§18d959a
+2	1	src/strategies/spidStrategy.ts
+
+§§§18d959a§§§2019-06-24§§§Edigio§§§Edigio§§§2019-06-24§§§[#166090151] Fixed idp loader test§§§2da7b03
+12	1	src/utils/__tests__/idpLoader.test.ts
+
+§§§2da7b03§§§2019-06-24§§§Edigio§§§Edigio§§§2019-06-24§§§[#166090151] Fixed var name§§§ce09574
+3	3	src/strategies/spidStrategy.ts
+
+§§§ce09574§§§2019-06-24§§§Edigio§§§Edigio§§§2019-06-24§§§[#166090151] Added spid validator as IDP§§§b718ca7
+14	12	src/strategies/spidStrategy.ts
+
+§§§b718ca7§§§2019-06-21§§§Edigio§§§Edigio§§§2019-06-21§§§[#166090151] Addes spid validator as identity provider§§§4574ae3
+8	0	src/strategies/spidStrategy.ts
+
+§§§59d25b8§§§2019-06-10§§§Davide Chiabrero§§§Federico Feroldi§§§2019-06-10§§§[#161886901] Implements 429 return code. (#421)§§§71992d6
+3	3	src/controllers/__tests__/authenticationController.test.ts
+3	0	src/controllers/messagesController.ts
+2	0	src/controllers/pagoPAController.ts
+3	0	src/controllers/profileController.ts
+4	0	src/controllers/servicesController.ts
+51	0	src/services/__tests__/messagesService.test.ts
+28	0	src/services/__tests__/profileService.test.ts
+26	5	src/services/messagesService.ts
+14	1	src/services/profileService.ts
+
+§§§8d6ce71§§§2019-05-31§§§Daniele Manni§§§Federico Feroldi§§§2019-05-31§§§[#166378350] fix metadata method on AuthenticationController (#429)§§§7d44046
+3	2	src/controllers/authenticationController.ts
+
+§§§34d8e32§§§2019-05-31§§§Daniele Manni§§§Daniele Manni§§§2019-05-31§§§[#166378350] fix metadata method on AuthenticationController§§§7d44046
+3	2	src/controllers/authenticationController.ts
+
+§§§7825c17§§§2019-05-31§§§Daniele Manni§§§Federico Feroldi§§§2019-05-31§§§[#157122753] update azure-sb types definition, remove string casting (#428)§§§1f6571a
+1	5	src/services/notificationService.ts
+
+§§§7b2a68d§§§2019-05-31§§§Federico Feroldi§§§GitHub§§§2019-05-31§§§Merge branch 'master' into 157122753-remove-string-cast-azure§§§0f36beb 1f6571a
+§§§bd9d818§§§2019-05-31§§§Daniele Manni§§§Federico Feroldi§§§2019-05-31§§§[#164984241] automatically update idp metadata (#425)§§§b4994e4
+40	2	src/__tests__/app.test.ts
+76	7	src/app.ts
+18	0	src/container.ts
+8	2	src/server.ts
+
+§§§376daed§§§2019-05-31§§§Daniele Manni§§§Daniele Manni§§§2019-05-31§§§[#158104939] renaming the identifiers that refer to the idp metadata refresh interval§§§7e2e11c
+3	3	src/__tests__/app.test.ts
+6	6	src/app.ts
+12	9	src/container.ts
+
+§§§7e2e11c§§§2019-05-30§§§Federico Feroldi§§§GitHub§§§2019-05-30§§§Merge branch 'master' into 164984241-auto-update-idp-metadata§§§a6e4c2a b4994e4
+§§§0f36beb§§§2019-05-28§§§Daniele Manni§§§Daniele Manni§§§2019-05-28§§§[#157122753] update azure-sb types definition, remove string casting§§§b4994e4
+1	5	src/services/notificationService.ts
+
+§§§9296810§§§2019-05-28§§§Daniele Manni§§§Federico Feroldi§§§2019-05-28§§§[#160895015] Obfuscate token in query params on logs (#427)§§§9233d64
+7	1	src/app.ts
+
+§§§7293ab6§§§2019-05-28§§§Daniele Manni§§§Daniele Manni§§§2019-05-28§§§[#160895015] rename function obfuscateToken and add a comment§§§1c77899
+3	2	src/app.ts
+
+§§§1c77899§§§2019-05-28§§§Daniele Manni§§§Daniele Manni§§§2019-05-28§§§[#160895015] Obfuscate token in query params on logs§§§9233d64
+6	1	src/app.ts
+
+§§§a6e4c2a§§§2019-05-27§§§Daniele Manni§§§Daniele Manni§§§2019-05-27§§§[#164984241] rename method, remove useless return§§§a3bb176
+2	2	src/__tests__/app.test.ts
+7	13	src/app.ts
+
+§§§a3bb176§§§2019-05-27§§§Daniele Manni§§§Daniele Manni§§§2019-05-27§§§[#164984241] use intermediate variables, add clarifying comments§§§cff11ea
+42	22	src/app.ts
+
+§§§cff11ea§§§2019-05-24§§§Daniele Manni§§§Daniele Manni§§§2019-05-24§§§[#164984241] milliseconds to setInterval function fix§§§56b1f09
+2	2	src/__tests__/app.test.ts
+1	1	src/app.ts
+
+§§§56b1f09§§§2019-05-24§§§Daniele Manni§§§Daniele Manni§§§2019-05-24§§§[#164984241] fix lint error§§§82e8752
+2	1	src/container.ts
+
+§§§82e8752§§§2019-05-24§§§Daniele Manni§§§Daniele Manni§§§2019-05-24§§§[#164984241] renaming constants, small lambda on setInterval, fix router stack filtering§§§0f53a76
+9	5	src/__tests__/app.test.ts
+41	29	src/app.ts
+10	7	src/container.ts
+
+§§§0f53a76§§§2019-05-24§§§Daniele Manni§§§Daniele Manni§§§2019-05-24§§§[#164984241] remove duplicated code, fix routes filtering§§§62daee1
+21	20	src/app.ts
+
+§§§62daee1§§§2019-05-24§§§Daniele Manni§§§Daniele Manni§§§2019-05-24§§§[#164984241] remove useless constant§§§2154676
+4	4	src/app.ts
+
+§§§2154676§§§2019-05-24§§§Daniele Manni§§§Daniele Manni§§§2019-05-24§§§[#164984241] add tests for app#idpMetadataUpdater§§§35704f2
+24	2	src/__tests__/app.test.ts
+11	5	src/app.ts
+1	1	src/container.ts
+
+§§§35704f2§§§2019-05-24§§§Daniele Manni§§§Daniele Manni§§§2019-05-24§§§[#164984241] create idpMetadataUpdater§§§9233d64
+13	1	src/__tests__/app.test.ts
+37	1	src/app.ts
+11	0	src/container.ts
+8	2	src/server.ts
+
+§§§3795815§§§2019-05-21§§§Daniele Manni§§§Federico Feroldi§§§2019-05-21§§§[#164984224] Use HTTP:Redirect Location for login and logout idp configuration (#424)§§§46799a8
+138	76	src/utils/__tests__/idpLoader.test.ts
+33	13	src/utils/idpLoader.ts
+
+§§§255654b§§§2019-05-21§§§Daniele Manni§§§Daniele Manni§§§2019-05-21§§§[#164984224] Use HTTP:Redirect Location for login and logout idp configuration§§§46799a8
+138	76	src/utils/__tests__/idpLoader.test.ts
+33	13	src/utils/idpLoader.ts
+
+§§§3ffec0f§§§2019-05-20§§§Daniele Manni§§§Federico Feroldi§§§2019-05-20§§§[#164984241] use Array instead NonEmptyArray for idp options (#423)§§§2b1e82d
+6	10	src/strategies/spidStrategy.ts
+14	6	src/utils/__tests__/idpLoader.test.ts
+14	2	src/utils/idpLoader.ts
+
+§§§1f56426§§§2019-05-20§§§Daniele Manni§§§Daniele Manni§§§2019-05-20§§§[#164984241] use Array instead NonEmptyArray for idp options§§§2b1e82d
+6	10	src/strategies/spidStrategy.ts
+14	6	src/utils/__tests__/idpLoader.test.ts
+14	2	src/utils/idpLoader.ts
+
+§§§777ca9e§§§2019-05-20§§§Daniele Manni§§§Federico Feroldi§§§2019-05-20§§§[#164984224] Download IDP metadata and configure SpidStrategy on startup (#420)§§§01aeeb7
+13	9	src/__tests__/app.test.ts
+3	3	src/app.ts
+1	0	src/container.ts
+25	18	src/controllers/__tests__/authenticationController.test.ts
+20	16	src/server.ts
+56	83	src/strategies/spidStrategy.ts
+15	0	src/types/IDPEntityDescriptor.ts
+363	0	src/utils/__tests__/idpLoader.test.ts
+85	0	src/utils/idpLoader.ts
+
+§§§ba8d84d§§§2019-05-20§§§Federico Feroldi§§§GitHub§§§2019-05-20§§§Merge branch 'master' into 164984224-download-idp-metadata§§§9c9d13f 01aeeb7
+§§§9c9d13f§§§2019-05-20§§§Daniele Manni§§§Daniele Manni§§§2019-05-20§§§[#164984224] remove comments on idpLoader§§§0b9431d
+2	1	src/utils/__tests__/idpLoader.test.ts
+0	5	src/utils/idpLoader.ts
+
+§§§0b9431d§§§2019-05-20§§§Daniele Manni§§§Daniele Manni§§§2019-05-20§§§[#164984224] add logging on startup idp loading, add test for new loadFromRemote method§§§26b860c
+33	36	src/strategies/spidStrategy.ts
+51	3	src/utils/__tests__/idpLoader.test.ts
+27	0	src/utils/idpLoader.ts
+
+§§§26b860c§§§2019-05-16§§§Daniele Manni§§§Daniele Manni§§§2019-05-16§§§[#164984224] add missing comments for functions, remove useless promise in parseIdpMetadata§§§a9d3aeb
+1	3	src/strategies/spidStrategy.ts
+4	4	src/utils/__tests__/idpLoader.test.ts
+10	2	src/utils/idpLoader.ts
+
+§§§a9d3aeb§§§2019-05-16§§§Daniele Manni§§§Daniele Manni§§§2019-05-16§§§[#164984224] remove useless startApp function, no return in mapIpdMetadata§§§1fb05c8
+27	31	src/server.ts
+2	3	src/strategies/spidStrategy.ts
+
+§§§1fb05c8§§§2019-05-16§§§Daniele Manni§§§Daniele Manni§§§2019-05-16§§§[#164984224] add undefined in idp object definition, use reduce insteand forEach§§§7d7e64b
+20	11	src/strategies/spidStrategy.ts
+10	4	src/utils/__tests__/idpLoader.test.ts
+
+§§§7d7e64b§§§2019-05-16§§§Daniele Manni§§§Daniele Manni§§§2019-05-16§§§[#164984224] mapIpdMetadata return mapped idps§§§6b3100d
+24	23	src/strategies/spidStrategy.ts
+13	9	src/utils/__tests__/idpLoader.test.ts
+
+§§§6b3100d§§§2019-05-15§§§Daniele Manni§§§Daniele Manni§§§2019-05-15§§§[#164984224] use errorsToReadableMessages instead ReadableReporter.report§§§67d8a5a
+2	4	src/utils/idpLoader.ts
+
+§§§67d8a5a§§§2019-05-15§§§Daniele Manni§§§Daniele Manni§§§2019-05-15§§§[#164984224] test skipping of not whitelisted idp provider in remapIpdMetadata§§§f4bd66b
+53	1	src/utils/__tests__/idpLoader.test.ts
+
+§§§f4bd66b§§§2019-05-15§§§Daniele Manni§§§Daniele Manni§§§2019-05-15§§§[#164984224] remap spidStrategy options inside a function, test remapIpdMetadata for invalid idp metadata xml§§§5323876
+19	10	src/strategies/spidStrategy.ts
+48	11	src/utils/__tests__/idpLoader.test.ts
+
+§§§e40cd52§§§2019-05-14§§§Davide Chiabrero§§§Federico Feroldi§§§2019-05-14§§§[#163190244] Adds ToS parameter to profile (#418)§§§98d04e3
+25	0	src/types/__tests__/profile.test.ts
+1	0	src/types/profile.ts
+
+§§§5323876§§§2019-05-14§§§Daniele Manni§§§Daniele Manni§§§2019-05-14§§§[#164984224] fix log.warn, add tests for parseIdpMetadata§§§e281711
+6	5	src/strategies/spidStrategy.ts
+215	0	src/utils/__tests__/idpLoader.test.ts
+12	5	src/utils/idpLoader.ts
+
+§§§e281711§§§2019-05-14§§§Daniele Manni§§§Daniele Manni§§§2019-05-14§§§[#164984224] use ReadableReporter on decode error, createNonEmptyArrayFromArray for cert property§§§4c665b2
+9	4	src/strategies/spidStrategy.ts
+2	5	src/types/IDPEntityDescriptor.ts
+9	7	src/utils/idpLoader.ts
+
+§§§4c665b2§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] remove useless comments§§§baa27f1
+5	7	src/types/IDPEntityDescriptor.ts
+
+§§§baa27f1§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] not empty array of NonEmptyString for cert property of IDPEntityDescriptor§§§ba009c4
+2	1	src/strategies/spidStrategy.ts
+3	13	src/types/IDPEntityDescriptor.ts
+1	1	src/utils/idpLoader.ts
+
+§§§ba009c4§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] programmatically defined IDPEntityDescriptor§§§9aa766b
+1	1	src/strategies/spidStrategy.ts
+30	0	src/types/IDPEntityDescriptor.ts
+
+§§§d9bf01c§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] handle multiple certificates on idp metadata definitions§§§1327add
+6	4	src/utils/idpLoader.ts
+
+§§§1327add§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] remove unused class and interfaces, remove static configuration for idps§§§420b3cc
+14	106	src/strategies/spidStrategy.ts
+0	31	src/utils/idpLoader.ts
+
+§§§420b3cc§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] refactor using io-ts generated IDPEntityDescriptor type§§§0bf5c0c
+5	1	src/strategies/spidStrategy.ts
+20	40	src/utils/idpLoader.ts
+
+§§§0bf5c0c§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] split parsing and fetching function for idps metadata§§§2ec7b9c
+8	2	src/strategies/spidStrategy.ts
+8	3	src/utils/idpLoader.ts
+
+§§§3d0b716§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] disable parameters-max-number for spidStrategy function§§§ebb3cf5
+1	0	src/strategies/spidStrategy.ts
+
+§§§ebb3cf5§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] use git raw file for idp metadata in test, use registerRequiredValue for IDP_METADATA_URL env var, remove exported ipd_id const§§§0765b25
+1	0	src/container.ts
+5	6	src/controllers/__tests__/authenticationController.test.ts
+14	18	src/strategies/spidStrategy.ts
+1	11	src/{ => utils}/idpLoader.ts
+
+§§§0765b25§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§use node-fetch instead custom https requester§§§aeb5219
+3	25	src/idpLoader.ts
+
+§§§aeb5219§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] add error on app error start log message§§§59439f3
+2	2	src/server.ts
+
+§§§59439f3§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] temporary disable no-any lint rules on single line§§§d874196
+1	0	src/strategies/spidStrategy.ts
+
+§§§d874196§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] IDP_METADATA_ULR ENV var required, use mapping between IdP url and ID, fix typo§§§8a040c0
+5	0	src/controllers/__tests__/authenticationController.test.ts
+42	9	src/idpLoader.ts
+36	55	src/strategies/spidStrategy.ts
+
+§§§12f3ee4§§§2019-05-13§§§Davide Chiabrero§§§Davide Chiabrero§§§2019-05-13§§§Update test case§§§41e8883
+3	3	src/types/__tests__/profile.test.ts
+
+§§§8a040c0§§§2019-05-13§§§Daniele Manni§§§Daniele Manni§§§2019-05-13§§§[#164984224] download IDP metadata, configure SpidStrategy with new parsed data on startup§§§98d04e3
+13	9	src/__tests__/app.test.ts
+3	3	src/app.ts
+21	18	src/controllers/__tests__/authenticationController.test.ts
+91	0	src/idpLoader.ts
+30	22	src/server.ts
+58	2	src/strategies/spidStrategy.ts
+
+§§§41e8883§§§2019-05-10§§§Davide Chiabrero§§§Davide Chiabrero§§§2019-05-10§§§Update test case§§§1f549e2
+11	3	src/types/__tests__/profile.test.ts
+
+§§§1f549e2§§§2019-05-10§§§Davide Chiabrero§§§Davide Chiabrero§§§2019-05-10§§§Add test to manage undefined ToS version response from functions API§§§feb585a
+11	0	src/types/__tests__/profile.test.ts
+
+§§§feb585a§§§2019-05-10§§§Davide Chiabrero§§§Davide Chiabrero§§§2019-05-10§§§Add ToS parameter to profile§§§98d04e3
+6	0	src/types/__tests__/profile.test.ts
+1	0	src/types/profile.ts
+
+§§§8f8b958§§§2019-05-06§§§Daniele Manni§§§Federico Feroldi§§§2019-05-06§§§[#165630447] Enables routing PagoPA requests to Test PagoPA Proxy (#416)§§§bca2d77
+2	1	src/container.ts
+128	12	src/controllers/__tests__/pagoPAProxyController.test.ts
+22	7	src/controllers/pagoPAProxyController.ts
+8	1	src/services/IPagoPAClientFactory.ts
+102	25	src/services/__tests__/pagoPAProxyService.test.ts
+15	4	src/services/pagoPAClientFactory.ts
+20	9	src/services/pagoPAProxyService.ts
+
+§§§455eb59§§§2019-05-06§§§Daniele Manni§§§Daniele Manni§§§2019-05-06§§§[#165630447] Required parameters in PagoPAClientFactory constructor, avoid code duplication in PagoPAProxyController§§§b235f21
+36	9	src/controllers/__tests__/pagoPAProxyController.test.ts
+9	6	src/controllers/pagoPAProxyController.ts
+4	1	src/services/__tests__/pagoPAProxyService.test.ts
+3	2	src/services/pagoPAClientFactory.ts
+
+§§§b235f21§§§2019-05-06§§§Daniele Manni§§§Daniele Manni§§§2019-05-06§§§[#165630447] Change requests from PR #416§§§b91589f
+28	36	src/controllers/__tests__/pagoPAProxyController.test.ts
+22	20	src/controllers/pagoPAProxyController.ts
+2	2	src/services/IPagoPAClientFactory.ts
+30	32	src/services/__tests__/pagoPAProxyService.test.ts
+12	21	src/services/pagoPAProxyService.ts
+
+§§§b91589f§§§2019-05-06§§§Daniele Manni§§§Daniele Manni§§§2019-05-06§§§[#165630447] fix type error on property rptId in getPaymentInfo method in PagoPAProxyController§§§09ccb40
+1	1	src/controllers/pagoPAProxyController.ts
+
+§§§09ccb40§§§2019-05-06§§§Daniele Manni§§§Daniele Manni§§§2019-05-06§§§[#165630447] temporarily disable no-object-mutation§§§bda5126
+2	0	src/services/pagoPAProxyService.ts
+
+§§§bda5126§§§2019-05-06§§§Daniele Manni§§§Daniele Manni§§§2019-05-06§§§[#165630447] refactoring tests for PagoPAProxy controller and service§§§417419b
+3	3	src/controllers/__tests__/pagoPAProxyController.test.ts
+42	39	src/services/__tests__/pagoPAProxyService.test.ts
+
+§§§417419b§§§2019-05-02§§§Daniele Manni§§§Daniele Manni§§§2019-05-06§§§[#165630447] add tests for PagoPAProxyController and PagoPAProxyService for client in test mode§§§e2d5120
+81	0	src/controllers/__tests__/pagoPAProxyController.test.ts
+73	0	src/services/__tests__/pagoPAProxyService.test.ts
+
+§§§e2d5120§§§2019-05-02§§§Daniele Manni§§§Daniele Manni§§§2019-05-06§§§[#165630447] initialize query params as empty object in tests§§§497fddb
+30	14	src/controllers/__tests__/pagoPAProxyController.test.ts
+
+§§§497fddb§§§2019-05-02§§§Daniele Manni§§§Daniele Manni§§§2019-05-06§§§[#165630447] Add test query params for pagoPA payments API, use specific pagoPAClient for test api calls§§§bca2d77
+2	1	src/container.ts
+15	5	src/controllers/pagoPAProxyController.ts
+8	1	src/services/IPagoPAClientFactory.ts
+14	4	src/services/pagoPAClientFactory.ts
+29	11	src/services/pagoPAProxyService.ts
+
+§§§bca2d77§§§2019-05-03§§§Federico Feroldi§§§GitHub§§§2019-05-03§§§MAJOR refactoring to use generated decoders (#415)§§§9567485
+1	1	src/__mocks__/request.ts
+1	1	src/__mocks__/response.ts
+1	1	src/__tests__/api-specs.test.ts
+1	0	src/__tests__/app.test.ts
+50	5	src/app.ts
+72	134	src/clients/api.ts
+7	53	src/clients/pagopa.ts
+11	7	src/container.ts
+17	15	src/controllers/__tests__/authenticationController.test.ts
+16	20	src/controllers/__tests__/messagesController.test.ts
+20	29	src/controllers/__tests__/notificationController.test.ts
+27	28	src/controllers/__tests__/pagoPAProxyController.test.ts
+30	35	src/controllers/__tests__/profileController.test.ts
+20	19	src/controllers/__tests__/serviceController.test.ts
+5	3	src/controllers/__tests__/sessionController.test.ts
+39	33	src/controllers/authenticationController.ts
+29	54	src/controllers/messagesController.ts
+40	66	src/controllers/notificationController.ts
+46	37	src/controllers/pagoPAController.ts
+48	34	src/controllers/pagoPAProxyController.ts
+31	69	src/controllers/profileController.ts
+34	57	src/controllers/servicesController.ts
+13	27	src/controllers/sessionController.ts
+6	6	src/server.ts
+1	1	src/services/IApiClientFactory.ts
+1	1	src/services/IPagoPAClientFactory.ts
+9	5	src/services/ISessionStorage.ts
+67	72	src/services/__tests__/messagesService.test.ts
+8	5	src/services/__tests__/notificationService.test.ts
+45	60	src/services/__tests__/pagoPAProxyService.test.ts
+34	29	src/services/__tests__/profileService.test.ts
+5	3	src/services/__tests__/redisSessionStorage.test.ts
+112	97	src/services/messagesService.ts
+81	78	src/services/notificationService.ts
+106	97	src/services/pagoPAProxyService.ts
+79	82	src/services/profileService.ts
+1	1	src/types/__tests__/notification.test.ts
+18	17	src/types/__tests__/profile.test.ts
+8	7	src/types/__tests__/user.test.ts
+0	52	src/types/error.ts
+8	7	src/types/notification.ts
+29	53	src/types/profile.ts
+8	8	src/types/spidLevel.ts
+28	32	src/types/user.ts
+28	0	src/utils/express.ts
+1	1	src/utils/getErrorCodeFromResponse.ts
+51	0	src/utils/responses.ts
+0	26	src/utils/types.ts
+
+§§§5af4862§§§2019-05-03§§§Federico Feroldi§§§Federico Feroldi§§§2019-05-03§§§Fixes§§§e37f731
+1	0	src/controllers/pagoPAProxyController.ts
+
+§§§6e505df§§§2019-05-03§§§Federico Feroldi§§§Federico Feroldi§§§2019-05-03§§§Fixes§§§24ae63d
+27	10	src/services/pagoPAProxyService.ts
+6	3	src/types/user.ts
+5	3	src/utils/responses.ts
+
+§§§cb81360§§§2019-05-03§§§Federico Feroldi§§§Federico Feroldi§§§2019-05-03§§§Fixes§§§45232b8
+1	1	src/app.ts
+1	1	src/types/user.ts
+1	1	src/utils/responses.ts
+
+§§§a45d79f§§§2019-05-03§§§Federico Feroldi§§§Federico Feroldi§§§2019-05-03§§§Improves decoding errors§§§88da3cb
+4	1	src/types/user.ts
+4	1	src/utils/responses.ts
+
+§§§633a7d7§§§2019-05-03§§§Federico Feroldi§§§Federico Feroldi§§§2019-05-03§§§Removes paths mapping§§§93b050b
+1	1	src/app.ts
+2	2	src/clients/api.ts
+1	1	src/clients/pagopa.ts
+3	3	src/controllers/__tests__/authenticationController.test.ts
+3	3	src/controllers/__tests__/messagesController.test.ts
+5	5	src/controllers/__tests__/notificationController.test.ts
+7	7	src/controllers/__tests__/profileController.test.ts
+7	7	src/controllers/__tests__/serviceController.test.ts
+3	3	src/controllers/__tests__/sessionController.test.ts
+2	2	src/controllers/messagesController.ts
+4	4	src/controllers/notificationController.ts
+2	2	src/controllers/pagoPAController.ts
+4	4	src/controllers/pagoPAProxyController.ts
+3	3	src/controllers/profileController.ts
+2	2	src/controllers/servicesController.ts
+1	1	src/controllers/sessionController.ts
+3	3	src/services/__tests__/messagesService.test.ts
+5	5	src/services/__tests__/notificationService.test.ts
+5	5	src/services/__tests__/pagoPAProxyService.test.ts
+6	6	src/services/__tests__/profileService.test.ts
+3	3	src/services/__tests__/redisSessionStorage.test.ts
+4	4	src/services/messagesService.ts
+6	6	src/services/notificationService.ts
+4	4	src/services/pagoPAProxyService.ts
+4	4	src/services/profileService.ts
+1	1	src/types/__tests__/notification.test.ts
+9	9	src/types/__tests__/profile.test.ts
+3	3	src/types/__tests__/user.test.ts
+3	3	src/types/notification.ts
+3	3	src/types/profile.ts
+1	1	src/types/spidLevel.ts
+3	3	src/types/user.ts
+
+§§§ebd9104§§§2019-05-03§§§Federico Feroldi§§§Federico Feroldi§§§2019-05-03§§§Fixes import paths§§§16a0015
+1	1	src/controllers/authenticationController.ts
+2	2	src/controllers/notificationController.ts
+1	1	src/controllers/pagoPAProxyController.ts
+1	1	src/controllers/profileController.ts
+1	1	src/controllers/servicesController.ts
+2	1	src/controllers/sessionController.ts
+2	2	src/services/messagesService.ts
+1	1	src/services/notificationService.ts
+1	1	src/services/pagoPAProxyService.ts
+3	3	src/services/profileService.ts
+1	1	src/types/user.ts
+
+§§§caacc1d§§§2019-05-02§§§Federico Feroldi§§§Federico Feroldi§§§2019-05-03§§§Refactoring the proxy logic to use generated decoders§§§3145c01
+0	42	generated/backend/AuthenticatedProfile.ts
+0	24	generated/backend/BlockedInboxOrChannels.ts
+0	15	generated/backend/CodiceContestoPagamento.ts
+0	40	generated/backend/CreatedMessageWithContent.ts
+0	37	generated/backend/CreatedMessageWithoutContent.ts
+0	16	generated/backend/DepartmentName.ts
+0	11	generated/backend/EmailAddress.ts
+0	45	generated/backend/EnteBeneficiario.ts
+0	41	generated/backend/ExtendedProfile.ts
+0	15	generated/backend/FiscalCode.ts
+0	17	generated/backend/HasProfile.ts
+0	11	generated/backend/Iban.ts
+0	15	generated/backend/ImportoEuroCents.ts
+0	59	generated/backend/InitializedProfile.ts
+0	29	generated/backend/Installation.ts
+0	18	generated/backend/InstallationID.ts
+0	17	generated/backend/IsEmailSet.ts
+0	21	generated/backend/IsInboxEnabled.ts
+0	20	generated/backend/IsWebhookEnabled.ts
+0	29	generated/backend/LimitedProfile.ts
+0	17	generated/backend/MessageBodyMarkdown.ts
+0	31	generated/backend/MessageContent.ts
+0	37	generated/backend/MessageResponseNotificationStatus.ts
+0	43	generated/backend/MessageResponseWithContent.ts
+0	17	generated/backend/MessageSubject.ts
+0	30	generated/backend/Messages.ts
+0	16	generated/backend/OrganizationName.ts
+0	15	generated/backend/PageSize.ts
+0	30	generated/backend/PaginationResponse.ts
+0	31	generated/backend/PaymentActivationsGetResponse.ts
+0	37	generated/backend/PaymentActivationsPostRequest.ts
+0	43	generated/backend/PaymentActivationsPostResponse.ts
+0	15	generated/backend/PaymentAmount.ts
+0	32	generated/backend/PaymentData.ts
+0	15	generated/backend/PaymentNoticeNumber.ts
+0	55	generated/backend/PaymentProblemJson.ts
+0	46	generated/backend/PaymentRequestsGetResponse.ts
+0	21	generated/backend/Platform.ts
+0	26	generated/backend/PreferredLanguage.ts
+0	22	generated/backend/PreferredLanguages.ts
+0	31	generated/backend/ProblemJson.ts
+0	28	generated/backend/PublicSession.ts
+0	15	generated/backend/PushChannel.ts
+0	10	generated/backend/RptId.ts
+0	16	generated/backend/ServiceId.ts
+0	27	generated/backend/ServiceList.ts
+0	15	generated/backend/ServiceName.ts
+0	40	generated/backend/ServicePublic.ts
+0	28	generated/backend/ServiceTuple.ts
+0	27	generated/backend/Services.ts
+0	37	generated/backend/SpezzoneStrutturatoCausaleVersamento.ts
+0	20	generated/backend/SpezzoniCausaleVersamento.ts
+0	34	generated/backend/SpezzoniCausaleVersamentoItem.ts
+0	23	generated/backend/SpidLevel.ts
+0	21	generated/backend/SuccessResponse.ts
+0	22	generated/backend/TimeToLiveSeconds.ts
+0	15	generated/backend/Timestamp.ts
+0	16	generated/backend/UserProfile.ts
+0	14	generated/backend/Version.ts
+0	27	generated/io-api/BlockedInboxOrChannel.ts
+0	25	generated/io-api/BlockedInboxOrChannels.ts
+0	17	generated/io-api/CIDR.ts
+0	38	generated/io-api/CreatedMessageWithContent.ts
+0	35	generated/io-api/CreatedMessageWithoutContent.ts
+0	35	generated/io-api/CreatedMessageWithoutContentCollection.ts
+0	16	generated/io-api/DepartmentName.ts
+0	11	generated/io-api/EmailAddress.ts
+0	42	generated/io-api/ExtendedProfile.ts
+0	15	generated/io-api/FiscalCode.ts
+0	16	generated/io-api/HttpStatusCode.ts
+0	17	generated/io-api/HttpsUrl.ts
+0	21	generated/io-api/IsInboxEnabled.ts
+0	20	generated/io-api/IsWebhookEnabled.ts
+0	30	generated/io-api/LimitedProfile.ts
+0	23	generated/io-api/MaxAllowedPaymentAmount.ts
+0	17	generated/io-api/MessageBodyMarkdown.ts
+0	32	generated/io-api/MessageContent.ts
+0	25	generated/io-api/MessageResponseNotificationStatus.ts
+0	31	generated/io-api/MessageResponseWithContent.ts
+0	31	generated/io-api/MessageResponseWithoutContent.ts
+0	28	generated/io-api/MessageStatus.ts
+0	35	generated/io-api/MessageStatusValue.ts
+0	17	generated/io-api/MessageSubject.ts
+0	29	generated/io-api/NewMessage.ts
+0	30	generated/io-api/NewMessageDefaultAddresses.ts
+0	24	generated/io-api/NotificationChannel.ts
+0	33	generated/io-api/NotificationChannelStatus.ts
+0	35	generated/io-api/NotificationChannelStatusValue.ts
+0	15	generated/io-api/OrganizationFiscalCode.ts
+0	16	generated/io-api/OrganizationName.ts
+0	22	generated/io-api/PaginatedCreatedMessageWithoutContentCollection.ts
+0	22	generated/io-api/PaginatedServiceTupleCollection.ts
+0	28	generated/io-api/PaginationResponse.ts
+0	15	generated/io-api/PaymentAmount.ts
+0	33	generated/io-api/PaymentData.ts
+0	15	generated/io-api/PaymentNoticeNumber.ts
+0	26	generated/io-api/PreferredLanguage.ts
+0	22	generated/io-api/PreferredLanguages.ts
+0	32	generated/io-api/ProblemJson.ts
+0	18	generated/io-api/Profile.ts
+0	33	generated/io-api/SenderMetadata.ts
+0	52	generated/io-api/Service.ts
+0	16	generated/io-api/ServiceId.ts
+0	15	generated/io-api/ServiceName.ts
+0	41	generated/io-api/ServicePublic.ts
+0	29	generated/io-api/ServiceTuple.ts
+0	27	generated/io-api/ServiceTupleCollection.ts
+0	22	generated/io-api/TimeToLiveSeconds.ts
+0	15	generated/io-api/Timestamp.ts
+0	352	generated/io-api/requestTypes.ts
+0	44	generated/notifications/CreatedMessageWithContent.ts
+0	15	generated/notifications/FiscalCode.ts
+0	17	generated/notifications/MessageBodyMarkdown.ts
+0	31	generated/notifications/MessageContent.ts
+0	17	generated/notifications/MessageSubject.ts
+0	29	generated/notifications/Notification.ts
+0	15	generated/notifications/PaymentAmount.ts
+0	32	generated/notifications/PaymentData.ts
+0	15	generated/notifications/PaymentNoticeNumber.ts
+0	30	generated/notifications/SenderMetadata.ts
+0	21	generated/notifications/SuccessResponse.ts
+0	15	generated/notifications/Timestamp.ts
+0	15	generated/pagopa-proxy/CodiceContestoPagamento.ts
+0	46	generated/pagopa-proxy/EnteBeneficiario.ts
+0	11	generated/pagopa-proxy/Iban.ts
+0	15	generated/pagopa-proxy/ImportoEuroCents.ts
+0	29	generated/pagopa-proxy/PaymentActivationsGetResponse.ts
+0	35	generated/pagopa-proxy/PaymentActivationsPostRequest.ts
+0	41	generated/pagopa-proxy/PaymentActivationsPostResponse.ts
+0	34	generated/pagopa-proxy/PaymentFault.ts
+0	37	generated/pagopa-proxy/PaymentProblemJson.ts
+0	44	generated/pagopa-proxy/PaymentRequestsGetResponse.ts
+0	32	generated/pagopa-proxy/ProblemJson.ts
+0	10	generated/pagopa-proxy/RptId.ts
+0	35	generated/pagopa-proxy/SpezzoneStrutturatoCausaleVersamento.ts
+0	20	generated/pagopa-proxy/SpezzoniCausaleVersamento.ts
+0	32	generated/pagopa-proxy/SpezzoniCausaleVersamentoItem.ts
+0	148	generated/pagopa-proxy/requestTypes.ts
+0	11	generated/pagopa/EmailAddress.ts
+0	33	generated/pagopa/PagoPAUser.ts
+0	31	generated/pagopa/ProblemJson.ts
+0	21	generated/public/ServerInfo.ts
+1	1	src/__mocks__/request.ts
+1	1	src/__mocks__/response.ts
+1	1	src/__tests__/api-specs.test.ts
+1	0	src/__tests__/app.test.ts
+46	4	src/app.ts
+1	1	src/clients/api.ts
+11	7	src/container.ts
+12	12	src/controllers/__tests__/authenticationController.test.ts
+12	17	src/controllers/__tests__/messagesController.test.ts
+14	24	src/controllers/__tests__/notificationController.test.ts
+27	28	src/controllers/__tests__/pagoPAProxyController.test.ts
+19	25	src/controllers/__tests__/profileController.test.ts
+12	12	src/controllers/__tests__/serviceController.test.ts
+1	0	src/controllers/__tests__/sessionController.test.ts
+39	33	src/controllers/authenticationController.ts
+27	3	src/controllers/messagesController.ts
+35	62	src/controllers/notificationController.ts
+42	33	src/controllers/pagoPAController.ts
+47	34	src/controllers/pagoPAProxyController.ts
+28	67	src/controllers/profileController.ts
+32	56	src/controllers/servicesController.ts
+10	26	src/controllers/sessionController.ts
+6	6	src/server.ts
+1	1	src/services/IApiClientFactory.ts
+1	1	src/services/IPagoPAClientFactory.ts
+9	5	src/services/ISessionStorage.ts
+63	69	src/services/__tests__/messagesService.test.ts
+2	0	src/services/__tests__/notificationService.test.ts
+40	55	src/services/__tests__/pagoPAProxyService.test.ts
+27	23	src/services/__tests__/profileService.test.ts
+1	0	src/services/__tests__/redisSessionStorage.test.ts
+81	38	src/services/messagesService.ts
+75	73	src/services/notificationService.ts
+91	97	src/services/pagoPAProxyService.ts
+71	71	src/services/profileService.ts
+10	9	src/types/__tests__/profile.test.ts
+4	3	src/types/__tests__/user.test.ts
+0	16	src/types/error.ts
+4	4	src/types/notification.ts
+28	52	src/types/profile.ts
+7	7	src/types/spidLevel.ts
+17	42	src/types/user.ts
+28	0	src/utils/express.ts
+1	1	src/utils/getErrorCodeFromResponse.ts
+31	27	src/utils/responses.ts
+0	28	src/utils/types.ts
+
+§§§3145c01§§§2019-04-29§§§Federico Feroldi§§§Federico Feroldi§§§2019-04-29§§§WIP§§§9567485
+42	0	generated/backend/AuthenticatedProfile.ts
+24	0	generated/backend/BlockedInboxOrChannels.ts
+15	0	generated/backend/CodiceContestoPagamento.ts
+40	0	generated/backend/CreatedMessageWithContent.ts
+37	0	generated/backend/CreatedMessageWithoutContent.ts
+16	0	generated/backend/DepartmentName.ts
+11	0	generated/backend/EmailAddress.ts
+45	0	generated/backend/EnteBeneficiario.ts
+41	0	generated/backend/ExtendedProfile.ts
+15	0	generated/backend/FiscalCode.ts
+17	0	generated/backend/HasProfile.ts
+11	0	generated/backend/Iban.ts
+15	0	generated/backend/ImportoEuroCents.ts
+59	0	generated/backend/InitializedProfile.ts
+29	0	generated/backend/Installation.ts
+18	0	generated/backend/InstallationID.ts
+17	0	generated/backend/IsEmailSet.ts
+21	0	generated/backend/IsInboxEnabled.ts
+20	0	generated/backend/IsWebhookEnabled.ts
+29	0	generated/backend/LimitedProfile.ts
+17	0	generated/backend/MessageBodyMarkdown.ts
+31	0	generated/backend/MessageContent.ts
+37	0	generated/backend/MessageResponseNotificationStatus.ts
+43	0	generated/backend/MessageResponseWithContent.ts
+17	0	generated/backend/MessageSubject.ts
+30	0	generated/backend/Messages.ts
+16	0	generated/backend/OrganizationName.ts
+15	0	generated/backend/PageSize.ts
+30	0	generated/backend/PaginationResponse.ts
+31	0	generated/backend/PaymentActivationsGetResponse.ts
+37	0	generated/backend/PaymentActivationsPostRequest.ts
+43	0	generated/backend/PaymentActivationsPostResponse.ts
+15	0	generated/backend/PaymentAmount.ts
+32	0	generated/backend/PaymentData.ts
+15	0	generated/backend/PaymentNoticeNumber.ts
+55	0	generated/backend/PaymentProblemJson.ts
+46	0	generated/backend/PaymentRequestsGetResponse.ts
+21	0	generated/backend/Platform.ts
+26	0	generated/backend/PreferredLanguage.ts
+22	0	generated/backend/PreferredLanguages.ts
+31	0	generated/backend/ProblemJson.ts
+28	0	generated/backend/PublicSession.ts
+15	0	generated/backend/PushChannel.ts
+10	0	generated/backend/RptId.ts
+16	0	generated/backend/ServiceId.ts
+27	0	generated/backend/ServiceList.ts
+15	0	generated/backend/ServiceName.ts
+40	0	generated/backend/ServicePublic.ts
+28	0	generated/backend/ServiceTuple.ts
+27	0	generated/backend/Services.ts
+37	0	generated/backend/SpezzoneStrutturatoCausaleVersamento.ts
+20	0	generated/backend/SpezzoniCausaleVersamento.ts
+34	0	generated/backend/SpezzoniCausaleVersamentoItem.ts
+23	0	generated/backend/SpidLevel.ts
+21	0	generated/backend/SuccessResponse.ts
+22	0	generated/backend/TimeToLiveSeconds.ts
+15	0	generated/backend/Timestamp.ts
+16	0	generated/backend/UserProfile.ts
+14	0	generated/backend/Version.ts
+27	0	generated/io-api/BlockedInboxOrChannel.ts
+25	0	generated/io-api/BlockedInboxOrChannels.ts
+17	0	generated/io-api/CIDR.ts
+38	0	generated/io-api/CreatedMessageWithContent.ts
+35	0	generated/io-api/CreatedMessageWithoutContent.ts
+35	0	generated/io-api/CreatedMessageWithoutContentCollection.ts
+16	0	generated/io-api/DepartmentName.ts
+11	0	generated/io-api/EmailAddress.ts
+42	0	generated/io-api/ExtendedProfile.ts
+15	0	generated/io-api/FiscalCode.ts
+16	0	generated/io-api/HttpStatusCode.ts
+17	0	generated/io-api/HttpsUrl.ts
+21	0	generated/io-api/IsInboxEnabled.ts
+20	0	generated/io-api/IsWebhookEnabled.ts
+30	0	generated/io-api/LimitedProfile.ts
+23	0	generated/io-api/MaxAllowedPaymentAmount.ts
+17	0	generated/io-api/MessageBodyMarkdown.ts
+32	0	generated/io-api/MessageContent.ts
+25	0	generated/io-api/MessageResponseNotificationStatus.ts
+31	0	generated/io-api/MessageResponseWithContent.ts
+31	0	generated/io-api/MessageResponseWithoutContent.ts
+28	0	generated/io-api/MessageStatus.ts
+35	0	generated/io-api/MessageStatusValue.ts
+17	0	generated/io-api/MessageSubject.ts
+29	0	generated/io-api/NewMessage.ts
+30	0	generated/io-api/NewMessageDefaultAddresses.ts
+24	0	generated/io-api/NotificationChannel.ts
+33	0	generated/io-api/NotificationChannelStatus.ts
+35	0	generated/io-api/NotificationChannelStatusValue.ts
+15	0	generated/io-api/OrganizationFiscalCode.ts
+16	0	generated/io-api/OrganizationName.ts
+22	0	generated/io-api/PaginatedCreatedMessageWithoutContentCollection.ts
+22	0	generated/io-api/PaginatedServiceTupleCollection.ts
+28	0	generated/io-api/PaginationResponse.ts
+15	0	generated/io-api/PaymentAmount.ts
+33	0	generated/io-api/PaymentData.ts
+15	0	generated/io-api/PaymentNoticeNumber.ts
+26	0	generated/io-api/PreferredLanguage.ts
+22	0	generated/io-api/PreferredLanguages.ts
+32	0	generated/io-api/ProblemJson.ts
+18	0	generated/io-api/Profile.ts
+33	0	generated/io-api/SenderMetadata.ts
+52	0	generated/io-api/Service.ts
+16	0	generated/io-api/ServiceId.ts
+15	0	generated/io-api/ServiceName.ts
+41	0	generated/io-api/ServicePublic.ts
+29	0	generated/io-api/ServiceTuple.ts
+27	0	generated/io-api/ServiceTupleCollection.ts
+22	0	generated/io-api/TimeToLiveSeconds.ts
+15	0	generated/io-api/Timestamp.ts
+352	0	generated/io-api/requestTypes.ts
+44	0	generated/notifications/CreatedMessageWithContent.ts
+15	0	generated/notifications/FiscalCode.ts
+17	0	generated/notifications/MessageBodyMarkdown.ts
+31	0	generated/notifications/MessageContent.ts
+17	0	generated/notifications/MessageSubject.ts
+29	0	generated/notifications/Notification.ts
+15	0	generated/notifications/PaymentAmount.ts
+32	0	generated/notifications/PaymentData.ts
+15	0	generated/notifications/PaymentNoticeNumber.ts
+30	0	generated/notifications/SenderMetadata.ts
+21	0	generated/notifications/SuccessResponse.ts
+15	0	generated/notifications/Timestamp.ts
+15	0	generated/pagopa-proxy/CodiceContestoPagamento.ts
+46	0	generated/pagopa-proxy/EnteBeneficiario.ts
+11	0	generated/pagopa-proxy/Iban.ts
+15	0	generated/pagopa-proxy/ImportoEuroCents.ts
+29	0	generated/pagopa-proxy/PaymentActivationsGetResponse.ts
+35	0	generated/pagopa-proxy/PaymentActivationsPostRequest.ts
+41	0	generated/pagopa-proxy/PaymentActivationsPostResponse.ts
+34	0	generated/pagopa-proxy/PaymentFault.ts
+37	0	generated/pagopa-proxy/PaymentProblemJson.ts
+44	0	generated/pagopa-proxy/PaymentRequestsGetResponse.ts
+32	0	generated/pagopa-proxy/ProblemJson.ts
+10	0	generated/pagopa-proxy/RptId.ts
+35	0	generated/pagopa-proxy/SpezzoneStrutturatoCausaleVersamento.ts
+20	0	generated/pagopa-proxy/SpezzoniCausaleVersamento.ts
+32	0	generated/pagopa-proxy/SpezzoniCausaleVersamentoItem.ts
+148	0	generated/pagopa-proxy/requestTypes.ts
+11	0	generated/pagopa/EmailAddress.ts
+33	0	generated/pagopa/PagoPAUser.ts
+31	0	generated/pagopa/ProblemJson.ts
+21	0	generated/public/ServerInfo.ts
+4	1	src/app.ts
+71	133	src/clients/api.ts
+7	53	src/clients/pagopa.ts
+5	3	src/controllers/__tests__/authenticationController.test.ts
+4	3	src/controllers/__tests__/messagesController.test.ts
+6	5	src/controllers/__tests__/notificationController.test.ts
+11	10	src/controllers/__tests__/profileController.test.ts
+8	7	src/controllers/__tests__/serviceController.test.ts
+4	3	src/controllers/__tests__/sessionController.test.ts
+9	58	src/controllers/messagesController.ts
+5	4	src/controllers/notificationController.ts
+4	4	src/controllers/pagoPAController.ts
+1	1	src/controllers/pagoPAProxyController.ts
+4	3	src/controllers/profileController.ts
+4	3	src/controllers/servicesController.ts
+2	1	src/controllers/sessionController.ts
+4	3	src/services/__tests__/messagesService.test.ts
+6	5	src/services/__tests__/notificationService.test.ts
+5	5	src/services/__tests__/pagoPAProxyService.test.ts
+7	6	src/services/__tests__/profileService.test.ts
+4	3	src/services/__tests__/redisSessionStorage.test.ts
+56	84	src/services/messagesService.ts
+7	6	src/services/notificationService.ts
+3	5	src/services/pagoPAProxyService.ts
+56	59	src/services/profileService.ts
+1	1	src/types/__tests__/notification.test.ts
+9	9	src/types/__tests__/profile.test.ts
+4	4	src/types/__tests__/user.test.ts
+0	36	src/types/error.ts
+4	3	src/types/notification.ts
+3	3	src/types/profile.ts
+1	1	src/types/spidLevel.ts
+28	13	src/types/user.ts
+42	0	src/utils/responses.ts
+2	0	src/utils/types.ts
+
+§§§0b15339§§§2019-03-29§§§Francesco Persico§§§Federico Feroldi§§§2019-03-29§§§[#164981426] IPD cert as array (#400)§§§e66faf1
+33	21	src/strategies/spidStrategy.ts
+
+§§§8dd83ff§§§2019-03-29§§§Federico Feroldi§§§Federico Feroldi§§§2019-03-29§§§[#164981426] Updates infocert cert§§§86daa44
+1	1	src/strategies/spidStrategy.ts
+
+§§§b53f107§§§2019-03-20§§§Francesco Persico§§§Federico Feroldi§§§2019-03-20§§§[#164725697] Fixes Lapida ID URLs (#395)§§§e199be2
+2	2	src/strategies/spidStrategy.ts
+
+§§§b28317f§§§2019-03-20§§§Francesco Persico§§§Federico Feroldi§§§2019-03-20§§§[#164725697] Adds Lepida ID (#394)§§§1009532
+6	0	src/strategies/spidStrategy.ts
+
+§§§b5a1374§§§2019-02-19§§§Luca Morelli - Wellnet§§§Federico Feroldi§§§2019-02-19§§§[#161981230] bind error code to page url (#375)§§§f517cdb
+11	2	src/app.ts
+0	1	src/controllers/authenticationController.ts
+37	0	src/utils/getErrorCodeFromResponse.ts
+
+§§§a5b6c2c§§§2019-02-16§§§Alessandro Ranellucci§§§Alessandro Ranellucci§§§2019-02-16§§§Rename italia-* npm packages to io-*§§§2e8b3d1
+3	3	src/__tests__/app.test.ts
+3	3	src/app.ts
+1	1	src/clients/api.ts
+1	1	src/clients/pagopa.ts
+4	4	src/container.ts
+2	2	src/controllers/__tests__/authenticationController.test.ts
+1	1	src/controllers/__tests__/messagesController.test.ts
+2	2	src/controllers/__tests__/notificationController.test.ts
+1	1	src/controllers/__tests__/pagoPAProxyController.test.ts
+2	2	src/controllers/__tests__/profileController.test.ts
+2	2	src/controllers/__tests__/serviceController.test.ts
+1	1	src/controllers/__tests__/sessionController.test.ts
+2	2	src/controllers/authenticationController.ts
+1	1	src/controllers/messagesController.ts
+2	2	src/controllers/notificationController.ts
+1	1	src/controllers/pagoPAController.ts
+1	1	src/controllers/pagoPAProxyController.ts
+1	1	src/controllers/profileController.ts
+1	1	src/controllers/servicesController.ts
+1	1	src/controllers/sessionController.ts
+2	2	src/server.ts
+1	1	src/services/__tests__/messagesService.test.ts
+1	1	src/services/__tests__/notificationService.test.ts
+1	1	src/services/__tests__/pagoPAProxyService.test.ts
+1	1	src/services/__tests__/profileService.test.ts
+1	1	src/services/__tests__/redisSessionStorage.test.ts
+2	2	src/services/messagesService.ts
+1	1	src/services/notificationService.ts
+1	1	src/services/pagoPAProxyService.ts
+2	2	src/services/profileService.ts
+1	1	src/services/redisSessionStorage.ts
+1	1	src/types/__tests__/profile.test.ts
+1	1	src/types/__tests__/user.test.ts
+1	1	src/types/error.ts
+2	2	src/types/notification.ts
+1	1	src/types/token.ts
+2	2	src/types/user.ts
+1	1	src/utils/middleware/checkIP.ts
+2	2	src/utils/types.ts
+
+§§§b1f30bc§§§2019-02-16§§§Alessandro Ranellucci§§§Alessandro Ranellucci§§§2019-02-16§§§Rename teamdigitale/italia-* repos to teamdigitale/io-*§§§f517cdb
+1	1	src/controllers/__tests__/authenticationController.test.ts
+1	1	src/strategies/spidStrategy.ts
+
+§§§e5d1067§§§2018-11-14§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-11-14§§§fix: naming§§§23d4cd2
+17	10	src/types/error.ts
+
+§§§23d4cd2§§§2018-11-14§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-11-14§§§fix: prettier§§§c223a34
+8	8	src/clients/api.ts
+
+§§§c223a34§§§2018-11-14§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-11-14§§§fix: lint§§§d8c34ce
+9	10	src/clients/api.ts
+
+§§§d8c34ce§§§2018-11-14§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-11-14§§§fix naming§§§7185708
+9	9	src/clients/api.ts
+
+§§§7185708§§§2018-11-14§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-11-14§§§fix: pass conflict error§§§cf10102
+20	17	src/clients/api.ts
+5	0	src/services/profileService.ts
+10	1	src/types/error.ts
+
+§§§cf10102§§§2018-11-14§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-11-14§§§naming§§§f0f2f1b
+5	3	src/services/messagesService.ts
+
+§§§f0f2f1b§§§2018-11-13§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-11-13§§§return 429 error to app§§§70c9ad1
+19	9	src/services/messagesService.ts
+33	25	src/services/profileService.ts
+10	1	src/types/error.ts
+
+§§§cf7fa8e§§§2018-11-12§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-11-12§§§forward 429 errors§§§f517cdb
+28	20	src/clients/api.ts
+
+§§§f517cdb§§§2018-11-12§§§Danilo Spinelli§§§GitHub§§§2018-11-12§§§log installation failures (#372)§§§ac600e7
+4	1	src/controllers/notificationController.ts
+8	0	src/services/notificationService.ts
+
+§§§16a4ddb§§§2018-11-12§§§Federico Feroldi§§§GitHub§§§2018-11-12§§§[#161861088] Update SPID cert for TIM id (#371)§§§76e3154
+1	1	src/strategies/spidStrategy.ts
+
+§§§1bcfdd0§§§2018-10-08§§§Francesco Persico§§§Federico Feroldi§§§2018-10-08§§§[#160088397] Set large and small icon name in the notification template (#363)§§§5af60eb
+1	1	src/services/__tests__/notificationService.test.ts
+1	1	src/services/notificationService.ts
+
+§§§80641e7§§§2018-10-03§§§Federico Feroldi§§§GitHub§§§2018-10-03§§§Fixes specs of notification API (#358)§§§dbddeba
+1	1	src/controllers/notificationController.ts
+1	1	src/services/notificationService.ts
+
+§§§a1dc837§§§2018-10-02§§§Francesco Persico§§§Francesco Persico§§§2018-10-02§§§Squashed commit of the following:§§§baf795d
+66	69	src/clients/pagopa.ts
+22	20	src/controllers/__tests__/pagoPAProxyController.test.ts
+24	45	src/controllers/pagoPAProxyController.ts
+1	1	src/services/__tests__/notificationService.test.ts
+108	55	src/services/__tests__/pagoPAProxyService.test.ts
+2	0	src/services/messagesService.ts
+1	1	src/services/notificationService.ts
+79	55	src/services/pagoPAProxyService.ts
+2	0	src/services/profileService.ts
+15	2	src/types/error.ts
+26	0	src/utils/types.ts
+
+§§§a0595c8§§§2018-10-01§§§Francesco Persico§§§Federico Feroldi§§§2018-10-01§§§[#160413467] Fixes Android notification payload (#357)§§§f33f115
+1	1	src/services/__tests__/notificationService.test.ts
+1	1	src/services/notificationService.ts
+
+§§§224e554§§§2018-09-28§§§Federico Feroldi§§§GitHub§§§2018-09-28§§§Update italia-pagopa-proxy specs to v0.8.6 (#350)§§§137e988
+15	5	src/clients/pagopa.ts
+4	1	src/services/__tests__/pagoPAProxyService.test.ts
+1	1	src/services/pagoPAProxyService.ts
+
+§§§bcf21e0§§§2018-09-26§§§Federico Feroldi§§§GitHub§§§2018-09-26§§§Updates pagopa-proxy specs to 0.8.0 (#348)§§§448d137
+1	1	src/clients/pagopa.ts
+4	4	src/services/__tests__/pagoPAProxyService.test.ts
+1	1	src/services/pagoPAProxyService.ts
+
+§§§baa86d2§§§2018-09-26§§§Federico Feroldi§§§GitHub§§§2018-09-26§§§Aligning code to specs with request types (#347)§§§258120f
+8	36	src/clients/pagopa.ts
+22	20	src/controllers/__tests__/pagoPAProxyController.test.ts
+24	45	src/controllers/pagoPAProxyController.ts
+52	30	src/services/__tests__/pagoPAProxyService.test.ts
+74	83	src/services/pagoPAProxyService.ts
+26	0	src/utils/types.ts
+
+§§§baf795d§§§2018-09-25§§§Luca Morelli§§§Luca Morelli§§§2018-09-25§§§[#159817292] Remove "has_profile" property§§§25a7e2c
+3	8	src/controllers/profileController.ts
+0	2	src/services/__tests__/profileService.test.ts
+5	5	src/services/profileService.ts
+6	11	src/types/__tests__/profile.test.ts
+1	23	src/types/profile.ts
+
+§§§25a7e2c§§§2018-09-24§§§Luca Morelli§§§Luca Morelli§§§2018-09-24§§§[#159817292] Join InitializedProfile and AuthenticatedProfile§§§464fe61
+3	3	src/controllers/pagoPAController.ts
+27	21	src/services/__tests__/profileService.test.ts
+3	6	src/services/profileService.ts
+17	15	src/types/__tests__/profile.test.ts
+11	10	src/types/profile.ts
+
+§§§e036bc1§§§2018-09-24§§§Federico Feroldi§§§GitHub§§§2018-09-24§§§[#160710078] Parse ProblemJson from pagopa proxy and forward 400 errors to the app (#339)§§§b6ebe58
+85	70	src/clients/pagopa.ts
+64	36	src/services/__tests__/pagoPAProxyService.test.ts
+2	0	src/services/messagesService.ts
+48	15	src/services/pagoPAProxyService.ts
+2	0	src/services/profileService.ts
+15	2	src/types/error.ts
+
+§§§464fe61§§§2018-09-20§§§Luca Morelli§§§Luca Morelli§§§2018-09-24§§§[#159817292] Split fields contained in InitializedProfile class between those coming from SPID and those others from API§§§b6ebe58
+1	1	src/controllers/pagoPAController.ts
+11	10	src/types/__tests__/profile.test.ts
+9	12	src/types/profile.ts
+
+§§§ae34b7d§§§2018-09-22§§§Danilo Spinelli§§§Federico Feroldi§§§2018-09-22§§§[#160704826] fix rest api calls (#338)§§§f8ee7f0
+2	2	src/clients/api.ts
+1	2	src/clients/pagopa.ts
+1	1	src/services/IApiClientFactory.ts
+1	1	src/services/IPagoPAClientFactory.ts
+4	4	src/services/__tests__/pagoPAProxyService.test.ts
+1	1	src/services/apiClientFactory.ts
+7	8	src/services/messagesService.ts
+1	1	src/services/pagoPAClientFactory.ts
+9	8	src/services/pagoPAProxyService.ts
+5	1	src/services/profileService.ts
+
+§§§aa68f65§§§2018-09-20§§§Federico Feroldi§§§GitHub§§§2018-09-20§§§[#160670643] Fixes parsing of API response for GetMessage (#337)§§§d016e8d
+1	5	src/services/__tests__/messagesService.test.ts
+5	2	src/services/messagesService.ts
+
+§§§d016e8d§§§2018-09-20§§§Danilo Spinelli§§§GitHub§§§2018-09-20§§§[#160659288] fix installationID format (#336)§§§a60250d
+2	2	src/controllers/__tests__/notificationController.test.ts
+
+§§§3c18b5a§§§2018-09-19§§§Lusso Luca§§§Federico Feroldi§§§2018-09-19§§§[#157768307] Replaces autorest with fetch and autogenerated models (#292)§§§b81e1a7
+218	0	src/clients/api.ts
+113	0	src/clients/pagopa.ts
+1	1	src/container.ts
+1	2	src/controllers/__tests__/profileController.test.ts
+1	24	src/controllers/__tests__/serviceController.test.ts
+2	3	src/controllers/messagesController.ts
+14	27	src/controllers/pagoPAProxyController.ts
+7	6	src/controllers/profileController.ts
+3	24	src/controllers/servicesController.ts
+2	2	src/services/IApiClientFactory.ts
+2	6	src/services/IPagoPAClientFactory.ts
+0	33	src/services/__tests__/apiClientFactory.test.ts
+135	204	src/services/__tests__/messagesService.test.ts
+87	92	src/services/__tests__/pagoPAProxyService.test.ts
+30	45	src/services/__tests__/profileService.test.ts
+4	9	src/services/apiClientFactory.ts
+82	206	src/services/messagesService.ts
+5	19	src/services/pagoPAClientFactory.ts
+62	102	src/services/pagoPAProxyService.ts
+52	74	src/services/profileService.ts
+0	119	src/types/__tests__/message.test.ts
+6	17	src/types/__tests__/profile.test.ts
+0	35	src/types/__tests__/service.test.ts
+0	33	src/types/api_client/createdMessageWithContent.ts
+0	31	src/types/api_client/createdMessageWithoutContent.ts
+0	29	src/types/api_client/extendedProfile.ts
+0	29	src/types/api_client/getMessagesByUserOKResponse.ts
+0	33	src/types/api_client/getProfileOKResponse.ts
+0	29	src/types/api_client/messageContent.ts
+0	27	src/types/api_client/messageResponseWithContent.ts
+0	36	src/types/api_client/messageWithContent.ts
+0	27	src/types/api_client/paymentData.ts
+0	28	src/types/api_client/servicePublic.ts
+0	33	src/types/api_client/upsertProfileOKResponse.ts
+0	56	src/types/message.ts
+13	32	src/types/profile.ts
+0	27	src/types/service.ts
+0	33	src/utils/APICredential.ts
+0	28	src/utils/simpleResponse.ts
+
+§§§d566f5d§§§2018-09-11§§§Lusso Luca§§§GitHub§§§2018-09-11§§§[#160420040] Fix simple Redis client creation§§§180316a
+1	1	src/container.ts
+
+§§§180316a§§§2018-09-11§§§Luca Lusso§§§Luca Lusso§§§2018-09-11§§§[#158907283] Use the same certificate as in test. Bump to version 0.0.56§§§1e89f88
+1	1	src/strategies/spidStrategy.ts
+
+§§§1e89f88§§§2018-09-11§§§Luca Lusso§§§Luca Lusso§§§2018-09-11§§§[#158907283] Use the same issuer as in production§§§913eed3
+1	1	src/container.ts
+3	3	src/controllers/__tests__/authenticationController.test.ts
+
+§§§913eed3§§§2018-09-11§§§Lusso Luca§§§GitHub§§§2018-09-11§§§[#158907283] Replace the old spid-testenv-identityserver with the new spid-testenv2§§§86a9906
+9	2	src/container.ts
+8	4	src/controllers/__tests__/authenticationController.test.ts
+107	94	src/strategies/spidStrategy.ts
+
+§§§3f7f2dd§§§2018-09-10§§§Federico Feroldi§§§GitHub§§§2018-09-10§§§Return profile fields that are either from a temporary SPID profile or from an initialized API profile (#324)§§§258ab5b
+2	2	src/controllers/pagoPAController.ts
+4	4	src/controllers/profileController.ts
+7	11	src/services/__tests__/profileService.test.ts
+8	11	src/services/profileService.ts
+4	7	src/types/__tests__/profile.test.ts
+6	12	src/types/profile.ts
+
+§§§8b88b08§§§2018-09-07§§§Francesco Persico§§§Francesco Persico§§§2018-09-07§§§Create a single Profile type with separate spid_data and cd_data§§§2c1e10a
+9	6	src/controllers/pagoPAController.ts
+4	5	src/controllers/profileController.ts
+23	22	src/services/__tests__/profileService.test.ts
+9	12	src/services/profileService.ts
+32	35	src/types/__tests__/profile.test.ts
+28	37	src/types/profile.ts
+
+§§§242318f§§§2018-09-06§§§Lusso Luca§§§Federico Feroldi§§§2018-09-06§§§[#159851430] Markdown and Subject in a MessageWithContent need to be required (#290)§§§f7b65c8
+6	4	src/controllers/__tests__/messagesController.test.ts
+13	4	src/services/__tests__/messagesService.test.ts
+10	8	src/types/__tests__/message.test.ts
+2	0	src/types/api_client/createdMessageWithoutContent.ts
+7	7	src/types/api_client/messageWithContent.ts
+10	5	src/types/message.ts
+
+§§§cc52a56§§§2018-08-30§§§Luca Morelli - Wellnet§§§Federico Feroldi§§§2018-08-30§§§[#160014945] Make sessionIndex an optional field in SpidUser and User (#305)§§§4cf126a
+2	9	src/controllers/__tests__/authenticationController.test.ts
+0	4	src/controllers/__tests__/profileController.test.ts
+1	4	src/types/__tests__/user.test.ts
+26	17	src/types/user.ts
+
+§§§732b920§§§2018-08-30§§§Federico Feroldi§§§GitHub§§§2018-08-30§§§[#160014945] makes sessionIndex in SPID profile as optional (#304)§§§4e5fab4
+15	13	src/types/user.ts
+
+§§§9ba5f57§§§2018-08-28§§§Luca Morelli - Wellnet§§§Federico Feroldi§§§2018-08-28§§§[#160014945] Remove SessionIndex from User and other optional fields (#303)§§§629f46f
+0	4	src/controllers/__tests__/authenticationController.test.ts
+0	4	src/controllers/__tests__/messagesController.test.ts
+0	8	src/controllers/__tests__/notificationController.test.ts
+0	4	src/controllers/__tests__/profileController.test.ts
+0	4	src/controllers/__tests__/serviceController.test.ts
+0	5	src/controllers/__tests__/sessionController.test.ts
+0	4	src/services/__tests__/messagesService.test.ts
+0	4	src/services/__tests__/profileService.test.ts
+0	4	src/services/__tests__/redisSessionStorage.test.ts
+0	4	src/types/__tests__/profile.test.ts
+0	4	src/types/__tests__/user.test.ts
+0	8	src/types/user.ts
+
+§§§629f46f§§§2018-08-24§§§Luca Lusso§§§Luca Lusso§§§2018-08-24§§§Add more logs to AuthenticationController. Bump to version 0.0.50§§§440e97a
+5	1	src/controllers/authenticationController.ts
+
+§§§440e97a§§§2018-08-24§§§Luca Lusso§§§Luca Lusso§§§2018-08-24§§§Add more logs to AuthenticationController. Bump to version 0.0.49§§§ab66fcf
+4	0	src/controllers/authenticationController.ts
+
+§§§db8d910§§§2018-08-20§§§Luca Lusso§§§Luca Lusso§§§2018-08-20§§§[#159889136] Add a wrapper to GetServicesByRecipientOKResponse and GetVisibleServicesOKResponse to fix the case of pageSize§§§f558569
+0	1	src/controllers/servicesController.ts
+1	1	src/services/__tests__/messagesService.test.ts
+17	6	src/services/messagesService.ts
+29	0	src/types/api_client/getServicesByRecipientOKResponse.ts
+29	0	src/types/api_client/getVisibleServicesOKResponse.ts
+
+§§§87872d6§§§2018-08-20§§§Lusso Luca§§§GitHub§§§2018-08-20§§§[#159802090] Fix version Type§§§f558569
+4	4	src/types/__tests__/profile.test.ts
+4	4	src/types/__tests__/service.test.ts
+2	2	src/types/api_client/getProfileOKResponse.ts
+2	2	src/types/api_client/servicePublic.ts
+2	2	src/types/api_client/upsertProfileOKResponse.ts
+2	2	src/types/profile.ts
+
+§§§3e4cd0c§§§2018-08-08§§§LsKoder§§§Federico Feroldi§§§2018-08-08§§§Fix and execute prettify command for WIN and BASH (#278)§§§e0bc056
+1	1	Dangerfile.ts
+
+§§§e0bc056§§§2018-08-08§§§LsKoder§§§Federico Feroldi§§§2018-08-08§§§[#159519359] Remove conn retry on error 500 + Add a whitelist for errors to forward (#277)§§§0f985f2
+6	1	src/services/pagoPAClientFactory.ts
+42	1	src/services/pagoPAProxyService.ts
+
+§§§f1e64af§§§2018-08-06§§§Sergio Manetta§§§Sergio Manetta§§§2018-08-06§§§Catch and propagate ForbiddenError from PagoPaProxy§§§972dc85
+7	3	src/controllers/pagoPAProxyController.ts
+2	0	src/controllers/profileController.ts
+2	0	src/services/messagesService.ts
+18	1	src/services/pagoPAProxyService.ts
+2	0	src/services/profileService.ts
+41	2	src/types/error.ts
+4	0	src/utils/simpleResponse.ts
+
+§§§529fc14§§§2018-08-03§§§Federico Feroldi§§§GitHub§§§2018-08-03§§§Create only one redis client per node (#274)§§§734ea14
+56	39	src/container.ts
+
+§§§9f84ab3§§§2018-08-01§§§Danilo Spinelli§§§Federico Feroldi§§§2018-08-01§§§fix: configure pagopa endpoint (#272)§§§4a3e617
+2	1	src/container.ts
+6	1	src/services/pagoPAClientFactory.ts
+
+§§§eff8ad9§§§2018-07-31§§§Danilo Spinelli§§§GitHub§§§2018-07-31§§§chore: add blockedInboxOrChannels to profile (#271)§§§bdffec8
+2	0	src/types/api_client/getProfileOKResponse.ts
+2	0	src/types/api_client/upsertProfileOKResponse.ts
+1	0	src/types/profile.ts
+
+§§§5e4d089§§§2018-07-31§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-07-31§§§chore: add blockedInboxOrChannels to profile§§§bdffec8
+2	0	src/types/api_client/getProfileOKResponse.ts
+2	0	src/types/api_client/upsertProfileOKResponse.ts
+1	0	src/types/profile.ts
+
+§§§b9656cf§§§2018-07-30§§§Luca Morelli - Wellnet§§§Danilo Spinelli§§§2018-07-30§§§[#158589222] Request services list to opt out (#227)§§§3660191
+24	0	src/app.ts
+66	2	src/controllers/__tests__/serviceController.test.ts
+50	0	src/controllers/servicesController.ts
+4	4	src/server.ts
+123	57	src/services/__tests__/messagesService.test.ts
+86	2	src/services/messagesService.ts
+2	0	src/types/__tests__/service.test.ts
+2	0	src/types/api_client/servicePublic.ts
+1	0	src/types/service.ts
+
+§§§56a9607§§§2018-07-30§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-07-30§§§fix: service list§§§64450d2
+1	1	src/app.ts
+3	4	src/controllers/servicesController.ts
+5	2	src/services/__tests__/messagesService.test.ts
+5	6	src/services/messagesService.ts
+
+§§§64450d2§§§2018-07-28§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-07-28§§§fix: build§§§8c79621
+4	4	src/server.ts
+
+§§§8c79621§§§2018-07-28§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-07-28§§§fix: tests§§§cbca0aa
+1	1	src/controllers/__tests__/serviceController.test.ts
+54	72	src/services/__tests__/messagesService.test.ts
+2	2	src/services/messagesService.ts
+
+§§§cbca0aa§§§2018-07-28§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-07-28§§§fix: packages§§§260d74b
+1	0	src/services/messagesService.ts
+
+§§§260d74b§§§2018-07-28§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-07-28§§§feat: services list§§§025c347
+86	2	src/services/messagesService.ts
+
+§§§025c347§§§2018-07-28§§§Spinelli Danilo§§§Spinelli Danilo§§§2018-07-28§§§feat: service list§§§3660191
+24	0	src/app.ts
+66	2	src/controllers/__tests__/serviceController.test.ts
+51	0	src/controllers/servicesController.ts
+82	1	src/services/__tests__/messagesService.test.ts
+2	0	src/types/__tests__/service.test.ts
+2	0	src/types/api_client/servicePublic.ts
+1	0	src/types/service.ts
+
+§§§9c4d7da§§§2018-07-26§§§Danilo Spinelli§§§GitHub§§§2018-07-26§§§[#159265784] add mobile phone to user's attributes (#262)§§§c7ee967
+8	3	src/controllers/__tests__/authenticationController.test.ts
+2	0	src/controllers/__tests__/messagesController.test.ts
+3	0	src/controllers/__tests__/notificationController.test.ts
+2	0	src/controllers/__tests__/profileController.test.ts
+1	0	src/controllers/__tests__/serviceController.test.ts
+2	0	src/controllers/__tests__/sessionController.test.ts
+4	1	src/controllers/pagoPAController.ts
+2	0	src/services/__tests__/messagesService.test.ts
+4	0	src/services/__tests__/profileService.test.ts
+2	0	src/services/__tests__/redisSessionStorage.test.ts
+7	1	src/strategies/spidStrategy.ts
+2	0	src/types/__tests__/profile.test.ts
+3	0	src/types/__tests__/user.test.ts
+2	0	src/types/profile.ts
+4	0	src/types/user.ts
+
+§§§85e02a9§§§2018-07-25§§§Danilo Spinelli§§§GitHub§§§2018-07-25§§§display user decoding errors (#261)§§§98d95cb
+4	2	src/controllers/__tests__/authenticationController.test.ts
+2	2	src/controllers/__tests__/messagesController.test.ts
+3	1	src/controllers/__tests__/notificationController.test.ts
+2	2	src/controllers/__tests__/profileController.test.ts
+1	1	src/controllers/__tests__/serviceController.test.ts
+22	15	src/types/user.ts
+
+§§§98d95cb§§§2018-07-25§§§Danilo Spinelli§§§GitHub§§§2018-07-25§§§removed extra logging (#260)§§§41f19d5
+0	7	src/app.ts
+
+§§§41f19d5§§§2018-07-25§§§Danilo Spinelli§§§GitHub§§§2018-07-25§§§[#159195406] add SPID Italia and IntesaId providers (#259)§§§258a687
+14	0	src/strategies/spidStrategy.ts
+1	1	src/types/user.ts
+
+§§§6477359§§§2018-07-24§§§Danilo Spinelli§§§GitHub§§§2018-07-24§§§fix: update spid passport (#257)§§§6bcdb8b
+0	104	src/__tests__/passport-saml.test.ts
+
+§§§6bcdb8b§§§2018-07-24§§§Danilo Spinelli§§§GitHub§§§2018-07-24§§§[#159266512] fix: SPID authContext (#256)§§§09a6eef
+1	0	src/controllers/__tests__/authenticationController.test.ts
+46	7	src/types/user.ts
+
+§§§09a6eef§§§2018-07-23§§§Francesco Persico§§§Danilo Spinelli§§§2018-07-23§§§Decode and log the SAML XML response (#242)§§§d7bb715
+7	0	src/app.ts
+
+§§§d7bb715§§§2018-07-23§§§Danilo Spinelli§§§GitHub§§§2018-07-23§§§[#159196621] fix: session duration to 30 days (#254)§§§2072afd
+6	5	src/container.ts
+
+§§§2072afd§§§2018-07-22§§§Federico Feroldi§§§GitHub§§§2018-07-22§§§[#157589713] The app does not need the deep_link attribute in the push notification (#246)§§§4f1670b
+2	4	src/services/__tests__/notificationService.test.ts
+2	3	src/services/notificationService.ts
+
+§§§4f1670b§§§2018-07-20§§§Luca Morelli - Wellnet§§§Federico Feroldi§§§2018-07-20§§§[#157589713] define and implement text and format of a push notification message (#229)§§§e64c43e
+12	6	src/services/__tests__/notificationService.test.ts
+7	4	src/services/notificationService.ts
+
+§§§45f5955§§§2018-07-19§§§Lusso Luca§§§Federico Feroldi§§§2018-07-19§§§[#157245744] Add endpoints for PagoPA proxy (#191)§§§bc06017
+42	0	src/app.ts
+22	1	src/container.ts
+220	0	src/controllers/__tests__/pagoPAProxyController.test.ts
+3	2	src/controllers/__tests__/profileController.test.ts
+1	2	src/controllers/pagoPAController.ts
+86	0	src/controllers/pagoPAProxyController.ts
+1	1	src/services/IApiClientFactory.ts
+15	0	src/services/IPagoPAClientFactory.ts
+1	1	src/services/__tests__/apiClientFactory.test.ts
+6	1	src/services/__tests__/messagesService.test.ts
+304	0	src/services/__tests__/pagoPAProxyService.test.ts
+2	2	src/services/apiClientFactory.ts
+22	0	src/services/pagoPAClientFactory.ts
+107	0	src/services/pagoPAProxyService.ts
+1	1	src/services/profileService.ts
+1	1	src/types/__tests__/profile.test.ts
+7	6	src/types/error.ts
+4	0	src/utils/simpleResponse.ts
+
+§§§804989b§§§2018-07-17§§§Francesco Persico§§§Danilo Spinelli§§§2018-07-17§§§Enable custom acceptedClockSkewMs using an environment variable (#241)§§§da211a9
+7	0	src/container.ts
+2	0	src/controllers/__tests__/authenticationController.test.ts
+2	0	src/strategies/spidStrategy.ts
+
+§§§081971a§§§2018-07-16§§§Francesco Persico§§§Federico Feroldi§§§2018-07-16§§§[#159031255] Add due_date to message details (#230)§§§19f0051
+2	0	src/types/api_client/messageContent.ts
+2	0	src/types/api_client/messageWithContent.ts
+19	19	src/types/message.ts
+
+§§§71c6ade§§§2018-07-13§§§Federico Feroldi§§§GitHub§§§2018-07-13§§§[#159038859] Signs SPID/SAML requests with sha256 (#231)§§§2e068df
+2	1	src/strategies/spidStrategy.ts
+
+§§§0a2e47c§§§2018-07-12§§§Francesco Persico§§§Lusso Luca§§§2018-07-12§§§[#158998658] Return 200 on /logout§§§361857e
+8	34	src/controllers/__tests__/authenticationController.test.ts
+6	32	src/controllers/authenticationController.ts
+1	1	src/controllers/notificationController.ts
+1	1	src/services/notificationService.ts
+11	0	src/types/commons.ts
+0	9	src/types/notification.ts
+
+§§§64ce06c§§§2018-07-10§§§Francesco Persico§§§Federico Feroldi§§§2018-07-10§§§Add the logout path to the bearerTokenStrategy (#226)§§§34a6c8b
+1	1	src/container.ts
+1	1	src/server.ts
+9	2	src/strategies/bearerTokenStrategy.ts
+
+§§§34a6c8b§§§2018-07-10§§§Lusso Luca§§§GitHub§§§2018-07-10§§§[#158909119] Fix Payment data in messages§§§e40739c
+1	1	src/types/api_client/createdMessageWithContent.ts
+27	0	src/types/api_client/messageContent.ts
+34	0	src/types/api_client/messageWithContent.ts
+27	0	src/types/api_client/paymentData.ts
+23	9	src/types/message.ts
+
+§§§d76a527§§§2018-07-07§§§Federico Feroldi§§§GitHub§§§2018-07-07§§§Removes info/uptime and makes /ping available in http (#217)§§§74a52c3
+0	1	src/__tests__/app.test.ts
+1	2	src/app.ts
+
+§§§74a52c3§§§2018-07-06§§§Lusso Luca§§§GitHub§§§2018-07-06§§§[#158868099] Convert upsert fields to the format expected by autorest§§§fd9558f
+5	4	src/controllers/__tests__/profileController.test.ts
+5	2	src/controllers/profileController.ts
+1	1	src/services/profileService.ts
+29	0	src/types/api_client/extendedProfile.ts
+22	3	src/types/profile.ts
+
+§§§293242e§§§2018-07-06§§§Federico Feroldi§§§GitHub§§§2018-07-06§§§[#158816228] Provides a public /info endpoint (#213)§§§8c8dee6
+21	7	src/app.ts
+
+§§§71b1026§§§2018-07-05§§§Lusso Luca§§§GitHub§§§2018-07-05§§§[#158832766] Fix profile upsert specs§§§ce93a26
+4	4	src/controllers/__tests__/profileController.test.ts
+14	3	src/services/__tests__/profileService.test.ts
+1	1	src/services/profileService.ts
+4	4	src/types/__tests__/profile.test.ts
+0	29	src/types/api_client/extendedProfile.ts
+1	1	src/types/profile.ts
+
+§§§ce93a26§§§2018-07-05§§§Luca Morelli - Wellnet§§§Lusso Luca§§§2018-07-05§§§[#157930299] Update model messaggio with payment metadata§§§b5f2aad
+2	2	src/controllers/__tests__/serviceController.test.ts
+3	3	src/types/__tests__/profile.test.ts
+4	4	src/types/__tests__/service.test.ts
+2	2	src/types/api_client/getMessagesByUserOKResponse.ts
+2	2	src/types/api_client/getProfileOKResponse.ts
+2	2	src/types/api_client/servicePublic.ts
+2	2	src/types/api_client/upsertProfileOKResponse.ts
+1	0	src/types/message.ts
+2	2	src/types/profile.ts
+
+§§§93f87b0§§§2018-07-04§§§Lusso Luca§§§GitHub§§§2018-07-04§§§[#158818736] Log the xml assertion§§§830b707
+1	0	src/controllers/__tests__/authenticationController.test.ts
+2	0	src/strategies/spidStrategy.ts
+1	0	src/types/__tests__/user.test.ts
+1	0	src/types/user.ts
+
+§§§830b707§§§2018-07-04§§§Lusso Luca§§§GitHub§§§2018-07-04§§§Add logs to SPID authentication§§§49a109f
+3	0	src/app.ts
+
+§§§49a109f§§§2018-07-03§§§Luca Morelli - Wellnet§§§Federico Feroldi§§§2018-07-03§§§[#158521335] Replace custom implementation of toExpressHandler to italia-ts-commons one in app.ts (#208)§§§3d360c4
+21	30	src/app.ts
+
+§§§e8fe443§§§2018-06-26§§§Lusso Luca§§§GitHub§§§2018-06-26§§§Update winston§§§bfad149
+3	1	src/app.ts
+9	8	src/container.ts
+4	4	src/controllers/notificationController.ts
+3	3	src/server.ts
+9	9	src/services/messagesService.ts
+5	5	src/services/profileService.ts
+2	2	src/services/redisSessionStorage.ts
+2	2	src/types/user.ts
+16	0	src/utils/logger.ts
+
+§§§7a3ed1c§§§2018-06-21§§§Lusso Luca§§§GitHub§§§2018-06-21§§§[#158422238] Use Redis on Docker in dev environment§§§568b1f8
+36	29	src/container.ts
+
+§§§69b40ec§§§2018-06-19§§§Lusso Luca§§§GitHub§§§2018-06-19§§§[#157719534] Add a new endpoint that returns the user email§§§3eb8ef1
+8	1	src/__tests__/app.test.ts
+114	62	src/app.ts
+38	5	src/container.ts
+5	22	src/controllers/__tests__/authenticationController.test.ts
+6	6	src/controllers/__tests__/messagesController.test.ts
+2	2	src/controllers/__tests__/notificationController.test.ts
+8	12	src/controllers/__tests__/profileController.test.ts
+4	8	src/controllers/__tests__/serviceController.test.ts
+66	0	src/controllers/__tests__/sessionController.test.ts
+0	30	src/controllers/authenticationController.ts
+26	3	src/controllers/messagesController.ts
+54	0	src/controllers/pagoPAController.ts
+24	3	src/controllers/profileController.ts
+17	2	src/controllers/servicesController.ts
+40	0	src/controllers/sessionController.ts
+17	1	src/server.ts
+7	2	src/services/ISessionStorage.ts
+6	20	src/services/__tests__/messagesService.test.ts
+7	18	src/services/__tests__/profileService.test.ts
+11	5	src/services/__tests__/redisSessionStorage.test.ts
+21	23	src/services/messagesService.ts
+16	15	src/services/profileService.ts
+55	3	src/services/redisSessionStorage.ts
+45	14	src/strategies/bearerTokenStrategy.ts
+3	3	src/types/__tests__/profile.test.ts
+1	1	src/types/__tests__/user.test.ts
+32	3	src/types/error.ts
+2	2	src/types/profile.ts
+2	2	src/types/user.ts
+
+§§§32bcea7§§§2018-06-18§§§Lusso Luca§§§GitHub§§§2018-06-18§§§[#158283419] Remove the refresh logic and use Redis to expire sessions§§§4991a8b
+7	5	src/app.ts
+2	209	src/controllers/__tests__/authenticationController.test.ts
+8	75	src/controllers/authenticationController.ts
+2	30	src/services/ISessionStorage.ts
+84	233	src/services/__tests__/redisSessionStorage.test.ts
+81	141	src/services/redisSessionStorage.ts
+5	11	src/strategies/bearerTokenStrategy.ts
+
+§§§4991a8b§§§2018-06-18§§§Luca Morelli - Wellnet§§§Lusso Luca§§§2018-06-18§§§[#158064201] replace "SenderMetadata" to its snake_case equivalent§§§e2c0dcf
+1	1	src/__tests__/app.test.ts
+2	2	src/controllers/__tests__/notificationController.test.ts
+1	1	src/services/__tests__/notificationService.test.ts
+
+§§§24e2214§§§2018-06-18§§§Luca Morelli - Wellnet§§§Federico Feroldi§§§2018-06-18§§§[#158064173] Switched response of notification service from string to JSON object (#174)§§§8c3fedd
+3	1	src/__tests__/app.test.ts
+12	8	src/controllers/__tests__/notificationController.test.ts
+3	2	src/controllers/notificationController.ts
+3	3	src/services/__tests__/notificationService.test.ts
+5	4	src/services/notificationService.ts
+9	0	src/types/notification.ts
+
+§§§3f8a972§§§2018-06-13§§§dependabot[bot]§§§Lusso Luca§§§2018-06-13§§§Bump italia-utils from 3.6.1 to 3.8.1§§§9bd2a60
+2	1	src/controllers/__tests__/serviceController.test.ts
+5	2	src/types/__tests__/message.test.ts
+3	1	src/types/service.ts
+
+§§§c5629b7§§§2018-06-12§§§Lusso Luca§§§GitHub§§§2018-06-12§§§[#158142427] Return the wallet token in /session endpoint§§§d41a008
+2	0	src/app.ts
+130	46	src/controllers/__tests__/authenticationController.test.ts
+3	1	src/controllers/__tests__/messagesController.test.ts
+5	2	src/controllers/__tests__/notificationController.test.ts
+3	1	src/controllers/__tests__/profileController.test.ts
+3	1	src/controllers/__tests__/serviceController.test.ts
+51	24	src/controllers/authenticationController.ts
+21	13	src/services/ISessionStorage.ts
+3	1	src/services/__tests__/messagesService.test.ts
+3	1	src/services/__tests__/profileService.test.ts
+322	178	src/services/__tests__/redisSessionStorage.test.ts
+102	25	src/services/redisSessionStorage.ts
+10	2	src/strategies/bearerTokenStrategy.ts
+3	1	src/types/__tests__/profile.test.ts
+12	6	src/types/__tests__/user.test.ts
+14	0	src/types/token.ts
+10	3	src/types/user.ts
+
+§§§bf236ff§§§2018-06-07§§§Lusso Luca§§§GitHub§§§2018-06-07§§§[#158149710] Run the proxy on HTTPS in dev environment§§§26e09ab
+15	3	src/server.ts
+
+§§§01100a8§§§2018-06-04§§§Lusso Luca§§§GitHub§§§2018-06-04§§§[#157431497] Backend is deployed on more than one instance§§§ecf82ad
+28	0	src/@types/redis-clustr/index.d.ts
+33	2	src/container.ts
+
+§§§ec04739§§§2018-06-01§§§Lusso Luca§§§GitHub§§§2018-06-01§§§[#157969241] Add session endpoint to swagger specs§§§1652078
+4	4	src/app.ts
+6	8	src/controllers/__tests__/authenticationController.test.ts
+2	2	src/controllers/__tests__/messagesController.test.ts
+2	2	src/controllers/__tests__/notificationController.test.ts
+2	2	src/controllers/__tests__/profileController.test.ts
+2	2	src/controllers/__tests__/serviceController.test.ts
+7	18	src/controllers/authenticationController.ts
+2	2	src/services/ISessionStorage.ts
+2	2	src/services/__tests__/messagesService.test.ts
+2	2	src/services/__tests__/profileService.test.ts
+8	5	src/services/__tests__/redisSessionStorage.test.ts
+6	5	src/services/redisSessionStorage.ts
+2	2	src/types/__tests__/profile.test.ts
+2	2	src/types/__tests__/user.test.ts
+7	15	src/types/spidLevel.ts
+3	2	src/types/user.ts
+
+§§§c3252e4§§§2018-05-25§§§Lusso Luca§§§GitHub§§§2018-05-25§§§[#157539460] Fix api specs§§§7331384
+11	2	src/__tests__/api-specs.test.ts
+2	9	src/__tests__/app.test.ts
+55	54	src/app.ts
+10	3	src/container.ts
+126	48	src/controllers/__tests__/authenticationController.test.ts
+39	76	src/controllers/__tests__/messagesController.test.ts
+59	65	src/controllers/__tests__/notificationController.test.ts
+49	81	src/controllers/__tests__/profileController.test.ts
+24	39	src/controllers/__tests__/serviceController.test.ts
+48	54	src/controllers/authenticationController.ts
+14	31	src/controllers/messagesController.ts
+12	8	src/controllers/notificationController.ts
+23	35	src/controllers/profileController.ts
+8	16	src/controllers/servicesController.ts
+19	8	src/services/__tests__/messagesService.test.ts
+23	21	src/services/__tests__/notificationService.test.ts
+15	3	src/services/__tests__/profileService.test.ts
+45	23	src/services/messagesService.ts
+11	10	src/services/notificationService.ts
+23	13	src/services/profileService.ts
+
+§§§0ea211c§§§2018-05-24§§§Lusso Luca§§§GitHub§§§2018-05-24§§§[#157834776] Proxy the created_at value§§§172bbd0
+1	0	src/controllers/__tests__/messagesController.test.ts
+1	1	src/controllers/__tests__/notificationController.test.ts
+4	0	src/services/__tests__/messagesService.test.ts
+1	1	src/services/__tests__/notificationService.test.ts
+6	0	src/types/__tests__/message.test.ts
+2	0	src/types/api_client/createdMessageWithContent.ts
+1	0	src/types/message.ts
+
+§§§5ce835f§§§2018-05-21§§§Lusso Luca§§§GitHub§§§2018-05-21§§§[#157123071] Generate api typescript models§§§e5e1804
+1	1	src/controllers/__tests__/messagesController.test.ts
+8	4	src/controllers/__tests__/notificationController.test.ts
+9	4	src/controllers/__tests__/profileController.test.ts
+9	6	src/controllers/__tests__/serviceController.test.ts
+10	8	src/controllers/notificationController.ts
+6	6	src/services/__tests__/messagesService.test.ts
+7	5	src/services/__tests__/notificationService.test.ts
+18	9	src/services/messagesService.ts
+11	11	src/services/notificationService.ts
+2	2	src/services/profileService.ts
+7	9	src/types/__tests__/message.test.ts
+9	4	src/types/__tests__/profile.test.ts
+13	9	src/types/__tests__/service.test.ts
+0	11	src/types/api/EmailAddress.ts
+0	13	src/types/api/FiscalCode.ts
+0	12	src/types/api/HttpStatusCode.ts
+0	16	src/types/api/IsInboxEnabled.ts
+0	16	src/types/api/IsWebhookEnabled.ts
+0	13	src/types/api/MessageBodyMarkdown.ts
+0	24	src/types/api/MessageContent.ts
+0	13	src/types/api/MessageSubject.ts
+0	21	src/types/api/NotificationChannelStatus.ts
+0	21	src/types/api/NotificationStatus.ts
+0	11	src/types/api/OrganizationName.ts
+0	26	src/types/api/PreferredLanguages.ts
+0	23	src/types/api/ProblemJson.ts
+0	15	src/types/api/TimeToLive.ts
+1	1	src/types/api_client/createdMessageWithContent.ts
+1	1	src/types/api_client/createdMessageWithoutContent.ts
+2	2	src/types/api_client/extendedProfile.ts
+2	3	src/types/api_client/getProfileOKResponse.ts
+2	2	src/types/api_client/messageResponseWithContent.ts
+6	3	src/types/api_client/servicePublic.ts
+2	3	src/types/api_client/upsertProfileOKResponse.ts
+7	42	src/types/message.ts
+6	65	src/types/notification.ts
+2	56	src/types/profile.ts
+7	26	src/types/service.ts
+
+§§§bfb0ff6§§§2018-05-08§§§Federico Feroldi§§§GitHub§§§2018-05-08§§§[#157391229] Fixes API specs (#108)§§§5e7cc2f
+10	0	src/__tests__/api-specs.test.ts
+
+§§§5e7cc2f§§§2018-05-08§§§Lusso Luca§§§GitHub§§§2018-05-08§§§[#157387922] Fix typing§§§354b148
+6	5	src/__tests__/app.test.ts
+12	33	src/controllers/__tests__/notificationController.test.ts
+1	10	src/controllers/notificationController.ts
+17	11	src/services/__tests__/notificationService.test.ts
+6	4	src/services/notificationService.ts
+3	1	src/types/__tests__/notification.test.ts
+16	15	src/types/notification.ts
+
+§§§354b148§§§2018-05-02§§§Lusso Luca§§§GitHub§§§2018-05-02§§§[#155181485] Post notification to NH§§§6c7ca58
+19	0	src/__tests__/app.test.ts
+1	1	src/app.ts
+26	4	src/controllers/__tests__/notificationController.test.ts
+12	9	src/controllers/notificationController.ts
+81	7	src/services/__tests__/{notification.test.ts => notificationService.test.ts}
+44	17	src/services/notificationService.ts
+0	31	src/types/__tests__/message.test.ts
+1	1	src/types/api_client/createdMessageWithContent.ts
+
+§§§30f2d93§§§2018-04-30§§§Lusso Luca§§§GitHub§§§2018-04-30§§§[#155934142] Add device to Azure Notification Hub§§§25b5d12
+11	0	src/app.ts
+22	9	src/container.ts
+241	0	src/controllers/__tests__/notificationController.test.ts
+44	1	src/controllers/notificationController.ts
+128	0	src/services/__tests__/notification.test.ts
+81	1	src/services/notificationService.ts
+12	0	src/types/__tests__/notification.test.ts
+103	2	src/types/notification.ts
+
+§§§8fa1ca9§§§2018-04-23§§§Federico Feroldi§§§GitHub§§§2018-04-23§§§[#156986329,#156977340] adds italia-ts-commons and removes unneeded code (#83)§§§212aa98
+3	3	src/__tests__/app.test.ts
+7	7	src/app.ts
+8	6	src/container.ts
+2	1	src/controllers/__tests__/authenticationController.test.ts
+2	1	src/controllers/__tests__/messagesController.test.ts
+2	1	src/controllers/__tests__/profileController.test.ts
+3	2	src/controllers/__tests__/serviceController.test.ts
+1	1	src/controllers/notificationController.ts
+3	2	src/server.ts
+2	1	src/services/__tests__/messagesService.test.ts
+2	1	src/services/__tests__/profileService.test.ts
+2	1	src/services/__tests__/redisSessionStorage.test.ts
+2	2	src/services/messagesService.ts
+1	1	src/services/profileService.ts
+4	3	src/types/__tests__/profile.test.ts
+1	1	src/types/__tests__/service.test.ts
+2	1	src/types/__tests__/user.test.ts
+1	1	src/types/api/EmailAddress.ts
+1	1	src/types/api/FiscalCode.ts
+1	1	src/types/api/HttpStatusCode.ts
+1	1	src/types/api/IsInboxEnabled.ts
+1	1	src/types/api/IsWebhookEnabled.ts
+1	1	src/types/api/MessageBodyMarkdown.ts
+1	1	src/types/api/MessageSubject.ts
+1	1	src/types/api/NotificationChannelStatus.ts
+1	1	src/types/api/OrganizationName.ts
+1	1	src/types/api/PreferredLanguages.ts
+1	1	src/types/api/ProblemJson.ts
+2	2	src/types/api/TimeToLive.ts
+1	1	src/types/api_client/getMessagesByUserOKResponse.ts
+1	1	src/types/api_client/getProfileOKResponse.ts
+1	1	src/types/api_client/servicePublic.ts
+1	1	src/types/api_client/upsertProfileOKResponse.ts
+0	19	src/types/environment.ts
+1	1	src/types/message.ts
+1	1	src/types/notification.ts
+2	2	src/types/profile.ts
+1	1	src/types/service.ts
+1	1	src/types/spidLevel.ts
+0	19	src/utils/default.ts
+1	1	src/utils/middleware/checkIP.ts
+0	47	src/utils/numbers.ts
+0	144	src/utils/strings.ts
+0	99	src/utils/types.ts
+0	52	src/utils/validation_reporters.ts
+
+§§§186f3be§§§2018-04-20§§§Lusso Luca§§§GitHub§§§2018-04-20§§§[#155934419] Add notification endpoint§§§25a78bb
+23	0	src/@types/passport-auth-token/index.d.ts
+10	0	src/@types/range_check/index.d.ts
+47	7	src/__tests__/app.test.ts
+35	10	src/app.ts
+71	4	src/container.ts
+39	0	src/controllers/notificationController.ts
+8	5	src/server.ts
+11	0	src/services/notificationService.ts
+2	2	src/strategies/{tokenStrategy.ts => bearerTokenStrategy.ts}
+18	0	src/strategies/urlTokenStrategy.ts
+1	1	src/types/api/IsWebhookEnabled.ts
+23	0	src/types/notification.ts
+37	0	src/utils/middleware/checkIP.ts
+29	0	src/utils/strings.ts
+
+§§§7cb7bfc§§§2018-04-12§§§Lusso Luca§§§GitHub§§§2018-04-12§§§[#155934507] Pass the isWebhookEnabled preference from app to API backend (and vice versa)§§§ab52e71
+4	0	src/controllers/__tests__/profileController.test.ts
+2	0	src/services/__tests__/profileService.test.ts
+4	0	src/types/__tests__/profile.test.ts
+2	0	src/types/api_client/extendedProfile.ts
+
+§§§ab52e71§§§2018-04-11§§§Lusso Luca§§§GitHub§§§2018-04-11§§§[#156463232] Return spid level in session§§§19c8976
+104	0	src/__tests__/passport-saml.test.ts
+20	4	src/controllers/__tests__/authenticationController.test.ts
+2	0	src/controllers/__tests__/messagesController.test.ts
+2	0	src/controllers/__tests__/profileController.test.ts
+2	0	src/controllers/__tests__/serviceController.test.ts
+9	2	src/controllers/authenticationController.ts
+1	1	src/services/ISessionStorage.ts
+2	0	src/services/__tests__/messagesService.test.ts
+2	0	src/services/__tests__/profileService.test.ts
+4	1	src/services/__tests__/redisSessionStorage.test.ts
+2	1	src/services/redisSessionStorage.ts
+2	0	src/types/__tests__/profile.test.ts
+3	0	src/types/__tests__/user.test.ts
+36	0	src/types/spidLevel.ts
+27	1	src/types/user.ts
+
+§§§9342b47§§§2018-04-10§§§Lusso Luca§§§GitHub§§§2018-04-10§§§Pass isWebhookEnable preference to the APP§§§5229e2f
+3	0	src/services/__tests__/profileService.test.ts
+4	0	src/types/profile.ts
+
+§§§5229e2f§§§2018-04-09§§§Lusso Luca§§§GitHub§§§2018-04-09§§§[#156395849] Remove strict validation for API responses§§§3a1f78c
+3	10	src/container.ts
+1	1	src/server.ts
+99	57	src/services/__tests__/messagesService.test.ts
+24	12	src/services/__tests__/profileService.test.ts
+72	41	src/services/messagesService.ts
+49	27	src/services/profileService.ts
+8	5	src/types/__tests__/profile.test.ts
+16	0	src/types/api/IsWebhookEnabled.ts
+8	12	src/types/api/MessageContent.ts
+1	1	src/types/api/NotificationChannelStatus.ts
+5	9	src/types/api/NotificationStatus.ts
+9	20	src/types/api/ProblemJson.ts
+4	6	src/types/api_client/createdMessageWithContent.ts
+4	6	src/types/api_client/createdMessageWithoutContent.ts
+4	6	src/types/api_client/extendedProfile.ts
+9	10	src/types/api_client/getMessagesByUserOKResponse.ts
+12	10	src/types/api_client/getProfileOKResponse.ts
+4	6	src/types/api_client/messageResponseWithContent.ts
+1	6	src/types/api_client/servicePublic.ts
+13	11	src/types/api_client/upsertProfileOKResponse.ts
+7	15	src/types/message.ts
+17	20	src/types/profile.ts
+1	6	src/types/service.ts
+24	0	src/utils/simpleResponse.ts
+0	44	src/utils/types.ts
+52	0	src/utils/validation_reporters.ts
+
+§§§3a1f78c§§§2018-04-09§§§Lusso Luca§§§GitHub§§§2018-04-09§§§[#156568809] Autogenerate the api client§§§dbbfe55
+0	1668	src/api/digitalCitizenshipAPI.ts
+0	416	src/api/models/index.ts
+0	703	src/api/models/mappers.ts
+
+§§§dbbfe55§§§2018-03-28§§§Lusso Luca§§§GitHub§§§2018-03-28§§§[#155902063] Update to new version of spid-passport§§§2daf4b6
+0	1	src/strategies/spidStrategy.ts
+
+§§§2daf4b6§§§2018-03-28§§§Lusso Luca§§§GitHub§§§2018-03-28§§§[#156343142] Fix Redis version in docker-compose§§§910fc91
+10	10	src/services/__tests__/redisSessionStorage.test.ts
+2	3	src/services/redisSessionStorage.ts
+
+§§§910fc91§§§2018-03-28§§§Lusso Luca§§§Federico Feroldi§§§2018-03-28§§§[#156017209] Add session endpoint (#59)§§§c1132e8
+5	0	src/@types/mock-redis-client/index.d.ts
+80	31	src/app.ts
+25	6	src/container.ts
+206	41	src/controllers/__tests__/authenticationController.test.ts
+1	1	src/controllers/__tests__/messagesController.test.ts
+1	1	src/controllers/__tests__/profileController.test.ts
+1	1	src/controllers/__tests__/serviceController.test.ts
+178	52	src/controllers/authenticationController.ts
+0	0	src/services/{iApiClientFactory.ts => IApiClientFactory.ts}
+47	0	src/services/ISessionStorage.ts
+0	51	src/services/__mocks__/redisClient.ts
+16	0	src/services/__tests__/messagesService.test.ts
+312	85	src/services/__tests__/redisSessionStorage.test.ts
+1	1	src/services/apiClientFactory.ts
+0	23	src/services/iSessionStorage.ts
+1	1	src/services/messagesService.ts
+1	1	src/services/profileService.ts
+143	32	src/services/redisSessionStorage.ts
+4	5	src/strategies/tokenStrategy.ts
+1	1	src/types/__tests__/profile.test.ts
+1	1	src/types/__tests__/user.test.ts
+
+§§§c1132e8§§§2018-03-20§§§Lusso Luca§§§GitHub§§§2018-03-20§§§[#153397207] Unit test§§§98c6c6b
+54	0	src/__mocks__/request.ts
+86	0	src/__mocks__/response.ts
+12	11	src/__tests__/app.test.ts
+141	133	src/app.ts
+7	0	src/container.ts
+369	0	src/controllers/__tests__/authenticationController.test.ts
+215	0	src/controllers/__tests__/messagesController.test.ts
+249	0	src/controllers/__tests__/profileController.test.ts
+127	0	src/controllers/__tests__/serviceController.test.ts
+4	2	src/controllers/authenticationController.ts
+3	1	src/server.ts
+51	0	src/services/__mocks__/redisClient.ts
+33	0	src/services/__tests__/apiClientFactory.test.ts
+307	0	src/services/__tests__/messagesService.test.ts
+176	0	src/services/__tests__/profileService.test.ts
+149	0	src/services/__tests__/redisSessionStorage.test.ts
+14	0	src/services/__tests__/tokenService.ts
+16	0	src/services/tokenService.ts
+141	0	src/types/__tests__/message.test.ts
+122	0	src/types/__tests__/profile.test.ts
+29	0	src/types/__tests__/service.test.ts
+130	0	src/types/__tests__/user.test.ts
+19	0	src/types/environment.ts
+1	0	src/types/profile.ts
+6	7	src/types/user.ts
+
+§§§98c6c6b§§§2018-03-20§§§Lusso Luca§§§Federico Feroldi§§§2018-03-20§§§[#156121070] Add logging when errors occur (#58)§§§e8d3815
+1	1	src/app.ts
+5	2	src/controllers/authenticationController.ts
+29	6	src/services/messagesService.ts
+28	12	src/services/profileService.ts
+
+§§§e8d3815§§§2018-03-20§§§Lusso Luca§§§Federico Feroldi§§§2018-03-20§§§[#156121044] Align async style in services (#57)§§§23da774
+55	63	src/services/messagesService.ts
+21	23	src/services/profileService.ts
+
+§§§ca0c35e§§§2018-03-19§§§Lusso Luca§§§Federico Feroldi§§§2018-03-19§§§[#155911635] Add sonar ts (#52)§§§8654cb2
+1	1	src/@types/spid-passport/index.d.ts
+8	10	src/controllers/authenticationController.ts
+9	6	src/services/messagesService.ts
+18	16	src/services/profileService.ts
+1	10	src/types/api/EmailAddress.ts
+0	9	src/types/api/FiscalCode.ts
+1	11	src/types/api/HttpStatusCode.ts
+0	9	src/types/api/IsInboxEnabled.ts
+2	11	src/types/api/MessageBodyMarkdown.ts
+5	13	src/types/api/MessageContent.ts
+2	11	src/types/api/MessageSubject.ts
+2	11	src/types/api/NotificationChannelStatus.ts
+4	12	src/types/api/NotificationStatus.ts
+3	12	src/types/api/OrganizationName.ts
+2	11	src/types/api/PreferredLanguages.ts
+2	11	src/types/api/ProblemJson.ts
+0	9	src/types/api/TimeToLive.ts
+5	3	src/types/user.ts
+
+§§§6f5de13§§§2018-03-19§§§Lusso Luca§§§Federico Feroldi§§§2018-03-19§§§[#156090306] remove international prefix (#56)§§§a6f8418
+2	2	src/controllers/authenticationController.ts
+11	1	src/types/user.ts
+
+§§§a6f8418§§§2018-03-19§§§Lusso Luca§§§Federico Feroldi§§§2018-03-19§§§Fix namirial endpoint. Bump to version 0.0.12 (#55)§§§50b167c
+4	0	src/controllers/authenticationController.ts
+4	2	src/strategies/spidStrategy.ts
+
+§§§50b167c§§§2018-03-15§§§Lusso Luca§§§Federico Feroldi§§§2018-03-15§§§Fix poste endpoint (#54)§§§cddbabf
+1	1	src/strategies/spidStrategy.ts
+
+§§§cddbabf§§§2018-03-15§§§Lusso Luca§§§Federico Feroldi§§§2018-03-15§§§Fix poste endpoint. Bump to version 0.0.10 (#53)§§§5c0f670
+2	2	src/strategies/spidStrategy.ts
+
+§§§7a82dea§§§2018-03-14§§§Lusso Luca§§§GitHub§§§2018-03-14§§§[#155973550] attribute consuming service index from environment§§§4eacd50
+2	2	src/app.ts
+9	0	src/container.ts
+3	2	src/strategies/spidStrategy.ts
+
+§§§540d28a§§§2018-03-13§§§Lusso Luca§§§GitHub§§§2018-03-13§§§Update spid-passport to a version that sets the NameQualifier attribute.§§§66b0b2a
+1	1	src/strategies/spidStrategy.ts
+
+§§§76a8e25§§§2018-03-02§§§Federico Feroldi§§§GitHub§§§2018-03-02§§§Adds DangerJS rules (#40)§§§64f7b18
+7	0	Dangerfile.ts
+
+§§§64f7b18§§§2018-03-02§§§Lusso Luca§§§GitHub§§§2018-03-02§§§[#155244935] SSL redirect§§§aef5166
+33	0	src/__tests__/app.test.ts
+172	0	src/app.ts
+1	156	src/server.ts
+
+§§§9090971§§§2018-03-01§§§Lusso Luca§§§GitHub§§§2018-03-01§§§[#155181167] Refactor controllers and move the business logic in services.§§§d99cdbf
+1	1	src/@types/spid-passport/index.d.ts
+14	0	src/container.ts
+12	24	src/controllers/authenticationController.ts
+49	110	src/controllers/messagesController.ts
+58	123	src/controllers/profileController.ts
+27	53	src/controllers/servicesController.ts
+3	3	src/server.ts
+3	6	src/services/apiClientFactory.ts
+1	3	src/services/iApiClientFactory.ts
+2	10	src/services/iSessionStorage.ts
+110	0	src/services/messagesService.ts
+86	0	src/services/profileService.ts
+10	9	src/services/redisSessionStorage.ts
+1	1	src/strategies/spidStrategy.ts
+2	2	src/strategies/tokenStrategy.ts
+2	1	src/types/api_client/createdMessageWithContent.ts
+2	1	src/types/api_client/createdMessageWithoutContent.ts
+1	1	src/types/api_client/extendedProfile.ts
+6	4	src/types/api_client/getMessagesByUserOKResponse.ts
+2	1	src/types/api_client/getProfileOKResponse.ts
+2	1	src/types/api_client/messageResponseWithContent.ts
+1	2	src/types/api_client/servicePublic.ts
+2	1	src/types/api_client/upsertProfileOKResponse.ts
+1	1	src/types/error.ts
+1	1	src/types/issuer.ts
+22	8	src/types/message.ts
+7	14	src/types/profile.ts
+2	4	src/types/service.ts
+9	20	src/types/user.ts
+14	6	src/utils/APICredential.ts
+0	75	src/utils/validators.ts
+
+§§§db956af§§§2018-03-01§§§Lusso Luca§§§GitHub§§§2018-03-01§§§[#155217349] Replaced old sessionId token with new crypto generated token. Fix sessionIndex return for logout.§§§48c343a
+5	3	src/types/user.ts
+
+§§§ea9123a§§§2018-02-26§§§Federico Feroldi§§§GitHub§§§2018-02-26§§§Tsc fixes (#34)§§§09237cf
+5	1	src/@types/spid-passport/index.d.ts
+679	283	src/api/digitalCitizenshipAPI.ts
+4	3	src/api/models/index.ts
+223	224	src/api/models/mappers.ts
+15	1	src/container.ts
+11	11	src/controllers/authenticationController.ts
+20	16	src/controllers/messagesController.ts
+21	19	src/controllers/profileController.ts
+9	12	src/controllers/servicesController.ts
+2	3	src/server.ts
+4	2	src/services/apiClientFactory.ts
+1	1	src/services/iSessionStorage.ts
+9	16	src/services/redisSessionStorage.ts
+7	1	src/strategies/spidStrategy.ts
+11	6	src/strategies/tokenStrategy.ts
+2	2	src/types/api/NotificationChannelStatus.ts
+7	4	src/types/api_client/{CreatedMessageWithContent.ts => createdMessageWithContent.ts}
+7	5	src/types/api_client/{CreatedMessageWithoutContent.ts => createdMessageWithoutContent.ts}
+0	1	src/types/api_client/{ExtendedProfile.ts => extendedProfile.ts}
+4	2	src/types/api_client/getMessagesByUserOKResponse.ts
+2	3	src/types/api_client/getProfileOKResponse.ts
+4	2	src/types/api_client/{MessageResponseWithContent.ts => messageResponseWithContent.ts}
+9	7	src/types/api_client/{ServicePublic.ts => servicePublic.ts}
+0	0	src/types/api_client/{UpsertProfileOKResponse.ts => upsertProfileOKResponse.ts}
+1	1	src/types/error.ts
+12	0	src/types/issuer.ts
+18	12	src/types/message.ts
+9	11	src/types/profile.ts
+18	6	src/types/service.ts
+4	2	src/types/user.ts
+4	2	src/utils/APICredential.ts
+1	1	src/utils/numbers.ts
+1	1	src/utils/strings.ts
+10	10	src/utils/types.ts
+3	6	src/{types/api.ts => utils/validators.ts}
+
+§§§b0092af§§§2018-02-23§§§Lusso Luca§§§GitHub§§§2018-02-23§§§[#155323080] Migrate to typescript.§§§683a132
+8	0	src/@types/spid-passport/index.d.ts
+0	494	src/api/digitalCitizenshipAPI.d.ts
+1272	0	src/api/digitalCitizenshipAPI.ts
+0	284	src/api/models/index.d.ts
+415	0	src/api/models/index.ts
+704	0	src/api/models/mappers.ts
+139	0	src/container.ts
+118	0	src/controllers/authenticationController.ts
+128	0	src/controllers/messagesController.ts
+147	0	src/controllers/profileController.ts
+72	0	src/controllers/servicesController.ts
+172	0	src/server.ts
+23	0	src/services/apiClientFactory.ts
+14	0	src/services/iApiClientFactory.ts
+31	0	src/services/iSessionStorage.ts
+71	0	src/services/redisSessionStorage.ts
+90	0	src/strategies/spidStrategy.ts
+24	0	src/strategies/tokenStrategy.ts
+78	0	src/types/api.ts
+20	0	src/types/api/EmailAddress.ts
+22	0	src/types/api/FiscalCode.ts
+22	0	src/types/api/HttpStatusCode.ts
+25	0	src/types/api/IsInboxEnabled.ts
+22	0	src/types/api/MessageBodyMarkdown.ts
+36	0	src/types/api/MessageContent.ts
+22	0	src/types/api/MessageSubject.ts
+30	0	src/types/api/NotificationChannelStatus.ts
+33	0	src/types/api/NotificationStatus.ts
+20	0	src/types/api/OrganizationName.ts
+35	0	src/types/api/PreferredLanguages.ts
+43	0	src/types/api/ProblemJson.ts
+24	0	src/types/api/TimeToLive.ts
+29	0	src/types/api_client/CreatedMessageWithContent.ts
+28	0	src/types/api_client/CreatedMessageWithoutContent.ts
+30	0	src/types/api_client/ExtendedProfile.ts
+26	0	src/types/api_client/MessageResponseWithContent.ts
+27	0	src/types/api_client/ServicePublic.ts
+29	0	src/types/api_client/UpsertProfileOKResponse.ts
+26	0	src/types/api_client/getMessagesByUserOKResponse.ts
+30	0	src/types/api_client/getProfileOKResponse.ts
+9	0	src/types/error.ts
+58	0	src/types/message.ts
+132	0	src/types/profile.ts
+38	0	src/types/service.ts
+110	0	src/types/user.ts
+23	0	src/utils/APICredential.ts
+19	0	src/utils/default.ts
+47	0	src/utils/numbers.ts
+115	0	src/utils/strings.ts
+143	0	src/utils/types.ts
+
+§§§5f7b793§§§2018-02-12§§§Federico Feroldi§§§GitHub§§§2018-02-12§§§Moves source of app to root of repo (#22)§§§fb9cce6
+0	0	{app/src => src}/api/digitalCitizenshipAPI.d.ts
+0	0	{app/src => src}/api/models/index.d.ts
+
+§§§0ad72c9§§§2018-01-29§§§Lusso Luca§§§GitHub§§§2018-01-29§§§[#154357642] Implements the services proxy§§§3a35d34
+0	385	app/src/api/admin/digitalCitizenshipAdminAPI.d.ts
+0	220	app/src/api/admin/models/index.d.ts
+58	0	app/src/api/digitalCitizenshipAPI.d.ts
+22	0	app/src/api/models/index.d.ts
+
+§§§946e6c5§§§2018-01-22§§§Lusso Luca§§§GitHub§§§2018-01-22§§§[#152810187] Forward messages to the app§§§1f17f3a
+385	0	app/src/api/admin/digitalCitizenshipAdminAPI.d.ts
+220	0	app/src/api/admin/models/index.d.ts
+
+§§§899a576§§§2018-01-16§§§Lusso Luca§§§GitHub§§§2018-01-16§§§[#152810792] update profile (#9)§§§faf0c1e
+32	34	app/src/api/digitalCitizenshipAPI.d.ts
+34	0	app/src/api/models/index.d.ts
+
+§§§53b83ed§§§2017-11-30§§§Lusso Luca§§§GitHub§§§2017-11-30§§§[#152810465] Implements the user profile proxy§§§39fba56
+438	0	app/src/api/digitalCitizenshipAPI.d.ts
+228	0	app/src/api/models/index.d.ts

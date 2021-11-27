@@ -1,0 +1,1 @@
+{"version":3,"file":"module-churn.js","sourceRoot":"","sources":["../../../src/read/types/module-churn.ts"],"names":[],"mappings":";;;AAUA,SAAgB,cAAc,CAAC,IAAY;IACvC,MAAM,MAAM,GAAgB;QACxB,IAAI;QACJ,IAAI,EAAE,CAAC;QACP,KAAK,EAAE,CAAC;QACR,WAAW,EAAE,CAAC;QACd,UAAU,EAAE,CAAC;QACb,YAAY,EAAE,CAAC;QACf,OAAO,EAAE,SAAS;KACrB,CAAC;IACF,OAAO,MAAM,CAAC;AAClB,CAAC;AAXD,wCAWC"}

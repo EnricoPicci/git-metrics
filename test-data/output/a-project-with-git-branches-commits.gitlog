@@ -1,0 +1,29 @@
+§§§commit_1§§§2021-11-01§§§Picci§§§Picci§§§2021-11-01§§§commit_1§§§
+1	0	file-1.txt
+
+§§§commit_2§§§2021-11-02§§§Picci§§§Picci§§§2021-11-02§§§commit_2§§§commit_1
+8	0	file-2.txt
+
+§§§commit_3§§§2021-11-02§§§Picci§§§Picci§§§2021-11-02§§§commit_3§§§commit_1
+8	0	file-3.txt
+
+§§§commit_4§§§2021-11-03§§§Picci§§§Picci§§§2021-11-03§§§commit_4§§§commit_3
+10	0	file-4.txt
+
+§§§commit_5§§§2021-11-03§§§Picci§§§Picci§§§2021-11-03§§§commit_5§§§commit_2
+10	0	file-5.txt
+
+§§§commit_Merge_A_into_master§§§2021-11-03§§§Picci§§§Picci§§§2021-11-03§§§Merge branch 'Branch-A'§§§commit_3 commit_5
+§§§commit_6§§§2021-11-04§§§Picci§§§Picci§§§2021-11-04§§§commit_6§§§commit_Merge_A_into_master
+16	2	file-6.txt
+
+§§§commit_7§§§2021-11-04§§§Picci§§§Picci§§§2021-11-04§§§commit_7§§§commit_5
+14	0	file-7.txt
+
+§§§commit_Merge_master_into_A§§§2021-11-04§§§Picci§§§Picci§§§2021-11-04§§§Merge branch 'master' into Branch-A§§§commit_7 commit_6
+§§§commit_8§§§2021-11-04§§§Picci§§§Picci§§§2021-11-04§§§commit 8§§§commit_Merge_master_into_A
+15	0	file-8.txt
+
+§§§commit_Merge_B_into_A§§§2021-11-05§§§Picci§§§Picci§§§2021-11-05§§§Merge branch 'Branch-B' into Branch-A§§§commit_8 commit_4
+§§§commit_9§§§2021-11-05§§§Picci§§§Picci§§§2021-11-05§§§commit 9§§§commit_Merge_B_into_A
+14	0	file-9.txt

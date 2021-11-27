@@ -1,0 +1,8 @@
+§§§ef76ff0§§§2021-10-05§§§Picci§§§Picci§§§2021-10-05§§§aggregation syntax changed for atlas to work§§§19145c2
+2	2	src/mongo/load/load-commits.spec.ts
+2	3	src/mongo/query/author-churn-query.ts
+
+§§§5a17995§§§2021-10-05§§§Picci§§§Picci§§§2021-10-05§§§readme updated§§§19145c2
+35	0	README.md
+-	-	readme-diagrams/dependency-diagram.png
+-	-	readme-diagrams/full-dependency-diagram.png
