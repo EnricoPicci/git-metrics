@@ -125,7 +125,7 @@ export function branchesReportCore(
     return generateReport.pipe(
         tap({
             next: () => {
-                console.log(`====>>>> BRUNCH REPORT GENERATED`);
+                console.log(`====>>>> BRANCH REPORT GENERATED`);
             },
         }),
     );
