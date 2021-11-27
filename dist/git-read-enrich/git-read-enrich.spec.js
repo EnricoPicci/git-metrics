@@ -61,7 +61,7 @@ describe(`gitReadCommitEnrich`, () => {
                 (0, chai_1.expect)(commits.length).gt(0);
                 const eldestCommit = commits[0];
                 const youngestCommit = commits[commits.length - 1];
-                (0, chai_1.expect)(eldestCommit.committerDate < youngestCommit.committerDate).true;
+                (0, chai_1.expect)(eldestCommit.committerDate <= youngestCommit.committerDate).true;
             },
         }))
             .subscribe({

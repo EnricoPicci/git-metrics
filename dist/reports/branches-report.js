@@ -79,7 +79,7 @@ function branchesReportCore(commitDaylySummary, params, csvFilePath, weeklyCsvFi
     }
     return generateReport.pipe((0, operators_1.tap)({
         next: () => {
-            console.log(`====>>>> BRUNCH REPORT GENERATED`);
+            console.log(`====>>>> BRANCH REPORT GENERATED`);
         },
     }));
 }

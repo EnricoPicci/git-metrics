@@ -105,7 +105,7 @@ describe(`readTagsCommand`, () => {
         (0, chai_1.expect)(cmd).equal(expected);
         (0, chai_1.expect)(out).equal(expectedOutfile);
     });
-    it(`read the tags from a git repo using git log command and saves them in a file`, (done) => {
+    it.skip(`read the tags from a git repo using git log command and saves them in a file`, (done) => {
         const outDir = './temp';
         const outFile = 'io-backend-tags.log';
         const config = {
