@@ -19,7 +19,7 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "prepublishOnly": "npm version patch",
-    "preversion": "npm run test-all",
+    "preversion": "npm run test",
     "version": "npm run tsc && git add -A dist",
     "postversion": "git push"
   },
