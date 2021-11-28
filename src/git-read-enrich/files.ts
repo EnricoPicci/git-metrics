@@ -1,5 +1,5 @@
 import { from, Observable } from 'rxjs';
-import { map, filter, mergeMap } from 'rxjs/operators';
+import { map, filter, concatMap, toArray, mergeMap } from 'rxjs/operators';
 import { GitCommitEnriched, FileGitCommitEnriched } from '../git-enriched-types/git-types';
 import { enrichedCommitsStream } from './commits';
 
@@ -7,24 +7,11 @@ import { enrichedCommitsStream } from './commits';
 // the git log and cloc data
 
 export function filesStream(commitLogPath: string, clocLogPath: string) {
-    return enrichedCommitsStream(commitLogPath, clocLogPath).pipe(
-        // create an array of files where each file has also the details of the commit
-        map((commit: GitCommitEnriched) => {
-            const files = [...commit.files];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const basicCommit = { ...commit } as any;
-            delete basicCommit.files;
-            const enrichedFiles = files.map((file) => ({ ...file, ...basicCommit } as FileGitCommitEnriched));
-            return enrichedFiles;
-        }),
-        // consider only the commits which have files
-        filter((enrichedFiles) => enrichedFiles.length > 0),
-        // transform the array of file documents into a stream
-        mergeMap((enrichedFiles) => from(enrichedFiles)),
-    );
+    return filesStreamFromEnrichedCommitsStream(enrichedCommitsStream(commitLogPath, clocLogPath));
 }
 
 export function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream: Observable<GitCommitEnriched>) {
+    const fileCreationDateDictionary: { [path: string]: Date } = {};
     return enrichedCommitsStream.pipe(
         // create an array of files where each file has also the details of the commit
         map((commit: GitCommitEnriched) => {
@@ -32,12 +19,31 @@ export function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream: Obse
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const basicCommit = { ...commit } as any;
             delete basicCommit.files;
-            const enrichedFiles = files.map((file) => ({ ...file, ...basicCommit } as FileGitCommitEnriched));
+            const enrichedFiles = files.map((file) => {
+                // set the file creation date as the date of the first commit which shows this file
+                let created = fileCreationDateDictionary[file.path];
+                if (!created) {
+                    created = commit.committerDate;
+                }
+                created = created > commit.committerDate ? commit.committerDate : created;
+                fileCreationDateDictionary[file.path] = created;
+                return { ...file, ...basicCommit } as FileGitCommitEnriched;
+            });
             return enrichedFiles;
         }),
         // consider only the commits which have files
         filter((enrichedFiles) => enrichedFiles.length > 0),
         // transform the array of file documents into a stream
-        mergeMap((enrichedFiles) => from(enrichedFiles)),
+        // use concatMap since I need to be sure that the upstream completes so that I have the fileCreationDateDictionary filled correctly
+        toArray(),
+        mergeMap((enrichedFilesBuffers) => enrichedFilesBuffers),
+        concatMap((enrichedFiles) =>
+            from(enrichedFiles).pipe(
+                map((file) => {
+                    const created = fileCreationDateDictionary[file.path];
+                    return { ...file, created };
+                }),
+            ),
+        ),
     );
 }

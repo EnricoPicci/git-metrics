@@ -25,7 +25,7 @@ export type GitCommitEnriched = _CommitDoc & {
     files: GitFileNumstatEnriched[];
 };
 
-export type FileGitCommitEnriched = _CommitDoc & GitFileNumstatEnriched;
+export type FileGitCommitEnriched = _CommitDoc & GitFileNumstatEnriched & { created: Date };
 
 export type GitCommitEnrichedWithBranchTips = {
     // branch tips are commits which are not parent of any other commit and therefore represent the tip of a branch

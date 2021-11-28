@@ -9,7 +9,6 @@ import { allReports, runReports } from './run-reports-on-repo-core';
 describe(`runReports`, () => {
     it(`runs all the reports on this project`, (done) => {
         const repoFolderPath = process.cwd();
-        //const repoFolderPath = `~/enrico-code/articles/2021-09-analize-git-data/2021-09-29-sample-repos/io-app`;
         const filter = ['*.ts'];
         const after = '2017-01-01';
         const before = undefined;
@@ -45,7 +44,6 @@ describe(`runReports`, () => {
         const reports = [AuthorChurnReport.name, FileChurnReport.name];
 
         const repoFolderPath = process.cwd();
-        //const repoFolderPath = `~/enrico-code/articles/2021-09-analize-git-data/2021-09-29-sample-repos/io-app`;
         const filter = ['*.ts'];
         const after = '2017-01-01';
         const before = undefined;
@@ -124,9 +122,7 @@ describe(`runReports`, () => {
     it.skip(`runs some reports on any project project`, (done) => {
         const reports = [BranchesReport.name];
 
-        // const repoFolderPath = process.cwd();
-        // const repoFolderPath = `~/enrico-code/articles/2021-09-analize-git-data/2021-09-29-sample-repos/git`;
-        const repoFolderPath = `~/temp/git-project/git`;
+        const repoFolderPath = process.cwd();
 
         const filter = undefined;
         const after = undefined;

@@ -16,17 +16,6 @@ describe(`runRepoCouplingReport`, () => {
         const outClocFile = undefined;
         const clocDefsPath = undefined;
 
-        // const repoFolderPath_1 = '~/temp/immuni-app-android';
-        // const repoFolderPath_2 = '~/temp/immuni-backend-common';
-        // const timeWindowLengthInDays = 1;
-        // const csvFilePath = path.join(process.cwd(), 'temp', 'immuni-android-backend.csv');
-        // const filter = ['*.py', '*.kt'];
-        // const after = '2021-01-01';
-        // const outDir = `${process.cwd()}/temp`;
-        // const outFile = undefined;
-        // const outClocFile = undefined;
-        // const clocDefsPath = undefined;
-
         runRepoCouplingReport(
             [repoFolderPath_1, repoFolderPath_2],
             timeWindowLengthInDays,

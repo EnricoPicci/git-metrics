@@ -37,8 +37,7 @@ export function fileChurnDictionary(fileCommits: Observable<FileGitCommitEnriche
             fileEntry.linesAdded = fileEntry.linesAdded + fileCommit.linesAdded;
             fileEntry.linesDeleted = fileEntry.linesDeleted + fileCommit.linesDeleted;
             fileEntry.linesAddDel = fileEntry.linesAddDel + fileCommit.linesAdded + fileCommit.linesDeleted;
-            fileEntry.created =
-                fileEntry.created > fileCommit.committerDate ? fileCommit.committerDate : acc[fileCommit.path].created;
+            fileEntry.created = fileEntry.created > fileCommit.created ? fileCommit.created : fileEntry.created;
             return acc;
         }, {} as { [path: string]: FileChurn }),
     );

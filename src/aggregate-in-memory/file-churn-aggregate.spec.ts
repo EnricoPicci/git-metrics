@@ -72,4 +72,37 @@ describe(`fileChurn`, () => {
                 complete: () => done(),
             });
     });
+    it(`reads the commit and cloc info and generates a stream of FileChurn objects considering only the commits after a certain date`, (done) => {
+        const fileCommits = filesStream(commitLogPath, clocLogPath);
+        const after = new Date('2021-01-01');
+        fileChurn(fileCommits, after)
+            .pipe(
+                toArray(),
+                tap({
+                    next: (fileChurns) => {
+                        expect(fileChurns).not.undefined;
+                        // the numebr of file churns notified is equal to the number of files in the commit log after the after date
+                        expect(fileChurns.length).equal(1);
+                    },
+                }),
+                tap({
+                    next: (fileChurns) => {
+                        const halloJavaFileCommits = fileChurns.filter((fc) => fc.path === 'hallo.java');
+                        expect(halloJavaFileCommits.length).equal(1);
+                        const halloJavaFileCommit = halloJavaFileCommits[0];
+                        expect(halloJavaFileCommit.commits).equal(1);
+                        expect(halloJavaFileCommit.linesAdded).equal(3);
+                        expect(halloJavaFileCommit.linesDeleted).equal(2);
+                        expect(halloJavaFileCommit.linesAddDel).equal(5);
+                        expect(halloJavaFileCommit.created.getFullYear()).equal(2019);
+                        expect(halloJavaFileCommit.created.getMonth()).equal(8);
+                        expect(halloJavaFileCommit.created.getDate()).equal(22);
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    });
 });

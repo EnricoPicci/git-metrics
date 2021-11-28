@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { tap, toArray } from 'rxjs';
+import { toYYYYMMDD } from '../tools/dates/date-functions';
 import { filesStream } from './files';
 
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
@@ -18,6 +19,9 @@ describe(`filesStream`, () => {
                 tap({
                     next: (allFileCommits) => {
                         expect(allFileCommits.length).equal(7);
+                        allFileCommits
+                            .filter((f) => f.path === 'hallo.java')
+                            .forEach((f) => expect(toYYYYMMDD(f.created)).equal('2019-09-22'));
                     },
                 }),
             )

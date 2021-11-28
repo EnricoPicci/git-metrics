@@ -18,19 +18,6 @@ describe(`loadMongRunReports`, () => {
         const clocDefsPath = undefined;
         const logProgress = false;
 
-        // const connectionString = 'mongodb://localhost:27017';
-        // const repoFolderPath = '~/temp/immuni-app-android';
-        // const filter = undefined;
-        // const after = '2021-01-01';
-        // const outDir = `${process.cwd()}/temp`;
-        // const outFile = undefined;
-        // const outClocFile = undefined;
-        // const dbName = 'immuni-app-android';
-        // const collName = undefined;
-        // const buffer = undefined;
-        // const clocDefsPath = undefined;
-        // const logProgress = false;
-
         loadMongRunReports(
             connectionString,
             repoFolderPath,
