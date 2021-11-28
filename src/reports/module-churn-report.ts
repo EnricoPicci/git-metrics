@@ -79,6 +79,9 @@ export function moduleChurnReportCore(
             const maxDepth = splitPath(churnsSorted[0].path).length;
             return { churns, maxDepth };
         }),
+        tap((moduleChurns) => {
+            console.log(`Processing ${moduleChurns.churns.length} records to generate ModuleChurnReport`);
+        }),
         share(),
     );
     const generateReport = moduleChurnSource.pipe(_moduleChurnReport(params));

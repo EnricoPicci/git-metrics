@@ -94,14 +94,7 @@ export function _streams(
 ) {
     const _after = new Date(after);
     const _before = new Date(before);
-    const _enrichedCommitsStream = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(
-        filter((commit) => {
-            const commitDate = new Date(commit.committerDate);
-            const isAfter = after ? commitDate > _after : true;
-            const isBefore = before ? commitDate < _before : true;
-            return isAfter && isBefore;
-        }),
-    );
+    const _enrichedCommitsStream = enrichedCommitsStream(commitLogPath, clocLogPath);
     const _commitStream = parallelRead ? _enrichedCommitsStream : _enrichedCommitsStream.pipe(share());
     const _filesStream = parallelRead
         ? filesStream(commitLogPath, clocLogPath).pipe(
@@ -112,7 +105,15 @@ export function _streams(
                   return isAfter && isBefore;
               }),
           )
-        : filesStreamFromEnrichedCommitsStream(_commitStream).pipe(share());
+        : filesStreamFromEnrichedCommitsStream(_commitStream).pipe(
+              filter((file) => {
+                  const commitDate = new Date(file.committerDate);
+                  const isAfter = after ? commitDate > _after : true;
+                  const isBefore = before ? commitDate < _before : true;
+                  return isAfter && isBefore;
+              }),
+              share(),
+          );
     const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
     return { _commitStream, _filesStream, _clocSummaryStream };
 }
@@ -120,7 +121,7 @@ export function _streams(
 export function runReportsFromStreams(
     reports: string[],
     repoFolderPath: string,
-    filter: string[],
+    _filter: string[],
     after: string,
     before: string,
     outDir: string,
@@ -134,13 +135,23 @@ export function runReportsFromStreams(
     const params: ReportParams = {
         repoFolderPath,
         outDir,
-        filter,
+        filter: _filter,
         clocDefsPath,
         after: new Date(after),
         before: new Date(before),
         outFilePrefix,
     };
     const repoName = path.parse(repoFolderPath).name;
+    const _commmitStreamFiltered = _commitStream.pipe(
+        filter((commit: GitCommitEnriched) => {
+            const _after = new Date(after);
+            const _before = new Date(before);
+            const commitDate = new Date(commit.committerDate);
+            const isAfter = after ? commitDate > _after : true;
+            const isBefore = before ? commitDate < _before : true;
+            return isAfter && isBefore;
+        }),
+    );
 
     const generators: ((_projectInfo: ProjectInfo) => Observable<Report>)[] = [];
 
@@ -157,7 +168,7 @@ export function runReportsFromStreams(
                 generators.push(moduleChurnReportGenerator(_filesStream, params, repoName));
                 break;
             case AuthorChurnReport.name:
-                generators.push(authorChurnReportGenerator(_commitStream, params, repoName));
+                generators.push(authorChurnReportGenerator(_commmitStreamFiltered, params, repoName));
                 break;
             case FileAuthorsReport.name:
                 generators.push(fileAuthorsReportGenerator(_filesStream, params, repoName));

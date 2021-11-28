@@ -70,7 +70,13 @@ export function fileCouplingReportCore(
     params: FilesCouplingReportParams,
     csvFilePath?: string,
 ) {
-    const fileCouplingSource = fileCoupling.pipe(toArray(), share());
+    const fileCouplingSource = fileCoupling.pipe(
+        toArray(),
+        tap((fileCouplings) => {
+            console.log(`Processing ${fileCouplings.length} records to generate FileCouplingReport`);
+        }),
+        share(),
+    );
     const generateReport = fileCouplingSource.pipe(_fileCouplingReport(params));
     const concurrentStreams: [Observable<FilesCouplingReport>, Observable<FileCoupling[]>?] = [
         generateReport as Observable<FilesCouplingReport>,

@@ -84,6 +84,9 @@ export function branchesReportCore(
             );
             return daylyCommitSummariesSorted;
         }),
+        tap((commitDaylySummaries) => {
+            console.log(`Processing ${commitDaylySummaries.length} records to generate BranchesReport`);
+        }),
         share(),
     );
     const generateReport = commitDaylySummarySource.pipe(_branchesReport(params));

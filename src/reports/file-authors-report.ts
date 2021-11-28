@@ -68,7 +68,13 @@ export function fileAuthorsReportCore(
     csvFilePath?: string,
 ) {
     const fileAuthorSource = fileAuthor.pipe(share());
-    const generateReport = fileAuthorSource.pipe(toArray(), _fileAuthorsReport(params));
+    const generateReport = fileAuthorSource.pipe(
+        toArray(),
+        tap((fileAuthors) => {
+            console.log(`Processing ${fileAuthors.length} records to generate FileAuthorsReport`);
+        }),
+        _fileAuthorsReport(params),
+    );
     const concurrentStreams: [Observable<FileAuthorsReport>, Observable<string>?] = [
         generateReport as Observable<FileAuthorsReport>,
     ];

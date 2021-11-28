@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { concatMap, tap } from 'rxjs';
 import { COMMIT_RECORD_COUNTER } from '../../git-read-enrich/commits';
 import { AuthorChurnReport, AUTHOR_CHURN_REPORT_NAME } from '../../reports/author-churn-report';
-import { BranchesReport } from '../../reports/branches-report';
 import { FileChurnReport, FILE_CHURN_REPORT_NAME } from '../../reports/file-churn-report';
 import { allReports, runReports } from './run-reports-on-repo-core';
 
@@ -120,12 +119,12 @@ describe(`runReports`, () => {
             });
     }).timeout(600000);
     it.skip(`runs some reports on any project project`, (done) => {
-        const reports = [BranchesReport.name];
+        const reports = [FileChurnReport.name];
 
         const repoFolderPath = process.cwd();
 
-        const filter = undefined;
-        const after = undefined;
+        const filter = ['*.ts'];
+        const after = '2021-01-01';
         const before = undefined;
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;

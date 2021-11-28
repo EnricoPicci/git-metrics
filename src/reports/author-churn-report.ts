@@ -72,7 +72,13 @@ export function authorChurnReportCore(
     csvFilePath?: string,
 ) {
     const authorChurnsSource = authorChurns.pipe(share());
-    const generateReport = authorChurnsSource.pipe(toArray(), _authorChurnReport(params));
+    const generateReport = authorChurnsSource.pipe(
+        toArray(),
+        tap((authorChurns) => {
+            console.log(`Processing ${authorChurns.length} records to generate AuthorChurnReport`);
+        }),
+        _authorChurnReport(params),
+    );
     const concurrentStreams: [Observable<AuthorChurnReport>, Observable<string>?] = [
         generateReport as Observable<AuthorChurnReport>,
     ];

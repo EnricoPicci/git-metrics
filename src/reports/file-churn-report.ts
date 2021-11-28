@@ -84,10 +84,10 @@ export function fileChurnReportCore(
 ): Observable<FileChurnReport> {
     const fileChurnSource = fileChurns.pipe(
         toArray(),
-        share(),
         tap((fileChurns) => {
             console.log(`Processing ${fileChurns.length} records to generate FileChurnReport`);
         }),
+        share(),
     );
     const generateReport = fileChurnSource.pipe(_fileChurnReport(params));
     const concurrentStreams: [Observable<FileChurnReport>, Observable<FileChurn[]>?] = [
