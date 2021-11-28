@@ -52,7 +52,6 @@ describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches using a this repo as a real repo`, (done) => {
         // input from the user
         const repoFolderPath = `./`;
-        // const repoFolderPath = `~/enrico-code/articles/2021-09-analize-git-data/2021-09-29-sample-repos/io-app`;
         const outDir = `${process.cwd()}/temp`;
         const csvFile = path_1.default.join(outDir, 'thisProjectBranchesReport-csv.csv');
         const weeklyCsvFile = path_1.default.join(outDir, 'thisProjectWeeklyBranchesReport-csv.csv');

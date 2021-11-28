@@ -18,18 +18,6 @@ describe(`loadMongRunReports`, () => {
         const buffer = undefined;
         const clocDefsPath = undefined;
         const logProgress = false;
-        // const connectionString = 'mongodb://localhost:27017';
-        // const repoFolderPath = '~/temp/immuni-app-android';
-        // const filter = undefined;
-        // const after = '2021-01-01';
-        // const outDir = `${process.cwd()}/temp`;
-        // const outFile = undefined;
-        // const outClocFile = undefined;
-        // const dbName = 'immuni-app-android';
-        // const collName = undefined;
-        // const buffer = undefined;
-        // const clocDefsPath = undefined;
-        // const logProgress = false;
         (0, load_mongo_run_reports_core_1.loadMongRunReports)(connectionString, repoFolderPath, filter, after, outDir, outFile, outClocFile, dbName, collName, buffer, clocDefsPath, logProgress)
             .pipe((0, rxjs_1.tap)((reports) => {
             (0, chai_1.expect)(reports).not.undefined;
