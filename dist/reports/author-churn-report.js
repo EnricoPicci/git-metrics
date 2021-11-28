@@ -45,7 +45,9 @@ exports.authorChurnReport = authorChurnReport;
 // Starts from a stream of AuthorChurn objects, like when we create the report from a Mongo query
 function authorChurnReportCore(authorChurns, params, csvFilePath) {
     const authorChurnsSource = authorChurns.pipe((0, operators_1.share)());
-    const generateReport = authorChurnsSource.pipe((0, operators_1.toArray)(), _authorChurnReport(params));
+    const generateReport = authorChurnsSource.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((authorChurns) => {
+        console.log(`Processing ${authorChurns.length} records to generate AuthorChurnReport`);
+    }), _authorChurnReport(params));
     const concurrentStreams = [
         generateReport,
     ];

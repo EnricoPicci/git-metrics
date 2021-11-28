@@ -49,6 +49,8 @@ function moduleChurnReportCore(moduleChurns, params, csvFilePath) {
         const churnsSorted = churns.sort((a, b) => (0, split_path_1.splitPath)(b.path).length - (0, split_path_1.splitPath)(a.path).length);
         const maxDepth = (0, split_path_1.splitPath)(churnsSorted[0].path).length;
         return { churns, maxDepth };
+    }), (0, operators_1.tap)((moduleChurns) => {
+        console.log(`Processing ${moduleChurns.churns.length} records to generate ModuleChurnReport`);
     }), (0, operators_1.share)());
     const generateReport = moduleChurnSource.pipe(_moduleChurnReport(params));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

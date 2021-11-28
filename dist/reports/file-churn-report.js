@@ -50,9 +50,9 @@ exports.fileChurnReport = fileChurnReport;
 // API to be used if we want to generate the core of the report info and not also the general project info
 // Starts from a stream of FileChurn objects, like when we create the report from a Mongo query
 function fileChurnReportCore(fileChurns, params, csvFilePath) {
-    const fileChurnSource = fileChurns.pipe((0, operators_1.toArray)(), (0, operators_1.share)(), (0, operators_1.tap)((fileChurns) => {
+    const fileChurnSource = fileChurns.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((fileChurns) => {
         console.log(`Processing ${fileChurns.length} records to generate FileChurnReport`);
-    }));
+    }), (0, operators_1.share)());
     const generateReport = fileChurnSource.pipe(_fileChurnReport(params));
     const concurrentStreams = [
         generateReport,

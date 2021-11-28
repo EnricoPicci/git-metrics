@@ -44,7 +44,9 @@ exports.fileAuthorsReport = fileAuthorsReport;
 // Starts from a stream of FileAuthors objects, like when we create the report from a Mongo query
 function fileAuthorsReportCore(fileAuthor, params, csvFilePath) {
     const fileAuthorSource = fileAuthor.pipe((0, operators_1.share)());
-    const generateReport = fileAuthorSource.pipe((0, operators_1.toArray)(), _fileAuthorsReport(params));
+    const generateReport = fileAuthorSource.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((fileAuthors) => {
+        console.log(`Processing ${fileAuthors.length} records to generate FileAuthorsReport`);
+    }), _fileAuthorsReport(params));
     const concurrentStreams = [
         generateReport,
     ];

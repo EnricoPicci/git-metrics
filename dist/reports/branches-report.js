@@ -50,6 +50,8 @@ function branchesReportCore(commitDaylySummary, params, csvFilePath, weeklyCsvFi
         // sort dayly summaries from the eldest, which has the smallest time, to the newer =, which has the biggest time
         const daylyCommitSummariesSorted = Object.values(daylySummaryDictionary).sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
         return daylyCommitSummariesSorted;
+    }), (0, operators_1.tap)((commitDaylySummaries) => {
+        console.log(`Processing ${commitDaylySummaries.length} records to generate BranchesReport`);
     }), (0, operators_1.share)());
     const generateReport = commitDaylySummarySource.pipe(_branchesReport(params));
     const concurrentStreams = [

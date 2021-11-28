@@ -4,7 +4,6 @@ const chai_1 = require("chai");
 const rxjs_1 = require("rxjs");
 const commits_1 = require("../../git-read-enrich/commits");
 const author_churn_report_1 = require("../../reports/author-churn-report");
-const branches_report_1 = require("../../reports/branches-report");
 const file_churn_report_1 = require("../../reports/file-churn-report");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
 describe(`runReports`, () => {
@@ -69,10 +68,10 @@ describe(`runReports`, () => {
         });
     }).timeout(600000);
     it.skip(`runs some reports on any project project`, (done) => {
-        const reports = [branches_report_1.BranchesReport.name];
+        const reports = [file_churn_report_1.FileChurnReport.name];
         const repoFolderPath = process.cwd();
-        const filter = undefined;
-        const after = undefined;
+        const filter = ['*.ts'];
+        const after = '2021-01-01';
         const before = undefined;
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
