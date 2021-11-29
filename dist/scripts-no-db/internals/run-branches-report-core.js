@@ -38,15 +38,17 @@ function runBranchesReportFromStreams(repoFolderPath, after, outDir, outFilePref
     };
     const repoName = path_1.default.parse(repoFolderPath).name;
     const _outFileBranches = outFilePrefix ? `${outFilePrefix}-branches.csv` : `${repoName}-branches.csv`;
-    const csvBranches = path_1.default.join(outDir, _outFileBranches);
+    const csvFile = path_1.default.join(outDir, _outFileBranches);
+    const _outFileWeeklyBranches = outFilePrefix ? `${outFilePrefix}-branches.csv` : `${repoName}-branches.csv`;
+    const weeklyCsvFile = path_1.default.join(outDir, _outFileWeeklyBranches);
     // aggregation
     const _daylySummaryDictionary = _commitStream.pipe((0, commit_branch_tips_aggregate_1.commitDaylySummary)());
     return (0, rxjs_1.forkJoin)([
         (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryStream),
-        (0, branches_report_1.branchesReportCore)(_daylySummaryDictionary, params, csvBranches),
+        (0, branches_report_1.branchesReportCore)(_daylySummaryDictionary, params, csvFile, weeklyCsvFile),
     ]).pipe((0, operators_1.map)(([_projectInfo, _branchesReport]) => {
-        (0, add_project_info_1.addProjectInfo)(_branchesReport, _projectInfo, csvBranches);
-        return [(0, branches_report_1.addConsiderationsForBranchesReport)(_branchesReport)];
+        (0, add_project_info_1.addProjectInfo)(_branchesReport, _projectInfo, csvFile);
+        return (0, branches_report_1.addConsiderationsForBranchesReport)(_branchesReport);
     }));
 }
 exports.runBranchesReportFromStreams = runBranchesReportFromStreams;

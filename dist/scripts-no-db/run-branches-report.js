@@ -20,12 +20,10 @@ function launchBranchesReport() {
     const _options = program.opts();
     const _repoFolderPath = _options.repoFolderPath ? _options.repoFolderPath : process.cwd();
     (0, run_branches_report_core_1.runBranchesReport)(_repoFolderPath, _options.after, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _options.noRenames).subscribe({
-        next: (reports) => {
-            reports.forEach((report) => {
-                console.log('\n', '\n');
-                report.considerations.forEach((l) => {
-                    console.log(l);
-                });
+        next: (report) => {
+            console.log('\n', '\n');
+            report.considerations.forEach((l) => {
+                console.log(l);
             });
         },
         error: (err) => {

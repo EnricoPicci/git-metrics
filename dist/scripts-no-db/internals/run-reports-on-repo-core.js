@@ -19,20 +19,18 @@ const module_churn_report_1 = require("../../reports/module-churn-report");
 const cloc_1 = require("../../git-read-enrich/cloc");
 const project_info_aggregate_1 = require("../../aggregate-in-memory/project-info-aggregate");
 const report_generators_1 = require("./report-generators");
-const branches_report_1 = require("../../reports/branches-report");
 exports.allReports = [
     file_churn_report_1.FileChurnReport.name,
     module_churn_report_1.ModuleChurnReport.name,
     author_churn_report_1.AuthorChurnReport.name,
     file_authors_report_1.FileAuthorsReport.name,
     file_coupling_report_1.FilesCouplingReport.name,
-    branches_report_1.BranchesReport.name,
 ];
 function runReports(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, parallelReadOfCommits, noRenames, depthInFilesCoupling) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
     // read the data from git and cloc tool
-    const commitOptions = { repoFolderPath, outDir, filter, noRenames, reverse: true };
+    const commitOptions = { repoFolderPath, outDir, filter, noRenames };
     const readClocOptions = { repoFolderPath, outDir };
     const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
     // generation of the source streams
@@ -102,9 +100,6 @@ function runReportsFromStreams(reports, repoFolderPath, _filter, after, before, 
                 break;
             case file_coupling_report_1.FilesCouplingReport.name:
                 generators.push((0, report_generators_1.fileCouplingReportGenerator)(_commitStream, params, depthInFilesCoupling, repoName));
-                break;
-            case branches_report_1.BranchesReport.name:
-                generators.push((0, report_generators_1.branchesReportGenerator)(_commitStream, params, repoName));
                 break;
             default:
                 throw new Error(`Report ${r} not known`);

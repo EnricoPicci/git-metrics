@@ -12,8 +12,8 @@ function gitReadEnrich(repoFolderPath, filter, outDir, outFile, outClocFile, clo
     const commitOptions = { filter, outDir, repoFolderPath, outFile };
     const readClocOptions = { outDir, repoFolderPath, outClocFile, clocDefsPath };
     const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
-    const commits = (0, commits_1.commitsStream)(commitLogPath);
-    const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
+    const commits = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
+    const fileCommits = (0, files_1.filesStreamFromEnrichedCommitsStream)(commits);
     return [commits, fileCommits];
 }
 exports.gitReadEnrich = gitReadEnrich;

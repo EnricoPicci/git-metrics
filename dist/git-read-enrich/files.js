@@ -33,9 +33,15 @@ function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream) {
     }), 
     // consider only the commits which have files
     (0, operators_1.filter)((enrichedFiles) => enrichedFiles.length > 0), 
-    // transform the array of file documents into a stream
+    // toArray makes sure that upstream is completed before we proceed, which is important since we need to have the fileCreationDateDictionary
+    // completely filled if we want to set the created date right on each file
+    (0, operators_1.toArray)(), 
+    // use mergeMap to flatten the array of arrays of FileGitCommitEnriched objects into an array of FileGitCommitEnriched objects
+    (0, operators_1.mergeMap)((enrichedFilesBuffers) => enrichedFilesBuffers), 
     // use concatMap since I need to be sure that the upstream completes so that I have the fileCreationDateDictionary filled correctly
-    (0, operators_1.toArray)(), (0, operators_1.mergeMap)((enrichedFilesBuffers) => enrichedFilesBuffers), (0, operators_1.concatMap)((enrichedFiles) => (0, rxjs_1.from)(enrichedFiles).pipe((0, operators_1.map)((file) => {
+    (0, operators_1.concatMap)((enrichedFiles) => 
+    // transform the array of file documents into a stream
+    (0, rxjs_1.from)(enrichedFiles).pipe((0, operators_1.map)((file) => {
         const created = fileCreationDateDictionary[file.path];
         return Object.assign(Object.assign({}, file), { created });
     }))));
