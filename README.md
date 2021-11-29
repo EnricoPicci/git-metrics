@@ -42,6 +42,18 @@ You can also install the 'git-metrics' package from npm, move to the directory c
 
 `node path-to-git-metrics/dist/lib/run-reports-on-repo.js`
 
+### RUN BRANCHES REPORT - IN MEMORY PROCESSING
+
+The BranchesReport is different from the other reports in the sense that, in order for it work correctly, it has to consider ALL commits since the birth of the repo. This means that neither `filter` nor `after` options can be used.
+
+Moreover it needs to process the commits from the eldest to the newest, and so the `reverse` option of `git log` has to be used.
+
+For these reasons it is not launched by the default `git-metrics` command but has to be launched by the following command
+
+`npx -p git-metrics run-branches-report`
+
+This report saves its results in a file ending with `*-branches.csv`.
+
 ## RUN TOOLS TO MERGE AND ANALYZE ALL THE REPOS CONTAINED IN A FOLDER AS A SINGLE PROJECT
 
 There are cases when it could be interesting to analyze all the repos contained in a single folder as they were a single project, for instance when a single team uses a multi repo approach to develop a solution.

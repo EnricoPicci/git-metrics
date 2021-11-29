@@ -5,7 +5,6 @@ import { enrichedCommitsStream } from './commits';
 
 // returns a stream of file committed data in the form of an Observable which notifies FileGitCommitEnriched reading data from files containing
 // the git log and cloc data
-
 export function filesStream(commitLogPath: string, clocLogPath: string) {
     return filesStreamFromEnrichedCommitsStream(enrichedCommitsStream(commitLogPath, clocLogPath));
 }
@@ -33,11 +32,14 @@ export function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream: Obse
         }),
         // consider only the commits which have files
         filter((enrichedFiles) => enrichedFiles.length > 0),
-        // transform the array of file documents into a stream
-        // use concatMap since I need to be sure that the upstream completes so that I have the fileCreationDateDictionary filled correctly
+        // toArray makes sure that upstream is completed before we proceed, which is important since we need to have the fileCreationDateDictionary
+        // completely filled if we want to set the created date right on each file
         toArray(),
+        // use mergeMap to flatten the array of arrays of FileGitCommitEnriched objects into an array of FileGitCommitEnriched objects
         mergeMap((enrichedFilesBuffers) => enrichedFilesBuffers),
+        // use concatMap since I need to be sure that the upstream completes so that I have the fileCreationDateDictionary filled correctly
         concatMap((enrichedFiles) =>
+            // transform the array of file documents into a stream
             from(enrichedFiles).pipe(
                 map((file) => {
                     const created = fileCreationDateDictionary[file.path];

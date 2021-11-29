@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { FileGitCommitEnriched, GitCommitEnriched } from '../git-enriched-types/git-types';
-import { commitsStream, enrichedCommitsStream } from './commits';
-import { filesStream } from './files';
+import { enrichedCommitsStream } from './commits';
+import { filesStreamFromEnrichedCommitsStream } from './files';
 import { ConfigReadCloc, ConfigReadCommits } from './config/config';
 import { readAll } from './read-all';
 
@@ -23,8 +23,8 @@ export function gitReadEnrich(
 
     const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
 
-    const commits = commitsStream(commitLogPath);
-    const fileCommits = filesStream(commitLogPath, clocLogPath);
+    const commits = enrichedCommitsStream(commitLogPath, clocLogPath);
+    const fileCommits = filesStreamFromEnrichedCommitsStream(commits);
 
     return [commits, fileCommits] as [Observable<GitCommitEnriched>, Observable<FileGitCommitEnriched>];
 }

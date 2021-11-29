@@ -24,9 +24,7 @@ import {
     authorChurnReportGenerator,
     fileAuthorsReportGenerator,
     fileCouplingReportGenerator,
-    branchesReportGenerator,
 } from './report-generators';
-import { BranchesReport } from '../../reports/branches-report';
 
 export const allReports = [
     FileChurnReport.name,
@@ -34,7 +32,6 @@ export const allReports = [
     AuthorChurnReport.name,
     FileAuthorsReport.name,
     FilesCouplingReport.name,
-    BranchesReport.name,
 ];
 export function runReports(
     reports: string[],
@@ -53,7 +50,7 @@ export function runReports(
     createDirIfNotExisting(outDir);
 
     // read the data from git and cloc tool
-    const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames, reverse: true };
+    const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames };
     const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
     const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
 
@@ -175,9 +172,6 @@ export function runReportsFromStreams(
                 break;
             case FilesCouplingReport.name:
                 generators.push(fileCouplingReportGenerator(_commitStream, params, depthInFilesCoupling, repoName));
-                break;
-            case BranchesReport.name:
-                generators.push(branchesReportGenerator(_commitStream, params, repoName));
                 break;
             default:
                 throw new Error(`Report ${r} not known`);
