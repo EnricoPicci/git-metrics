@@ -1,5 +1,5 @@
-import { from, Observable } from 'rxjs';
-import { map, filter, concatMap, toArray, mergeMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, filter, mergeMap } from 'rxjs/operators';
 import { GitCommitEnriched, FileGitCommitEnriched } from '../git-enriched-types/git-types';
 import { enrichedCommitsStream } from './commits';
 
@@ -23,29 +23,22 @@ export function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream: Obse
                 let created = fileCreationDateDictionary[file.path];
                 if (!created) {
                     created = commit.committerDate;
+                    // first time the file is encountered is considered the date it has been created
+                    fileCreationDateDictionary[file.path] = created;
                 }
-                created = created > commit.committerDate ? commit.committerDate : created;
+                if (created > commit.committerDate) {
+                    console.warn(
+                        `!!!! The commit ${commit.hashShort} with file ${file.path} is older than a previous commit containing the same file even if git log is read in reverse order.`,
+                    );
+                }
                 fileCreationDateDictionary[file.path] = created;
-                return { ...file, ...basicCommit } as FileGitCommitEnriched;
+                return { ...file, ...basicCommit, created } as FileGitCommitEnriched;
             });
             return enrichedFiles;
         }),
         // consider only the commits which have files
         filter((enrichedFiles) => enrichedFiles.length > 0),
-        // toArray makes sure that upstream is completed before we proceed, which is important since we need to have the fileCreationDateDictionary
-        // completely filled if we want to set the created date right on each file
-        toArray(),
         // use mergeMap to flatten the array of arrays of FileGitCommitEnriched objects into an array of FileGitCommitEnriched objects
         mergeMap((enrichedFilesBuffers) => enrichedFilesBuffers),
-        // use concatMap since I need to be sure that the upstream completes so that I have the fileCreationDateDictionary filled correctly
-        concatMap((enrichedFiles) =>
-            // transform the array of file documents into a stream
-            from(enrichedFiles).pipe(
-                map((file) => {
-                    const created = fileCreationDateDictionary[file.path];
-                    return { ...file, created };
-                }),
-            ),
-        ),
     );
 }

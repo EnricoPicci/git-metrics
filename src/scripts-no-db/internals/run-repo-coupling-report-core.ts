@@ -19,7 +19,7 @@ export function runRepoCouplingReport(
     createDirIfNotExisting(outDir);
 
     const fileStreams = repoFolderPaths.map((repoFolderPath) => {
-        const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile, after };
+        const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile, after, reverse: true };
         const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath, outClocFile, clocDefsPath };
         const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
         return filesStream(commitLogPath, clocLogPath);

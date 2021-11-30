@@ -35,7 +35,13 @@ export function runAllReportsOnMergedRepos(
             const allFileStreams: Observable<FileGitCommitEnriched>[] = [];
             _repoFolderPaths.forEach((repoFolderPath) => {
                 // read the data from git and cloc tool
-                const commitOptions: ConfigReadCommits = { repoFolderPath, outDir: _outDir, filter, noRenames };
+                const commitOptions: ConfigReadCommits = {
+                    repoFolderPath,
+                    outDir: _outDir,
+                    filter,
+                    noRenames,
+                    reverse: true,
+                };
                 const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir: _outDir };
                 const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
 

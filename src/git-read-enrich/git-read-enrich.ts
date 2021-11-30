@@ -17,7 +17,7 @@ export function gitReadEnrich(
     outClocFile?: string,
     clocDefsPath?: string,
 ) {
-    const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile };
+    const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile, reverse: true };
 
     const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath, outClocFile, clocDefsPath };
 

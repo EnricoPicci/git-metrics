@@ -27,7 +27,7 @@ export function runAllReportsOnMultiRepos(
 
     const allReports = repoFolderPaths.map((repoFolderPath) => {
         // read the data from git and cloc tool
-        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames };
+        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames, reverse: true };
         const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
 

@@ -470,13 +470,14 @@ describe(`aggregateFileTuples`, () => {
     is committed in a timewindow we find the tuple [hallo-X.java, good-by-Y.java]
 
         REPO_1                                                              REPO_2
+§§§1c8a199§§§2020-09-22§§§Picci-2§§§Picci§§§2020-09-22§§§first commit
+1	1	hallo-X.java                                                        1	1	hallo-Y.java
+1	1	good-by-X.java                                                      1	1	good-by-Y.java
+
 §§§e4f5978§§§2021-09-01§§§Picci-3§§§Picci§§§2021-09-22§§§second commit
 3	2	hallo-X.java                                                        3	2	hallo-Y.java
 2	1	good-by-X.java
 
-§§§1c8a199§§§2020-09-22§§§Picci-2§§§Picci§§§2020-09-22§§§first commit
-1	1	hallo-X.java                                                        1	1	hallo-Y.java
-1	1	good-by-X.java                                                      1	1	good-by-Y.java
 
     `, (done) => {
         const logName_1 = 'a-git-repo-commits-X';

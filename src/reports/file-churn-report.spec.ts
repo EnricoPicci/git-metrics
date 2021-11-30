@@ -279,7 +279,7 @@ describe(`projectAndFileChurnReport`, () => {
         const after = undefined;
 
         // read
-        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter };
+        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, reverse: true };
         const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
         // generation of the source streams
