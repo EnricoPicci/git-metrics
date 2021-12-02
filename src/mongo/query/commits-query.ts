@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { Observable } from 'rxjs';
 import { concatMap, finalize, tap } from 'rxjs/operators';
 import { connectObs, findObs } from 'observable-mongo';
-import { GitCommitEnriched } from '../../git-enriched-types/git-types';
+import { GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 // ============================ READ THE COMMITS ================================
 // read the commits collection
 export function commits(connectionString: string, dbName: string, commitsCollection: string, after?: Date) {

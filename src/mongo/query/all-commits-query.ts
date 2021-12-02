@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { Observable } from 'rxjs';
 import { concatMap, finalize, tap } from 'rxjs/operators';
 import { aggregateObs, connectObs } from 'observable-mongo';
-import { CommitsInfo } from '../../aggregate-types/all-commits';
+import { CommitsInfo } from '../../1-C-aggregate-types/all-commits';
 
 // ============================ CALCULATE THE TOTAL NUMBER OF COMMITS, THE FIRST AND THE LAST COMMIT ================================
 // Read the entire commits collection from mongo and calculates total number of commits as well as the first and the last commit

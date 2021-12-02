@@ -4,13 +4,13 @@ import {
     FilesCouplingReport,
     FilesCouplingReportParams as FilesCouplingReportParams,
     fileCouplingReportCore,
-} from '../../reports/file-coupling-report';
+} from '../../1-D-reports/file-coupling-report';
 import { commits } from '../query/commits-query';
 import { mongoProjectInfo } from './mongo-add-prj-info';
-import { addProjectInfo } from '../../reports/add-project-info';
-import { ProjectInfo } from '../../aggregate-types/project-info';
+import { addProjectInfo } from '../../1-D-reports/add-project-info';
+import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
 import { cleanParamsForReport, MongoReportParams } from './mongo-report';
-import { fileCoupling } from '../../aggregate-in-memory/file-coupling-aggregate';
+import { fileCoupling } from '../../1-C-aggregate-in-memory/file-coupling-aggregate';
 
 export type MongoFilesCouplingReportParams = {
     // for this type of report the commit collection is mandatory

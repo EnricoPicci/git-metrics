@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { readLinesObs } from 'observable-fs';
 import path from 'path';
 import { concatMap, tap } from 'rxjs';
-import { fromCsv } from '../../tools/csv/from-csv';
+import { fromCsv } from '../../0-tools/csv/from-csv';
 import { loadAllCommits } from '../load/load-commits';
 import { addAllFilesWithCreationDate } from '../load/load-files';
 import { mongoFileChurnReportWithProjectInfo, _mongoFileChurnReport } from './mongo-file-churn-report';

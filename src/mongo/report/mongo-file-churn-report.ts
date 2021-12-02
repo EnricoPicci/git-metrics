@@ -4,11 +4,11 @@ import {
     FileChurnReport,
     FileChurnReportParams,
     fileChurnReportCore,
-} from '../../reports/file-churn-report';
+} from '../../1-D-reports/file-churn-report';
 import { fileChurn } from '../query/file-churn-query';
 import { mongoProjectInfo } from './mongo-add-prj-info';
-import { addProjectInfo } from '../../reports/add-project-info';
-import { ProjectInfo } from '../../aggregate-types/project-info';
+import { addProjectInfo } from '../../1-D-reports/add-project-info';
+import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
 import { cleanParamsForReport, MongoReportParams } from './mongo-report';
 
 export type MongoFileChurnReportParams = {

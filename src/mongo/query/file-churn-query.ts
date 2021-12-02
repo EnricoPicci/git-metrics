@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { Observable } from 'rxjs';
 import { concatMap, finalize, tap } from 'rxjs/operators';
 import { aggregateObs, connectObs } from 'observable-mongo';
-import { FileChurn } from '../../aggregate-types/file-churn';
+import { FileChurn } from '../../1-C-aggregate-types/file-churn';
 
 // ============================ CALCULATE THE FILE CHURN READING FILES INFO FROM A MONGO COLLECTION ================================
 // read the files collection from mongo and calculates, for each file, the total number of lines added and deleted

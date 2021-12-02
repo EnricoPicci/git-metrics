@@ -1,4 +1,4 @@
-import { Report, ReportParams } from '../../reports/report';
+import { Report, ReportParams } from '../../1-D-reports/report';
 
 export type MongoReportParams = {
     connectionString: string;

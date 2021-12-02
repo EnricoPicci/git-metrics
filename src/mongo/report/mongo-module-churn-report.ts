@@ -4,13 +4,13 @@ import {
     ModuleChurnReport,
     moduleChurnReportCore,
     ModuleChurnReportParams,
-} from '../../reports/module-churn-report';
+} from '../../1-D-reports/module-churn-report';
 import { fileChurn } from '../query/file-churn-query';
 import { mongoProjectInfo } from './mongo-add-prj-info';
-import { addProjectInfo } from '../../reports/add-project-info';
-import { ProjectInfo } from '../../aggregate-types/project-info';
+import { addProjectInfo } from '../../1-D-reports/add-project-info';
+import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
 import { cleanParamsForReport, MongoReportParams } from './mongo-report';
-import { moduleChurns } from '../../aggregate-in-memory/module-churn-aggregate';
+import { moduleChurns } from '../../1-C-aggregate-in-memory/module-churn-aggregate';
 
 export type MongoModuleChurnReportParams = {
     // for this type of report the files collection is mandatory

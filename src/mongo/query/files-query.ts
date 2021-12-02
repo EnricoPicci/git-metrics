@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { Observable } from 'rxjs';
 import { concatMap, finalize, tap } from 'rxjs/operators';
 import { connectObs, findObs } from 'observable-mongo';
-import { FileGitCommitEnriched } from '../../git-enriched-types/git-types';
+import { FileGitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 
 // ============================ READ THE FILES ================================
 // read the files collection

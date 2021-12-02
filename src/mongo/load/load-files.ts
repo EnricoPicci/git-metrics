@@ -13,7 +13,7 @@ import {
     updateManyObs,
 } from 'observable-mongo';
 import { MONGO_CONFIG } from '../config/mongo-config';
-import { GitCommitEnriched } from '../../git-enriched-types/git-types';
+import { GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 
 // ============================ LOAD ALL FILES ================================
 // Loads all the files for each commit as documents into a mongo collection.

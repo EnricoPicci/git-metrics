@@ -1,8 +1,8 @@
 import { map, tap, concatMap } from 'rxjs';
 import { commitsInfo } from '../query/all-commits-query';
 import { MongoReportParams } from './mongo-report';
-import { ProjectInfo } from '../../aggregate-types/project-info';
-import { clocSummaryInfo } from '../../read/cloc';
+import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
+import { clocSummaryInfo } from '../../1-A-read/cloc';
 
 function mongoProjectCommitsInfo(params: MongoReportParams) {
     return commitsInfo(params.connectionString, params.dbName, params.commitsCollection);

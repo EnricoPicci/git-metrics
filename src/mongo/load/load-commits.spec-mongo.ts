@@ -4,7 +4,7 @@ import { MongoClient } from 'mongodb';
 import { connectObs, findObs } from 'observable-mongo';
 import path = require('path');
 import { toArray, concatMap, tap, finalize } from 'rxjs/operators';
-import { newGitCommit, gitCommitStream } from '../../git-enriched-streams/commits';
+import { newGitCommit, gitCommitStream } from '../../1-B-git-enriched-streams/commits';
 import { loadAllCommits } from './load-commits';
 
 describe(`newCommitDoc`, () => {

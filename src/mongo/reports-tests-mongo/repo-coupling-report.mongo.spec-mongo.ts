@@ -6,7 +6,7 @@ import { loadAllCommitsFiles } from '../load/load-commits-files';
 import { loadMultiAllCommitsFiles } from '../load/load-multi-commits-files';
 import { files } from '../query/files-query';
 
-import { TUPLE_KEY_SEPARATOR } from '../../reports/dictionary-utils/dictionary-utils';
+import { TUPLE_KEY_SEPARATOR } from '../../1-D-reports/dictionary-utils/dictionary-utils';
 import {
     splitCommitsInTimeWindows,
     calculateFileTuplesPerTimeWindow,
@@ -15,7 +15,7 @@ import {
     selectTimeWindowsPresentInAllRepos,
     flatFilesCsv,
     FilesInfo,
-} from '../../reports/repo-coupling-report';
+} from '../../1-D-reports/repo-coupling-report';
 
 describe(`timeWindowedFileCommitsDict`, () => {
     it(`creates the dictionary of timewindows with the info related to each file which has a commit in that timewindow.

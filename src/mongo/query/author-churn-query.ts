@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { Observable } from 'rxjs';
 import { tap, concatMap, finalize, toArray, map } from 'rxjs/operators';
 import { connectObs, aggregateObs } from 'observable-mongo';
-import { AuthorChurn } from '../../aggregate-types/author-churn';
+import { AuthorChurn } from '../../1-C-aggregate-types/author-churn';
 
 // ============================ CALCULATE THE AUTHOR CHURN READING FILES INFO FROM A MONGO COLLECTION ================================
 // read the files collection from mongo and calculates, for each author, the total number of lines added and deleted,

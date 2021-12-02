@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { Observable } from 'rxjs';
 import { concatMap, finalize, tap } from 'rxjs/operators';
 import { aggregateObs, connectObs } from 'observable-mongo';
-import { FileAuthors } from '../../aggregate-types/file-authors';
+import { FileAuthors } from '../../1-C-aggregate-types/file-authors';
 
 // ============================ CALCULATE HOW MANY AUTHORS EACH FILE HAS ================================
 // read the files collection from mongo and calculates, for each file, the number of authors that have committed at least once that file
