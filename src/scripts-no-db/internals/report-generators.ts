@@ -92,7 +92,7 @@ export function fileAuthorsReportGenerator(
 ) {
     const outDir = params.outDir;
     const outFilePrefix = params.outFilePrefix;
-    const _outFilesAuthors = outFilePrefix ? `${outFilePrefix}-files-authors.csv` : `${repoName}-files-authors-.csv`;
+    const _outFilesAuthors = outFilePrefix ? `${outFilePrefix}-files-authors.csv` : `${repoName}-files-authors.csv`;
     const csvFilePath = path.join(outDir, _outFilesAuthors);
     // aggregation
     const _fileAuthors = fileAuthors(_filesStream, params.after);

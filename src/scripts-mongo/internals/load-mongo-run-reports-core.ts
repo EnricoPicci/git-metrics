@@ -78,7 +78,7 @@ export function loadMongRunReports(
             const csvModuleChurnPath = path.join(outDir, _outModuleChurn);
             const _outAuthorChurn = outFile ? outFile : `${paramsWithCollections.filesCollection}-authors-churn.csv`;
             const csvAuthorChurnPath = path.join(outDir, _outAuthorChurn);
-            const _outFilesAuthors = outFile ? outFile : `${paramsWithCollections.filesCollection}-files-authors-.csv`;
+            const _outFilesAuthors = outFile ? outFile : `${paramsWithCollections.filesCollection}-files-authors.csv`;
             const csvFilesAuthors = path.join(outDir, _outFilesAuthors);
             const _outFilesCoupling = outFile ? outFile : `${paramsWithCollections.filesCollection}-files-coupling.csv`;
             const csvFilesCoupling = path.join(outDir, _outFilesCoupling);

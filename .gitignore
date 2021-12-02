@@ -109,3 +109,4 @@ test-data/output/git-repo-with-code-cloc.csv
 test-data/output/git-repo-with-code-summary-cloc.csv
 test-data/output/io-backend-cloc.csv
 to-do.txt
+commands.txt
