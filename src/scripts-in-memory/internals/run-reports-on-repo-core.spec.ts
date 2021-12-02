@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { concatMap, tap } from 'rxjs';
-import { COMMIT_RECORD_COUNTER } from '../../git-read-enrich/commits';
+import { COMMIT_RECORD_COUNTER } from '../../git-enriched-streams/commits';
 import { AuthorChurnReport, AUTHOR_CHURN_REPORT_NAME } from '../../reports/author-churn-report';
 import { FileChurnReport, FILE_CHURN_REPORT_NAME } from '../../reports/file-churn-report';
 import { allReports, runReports } from './run-reports-on-repo-core';

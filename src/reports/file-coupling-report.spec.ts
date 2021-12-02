@@ -4,10 +4,10 @@ import path from 'path';
 import { tap } from 'rxjs/operators';
 import { fileCoupling } from '../aggregate-in-memory/file-coupling-aggregate';
 import { projectInfo } from '../aggregate-in-memory/project-info-aggregate';
-import { clocSummaryInfo, clocSummaryStream } from '../git-read-enrich/cloc';
-import { enrichedCommitsStream } from '../git-read-enrich/commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../git-read-enrich/config/config';
-import { readAll } from '../git-read-enrich/read-all';
+import { clocSummaryInfo, clocSummaryStream } from '../read/cloc';
+import { enrichedCommitsStream } from '../git-enriched-streams/commits';
+import { ConfigReadCloc, ConfigReadCommits } from '../read/config/config';
+import { readAll } from '../read/read-all';
 
 import {
     fileCouplingReportCore,

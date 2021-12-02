@@ -6,8 +6,8 @@
 import path from 'path';
 import { forkJoin } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
-import { ConfigReadCommits, ConfigReadCloc } from '../../git-read-enrich/config/config';
-import { readAll } from '../../git-read-enrich/read-all';
+import { ConfigReadCommits, ConfigReadCloc } from '../../read/config/config';
+import { readAll } from '../../read/read-all';
 import { loadAllCommitsFiles } from '../../mongo/load/load-commits-files';
 import { mongoFileChurnReport } from '../../mongo/report/mongo-file-churn-report';
 import { mongoProjectInfo } from '../../mongo/report/mongo-add-prj-info';
@@ -15,7 +15,7 @@ import { mongoAuthorChurnReport } from '../../mongo/report/mongo-author-churn-re
 import { mongoModuleChurnReport } from '../../mongo/report/mongo-module-churn-report';
 import { mongoFileAuthorReport } from '../../mongo/report/mongo-file-author-report';
 import { mongoFilesCouplingReport } from '../../mongo/report/mongo-files-coupling-report';
-import { createDirIfNotExisting } from '../../git-read-enrich/create-outdir';
+import { createDirIfNotExisting } from '../../read/create-outdir';
 
 export function loadMongRunReports(
     connectionString: string,

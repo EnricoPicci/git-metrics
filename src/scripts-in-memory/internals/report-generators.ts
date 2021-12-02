@@ -7,6 +7,7 @@ import { fileChurn } from '../../aggregate-in-memory/file-churn-aggregate';
 import { fileCoupling } from '../../aggregate-in-memory/file-coupling-aggregate';
 import { moduleChurns } from '../../aggregate-in-memory/module-churn-aggregate';
 import { ProjectInfo } from '../../aggregate-types/project-info';
+import { commitWithBranchTips } from '../../git-enriched-streams/commits-and-branch-tips';
 import { FileGitCommitEnriched, GitCommitEnriched } from '../../git-enriched-types/git-types';
 import { addProjectInfo } from '../../reports/add-project-info';
 import { authorChurnReportCore, addConsiderationsForAuthorChurnReport } from '../../reports/author-churn-report';
@@ -142,7 +143,8 @@ export function branchesReportGenerator(
         : `${repoName}-branches-weekly.csv`;
     const weeklyCsvFilePath = path.join(outDir, _outFileWeeklyBranches);
     // aggregation
-    const _daylySummaryDictionary = _commitStream.pipe(commitDaylySummary());
+    const _commitsWithBranchTips = _commitStream.pipe(commitWithBranchTips());
+    const _daylySummaryDictionary = commitDaylySummary(_commitsWithBranchTips);
     // report generations
     return (_projectInfo: ProjectInfo) =>
         branchesReportCore(_daylySummaryDictionary, params, csvFilePath, weeklyCsvFilePath).pipe(

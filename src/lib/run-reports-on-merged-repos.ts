@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { launchAllReportsOnMergedRepos } from '../scripts-no-db/run-reports-on-merged-repos';
+import { launchAllReportsOnMergedRepos } from '../scripts-in-memory/run-reports-on-merged-repos';
 
 launchAllReportsOnMergedRepos();

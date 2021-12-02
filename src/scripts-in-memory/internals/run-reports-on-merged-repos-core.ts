@@ -1,11 +1,11 @@
 import { concatMap, map, merge, Observable } from 'rxjs';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../git-read-enrich/config/config';
-import { readAll } from '../../git-read-enrich/read-all';
-import { createDirIfNotExisting } from '../../git-read-enrich/create-outdir';
+import { ConfigReadCommits, ConfigReadCloc } from '../../read/config/config';
+import { readAll } from '../../read/read-all';
+import { createDirIfNotExisting } from '../../read/create-outdir';
 
 import { gitRepos } from './run-reports-on-multi-repos-core';
-import { clocSummaryStream, createSummaryClocLog } from '../../git-read-enrich/cloc';
+import { clocSummaryStream, createSummaryClocLog } from '../../read/cloc';
 import { FileGitCommitEnriched, GitCommitEnriched } from '../../git-enriched-types/git-types';
 import path from 'path';
 import { runReportsFromStreams, _streams } from './run-reports-on-repo-core';

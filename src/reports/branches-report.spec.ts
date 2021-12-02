@@ -1,13 +1,14 @@
 import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
-import { commitsStream, enrichedCommitsStream } from '../git-read-enrich/commits';
-import { clocSummaryInfo, clocSummaryStream } from '../git-read-enrich/cloc';
+import { commitsStream, enrichedCommitsStream } from '../git-enriched-streams/commits';
+import { clocSummaryInfo, clocSummaryStream } from '../read/cloc';
 import { projectInfo } from '../aggregate-in-memory/project-info-aggregate';
 import { BranchesReportParams, projectAndBranchesReport } from './branches-report';
 import { commitDaylySummary } from '../aggregate-in-memory/commit-branch-tips-aggregate';
-import { ConfigReadCloc, ConfigReadCommits } from '../git-read-enrich/config/config';
-import { readAll } from '../git-read-enrich/read-all';
+import { ConfigReadCloc, ConfigReadCommits } from '../read/config/config';
+import { readAll } from '../read/read-all';
+import { commitWithBranchTips } from '../git-enriched-streams/commits-and-branch-tips';
 
 describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches as well as the general project info`, (done) => {
@@ -26,8 +27,8 @@ describe(`projectAndBranchesReport`, () => {
             outDir,
         };
 
-        const commits = enrichedCommitsStream(commitLogPath, clocLogPath);
-        const daylySummaryDictionary = commits.pipe(commitDaylySummary());
+        const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());
+        const daylySummaryDictionary = commitDaylySummary(commitsWithBranchTips);
 
         const _commitStream = commitsStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryInfo(repoFolderPath, outDir);
@@ -77,7 +78,8 @@ describe(`projectAndBranchesReport`, () => {
         };
 
         // aggregation
-        const daylySummaryDictionary = _commitStream.pipe(commitDaylySummary());
+        const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());
+        const daylySummaryDictionary = commitDaylySummary(commitsWithBranchTips);
         const _projectInfo = projectInfo(_commitStream, _clocSummaryStream);
 
         projectAndBranchesReport(daylySummaryDictionary, _projectInfo, params, csvFile, weeklyCsvFile)

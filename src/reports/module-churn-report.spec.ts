@@ -1,17 +1,17 @@
 import { expect } from 'chai';
 import path from 'path';
 import { tap, share, concatMap } from 'rxjs';
-import { filesStream } from '../git-read-enrich/files';
-import { commitsStream } from '../git-read-enrich/commits';
+import { filesStream } from '../git-enriched-streams/files';
+import { commitsStream } from '../git-enriched-streams/commits';
 import { ModuleChurnReportParams, projectAndModuleChurnReport } from './module-churn-report';
-import { clocSummaryInfo, clocSummaryStream } from '../git-read-enrich/cloc';
+import { clocSummaryInfo, clocSummaryStream } from '../read/cloc';
 import { projectInfo } from '../aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../aggregate-in-memory/file-churn-aggregate';
 import { moduleChurns } from '../aggregate-in-memory/module-churn-aggregate';
 import { readLinesObs } from 'observable-fs';
 import { fromCsv } from '../tools/csv/from-csv';
-import { ConfigReadCloc, ConfigReadCommits } from '../git-read-enrich/config/config';
-import { readAll } from '../git-read-enrich/read-all';
+import { ConfigReadCloc, ConfigReadCommits } from '../read/config/config';
+import { readAll } from '../read/read-all';
 
 describe(`projectAndModuleChurnReport`, () => {
     it(`generates the report about the churn of modules`, (done) => {

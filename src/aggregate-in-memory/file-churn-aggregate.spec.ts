@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { tap, toArray } from 'rxjs';
 import { fileChurn, fileChurnDictionary } from './file-churn-aggregate';
-import { filesStream } from '../git-read-enrich/files';
+import { filesStream } from '../git-enriched-streams/files';
 
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
 const clocLogPath = `${process.cwd()}/test-data/output/a-git-repo-cloc.gitlog`;

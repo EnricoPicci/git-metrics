@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
-import { filesStream } from '../git-read-enrich/files';
-import { commitsStream } from '../git-read-enrich/commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../git-read-enrich/config/config';
-import { readAll } from '../git-read-enrich/read-all';
+import { filesStream } from '../git-enriched-streams/files';
+import { commitsStream } from '../git-enriched-streams/commits';
+import { ConfigReadCloc, ConfigReadCommits } from '../read/config/config';
+import { readAll } from '../read/read-all';
 import { FileAuthorsReportParams, projectAndFileAuthorsReport } from './file-authors-report';
-import { clocSummaryInfo, clocSummaryStream } from '../git-read-enrich/cloc';
+import { clocSummaryInfo, clocSummaryStream } from '../read/cloc';
 import { projectInfo } from '../aggregate-in-memory/project-info-aggregate';
 import { fileAuthors } from '../aggregate-in-memory/file-authors-aggregate';
 

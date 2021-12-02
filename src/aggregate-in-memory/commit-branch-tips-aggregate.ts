@@ -1,7 +1,6 @@
-import { map, pipe, reduce } from 'rxjs';
+import { map, Observable, reduce } from 'rxjs';
 import { CommitDaylySummary } from '../aggregate-types/commit-dayly-summary';
 import { GitCommitEnrichedWithBranchTips } from '../git-enriched-types/git-types';
-import { addBranchTips } from '../git-read-enrich/commits-and-branch-tips';
 import { toYYYYMMDD } from '../tools/dates/date-functions';
 
 type CommitPerDayDictionaryStruct = {
@@ -9,9 +8,8 @@ type CommitPerDayDictionaryStruct = {
     lastCommit: GitCommitEnrichedWithBranchTips;
 };
 
-export function commitWithBranchTipsPerDayDictionary() {
-    return pipe(
-        addBranchTips(),
+export function commitWithBranchTipsPerDayDictionary(commits: Observable<GitCommitEnrichedWithBranchTips>) {
+    return commits.pipe(
         reduce(
             (dictStruct, commit: GitCommitEnrichedWithBranchTips) => {
                 const dict = dictStruct.dictionary;
@@ -30,10 +28,9 @@ export function commitWithBranchTipsPerDayDictionary() {
 }
 
 export type DaylySummaryDictionary = { [day: string]: CommitDaylySummary };
-export function commitDaylySummary() {
+export function commitDaylySummary(commits: Observable<GitCommitEnrichedWithBranchTips>) {
     let previousDaylySummary: CommitDaylySummary;
-    return pipe(
-        commitWithBranchTipsPerDayDictionary(),
+    return commitWithBranchTipsPerDayDictionary(commits).pipe(
         map(({ dictionary, lastCommit }) => {
             const daylySummaryDictionary: DaylySummaryDictionary = {};
             //

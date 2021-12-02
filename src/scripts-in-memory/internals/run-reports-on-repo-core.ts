@@ -2,18 +2,18 @@ import path from 'path';
 import { forkJoin, Observable } from 'rxjs';
 import { concatMap, filter, map, share } from 'rxjs/operators';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../git-read-enrich/config/config';
-import { readAll } from '../../git-read-enrich/read-all';
-import { createDirIfNotExisting } from '../../git-read-enrich/create-outdir';
+import { ConfigReadCommits, ConfigReadCloc } from '../../read/config/config';
+import { readAll } from '../../read/read-all';
+import { createDirIfNotExisting } from '../../read/create-outdir';
 
 import { FileChurnReport } from '../../reports/file-churn-report';
-import { filesStream, filesStreamFromEnrichedCommitsStream } from '../../git-read-enrich/files';
-import { enrichedCommitsStream } from '../../git-read-enrich/commits';
+import { filesStream, filesStreamFromEnrichedCommitsStream } from '../../git-enriched-streams/files';
+import { enrichedCommitsStream } from '../../git-enriched-streams/commits';
 import { AuthorChurnReport } from '../../reports/author-churn-report';
 import { FileAuthorsReport } from '../../reports/file-authors-report';
 import { FilesCouplingReport } from '../../reports/file-coupling-report';
 import { ModuleChurnReport } from '../../reports/module-churn-report';
-import { clocSummaryStream } from '../../git-read-enrich/cloc';
+import { clocSummaryStream } from '../../read/cloc';
 import { projectInfo } from '../../aggregate-in-memory/project-info-aggregate';
 import { FileGitCommitEnriched, GitCommitEnriched } from '../../git-enriched-types/git-types';
 import { ProjectInfo } from '../../aggregate-types/project-info';

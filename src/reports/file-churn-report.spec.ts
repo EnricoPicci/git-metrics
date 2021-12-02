@@ -3,12 +3,12 @@ import { readLinesObs } from 'observable-fs';
 import path from 'path';
 import { tap, concatMap } from 'rxjs';
 import { fromCsv } from '../tools/csv/from-csv';
-import { filesStream } from '../git-read-enrich/files';
-import { commitsStream } from '../git-read-enrich//commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../git-read-enrich/config/config';
-import { readAll } from '../git-read-enrich/read-all';
+import { filesStream } from '../git-enriched-streams/files';
+import { commitsStream } from '../git-enriched-streams/commits';
+import { ConfigReadCloc, ConfigReadCommits } from '../read/config/config';
+import { readAll } from '../read/read-all';
 import { fileChurnReportCore, FileChurnReportParams, projectAndFileChurnReport } from './file-churn-report';
-import { clocSummaryInfo, clocSummaryStream } from '../git-read-enrich/cloc';
+import { clocSummaryInfo, clocSummaryStream } from '../read/cloc';
 import { projectInfo } from '../aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../aggregate-in-memory/file-churn-aggregate';
 

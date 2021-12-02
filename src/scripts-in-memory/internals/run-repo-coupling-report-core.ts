@@ -1,7 +1,7 @@
-import { filesStream } from '../../git-read-enrich/files';
-import { ConfigReadCloc, ConfigReadCommits } from '../../git-read-enrich/config/config';
-import { createDirIfNotExisting } from '../../git-read-enrich/create-outdir';
-import { readAll } from '../../git-read-enrich/read-all';
+import { filesStream } from '../../git-enriched-streams/files';
+import { ConfigReadCloc, ConfigReadCommits } from '../../read/config/config';
+import { createDirIfNotExisting } from '../../read/create-outdir';
+import { readAll } from '../../read/read-all';
 import { repoCouplingReport } from '../../reports/repo-coupling-report';
 
 export function runRepoCouplingReport(

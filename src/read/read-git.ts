@@ -8,9 +8,7 @@ import {
     ConfigReadTags,
 } from './config/config';
 import { executeCommand, executeCommandObs } from './execute-command';
-
-// SEP is the separator used to separate the various pieces of info of the commeit record
-export const SEP = '§§§';
+import { SEP } from '../config/default-git-log-separator';
 
 export const DEFAULT_OUT_DIR = './';
 export const COMMITS_FILE_POSTFIX = '-commits.log';

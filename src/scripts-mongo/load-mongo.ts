@@ -1,8 +1,8 @@
 import { Command } from 'commander';
-import { ConfigReadCommits, ConfigReadCloc } from '../git-read-enrich/config/config';
+import { ConfigReadCommits, ConfigReadCloc } from '../read/config/config';
 import { loadAllCommitsFiles } from '../mongo/load/load-commits-files';
-import { DEFAULT_OUT_DIR } from '../git-read-enrich/read-git';
-import { readAll } from '../git-read-enrich/read-all';
+import { DEFAULT_OUT_DIR } from '../read/read-git';
+import { readAll } from '../read/read-all';
 
 const DEFAULT_DB_NAME = 'git-metrics';
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { launchRunRepoCouplingReport } from '../scripts-no-db/run-repo-coupling-report';
+import { launchRunRepoCouplingReport } from '../scripts-in-memory/run-repo-coupling-report';
 
 launchRunRepoCouplingReport();

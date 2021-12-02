@@ -3,9 +3,9 @@ import { forkJoin } from 'rxjs';
 import { filter, map, mergeMap, toArray } from 'rxjs/operators';
 import { dirNamesListObs } from 'observable-fs';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../git-read-enrich/config/config';
-import { readAll } from '../../git-read-enrich/read-all';
-import { createDirIfNotExisting } from '../../git-read-enrich/create-outdir';
+import { ConfigReadCommits, ConfigReadCloc } from '../../read/config/config';
+import { readAll } from '../../read/read-all';
+import { createDirIfNotExisting } from '../../read/create-outdir';
 
 import { runReportsFromStreams, _streams } from './run-reports-on-repo-core';
 

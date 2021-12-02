@@ -6,7 +6,6 @@ import { ConfigReadCommits, ConfigReadMultiReposCommits, ConfigReadTags } from '
 import {
     readCommitsCommand,
     readCommits,
-    SEP,
     readTags,
     readTagsCommand,
     readMultiReposCommits,
@@ -14,6 +13,7 @@ import {
     readBranchesGraphCommand,
     readBranchesGraph,
 } from './read-git';
+import { SEP } from '../config/default-git-log-separator';
 
 describe(`readCommitsCommand`, () => {
     const outDir = './temp';

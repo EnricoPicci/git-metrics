@@ -2,17 +2,18 @@ import path from 'path';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../git-read-enrich/config/config';
-import { readAll } from '../../git-read-enrich/read-all';
-import { createDirIfNotExisting } from '../../git-read-enrich/create-outdir';
+import { ConfigReadCommits, ConfigReadCloc } from '../../read/config/config';
+import { readAll } from '../../read/read-all';
+import { createDirIfNotExisting } from '../../read/create-outdir';
 
-import { enrichedCommitsStream } from '../../git-read-enrich/commits';
-import { clocSummaryStream } from '../../git-read-enrich/cloc';
+import { enrichedCommitsStream } from '../../git-enriched-streams/commits';
+import { clocSummaryStream } from '../../read/cloc';
 import { projectInfo } from '../../aggregate-in-memory/project-info-aggregate';
 import { GitCommitEnriched } from '../../git-enriched-types/git-types';
 import { addProjectInfo } from '../../reports/add-project-info';
 import { commitDaylySummary } from '../../aggregate-in-memory/commit-branch-tips-aggregate';
 import { addConsiderationsForBranchesReport, branchesReportCore } from '../../reports/branches-report';
+import { commitWithBranchTips } from '../../git-enriched-streams/commits-and-branch-tips';
 
 export function runBranchesReport(
     repoFolderPath: string,
@@ -67,8 +68,10 @@ export function runBranchesReportFromStreams(
     const _outFileWeeklyBranches = outFilePrefix ? `${outFilePrefix}-branches.csv` : `${repoName}-branches.csv`;
     const weeklyCsvFile = path.join(outDir, _outFileWeeklyBranches);
 
+    const _commitsWithBranchTips = _commitStream.pipe(commitWithBranchTips());
+
     // aggregation
-    const _daylySummaryDictionary = _commitStream.pipe(commitDaylySummary());
+    const _daylySummaryDictionary = commitDaylySummary(_commitsWithBranchTips);
 
     return forkJoin([
         projectInfo(_commitStream, _clocSummaryStream),

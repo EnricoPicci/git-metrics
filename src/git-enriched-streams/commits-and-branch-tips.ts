@@ -1,6 +1,10 @@
 import { map, pipe } from 'rxjs';
 import { GitCommitEnriched, GitCommitEnrichedWithBranchTips } from '../git-enriched-types/git-types';
 
+export function commitWithBranchTips() {
+    return pipe(addBranchTips());
+}
+
 export function addBranchTips() {
     let currentBranchTips = [];
     return pipe(

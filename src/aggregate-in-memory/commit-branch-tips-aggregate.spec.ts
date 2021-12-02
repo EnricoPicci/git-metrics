@@ -1,25 +1,27 @@
 import { expect } from 'chai';
 import { tap } from 'rxjs';
-import { enrichedCommitsStream } from '../git-read-enrich/commits';
-import { gitReadCommitEnrich } from '../git-read-enrich/git-read-enrich';
+import { enrichedCommitsStream } from '../git-enriched-streams/commits';
+import { commitWithBranchTips } from '../git-enriched-streams/commits-and-branch-tips';
+import { ConfigReadCommits, ConfigReadCloc } from '../read/config/config';
+import { readAll } from '../read/read-all';
 import { commitDaylySummary, commitWithBranchTipsPerDayDictionary } from './commit-branch-tips-aggregate';
 
 describe(`commitWithBranchTipsPerDayDictionary`, () => {
     it(`returns a dictionary with day as key and the array of commits for that day as value`, (done) => {
         const repoFolderPath = './';
-        //     const repoFolderPath =
-        //         '/Users/enricopiccinin/enrico-code/articles/2021-09-analize-git-data/2021-09-29-sample-repos/kubernetes';
-        // const repoFolderPath =
-        //     '/Users/enricopiccinin/enrico-code/articles/2021-09-analize-git-data/2021-09-29-sample-repos/git';
         const filter = [];
         const outDir = './temp';
         const outFile = 'this-git-repo-commits-2.log';
         const reverse = true;
 
-        const commits = gitReadCommitEnrich(repoFolderPath, filter, outDir, outFile, null, null, reverse);
-        commits
+        const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile, reverse };
+        const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath };
+        const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
+
+        const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());
+
+        commitWithBranchTipsPerDayDictionary(commitsWithBranchTips)
             .pipe(
-                commitWithBranchTipsPerDayDictionary(),
                 tap({
                     next: (commitPerDayDictionaryStruct) => {
                         expect(commitPerDayDictionaryStruct).not.undefined;
@@ -49,10 +51,9 @@ describe(`commitDaylySummary`, () => {
         const commitLogPath = './test-data/output/a-project-with-git-branches-commits.gitlog';
         const clocLogPath = './test-data/output/a-project-with-git-branches-cloc.gitlog';
 
-        const commits = enrichedCommitsStream(commitLogPath, clocLogPath);
-        commits
+        const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());
+        commitDaylySummary(commitsWithBranchTips)
             .pipe(
-                commitDaylySummary(),
                 tap({
                     next: (commitDaylySummaryDict) => {
                         expect(commitDaylySummaryDict).not.undefined;
@@ -155,10 +156,13 @@ describe(`commitDaylySummary`, () => {
         const outFile = 'this-git-repo-commits-2.log';
         const reverse = true;
 
-        const commits = gitReadCommitEnrich(repoFolderPath, filter, outDir, outFile, null, null, reverse);
-        commits
+        const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile, reverse };
+        const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath };
+        const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
+
+        const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());
+        commitDaylySummary(commitsWithBranchTips)
             .pipe(
-                commitDaylySummary(),
                 tap({
                     next: (commitDaylySummaryDict) => {
                         expect(commitDaylySummaryDict).not.undefined;

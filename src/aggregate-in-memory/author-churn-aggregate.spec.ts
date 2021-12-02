@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { tap, toArray } from 'rxjs';
-import { commitsStream } from '../git-read-enrich/commits';
+import { commitsStream } from '../git-enriched-streams/commits';
 import { authorChurn, authorChurnDictionary } from './author-churn-aggregate';
 
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;

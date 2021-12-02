@@ -1,6 +1,6 @@
 import path from 'path';
 import { Command } from 'commander';
-import { DEFAULT_OUT_DIR } from '../git-read-enrich/read-git';
+import { DEFAULT_OUT_DIR } from '../read/read-git';
 import { loadMongRunReports } from './internals/load-mongo-run-reports-core';
 import { addProjectInfoConsiderations } from '../reports/report';
 

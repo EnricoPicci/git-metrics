@@ -3,7 +3,7 @@ import path from 'path';
 import { of } from 'rxjs';
 import { tap, toArray } from 'rxjs/operators';
 
-import { filesStream } from '../git-read-enrich/files';
+import { filesStream } from '../git-enriched-streams/files';
 import { TUPLE_KEY_SEPARATOR } from './dictionary-utils/dictionary-utils';
 
 import {

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { tap } from 'rxjs';
-import { COMMIT_RECORD_COUNTER } from '../../git-read-enrich/commits';
+import { COMMIT_RECORD_COUNTER } from '../../git-enriched-streams/commits';
 import { runBranchesReport } from './run-branches-report-core';
 
 describe(`runBranchesReport`, () => {

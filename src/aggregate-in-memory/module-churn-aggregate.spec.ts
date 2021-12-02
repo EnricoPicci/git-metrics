@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import path from 'path';
 
 import { tap } from 'rxjs/operators';
-import { filesStream } from '../git-read-enrich/files';
+import { filesStream } from '../git-enriched-streams/files';
 import { fileChurn } from './file-churn-aggregate';
 import { moduleChurns } from './module-churn-aggregate';
 

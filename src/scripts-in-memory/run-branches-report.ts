@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { DEFAULT_OUT_DIR } from '../git-read-enrich/read-git';
+import { DEFAULT_OUT_DIR } from '../read/read-git';
 import { runBranchesReport } from './internals/run-branches-report-core';
 
 export function launchBranchesReport() {
