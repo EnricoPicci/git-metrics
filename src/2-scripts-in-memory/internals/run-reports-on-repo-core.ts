@@ -5,19 +5,22 @@ import { concatMap, filter, map, share } from 'rxjs/operators';
 import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/config/config';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
+import { clocSummaryStream } from '../../1-A-read/cloc';
+
+import { enrichedCommitsStream } from '../../1-B-git-enriched-streams/commits';
+import { filesStream, filesStreamFromEnrichedCommitsStream } from '../../1-B-git-enriched-streams/files';
+import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+
+import { projectInfo } from '../../1-C-aggregate-in-memory/project-info-aggregate';
+import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
 
 import { FileChurnReport } from '../../1-D-reports/file-churn-report';
-import { filesStream, filesStreamFromEnrichedCommitsStream } from '../../1-B-git-enriched-streams/files';
-import { enrichedCommitsStream } from '../../1-B-git-enriched-streams/commits';
 import { AuthorChurnReport } from '../../1-D-reports/author-churn-report';
 import { FileAuthorsReport } from '../../1-D-reports/file-authors-report';
 import { FilesCouplingReport } from '../../1-D-reports/file-coupling-report';
 import { ModuleChurnReport } from '../../1-D-reports/module-churn-report';
-import { clocSummaryStream } from '../../1-A-read/cloc';
-import { projectInfo } from '../../1-C-aggregate-in-memory/project-info-aggregate';
-import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
-import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
 import { Report, ReportParams } from '../../1-D-reports/report';
+
 import {
     fileChurnReportGenerator,
     moduleChurnReportGenerator,

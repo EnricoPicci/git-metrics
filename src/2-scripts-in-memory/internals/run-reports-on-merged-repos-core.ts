@@ -1,13 +1,14 @@
+import path from 'path';
 import { concatMap, map, merge, Observable } from 'rxjs';
 
 import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/config/config';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
+import { clocSummaryStream, createSummaryClocLog } from '../../1-A-read/cloc';
+
+import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 
 import { gitRepos } from './run-reports-on-multi-repos-core';
-import { clocSummaryStream, createSummaryClocLog } from '../../1-A-read/cloc';
-import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
-import path from 'path';
 import { runReportsFromStreams, _streams } from './run-reports-on-repo-core';
 
 export function runAllReportsOnMergedRepos(
