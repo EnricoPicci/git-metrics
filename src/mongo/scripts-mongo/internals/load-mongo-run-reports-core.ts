@@ -6,7 +6,7 @@
 import path from 'path';
 import { forkJoin } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
-import { ConfigReadCommits, ConfigReadCloc } from '../../../1-A-read/config/config';
+import { ConfigReadCommits, ConfigReadCloc } from '../../../1-A-read/read-params/read-params';
 import { readAll } from '../../../1-A-read/read-all';
 import { loadAllCommitsFiles } from '../../load/load-commits-files';
 import { mongoFileChurnReport } from '../../report/mongo-file-churn-report';

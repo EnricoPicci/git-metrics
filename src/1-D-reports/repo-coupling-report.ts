@@ -4,9 +4,10 @@ import { writeFileObs } from 'observable-fs';
 
 import { REPORT_CONFIG } from './config/report-config';
 import { Report, ReportParams } from './report';
-import { allTuples, keysInAll, TUPLE_KEY_SEPARATOR } from './dictionary-utils/dictionary-utils';
 
 import { toCsvObs } from '../0-tools/csv/to-csv';
+import { allTuples, keysInAll, TUPLE_KEY_SEPARATOR } from '../0-tools/dictionary-utils/dictionary-utils';
+
 import { FileGitCommitEnriched } from '../1-B-git-enriched-types/git-types';
 
 export type RepoCouplingReportParams = {

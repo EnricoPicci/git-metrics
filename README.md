@@ -4,9 +4,9 @@ Tools to calculate some metrics out of git.
 
 There are tools that analyze a single repo and there are tools that analyze more than one repo, the latter with the objective to highlight signals of potential copling among the repos.
 
-# TOOLS TO ANALYZE A SINGLE REPO
+# TOOLS TO ANALYZE A SINGLE REPO - IN MEMORY AGGREGATION
 
-## BASIC LOGICAL STEPS FOR IN MEMORY AGGREGATION
+## BASIC LOGICAL STEPS
 
 -   The git log info is read using the command
 
@@ -18,15 +18,11 @@ There are tools that analyze a single repo and there are tools that analyze more
 -   Once the report has been generated, some summary considerations are added to the report
 -   Some general info about the project (i.e. about the files contained in the repo folder) are also generated
 
-## BASIC LOGICAL STEPS IF MONGODB IS USED
+We say that this logic implements "in memory" aggregagtion since all the aggregation logic runs in the node thread, i.e. in memory.
 
--   The steps to create the files with the git commit records and the cloc data are the same as above
--   The data collected from git and with cloc are then used to load 2 mongodb collections, one that stores the data relative to the commits and one that flatten the commit info and stores one document per each file encountered in each commit (so if the same file is present in 2 commits, this last collection has 2 entries for that file, each relative to a different commit)
--   Loading the files into mongodb is itself divided into subphases: the first loads the data, the second calculates the age of the file (i.e. the first time a file has been commited)
--   Once the data is loaded into mongodb, the reports can be generated. Reports are generated running a query on the mongodb, the type of query depends on the report, and using the data streamed from mongodb to perform the calculations required by the report
--   The reason we have chosen to load data into a mongodb is that it moves part of the aggregation logic to the mongodb engine which can improve performace and can allow to process big repos without requiring as much memory as it would be required by the in memory processing
+This design though allows also to use an external DB to run at least part of the aggregation logic. An initial implementation of this different approach is contained in the "mongo" folder and its logic is described later.
 
-## RUN TOOLS TO ANALYZE A SINGLE REPO - IN MEMORY PROCESSING (i.e. without MONGODB)
+## RUN TOOLS TO ANALYZE A SINGLE REPO
 
 To run the tool you should move to the folder containing the git repo and, from there, use the tool via npx like this
 
@@ -42,7 +38,7 @@ You can also install the 'git-metrics' package from npm, move to the directory c
 
 `node path-to-git-metrics/dist/lib/run-reports-on-repo.js`
 
-### RUN BRANCHES REPORT - IN MEMORY PROCESSING
+### RUN BRANCHES REPORT
 
 The BranchesReport is different from the other reports in the sense that, in order for it work correctly, it has to consider ALL commits since the birth of the repo. This means that neither `filter` nor `after` options can be used.
 
@@ -72,16 +68,6 @@ We can also run the tool to analyze many repos which are passed as parameters. I
 
 where 'path_1' and 'path_2' represent the paths to the folders that contain the repos we want to analyze.
 
-## RUN TOOLS TO ANALYZE A SINGLE REPO WITH MONGODB
-
-To run the tool with mongodb you need to have a mongodb instance running, either locally or on a server, and provide the connection string like this
-
-`npx -p git-metrics load-mongo-run-reports -s connectionStringToMongo`
-
-There are some specific options for mongo. For instance, launching the followint command will use a local mongodb instance. The updates on mongodb will be done in buffers of 100 documnents and there will be a concurrency of 50 while accessing mongo (i.e. up to 50 parallel sessions). A message about the progress of the elaboration will be printed on the console.
-
-`npx -p git-metrics load-mongo-run-reports -s mongodb://localhost:27017 -f '*.ts*' -a 2021-01-01 -d ../logs -b 100 --logProgress true --mongoConcurrency 50`
-
 ## options
 
 -   '--reports <string...>': reports to be run (the default is all reports) - report names have to be specified with single quotes and have to be separated by spaces like this --reports 'FileChurnReport' 'ModuleChurnReport'
@@ -94,17 +80,6 @@ There are some specific options for mongo. For instance, launching the followint
 -   '--depthInFilesCoupling <string>': if we sort the files for number of commits, we consider for coupling only the ones with more commits, i.e. the ones which remain within depthInFilesCoupling (default value is 10)`
 -   '-p, --parallelReadOfCommits': if this option is specified, then the file containing the commit records is read in parallel in the processing of all reports, this can reduce the memory consumption
 -   '--noRenames': if this opion is specified, then the no-renames option is used in the git log command
-
-### Options that can be used when using Mongo
-
--   '-s, --connStr <string>': connection string to use to connect to mongo
--   '--dbName <string>': name of the db to use (the name of the repo is the defalt)
--   '-c, --collName <string>': name of the collection to use (the name of the log file is the defalt)
--   '-b, --buffer <number>': size of the batches of documents for the load operation
--   '--clocDefsFile <string>': path of the file that contains the language definitions used by cloc (sse "force-lang-def" in http://cloc.sourceforge.net/
-    #Options)`
--   '--logProgress <boolean>': logs the progress in loading the mongo db with documents (default is false);
--   '--mongoConcurrency <number>': concurrency level used in insert and update operations (default is 1, i.e. no concurrency)
 
 ## Results produced
 
@@ -274,6 +249,14 @@ where after the -r options you specify the paths to the folders containing the r
 
 # DESIGN
 
+## Mapping of pipelines phases to code
+
+The various phases of the transformation pipelines are mapped to specific folders containing all the code that runs each specific phase, as illustrated in the diagram.
+
+![Pipeline phases to code mapping diagram](./readme-diagrams/pipeline-phases-to-code-mapping.png?raw=true)
+
+"Folder dependency diagram"
+
 ## Folder dependency tree
 
 Source code is organized in folder which aim to isolate logical components. The dependencies among these components are illustrated in the following diagrams
@@ -282,6 +265,33 @@ Source code is organized in folder which aim to isolate logical components. The 
 
 "Folder dependency diagram"
 
-![Detailed dependency diagram](./readme-diagrams/full-dependency-diagram.png?raw=true)
+# TOOLS TO ANALYZE A SINGLE REPO - PARTIAL AGGREGATION IN MONGO
 
-"Detailed folder dependency diagram"
+## BASIC LOGICAL STEPS IF MONGODB IS USED
+
+-   The steps to create the files with the git commit records and the cloc data are the same as for the in memory aggregation approach
+-   The data collected from git and with cloc are then used to load 2 mongodb collections, one that stores the data relative to the commits and one that flatten the commit info and stores one document per each file encountered in each commit (so if the same file is present in 2 commits, this last collection has 2 entries for that file, each relative to a different commit)
+-   Loading the files into mongodb is itself divided into subphases: the first loads the data, the second calculates the age of the file (i.e. the first time a file has been commited)
+-   Once the data is loaded into mongodb, the reports can be generated. Reports are generated running a query on the mongodb, the type of query depends on the report, and using the data streamed from mongodb to perform the calculations required by the report
+-   The reason we have chosen to load data into a mongodb is that it moves part of the aggregation logic to the mongodb engine which can improve performace and can allow to process big repos without requiring as much memory as it would be required by the in memory processing
+
+## RUN TOOLS TO ANALYZE A SINGLE REPO WITH MONGODB
+
+To run the tool with mongodb you need to have a mongodb instance running, either locally or on a server, and provide the connection string like this
+
+`npx -p git-metrics load-mongo-run-reports -s connectionStringToMongo`
+
+There are some specific options for mongo. For instance, launching the followint command will use a local mongodb instance. The updates on mongodb will be done in buffers of 100 documnents and there will be a concurrency of 50 while accessing mongo (i.e. up to 50 parallel sessions). A message about the progress of the elaboration will be printed on the console.
+
+`npx -p git-metrics load-mongo-run-reports -s mongodb://localhost:27017 -f '*.ts*' -a 2021-01-01 -d ../logs -b 100 --logProgress true --mongoConcurrency 50`
+
+### Options that can be used when using Mongo
+
+-   '-s, --connStr <string>': connection string to use to connect to mongo
+-   '--dbName <string>': name of the db to use (the name of the repo is the defalt)
+-   '-c, --collName <string>': name of the collection to use (the name of the log file is the defalt)
+-   '-b, --buffer <number>': size of the batches of documents for the load operation
+-   '--clocDefsFile <string>': path of the file that contains the language definitions used by cloc (sse "force-lang-def" in http://cloc.sourceforge.net/
+    #Options)`
+-   '--logProgress <boolean>': logs the progress in loading the mongo db with documents (default is false);
+-   '--mongoConcurrency <number>': concurrency level used in insert and update operations (default is 1, i.e. no concurrency)

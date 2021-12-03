@@ -1,5 +1,5 @@
 import { createClocLog, createSummaryClocLog } from './cloc';
-import { ConfigReadCommits, ConfigReadCloc } from './config/config';
+import { ConfigReadCommits, ConfigReadCloc } from './read-params/read-params';
 import { readCommits } from './read-git';
 
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations

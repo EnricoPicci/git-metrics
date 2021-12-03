@@ -5,7 +5,7 @@ import { tap, concatMap } from 'rxjs';
 import { fromCsv } from '../0-tools/csv/from-csv';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { commitsStream } from '../1-B-git-enriched-streams/commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/config/config';
+import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { fileChurnReportCore, FileChurnReportParams, projectAndFileChurnReport } from './file-churn-report';
 import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';

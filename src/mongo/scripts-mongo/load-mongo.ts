@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/config/config';
+import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { loadAllCommitsFiles } from '../load/load-commits-files';
 import { DEFAULT_OUT_DIR } from '../../1-A-read/read-git';
 import { readAll } from '../../1-A-read/read-all';

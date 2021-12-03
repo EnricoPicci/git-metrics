@@ -7,11 +7,10 @@ import { addConsideration, addConsiderationsHeader, Report, ReportParams } from 
 import { addProjectInfo } from './add-project-info';
 
 import { toCsv } from '../0-tools/csv/to-csv';
+import { splitPath } from '../0-tools/split-path/split-path';
 
 import { ModuleChurn } from '../1-C-aggregate-types/module-churn';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
-
-import { splitPath } from '../0-tools/split-path/split-path';
 
 export type ModuleChurnReportParams = {
     // size of the list of modules to be considered as top contributors in terms of churn

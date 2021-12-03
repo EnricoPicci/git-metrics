@@ -1,6 +1,6 @@
 import path = require('path');
 import { readLinesObs } from 'observable-fs';
-import { ConfigReadCloc, ConfigReadMultiCloc } from './config/config';
+import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 import { executeCommand } from './execute-command';
 import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
 

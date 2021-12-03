@@ -6,9 +6,11 @@ import {
     ConfigReadCommits,
     ConfigReadMultiReposCommits,
     ConfigReadTags,
-} from './config/config';
+} from './read-params/read-params';
 import { executeCommand, executeCommandObs } from './execute-command';
-import { SEP } from '../0-config/default-git-log-separator';
+import { DEFAUL_CONFIG } from '../0-config/config';
+
+const SEP = DEFAUL_CONFIG.SEP;
 
 export const DEFAULT_OUT_DIR = './';
 export const COMMITS_FILE_POSTFIX = '-commits.log';

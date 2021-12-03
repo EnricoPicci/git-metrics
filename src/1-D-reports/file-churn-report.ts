@@ -2,8 +2,6 @@ import { pipe, Observable, forkJoin } from 'rxjs';
 import { map, share, toArray, tap, concatMap } from 'rxjs/operators';
 import { writeFileObs } from 'observable-fs';
 
-import { toCsv } from '../0-tools/csv/to-csv';
-
 import { addProjectInfo } from './add-project-info';
 import { REPORT_CONFIG } from './config/report-config';
 import {
@@ -14,6 +12,8 @@ import {
     ReportParams,
     topChurnContributors,
 } from './report';
+
+import { toCsv } from '../0-tools/csv/to-csv';
 
 import { FileChurn } from '../1-C-aggregate-types/file-churn';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';

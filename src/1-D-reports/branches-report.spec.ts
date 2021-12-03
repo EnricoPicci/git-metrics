@@ -6,7 +6,7 @@ import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { BranchesReportParams, projectAndBranchesReport } from './branches-report';
 import { commitDaylySummary } from '../1-C-aggregate-in-memory/commit-branch-tips-aggregate';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/config/config';
+import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
 

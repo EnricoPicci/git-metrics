@@ -2,7 +2,7 @@ import path from 'path';
 import { forkJoin, Observable } from 'rxjs';
 import { concatMap, filter, map, share } from 'rxjs/operators';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/config/config';
+import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryStream } from '../../1-A-read/cloc';

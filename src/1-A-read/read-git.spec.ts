@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import path = require('path');
 import { tap, concatMap } from 'rxjs';
 import { readLinesObs } from 'observable-fs';
-import { ConfigReadCommits, ConfigReadMultiReposCommits, ConfigReadTags } from './config/config';
+import { ConfigReadCommits, ConfigReadMultiReposCommits, ConfigReadTags } from './read-params/read-params';
 import {
     readCommitsCommand,
     readCommits,
@@ -13,7 +13,10 @@ import {
     readBranchesGraphCommand,
     readBranchesGraph,
 } from './read-git';
-import { SEP } from '../0-config/default-git-log-separator';
+
+import { DEFAUL_CONFIG } from '../0-config/config';
+
+const SEP = DEFAUL_CONFIG.SEP;
 
 describe(`readCommitsCommand`, () => {
     const outDir = './temp';

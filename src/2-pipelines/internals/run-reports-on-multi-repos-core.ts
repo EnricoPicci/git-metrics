@@ -3,7 +3,7 @@ import { forkJoin } from 'rxjs';
 import { filter, map, mergeMap, toArray } from 'rxjs/operators';
 import { dirNamesListObs } from 'observable-fs';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/config/config';
+import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 

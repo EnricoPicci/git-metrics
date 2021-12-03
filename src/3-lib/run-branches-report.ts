@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { launchBranchesReport } from '../2-scripts-in-memory/run-branches-report';
+import { launchBranchesReport } from '../2-launch-scripts/run-branches-report';
 
 launchBranchesReport();

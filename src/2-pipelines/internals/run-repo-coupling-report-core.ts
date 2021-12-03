@@ -1,4 +1,4 @@
-import { ConfigReadCloc, ConfigReadCommits } from '../../1-A-read/config/config';
+import { ConfigReadCloc, ConfigReadCommits } from '../../1-A-read/read-params/read-params';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { readAll } from '../../1-A-read/read-all';
 

@@ -3,7 +3,7 @@ import path from 'path';
 import { tap, concatMap } from 'rxjs/operators';
 import { readLinesObs } from 'observable-fs';
 import { createClocLog, createMultiClocLogs, createSummaryClocLog } from './cloc';
-import { ConfigReadCloc, ConfigReadMultiCloc } from './config/config';
+import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 
 describe(`createClocLog`, () => {
     it(`read the number of lines for each file from the folder named as the repo and saves them in a file`, (done) => {

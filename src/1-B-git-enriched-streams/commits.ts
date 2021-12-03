@@ -1,9 +1,12 @@
 import { Observable, Subscriber } from 'rxjs';
 import { map, filter, concatMap, tap } from 'rxjs/operators';
 import { readLineObs } from 'observable-fs';
-import { SEP } from '../0-config/default-git-log-separator';
 import { ClocDictionary, clocFileDict } from './read-cloc-log';
 import { GitCommitEnriched, GitFileNumstatEnriched } from '../1-B-git-enriched-types/git-types';
+
+import { DEFAUL_CONFIG } from '../0-config/config';
+
+const SEP = DEFAUL_CONFIG.SEP;
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 

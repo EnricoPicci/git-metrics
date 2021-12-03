@@ -3,7 +3,7 @@ import path from 'path';
 import { tap } from 'rxjs';
 import { authorChurn } from '../1-C-aggregate-in-memory/author-churn-aggregate';
 import { commitsStream, enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/config/config';
+import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { authorChurnReportCore, AuthorChurnReportParams, projectAndAuthorChurnReport } from './author-churn-report';
 import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';

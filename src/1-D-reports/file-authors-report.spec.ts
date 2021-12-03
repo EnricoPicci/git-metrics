@@ -3,7 +3,7 @@ import path from 'path';
 import { tap } from 'rxjs';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { commitsStream } from '../1-B-git-enriched-streams/commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/config/config';
+import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { FileAuthorsReportParams, projectAndFileAuthorsReport } from './file-authors-report';
 import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';

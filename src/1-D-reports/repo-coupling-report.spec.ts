@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { tap, toArray } from 'rxjs/operators';
 
 import { filesStream } from '../1-B-git-enriched-streams/files';
-import { TUPLE_KEY_SEPARATOR } from './dictionary-utils/dictionary-utils';
+import { TUPLE_KEY_SEPARATOR } from '../0-tools/dictionary-utils/dictionary-utils';
 
 import {
     timeWindowKey,

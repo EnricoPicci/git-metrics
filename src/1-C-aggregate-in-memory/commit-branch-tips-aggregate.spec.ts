@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { tap } from 'rxjs';
 import { enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
-import { ConfigReadCommits, ConfigReadCloc } from '../1-A-read/config/config';
+import { ConfigReadCommits, ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { commitDaylySummary, commitWithBranchTipsPerDayDictionary } from './commit-branch-tips-aggregate';
 

@@ -1,7 +1,7 @@
 import path from 'path';
 import { concatMap, map, merge, Observable } from 'rxjs';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/config/config';
+import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryStream, createSummaryClocLog } from '../../1-A-read/cloc';

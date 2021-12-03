@@ -2,6 +2,7 @@ import { pipe, Observable, forkJoin } from 'rxjs';
 import { map, share, tap, concatMap } from 'rxjs/operators';
 import { writeFileObs } from 'observable-fs';
 
+import { dayToWeekDictionary } from '../0-tools/dates/date-functions';
 import { toCsv } from '../0-tools/csv/to-csv';
 
 import { addProjectInfo } from './add-project-info';
@@ -10,7 +11,6 @@ import { addConsideration, addConsiderationsHeader, Report, ReportParams } from 
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
 import { CommitDaylySummary } from '../1-C-aggregate-types/commit-dayly-summary';
 import { DaylySummaryDictionary } from '../1-C-aggregate-in-memory/commit-branch-tips-aggregate';
-import { dayToWeekDictionary } from '../0-tools/dates/date-functions';
 
 export type BranchesReportParams = {
     //
