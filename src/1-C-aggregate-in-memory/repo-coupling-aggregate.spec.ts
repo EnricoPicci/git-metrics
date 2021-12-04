@@ -1,35 +1,57 @@
 import { expect } from 'chai';
 import path from 'path';
-import { concatMap, tap, map, toArray } from 'rxjs/operators';
-
-import { loadAllCommitsFiles } from '../load/load-commits-files';
-import { loadMultiAllCommitsFiles } from '../load/load-multi-commits-files';
-import { files } from '../query/files-query';
-
-import { TUPLE_KEY_SEPARATOR } from '../../0-tools/dictionary-utils/dictionary-utils';
-import { flatFilesCsv } from '../../1-D-reports/repo-coupling-report';
+import { of, tap } from 'rxjs';
+import { TUPLE_KEY_SEPARATOR } from '../0-tools/dictionary-utils/dictionary-utils';
+import { filesStream } from '../1-B-git-enriched-streams/files';
 import {
+    timeWindowKey,
+    timeWindowedFileCommitsDict,
+    FilesInfo,
     splitCommitsInTimeWindows,
+    selectTimeWindowsPresentInAllRepos,
     calculateFileTuplesPerTimeWindow,
     groupFileTuples,
-    timeWindowedFileCommitsDict,
-    selectTimeWindowsPresentInAllRepos,
-    FilesInfo,
-} from '../../1-C-aggregate-in-memory/repo-coupling-aggregate';
+} from './repo-coupling-aggregate';
+
+describe(`timeWindowKey`, () => {
+    it(`two dates which differ for 1 day generate the same timeWindowKey if the timeWindowLengthInDays is 7
+    since they are in the same week. COnsidering that Unix Epoch starts with a Thursday, a week in this case starts with a Thursday and
+    ends with the following Friday`, () => {
+        const date_1 = new Date('2021-09-03T00:00:00.000+00:00');
+        const date_2 = new Date('2021-09-02T00:00:00.000+00:00');
+        const timeWindowLengthInDays = 7;
+        const key_1 = timeWindowKey(date_1, timeWindowLengthInDays);
+        const key_2 = timeWindowKey(date_2, timeWindowLengthInDays);
+        expect(key_1).equal(key_2);
+    });
+    it(`two dates which differ for 8 days generate different timeWindowKey if the timeWindowLengthInDays is 7`, () => {
+        const date_1 = new Date('2021-09-10T00:00:00.000+00:00');
+        const date_2 = new Date('2021-09-02T00:00:00.000+00:00');
+        const timeWindowLengthInDays = 7;
+        const key_1 = timeWindowKey(date_1, timeWindowLengthInDays);
+        const key_2 = timeWindowKey(date_2, timeWindowLengthInDays);
+        expect(key_1).gt(key_2);
+    });
+    it(`two dates which differ for 1 day generate different timeWindowKey if the timeWindowLengthInDays is 1`, () => {
+        const date_1 = new Date('2021-09-03T00:00:00.000+00:00');
+        const date_2 = new Date('2021-09-02T00:00:00.000+00:00');
+        const timeWindowLengthInDays = 1;
+        const key_1 = timeWindowKey(date_1, timeWindowLengthInDays);
+        const key_2 = timeWindowKey(date_2, timeWindowLengthInDays);
+        expect(key_1).gt(key_2);
+    });
+});
 
 describe(`timeWindowedFileCommitsDict`, () => {
     it(`creates the dictionary of timewindows with the info related to each file which has a commit in that timewindow.
     Since in the test data there are 3 commits with distance of one year, then there are 3 time windows`, (done) => {
-        const logName = 'a-git-repo-commits';
-        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
-
-        const params: [string, string, string] = [logFilePath, connectionString, logName];
+        const logName = 'a-git-repo';
+        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}-commits.gitlog`);
+        const clocLogPath = path.join(process.cwd(), `/test-data/output/${logName}-cloc.gitlog`);
 
         const aFilePath = 'hallo.java';
 
-        // first load the commits and the files
-        const filesObs = oneStream(...params);
+        const filesObs = oneStream(logFilePath, clocLogPath);
         filesObs
             .pipe(
                 timeWindowedFileCommitsDict(1, 1),
@@ -95,18 +117,16 @@ describe(`timeWindowedFileCommitsDict`, () => {
             });
     }).timeout(20000);
     it(`if the timeWindowLengthInDays is very big, all commits fall into the same timewindow`, (done) => {
-        const logName = 'a-git-repo-commits';
-        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
-
-        const params: [string, string, string] = [logFilePath, connectionString, logName];
+        const logName = 'a-git-repo';
+        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}-commits.gitlog`);
+        const clocLogPath = path.join(process.cwd(), `/test-data/output/${logName}-cloc.gitlog`);
 
         const timeWindowLengthInDays = 5000;
 
         const aFilePath = 'hallo.java';
 
         // first load the commits and the files
-        const filesObs = oneStream(...params);
+        const filesObs = oneStream(logFilePath, clocLogPath);
         filesObs
             .pipe(
                 timeWindowedFileCommitsDict(timeWindowLengthInDays, 1),
@@ -152,18 +172,16 @@ describe(`timeWindowedFileCommitsDict`, () => {
 
 describe(`splitCommittsInTimeWindows & selectTimeWindowsPresentInAllRepos`, () => {
     it(`Splits the commits into timewindows and select the timewindows for which there is at least one commit per each repo.
-    Since we use, as input, an array of streams of commits which come from the SAME repo, it returns all the time windows. 
+    Since we use, as input, an array of streams of commits which come from the SAME repo, it returns all the time windows.
     In other words, we want to select the time windows that are present in 2 repos, but since the
     repos are the same, all time windows are present in one repo are also present in the other one and therfore we select all of them`, (done) => {
-        const logName = 'a-git-repo-commits';
-        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
-
-        const params: [string, string, string] = [logFilePath, connectionString, logName];
+        const logName = 'a-git-repo';
+        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}-commits.gitlog`);
+        const clocLogPath = path.join(process.cwd(), `/test-data/output/${logName}-cloc.gitlog`);
 
         const timeWindowLengthInDays = 1;
 
-        const twoFileStreams = twoStreamsFromSameRepo(...params);
+        const twoFileStreams = twoStreamsFromSameRepo(logFilePath, clocLogPath);
 
         twoFileStreams
             .pipe(
@@ -209,12 +227,10 @@ describe(`splitCommittsInTimeWindows & selectTimeWindowsPresentInAllRepos`, () =
         const clocLogFilePath_1 = path.join(process.cwd(), `/test-data/output/${logName_1}-cloc.gitlog`);
         const logName_2 = 'a-git-repo-commits-shifted';
         const logFilePath_2 = path.join(process.cwd(), `/test-data/output/${logName_2}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
 
         const timeWindowLengthInDays = 1;
 
         const twoStreams = twoStreamsFromDifferentRepos(
-            connectionString,
             [logFilePath_1, logFilePath_2],
             [clocLogFilePath_1, clocLogFilePath_1], // use the same cloc data since the info coming from the cloc are not relevat for the tests
         );
@@ -254,17 +270,17 @@ describe(`splitCommittsInTimeWindows & selectTimeWindowsPresentInAllRepos`, () =
 });
 
 describe(`calculateFileTuplesPerTimeWindow`, () => {
-    it(`returns the combination of files for all 3 timewindows since the 2 repos are actually the same and therefore the 3 commits which are present 
+    it(`returns the combination of files for all 3 timewindows since the 2 repos are actually the same and therefore the 3 commits which are present
     in one repo are necessarly present in the other one as well`, (done) => {
-        const logName = 'a-git-repo-commits';
-        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
-
-        const params: [string, string, string] = [logFilePath, connectionString, logName];
+        const logName = 'a-git-repo';
+        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}-commits.gitlog`);
+        const clocLogPath = path.join(process.cwd(), `/test-data/output/${logName}-cloc.gitlog`);
 
         const timeWindowLengthInDays = 1;
 
-        twoStreamsFromSameRepo(...params)
+        const twoFileStreams = twoStreamsFromSameRepo(logFilePath, clocLogPath);
+
+        twoFileStreams
             .pipe(
                 splitCommitsInTimeWindows(timeWindowLengthInDays),
                 selectTimeWindowsPresentInAllRepos(),
@@ -293,22 +309,21 @@ describe(`calculateFileTuplesPerTimeWindow`, () => {
                 complete: () => done(),
             });
     }).timeout(20000);
-    it(`returns the combination of files for only 1 timewindow since the 2 repos have only 1 commit which is present in the same time window, 
+    it(`returns the combination of files for only 1 timewindow since the 2 repos have only 1 commit which is present in the same time window,
     the other 2 commits happen in differen days and therefore belong to different time windows`, (done) => {
         const logName_1 = 'a-git-repo';
         const logFilePath_1 = path.join(process.cwd(), `/test-data/output/${logName_1}-commits.gitlog`);
         const clocLogFilePath_1 = path.join(process.cwd(), `/test-data/output/${logName_1}-cloc.gitlog`);
         const logName_2 = 'a-git-repo-commits-shifted';
         const logFilePath_2 = path.join(process.cwd(), `/test-data/output/${logName_2}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
 
         const timeWindowLengthInDays = 1;
 
         const twoStreams = twoStreamsFromDifferentRepos(
-            connectionString,
             [logFilePath_1, logFilePath_2],
             [clocLogFilePath_1, clocLogFilePath_1], // use the same cloc data since the info coming from the cloc are not relevat for the tests
         );
+
         twoStreams
             .pipe(
                 splitCommitsInTimeWindows(timeWindowLengthInDays),
@@ -335,15 +350,15 @@ describe(`aggregateFileTuples`, () => {
     it(`returns 9 touples since the 2 repos (which happen to be the same one but this is not relevant for the test) have 3 files each which
     are committed in the same timewindows. There each of the 3 files of the first repo is combined with each of the 3 files of the second repo.
     the result so is a 3 * 3 = 9 combinantions`, (done) => {
-        const logName = 'a-git-repo-commits';
-        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
-
-        const params: [string, string, string] = [logFilePath, connectionString, logName];
+        const logName = 'a-git-repo';
+        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}-commits.gitlog`);
+        const clocLogPath = path.join(process.cwd(), `/test-data/output/${logName}-cloc.gitlog`);
 
         const timeWindowLengthInDays = 1;
 
-        twoStreamsFromSameRepo(...params)
+        const twoFileStreams = twoStreamsFromSameRepo(logFilePath, clocLogPath);
+
+        twoFileStreams
             .pipe(
                 splitCommitsInTimeWindows(timeWindowLengthInDays),
                 selectTimeWindowsPresentInAllRepos(),
@@ -390,15 +405,14 @@ describe(`aggregateFileTuples`, () => {
         const clocLogFilePath_1 = path.join(process.cwd(), `/test-data/output/${logName_1}-cloc.gitlog`);
         const logName_2 = 'a-git-repo-commits-shifted';
         const logFilePath_2 = path.join(process.cwd(), `/test-data/output/${logName_2}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
 
         const timeWindowLengthInDays = 1;
 
         const twoStreams = twoStreamsFromDifferentRepos(
-            connectionString,
             [logFilePath_1, logFilePath_2],
             [clocLogFilePath_1, clocLogFilePath_1], // use the same cloc data since the info coming from the cloc are not relevat for the tests
         );
+
         twoStreams
             .pipe(
                 splitCommitsInTimeWindows(timeWindowLengthInDays),
@@ -445,21 +459,22 @@ describe(`aggregateFileTuples`, () => {
                 complete: () => done(),
             });
     }).timeout(20000);
-    it(`In these example repos what we see is that any time hallo-X.java is committed in a timewindow also hallo-Y.java is committed 
-    in the same timewindow. So 100% of the times hallo-X.java is committed in a timewindow, we encounter the tuple [hallo-X.java, hallo-Y.java] 
+    it(`In these example repos what we see is that any time hallo-X.java is committed in a timewindow also hallo-Y.java is committed
+    in the same timewindow. So 100% of the times hallo-X.java is committed in a timewindow, we encounter the tuple [hallo-X.java, hallo-Y.java]
     in the same timewindow.
-    On the contrary, 50% of the times hallo-X.java is committed also good-by-Y.java is committed. Therefore 50% of the times hallo-X.java 
+    On the contrary, 50% of the times hallo-X.java is committed also good-by-Y.java is committed. Therefore 50% of the times hallo-X.java
     is committed in a timewindow we find the tuple [hallo-X.java, good-by-Y.java]
 
         REPO_1                                                              REPO_2
+§§§1c8a199§§§2020-09-22§§§Picci-2§§§Picci§§§2020-09-22§§§first commit
+1	1	hallo-X.java                                                        1	1	hallo-Y.java
+1	1	good-by-X.java                                                      1	1	good-by-Y.java
+
 §§§e4f5978§§§2021-09-01§§§Picci-3§§§Picci§§§2021-09-22§§§second commit
 3	2	hallo-X.java                                                        3	2	hallo-Y.java
 2	1	good-by-X.java
 
-§§§1c8a199§§§2020-09-22§§§Picci-2§§§Picci§§§2020-09-22§§§first commit
-1	1	hallo-X.java                                                        1	1	hallo-Y.java
-1	1	good-by-X.java                                                      1	1	good-by-Y.java
-    
+
     `, (done) => {
         const logName_1 = 'a-git-repo-commits-X';
         const logFilePath_1 = path.join(process.cwd(), `/test-data/output/${logName_1}.gitlog`);
@@ -468,12 +483,9 @@ describe(`aggregateFileTuples`, () => {
 
         const clocLogFilePath = path.join(process.cwd(), `/test-data/output/a-git-repo-cloc.gitlog`);
 
-        const connectionString = 'mongodb://localhost:27017';
-
         const timeWindowLengthInDays = 1;
 
         const twoStreams = twoStreamsFromDifferentRepos(
-            connectionString,
             [logFilePath_1, logFilePath_2],
             [clocLogFilePath, clocLogFilePath], // use the same cloc data since the info coming from the cloc are not relevat for the tests
         );
@@ -532,73 +544,21 @@ describe(`aggregateFileTuples`, () => {
     }).timeout(20000);
 });
 
-describe(`flatFilesCsv`, () => {
-    it(`generate an array of strings, each representing one file in a specific tuple, in csv format`, (done) => {
-        const logName = 'a-git-repo-commits';
-        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}.gitlog`);
-        const connectionString = 'mongodb://localhost:27017';
-
-        const params: [string, string, string] = [logFilePath, connectionString, logName];
-
-        const timeWindowLengthInDays = 1;
-
-        twoStreamsFromSameRepo(...params)
-            .pipe(
-                splitCommitsInTimeWindows(timeWindowLengthInDays),
-                selectTimeWindowsPresentInAllRepos(),
-                calculateFileTuplesPerTimeWindow(),
-                groupFileTuples(),
-                flatFilesCsv(),
-                toArray(),
-                tap({
-                    next: (fileTuplesCsv) => {
-                        // there are 9 tuples, each containing 2 files, plus the first line (the header)
-                        expect(fileTuplesCsv.length).equal(19);
-                    },
-                }),
-            )
-            .subscribe({
-                error: (err) => done(err),
-                complete: () => done(),
-            });
-    }).timeout(20000);
-});
-
 // returns one stream of File commit info
-function oneStream(logFilePath: string, connectionString: string, dbName: string) {
-    // first load the commits and the files
-    return loadAllCommitsFiles(logFilePath, connectionString, dbName).pipe(
-        concatMap(({ connectionString, dbName, filesCollection }) => files(connectionString, dbName, filesCollection)),
-    );
+
+function oneStream(logName: string, clocLogPath: string) {
+    return filesStream(logName, clocLogPath);
 }
 
 // returns two streams of File commits info, the streams notify the same data since the both come from the same repo log
-function twoStreamsFromSameRepo(logFilePath: string, connectionString: string, dbName: string) {
-    // first load the commits and the files
-    return loadAllCommitsFiles(logFilePath, connectionString, dbName).pipe(
-        // the following map returns an array that contains 2 streams of commits relative to the same repo
-        map(({ connectionString, dbName, filesCollection }) => [
-            files(connectionString, dbName, filesCollection),
-            files(connectionString, dbName, filesCollection),
-        ]),
-    );
+function twoStreamsFromSameRepo(logName: string, clocLogPath: string) {
+    return of([filesStream(logName, clocLogPath), filesStream(logName, clocLogPath)]);
 }
 
 // returns two streams of File commits info read from different repo logs
-function twoStreamsFromDifferentRepos(connectionString: string, logFilePaths: string[], clocLogFilePaths: string[]) {
+function twoStreamsFromDifferentRepos(logFilePaths: string[], clocLogFilePaths: string[]) {
     const [logFilePath_1, logFilePath_2] = logFilePaths;
     const [clocLogFilePath_1, clocLogFilePath_2] = clocLogFilePaths;
 
-    // first load the commits and the files
-    return loadMultiAllCommitsFiles(
-        connectionString,
-        [logFilePath_1, logFilePath_2],
-        [clocLogFilePath_1, clocLogFilePath_2],
-    ).pipe(
-        map((notification) => {
-            const dbName = notification[0].dbName;
-            const filesCollections = notification.map((n) => n.filesCollection);
-            return filesCollections.map((fc) => files(connectionString, dbName, fc));
-        }),
-    );
+    return of([filesStream(logFilePath_1, clocLogFilePath_1), filesStream(logFilePath_2, clocLogFilePath_2)]);
 }
