@@ -75,6 +75,9 @@ describe(`commitDaylySummary`, () => {
                         expect(summaryDay_1.numberOfCommitsWithNoFutureChildren).equal(0);
                         expect(summaryDay_1.day).equal(day_1);
                         expect(summaryDay_1.commitHashes.length).equal(1);
+                        // there are no merges in day 1
+                        expect(summaryDay_1.numberOfMerges).equal(0);
+                        expect(summaryDay_1.linesAddDelForMerges).equal(0);
                         //
                         const day_2 = '2021-11-02';
                         const summaryDay_2 = commitDaylySummaryDict[day_2];
@@ -90,6 +93,9 @@ describe(`commitDaylySummary`, () => {
                         expect(summaryDay_2.numberOfCommitsWithNoFutureChildren).equal(0);
                         expect(summaryDay_2.day).equal(day_2);
                         expect(summaryDay_2.commitHashes.length).equal(2);
+                        // there are no merges in day 2
+                        expect(summaryDay_2.numberOfMerges).equal(0);
+                        expect(summaryDay_2.linesAddDelForMerges).equal(0);
                         //
                         const day_3 = '2021-11-03';
                         const summaryDay_3 = commitDaylySummaryDict[day_3];
@@ -106,6 +112,9 @@ describe(`commitDaylySummary`, () => {
                         expect(summaryDay_3.numberOfCommitsWithNoFutureChildren).equal(0);
                         expect(summaryDay_3.day).equal(day_3);
                         expect(summaryDay_3.commitHashes.length).equal(3);
+                        // there is 1 merge in day 3
+                        expect(summaryDay_3.numberOfMerges).equal(1);
+                        expect(summaryDay_3.linesAddDelForMerges).equal(18);
                         //
                         const day_4 = '2021-11-04';
                         const summaryDay_4 = commitDaylySummaryDict[day_4];
@@ -125,6 +134,9 @@ describe(`commitDaylySummary`, () => {
                         expect(summaryDay_4.linesAdded).equal(45);
                         expect(summaryDay_4.linesDeleted).equal(2);
                         expect(summaryDay_4.linesAddDel).equal(47);
+                        // there is 1 merge in day 4
+                        expect(summaryDay_4.numberOfMerges).equal(1);
+                        expect(summaryDay_4.linesAddDelForMerges).equal(26);
                         //
                         const day_5 = '2021-11-05';
                         const summaryDay_5 = commitDaylySummaryDict[day_5];
@@ -141,6 +153,9 @@ describe(`commitDaylySummary`, () => {
                         expect(summaryDay_5.numberOfCommitsWithNoFutureChildren).equal(1);
                         expect(summaryDay_5.day).equal(day_5);
                         expect(summaryDay_5.commitHashes.length).equal(2);
+                        // there is 1 merge in day 5
+                        expect(summaryDay_5.numberOfMerges).equal(1);
+                        expect(summaryDay_5.linesAddDelForMerges).equal(10);
                     },
                 }),
             )

@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports._mongoFilesCouplingReport = exports.mongoFilesCouplingReport = exports.mongoFilesCouplingReportWithProjectInfo = void 0;
 const operators_1 = require("rxjs/operators");
-const file_coupling_report_1 = require("../../reports/file-coupling-report");
+const file_coupling_report_1 = require("../../1-D-reports/file-coupling-report");
 const commits_query_1 = require("../query/commits-query");
 const mongo_add_prj_info_1 = require("./mongo-add-prj-info");
-const add_project_info_1 = require("../../reports/add-project-info");
+const add_project_info_1 = require("../../1-D-reports/add-project-info");
 const mongo_report_1 = require("./mongo-report");
-const file_coupling_aggregate_1 = require("../../aggregate-in-memory/file-coupling-aggregate");
+const file_coupling_aggregate_1 = require("../../1-C-aggregate-in-memory/file-coupling-aggregate");
 // produce a report about files coupling and general project info reading from a mongo db (previously loaded with commit info)
 // reads also from the repo folder for information about the files currently in the project
 function mongoFilesCouplingReportWithProjectInfo(params, csvFilePath) {

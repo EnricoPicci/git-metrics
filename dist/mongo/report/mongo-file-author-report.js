@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports._mongoFileAuthorReport = exports.mongoFileAuthorReport = exports.mongoFileAuthorReportWithProjectInfo = void 0;
 const operators_1 = require("rxjs/operators");
-const file_authors_report_1 = require("../../reports/file-authors-report");
+const file_authors_report_1 = require("../../1-D-reports/file-authors-report");
 const files_authors_query_1 = require("../query/files-authors-query");
 const mongo_add_prj_info_1 = require("./mongo-add-prj-info");
-const add_project_info_1 = require("../../reports/add-project-info");
+const add_project_info_1 = require("../../1-D-reports/add-project-info");
 const mongo_report_1 = require("./mongo-report");
 // produce a report about how many authors have contributed to a file and general project info
 // reading from a mongo db (previously loaded with commit and files info).

@@ -1,7 +1,9 @@
 import { map, Observable, reduce } from 'rxjs';
 import { CommitDaylySummary } from '../1-C-aggregate-types/commit-dayly-summary';
-import { GitCommitEnrichedWithBranchTips } from '../1-B-git-enriched-types/git-types';
+
 import { toYYYYMMDD } from '../0-tools/dates/date-functions';
+
+import { GitCommitEnrichedWithBranchTips } from '../1-B-git-enriched-types/git-types';
 
 type CommitPerDayDictionaryStruct = {
     dictionary: { [day: string]: GitCommitEnrichedWithBranchTips[] };
@@ -57,8 +59,14 @@ export function commitDaylySummary(commits: Observable<GitCommitEnrichedWithBran
                                 },
                                 { _lAdd: 0, _lDel: 0 },
                             );
-                            summary.linesAdded = summary.linesAdded + _lAdd;
-                            summary.linesDeleted = summary.linesDeleted + _lDel;
+                            //
+                            if (commit.isMerge) {
+                                summary.numberOfMerges++;
+                                summary.linesAddDelForMerges = summary.linesAddDelForMerges + _lAdd + _lDel;
+                            } else {
+                                summary.linesAdded = summary.linesAdded + _lAdd;
+                                summary.linesDeleted = summary.linesDeleted + _lDel;
+                            }
                             return summary;
                         },
                         {
@@ -70,6 +78,8 @@ export function commitDaylySummary(commits: Observable<GitCommitEnrichedWithBran
                             commitHashes: [],
                             branchTips: [],
                             numberOfBranchTipsWhichWillHaveChildren: 0,
+                            numberOfMerges: 0,
+                            linesAddDelForMerges: 0,
                             linesAdded: 0,
                             linesDeleted: 0,
                             linesAddDel: 0,

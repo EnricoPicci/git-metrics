@@ -10,6 +10,7 @@ export function addBranchTips() {
     return pipe(
         map((commit: GitCommitEnriched) => {
             const _parents = commit.parents;
+            const isMerge = _parents.length > 1;
             const { updatedBranchTips, isAdditionalBranchTip } = updateCurrentBranchTips(
                 _parents,
                 currentBranchTips,
@@ -20,6 +21,7 @@ export function addBranchTips() {
                 ...commit,
                 branchTips: [...updatedBranchTips],
                 isAdditionalBranchTip,
+                isMerge,
             } as GitCommitEnrichedWithBranchTips;
         }),
     );

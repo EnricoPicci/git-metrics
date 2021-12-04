@@ -31,5 +31,8 @@ export type GitCommitEnrichedWithBranchTips = {
     // branch tips are commits which are not parent of any other commit and therefore represent the tip of a branch
     // stash commits have no children and therefore are considered branch tips
     branchTips: string[];
+    // represents a new branch tip which increments the number of branch tips
     isAdditionalBranchTip: boolean;
+    // as a commit that represents a merge, i.e. it has more than one parent
+    isMerge: boolean;
 } & GitCommitEnriched;

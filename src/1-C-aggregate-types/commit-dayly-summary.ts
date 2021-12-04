@@ -17,6 +17,10 @@ export type CommitDaylySummary = {
     numberOfCommitsWithNoFutureChildren: number;
     // number of commits that represent branch tips at the end of the summary day but that at some point will have some children
     numberOfBranchTipsWhichWillHaveChildren: number;
+    // number of merges performed in a day
+    numberOfMerges: number;
+    // lines added and deleted for all commits which are merges
+    linesAddDelForMerges: number;
     //
     linesAdded: number;
     linesDeleted: number;

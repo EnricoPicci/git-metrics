@@ -11,6 +11,8 @@ export type ConfigReadCommits = {
     outFilePrefix?: string;
     noRenames?: boolean;
     reverse?: boolean;
+    includeMergeCommits?: boolean;
+    firstParent?: boolean;
 } & ConfigReadGit;
 
 export type ConfigReadMultiReposCommits = {

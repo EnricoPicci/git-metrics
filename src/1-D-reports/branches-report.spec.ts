@@ -47,6 +47,9 @@ describe(`projectAndBranchesReport`, () => {
                     expect(report.maxBranchTips.val).equal(2);
                     expect(report.branchTips.val.length).equal(1);
                     expect(report.branchTips.val[0]).equal('commit_9');
+                    // tests on the data about merges
+                    expect(report.totMerges.val).equal(3);
+                    expect(report.averageLinesAddDelForMerge.val).equal(54 / 3);
                 }),
             )
             .subscribe({

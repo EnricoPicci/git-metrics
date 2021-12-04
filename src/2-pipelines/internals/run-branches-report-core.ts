@@ -29,7 +29,14 @@ export function runBranchesReport(
     createDirIfNotExisting(outDir);
 
     // read the data from git and cloc tool
-    const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, noRenames, reverse: true };
+    const commitOptions: ConfigReadCommits = {
+        repoFolderPath,
+        outDir,
+        noRenames,
+        reverse: true,
+        includeMergeCommits: true,
+        firstParent: true,
+    };
     const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
     const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
 
@@ -67,7 +74,9 @@ export function runBranchesReportFromStreams(
     const repoName = path.parse(repoFolderPath).name;
     const _outFileBranches = outFilePrefix ? `${outFilePrefix}-branches.csv` : `${repoName}-branches.csv`;
     const csvFile = path.join(outDir, _outFileBranches);
-    const _outFileWeeklyBranches = outFilePrefix ? `${outFilePrefix}-branches.csv` : `${repoName}-branches.csv`;
+    const _outFileWeeklyBranches = outFilePrefix
+        ? `${outFilePrefix}-branches-weekly.csv`
+        : `${repoName}-branches-weekly.csv`;
     const weeklyCsvFile = path.join(outDir, _outFileWeeklyBranches);
 
     const _commitsWithBranchTips = _commitStream.pipe(commitWithBranchTips());

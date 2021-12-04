@@ -69,6 +69,21 @@ describe(`readCommitsCommand`, () => {
         expect(cmd).equal(expected);
         expect(out).equal(expectedOutfile);
     });
+    it(`builds the git log command to read the commits with -m and --first-parent options`, () => {
+        const config: ConfigReadCommits = {
+            repoFolderPath: './a-path-to-a-git-repo',
+            filter: ['*.txt'],
+            outDir,
+            outFile,
+            includeMergeCommits: true,
+            firstParent: true,
+        };
+        const expectedOutfile = path.resolve(path.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:'${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p' -m --first-parent '*.txt' > ${expectedOutfile}`;
+        const [cmd, out] = readCommitsCommand(config);
+        expect(cmd).equal(expected);
+        expect(out).equal(expectedOutfile);
+    });
 });
 
 describe(`readCommits`, () => {

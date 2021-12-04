@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports._mongoAuthorChurnReport = exports.mongoAuthorChurnReport = exports.mongoAuthorChurnReportWithProjectInfo = void 0;
 const operators_1 = require("rxjs/operators");
-const author_churn_report_1 = require("../../reports/author-churn-report");
+const author_churn_report_1 = require("../../1-D-reports/author-churn-report");
 const author_churn_query_1 = require("../query/author-churn-query");
 const mongo_add_prj_info_1 = require("./mongo-add-prj-info");
-const add_project_info_1 = require("../../reports/add-project-info");
+const add_project_info_1 = require("../../1-D-reports/add-project-info");
 const mongo_report_1 = require("./mongo-report");
 // produce a report about author churn and general project info reading from a mongo db (previously loaded with commit and files info)
 // reads also from the repo folder for information about the files currently in the project

@@ -96,13 +96,16 @@ export function readCommitsCommand(config: ConfigReadCommits) {
     }
     const _noRenames = config.noRenames ? '--no-renames ' : '';
     const _reverse = config.reverse ? '--reverse ' : '';
+    const _includeMergeCommits = config.includeMergeCommits ? '-m ' : '';
+    const _firstParent = config.firstParent ? '--first-parent' : '';
+
     let outDir = config.outDir ? config.outDir : DEFAULT_OUT_DIR;
     outDir = path.resolve(outDir);
     const _postfix = config.reverse ? COMMITS_FILE_REVERSE_POSTFIX : COMMITS_FILE_POSTFIX;
     const outFile = getOutfileName(config.outFile, config.outFilePrefix, config.repoFolderPath, _postfix);
     const out = path.join(outDir, outFile);
     return [
-        `git ${repoFolder} log --all --numstat --date=short --pretty=format:'${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p' ${_reverse}${_noRenames}${after}${before} ${filter} > ${out}`,
+        `git ${repoFolder} log --all --numstat --date=short --pretty=format:'${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p' ${_reverse}${_noRenames}${_includeMergeCommits}${_firstParent}${after}${before} ${filter} > ${out}`,
         out,
     ];
 }

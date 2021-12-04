@@ -4,7 +4,7 @@ import { tap, toArray } from 'rxjs';
 import { enrichedCommitsStream } from './commits';
 import { addBranchTips, updateCurrentBranchTips } from './commits-and-branch-tips';
 
-describe(`adjustCurrentBranchTips`, () => {
+describe(`updateCurrentBranchTips`, () => {
     it(`add the commit if the currentBranchTips is empty, which should happen with the first commit`, () => {
         const firstCommitHash = 'hash for the first commit';
         const parentsOfTheNewCommit = [];
@@ -88,7 +88,7 @@ describe(`addBranchTips`, () => {
                 toArray(),
                 tap({
                     next: (commits) => {
-                        // the commits are 8 + 2, the 2 representing the merges
+                        // the commits are 9 + 3, the 3 representing the merges
                         expect(commits.length).equal(12);
                         //
                         // the first commit is a new additional tip (actually the first one) and, at the time of the commit,
@@ -296,6 +296,28 @@ describe(`addBranchTips`, () => {
                         expect(commit_9.branchTips.length).equal(1);
                         expect(commit_9.branchTips.includes(commit_9.hashShort)).true;
                         commitHashes['commit 9'] = commit_9.hashShort;
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    });
+    it(`adds the flag about the fact that a commit represents a branch or not`, (done) => {
+        const commitLogName = 'a-project-with-git-branches-commits.gitlog';
+        const clocLogName = 'a-project-with-git-branches-cloc.gitlog';
+        const commitLogPath = path.join(process.cwd(), 'test-data', 'output', commitLogName);
+        const clocLogPath = path.join(process.cwd(), 'test-data', 'output', clocLogName);
+
+        enrichedCommitsStream(commitLogPath, clocLogPath)
+            .pipe(
+                addBranchTips(),
+                toArray(),
+                tap({
+                    next: (commits) => {
+                        // there are 3 merges
+                        expect(commits.filter((c) => c.isMerge).length).equal(3);
                     },
                 }),
             )

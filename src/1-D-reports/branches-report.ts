@@ -18,6 +18,12 @@ export type BranchesReportParams = {
 
 export const BRANCHES_REPORT_NAME = 'BranchesReport';
 export class BranchesReport extends Report {
+    totMerges = { val: 0, description: `The total number of merges.` };
+    averageLinesAddDelForMerge = {
+        val: 0,
+        description: `Average number of lines added or deleted in the merges. Small merges (i.e. a low average) are 
+likely easier to manage, reduce complexity and are probably a signal of a well executed trunk-based development`,
+    };
     maxCommits = { val: 0, description: `Maximum number of commits in a day.` };
     maxMerges = { val: 0, description: `Maximum number of commits merged in a day.` };
     branchTips = {
@@ -138,10 +144,14 @@ function _branchesReport(params: BranchesReportParams) {
     return pipe(
         map((daylyCommitSummariesSorted: CommitDaylySummary[]) => {
             const r = new BranchesReport(params);
+            let totMerges = 0;
+            let totLinesAddDelForMerges = 0;
             let maxCommits = 0;
             let maxMerges = 0;
             let maxBranchTips = 0;
             daylyCommitSummariesSorted.forEach((daylyCommitSummary) => {
+                totMerges = totMerges + daylyCommitSummary.numberOfMerges;
+                totLinesAddDelForMerges = totLinesAddDelForMerges + daylyCommitSummary.linesAddDelForMerges;
                 maxCommits =
                     maxCommits < daylyCommitSummary.numberOfCommits ? daylyCommitSummary.numberOfCommits : maxCommits;
                 maxMerges =
@@ -153,6 +163,8 @@ function _branchesReport(params: BranchesReportParams) {
                         ? daylyCommitSummary.branchTips.length
                         : maxBranchTips;
             });
+            r.totMerges.val = totMerges;
+            r.averageLinesAddDelForMerge.val = Math.round(totLinesAddDelForMerges / totMerges);
             r.maxCommits.val = maxCommits;
             r.maxMerges.val = maxMerges;
             r.maxBranchTips.val = maxBranchTips;
@@ -168,11 +180,19 @@ type BranchReportCsvType = {
     linesAdded: number;
     linesDeleted: number;
     linesAddDel: number;
+    // number of merges performed in a day
+    numberOfMerges: number;
+    // lines added and deleted for all commits which are merges
+    linesAddDelForMerges: number;
+    // averege number of lines added or deleted per merge
+    averageLinesAddDelForMerges: number;
+    //
     branchTips: number;
     deltaBranchTips: number;
     numberOfCommitsMergedInTheDay: number;
     numberOfCommitsWithNoFutureChildren: number;
     numberOfBranchTipsWhichWillHaveChildren: number;
+    //
     commitsWithNoFutureChildren: string[];
 };
 type BranchReportWeeklyCsvType = {
@@ -181,6 +201,13 @@ type BranchReportWeeklyCsvType = {
     linesAdded: number;
     linesDeleted: number;
     linesAddDel: number;
+    // number of merges performed in a day
+    numberOfMerges: number;
+    // lines added and deleted for all commits which are merges
+    linesAddDelForMerges: number;
+    // averege number of lines added or deleted per merge
+    averageLinesAddDelForMerges: number;
+    //
     // branch tips at the end of the week
     branchTips: number;
     numberOfCommitsMergedInTheWeek: number;
@@ -194,6 +221,11 @@ function mapDaylySummariesToCsv(allCommitDaylySummaries: CommitDaylySummary[]) {
             linesAdded: commitSummary.linesAdded,
             linesDeleted: commitSummary.linesDeleted,
             linesAddDel: commitSummary.linesAddDel,
+            numberOfMerges: commitSummary.numberOfMerges,
+            linesAddDelForMerges: commitSummary.linesAddDelForMerges,
+            averageLinesAddDelForMerges: commitSummary.numberOfMerges
+                ? Math.round(commitSummary.linesAddDelForMerges / commitSummary.numberOfMerges)
+                : 0,
             branchTips: commitSummary.branchTips.length,
             deltaBranchTips: commitSummary.deltaBranchTips,
             numberOfCommitsMergedInTheDay: commitSummary.numberOfCommitsMergedInTheDay,
@@ -233,6 +265,9 @@ function weeklySummariesToCsv(allCommitDaylySummaries: CommitDaylySummary[]) {
                 linesAdded: 0,
                 linesDeleted: 0,
                 linesAddDel: 0,
+                numberOfMerges: 0,
+                linesAddDelForMerges: 0,
+                averageLinesAddDelForMerges: 0,
                 branchTips: 0,
                 numberOfCommitsMergedInTheWeek: 0,
                 numberOfCommitsWithNoFutureChildren: 0,
@@ -243,6 +278,13 @@ function weeklySummariesToCsv(allCommitDaylySummaries: CommitDaylySummary[]) {
         csvRec.linesAdded = csvRec.linesAdded + commitSummary.linesAdded;
         csvRec.linesDeleted = csvRec.linesDeleted + commitSummary.linesDeleted;
         csvRec.linesAddDel = csvRec.linesAddDel + commitSummary.linesAddDel;
+        //
+        csvRec.numberOfMerges = csvRec.numberOfMerges + commitSummary.numberOfMerges;
+        csvRec.linesAddDelForMerges = csvRec.linesAddDelForMerges + commitSummary.linesAddDelForMerges;
+        csvRec.averageLinesAddDelForMerges = csvRec.numberOfMerges
+            ? Math.round(csvRec.linesAddDelForMerges / csvRec.numberOfMerges)
+            : 0;
+        //
         csvRec.numberOfCommitsMergedInTheWeek =
             csvRec.numberOfCommitsMergedInTheWeek + commitSummary.numberOfCommitsMergedInTheDay;
         csvRec.numberOfCommitsWithNoFutureChildren =
@@ -261,7 +303,12 @@ function weeklySummariesToCsv(allCommitDaylySummaries: CommitDaylySummary[]) {
 
 export function addConsiderationsForBranchesReport(r: BranchesReport) {
     addConsiderationsHeader(r);
-    addConsideration(r, `Weekly summary for branches saves in ${r.weeklyCsvFile.val}.`);
+    addConsideration(r, `Weekly summary for branches saved in ${r.weeklyCsvFile.val}.`);
+    addConsideration(r, `The total number of merges has been ${r.totMerges.val}.`);
+    addConsideration(
+        r,
+        `The average number of lines added or deleted in a merge is ${r.averageLinesAddDelForMerge.val}.`,
+    );
     addConsideration(r, `The max number of commits in a day has been ${r.maxCommits.val}.`);
     addConsideration(r, `The max number of merges in a day has been ${r.maxMerges.val}.`);
     addConsideration(
