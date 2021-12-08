@@ -26,6 +26,9 @@ class Report {
         _params.outDir = _params.outDir ? _params.outDir : process.cwd();
         this.params.val = _params;
     }
+    addConsiderations() {
+        throw new Error('to be implemented');
+    }
 }
 exports.Report = Report;
 function addConsiderationsHeader(r) {

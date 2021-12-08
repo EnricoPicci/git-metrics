@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.splitCommits = exports.COMMIT_RECORD_COUNTER = exports.newGitCommit = exports.gitCommitStream = exports.commitsStream = exports.enrichedCommitsStream = void 0;
+exports.toCommits = exports.splitCommits = exports.COMMIT_RECORD_COUNTER = exports.newGitCommit = exports.gitCommitStream = exports.commitsStream = exports.enrichedCommitsStream = void 0;
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
@@ -91,13 +91,13 @@ function splitCommits(logFilePath) {
             },
         }))
         : _readLineObs;
-    return _readLineObs.pipe((0, operators_1.filter)((line) => line.length > 0), _splitCommit(logFilePath));
+    return _readLineObs.pipe((0, operators_1.filter)((line) => line.length > 0), toCommits(logFilePath));
 }
 exports.splitCommits = splitCommits;
 // Custom operator which splits the content of a git log into buffers of lines whereeach buffer contains all the info
 // relative to a single git commit
 // https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
-function _splitCommit(logFilePath) {
+function toCommits(logFilePath) {
     return (source) => {
         return new rxjs_1.Observable((subscriber) => {
             let buffer;
@@ -115,7 +115,8 @@ function _splitCommit(logFilePath) {
                 error: (err) => subscriber.error(err),
                 complete: () => {
                     if (!buffer) {
-                        subscriber.error(`!!!!!!!!!!!!! >>>>  No commits found in file ${logFilePath}`);
+                        const logPathMsg = logFilePath ? `in file ${logFilePath}` : '';
+                        subscriber.error(`!!!!!!!!!!!!! >>>>  No commits found ${logPathMsg}`);
                     }
                     subscriber.next(buffer);
                     subscriber.complete();
@@ -127,6 +128,7 @@ function _splitCommit(logFilePath) {
         });
     };
 }
+exports.toCommits = toCommits;
 // ALTERNATIVE VERSION
 // This is an alternative version of the above function which does use only rxJs operators and not custom operators
 //

@@ -18,6 +18,9 @@ class FilesCouplingReport extends report_1.Report {
         this, (this.name = exports.FILES_COUPLING_NAME);
         this.description = `File coupling report`;
     }
+    addConsiderations() {
+        return addConsiderationsForFilesCouplingReport(this);
+    }
 }
 exports.FilesCouplingReport = FilesCouplingReport;
 // API to be used if we want to generate the report for the general project as well as the report about file churn
@@ -40,7 +43,7 @@ function fileCouplingReportCore(fileCoupling, params, csvFilePath) {
     const fileCouplingSource = fileCoupling.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((fileCouplings) => {
         console.log(`Processing ${fileCouplings.length} records to generate FileCouplingReport`);
     }), (0, operators_1.share)());
-    const generateReport = fileCouplingSource.pipe(_fileCouplingReport(params));
+    const generateReport = fileCouplingSource.pipe(_fileCouplingReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
     const concurrentStreams = [
         generateReport,
     ];

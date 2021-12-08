@@ -11,7 +11,7 @@ const create_outdir_1 = require("../../1-A-read/create-outdir");
 const cloc_1 = require("../../1-A-read/cloc");
 const run_reports_on_multi_repos_core_1 = require("./run-reports-on-multi-repos-core");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
-function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, parallelReadOfCommits, noRenames) {
+function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, concurrentReadOfCommits, noRenames) {
     // create the output directory if not existing
     const _outDir = path_1.default.resolve(outDir ? outDir : '');
     (0, create_outdir_1.createDirIfNotExisting)(_outDir);
@@ -31,7 +31,7 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
             const readClocOptions = { repoFolderPath, outDir: _outDir };
             const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
             // generation of the source streams
-            const { _commitStream, _filesStream } = (0, run_reports_on_repo_core_1._streams)(commitLogPath, clocLogPath, clocSummaryPath, parallelReadOfCommits, after, before);
+            const { _commitStream, _filesStream } = (0, run_reports_on_repo_core_1._streams)(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before);
             allCommitStreams.push(_commitStream.pipe((0, rxjs_1.map)((commit) => {
                 const _commit = Object.assign({}, commit);
                 _commit.files.forEach((f) => {

@@ -25,6 +25,9 @@ class AuthorChurnReport extends report_1.Report {
         this.name = exports.AUTHOR_CHURN_REPORT_NAME;
         this.description = `Author churn report`;
     }
+    addConsiderations() {
+        return addConsiderationsForAuthorChurnReport(this);
+    }
 }
 exports.AuthorChurnReport = AuthorChurnReport;
 // API to be used if we want to generate the report for the general project as well as the report about author churn
@@ -47,7 +50,7 @@ function authorChurnReportCore(authorChurns, params, csvFilePath) {
     const authorChurnsSource = authorChurns.pipe((0, operators_1.share)());
     const generateReport = authorChurnsSource.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((authorChurns) => {
         console.log(`Processing ${authorChurns.length} records to generate AuthorChurnReport`);
-    }), _authorChurnReport(params));
+    }), _authorChurnReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
     const concurrentStreams = [
         generateReport,
     ];

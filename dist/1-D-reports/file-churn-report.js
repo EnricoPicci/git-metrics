@@ -31,6 +31,9 @@ class FileChurnReport extends report_1.Report {
         this.name = exports.FILE_CHURN_REPORT_NAME;
         this.description = `File churn report`;
     }
+    addConsiderations() {
+        return addConsiderationsForFileChurnReport(this);
+    }
 }
 exports.FileChurnReport = FileChurnReport;
 // API to be used if we want to generate the report for the general project as well as the report about file churn
@@ -53,7 +56,7 @@ function fileChurnReportCore(fileChurns, params, csvFilePath) {
     const fileChurnSource = fileChurns.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((fileChurns) => {
         console.log(`Processing ${fileChurns.length} records to generate FileChurnReport`);
     }), (0, operators_1.share)());
-    const generateReport = fileChurnSource.pipe(_fileChurnReport(params));
+    const generateReport = fileChurnSource.pipe(_fileChurnReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
     const concurrentStreams = [
         generateReport,
     ];

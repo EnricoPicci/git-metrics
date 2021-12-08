@@ -6,7 +6,9 @@ function addProjectInfo(report, prjInfo, csvFilePath) {
     report.totCommits.val = prjInfo.commits.count;
     report.firstCommitDate.val = prjInfo.commits.first.committerDate;
     report.lastCommitDate.val = prjInfo.commits.last.committerDate;
-    report.csvFile.val = csvFilePath;
+    if (csvFilePath) {
+        report.csvFile.val = csvFilePath;
+    }
     console.log(`====>>>> GENERAL PROJECT INFO ADDED TO REPORT ${report.description}`);
 }
 exports.addProjectInfo = addProjectInfo;

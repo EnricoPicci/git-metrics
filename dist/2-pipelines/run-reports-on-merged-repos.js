@@ -20,14 +20,14 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         .option('-o, --outFilePrefix <string>', `the prefix of the name of the log file written as result of creating a report (default is the name of the repo)`)
         .option('--clocDefsFile <string>', `path of the file that contains the language definitions used by cloc (sse "force-lang-def" in http://cloc.sourceforge.net/#Options)`)
         .option('--depthInFilesCoupling <string>', `if we sort the files for number of commits, we consider for coupling only the ones with more commits, i.e. the ones which remain within depthInFilesCoupling (default value is 10)`, `10`)
-        .option('-p, --parallelReadOfCommits', `if this opion is specified, then the file containing the commit records is read in parallel in the processing of all reports, this can reduce the memory consumption`)
+        .option('-c, --concurrentReadOfCommits', `if this opion is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption`)
         .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`);
     program.parse(process.argv);
     const _options = program.opts();
     const _reports = (_a = _options.reports) !== null && _a !== void 0 ? _a : run_reports_on_repo_core_1.allReports;
     const _repoFolderPath = _options.repoFolderPath ? _options.repoFolderPath : process.cwd();
     const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
-    (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(_reports, _repoFolderPath, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _depthInFilesCoupling, _options.parallelReadOfCommits, _options.noRenames).subscribe({
+    (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(_reports, _repoFolderPath, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _depthInFilesCoupling, _options.concurrentReadOfCommits, _options.noRenames).subscribe({
         next: (reports) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');

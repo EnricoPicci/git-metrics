@@ -55,4 +55,40 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
         });
     });
 });
+describe(`executeCommandNewProcessObs`, () => {
+    it(`the data notified is of type Buffer`, (done) => {
+        const cmd = process.platform === 'win32' ? 'dir' : 'ls';
+        const args = process.platform === 'win32' ? [] : ['-l'];
+        (0, execute_command_1.executeCommandNewProcessObs)('Test-1', cmd, args).subscribe({
+            next: (data) => {
+                (0, chai_1.expect)(data).not.undefined;
+                (0, chai_1.expect)(data instanceof Buffer).true;
+            },
+            error: (err) => {
+                done(`should not arrive here with error: ${err}`);
+            },
+            complete: () => {
+                done();
+            },
+        });
+    });
+});
+describe(`executeCommandNewProcessToLinesObs`, () => {
+    it(`the data notified is of type string`, (done) => {
+        const cmd = process.platform === 'win32' ? 'dir' : 'ls';
+        const args = process.platform === 'win32' ? [] : ['-l'];
+        (0, execute_command_1.executeCommandNewProcessToLinesObs)('Test-1', cmd, args).subscribe({
+            next: (data) => {
+                (0, chai_1.expect)(data).not.undefined;
+                (0, chai_1.expect)(typeof data).equal('string');
+            },
+            error: (err) => {
+                done(`should not arrive here with error: ${err}`);
+            },
+            complete: () => {
+                done();
+            },
+        });
+    });
+});
 //# sourceMappingURL=execute-command.spec.js.map

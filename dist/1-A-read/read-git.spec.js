@@ -22,7 +22,7 @@ describe(`readCommitsCommand`, () => {
         // the command build should be equivalent to this
         // git -C ./test-data/git-repo log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renames --after=2018-01-01 '*.txt' > ./test-data/output/git-repo-commits.log`;
         const expectedOutfile = path.resolve(path.join(outDir, outFile));
-        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:'${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p' --no-renames --after=2018-01-01 '*.txt' > ${expectedOutfile}`;
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --no-renames --after=2018-01-01 *.txt > ${expectedOutfile}`;
         const [cmd, out] = (0, read_git_1.readCommitsCommand)(config);
         (0, chai_1.expect)(cmd).equal(expected);
         (0, chai_1.expect)(out).equal(expectedOutfile);
@@ -38,7 +38,7 @@ describe(`readCommitsCommand`, () => {
             outFile,
         };
         const expectedOutfile = path.resolve(path.join(outDir, outFile));
-        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:'${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p' --after=2018-01-01 '*.c' '*.sh' > ${expectedOutfile}`;
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --after=2018-01-01 *.c *.sh > ${expectedOutfile}`;
         const [cmd, out] = (0, read_git_1.readCommitsCommand)(config);
         (0, chai_1.expect)(cmd).equal(expected);
         (0, chai_1.expect)(out).equal(expectedOutfile);
@@ -53,7 +53,7 @@ describe(`readCommitsCommand`, () => {
             outFile,
         };
         const expectedOutfile = path.resolve(path.join(outDir, outFile));
-        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:'${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p' --after=2018-01-01 --before=2019-01-01  '*.c' '*.sh' > ${expectedOutfile}`;
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --after=2018-01-01 --before=2019-01-01  *.c *.sh > ${expectedOutfile}`;
         const [cmd, out] = (0, read_git_1.readCommitsCommand)(config);
         (0, chai_1.expect)(cmd).equal(expected);
         (0, chai_1.expect)(out).equal(expectedOutfile);
@@ -68,7 +68,7 @@ describe(`readCommitsCommand`, () => {
             firstParent: true,
         };
         const expectedOutfile = path.resolve(path.join(outDir, outFile));
-        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:'${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p' -m --first-parent '*.txt' > ${expectedOutfile}`;
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p -m --first-parent *.txt > ${expectedOutfile}`;
         const [cmd, out] = (0, read_git_1.readCommitsCommand)(config);
         (0, chai_1.expect)(cmd).equal(expected);
         (0, chai_1.expect)(out).equal(expectedOutfile);
@@ -104,6 +104,150 @@ describe(`readCommits`, () => {
             complete: () => done(),
         });
     });
+});
+describe(`readCommitsNewProces`, () => {
+    const outDir = './temp';
+    it(`read the commits from a git repo using git log command running on a different process`, (done) => {
+        const outFile = 'this-git-repo-commits.log';
+        const config = {
+            repoFolderPath: process.cwd(),
+            filter: ['test-data/git-repo-with-code/*.java'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+        const outGitFile = (0, read_git_1.buildGitOutfile)(config);
+        (0, read_git_1.readCommitsNewProces)(config, outGitFile)
+            .pipe((0, rxjs_1.tap)({
+            next: (data) => {
+                (0, chai_1.expect)(data).not.undefined;
+            },
+        }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            next: (lines) => {
+                (0, chai_1.expect)(lines).not.undefined;
+                (0, chai_1.expect)(lines.length).gt(0);
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+    it(`read the commits from a git repo using git log command running on a different process - the result should be the same as 
+    when running the command that writes the result of git log into a file`, (done) => {
+        const outFileNewProces = 'this-git-repo-commits-new-process.log';
+        const outFileSameProces = 'this-git-repo-commits-same-process.log';
+        const config = {
+            repoFolderPath: process.cwd(),
+            after: '2018-01-01',
+            outDir,
+        };
+        const outGitFileNewProces = (0, read_git_1.buildGitOutfile)(Object.assign(Object.assign({}, config), { outFile: outFileNewProces }));
+        (0, read_git_1.readCommitsNewProces)(config, outGitFileNewProces)
+            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((linesReadInOtherProces) => {
+            const outFile = (0, read_git_1.readCommits)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
+            return { linesReadInOtherProces, outFile };
+        }), (0, rxjs_1.concatMap)(({ linesReadInOtherProces, outFile }) => {
+            return (0, observable_fs_1.readLinesObs)(outFile).pipe((0, rxjs_1.map)((linesReadFromFileSaved) => ({ linesReadInOtherProces, linesReadFromFileSaved })));
+        }), (0, rxjs_1.tap)({
+            next: ({ linesReadInOtherProces, linesReadFromFileSaved }) => {
+                linesReadFromFileSaved.forEach((line, i) => {
+                    if (line !== linesReadInOtherProces[i]) {
+                        const otherLine = linesReadInOtherProces[i];
+                        console.log(line);
+                        console.log(otherLine);
+                        throw new Error(`Error in line ${i} - ${line} vs ${otherLine}`);
+                    }
+                    (0, chai_1.expect)(line === linesReadInOtherProces[i]).true;
+                });
+                linesReadFromFileSaved.forEach((line, i) => {
+                    (0, chai_1.expect)(line === linesReadInOtherProces[i]).true;
+                });
+                (0, chai_1.expect)(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length + 1);
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
+    it(`read the commits from a git repo using git log command running on a different process - the output of the git log command is saved on a file - 
+    this file should have the same content as that of the file saved 
+    when running the command that writes syncronously the result of git log into a file`, (done) => {
+        const outFileNewProces = 'this-git-repo-commits-new-process-check-file-3.log';
+        const outFileSameProces = 'this-git-repo-commits-same-process-check-file-3.log';
+        const config = {
+            repoFolderPath: process.cwd(),
+            after: '2018-01-01',
+            outDir,
+        };
+        const outGitFileNewProces = (0, read_git_1.buildGitOutfile)(Object.assign(Object.assign({}, config), { outFile: outFileNewProces }));
+        (0, read_git_1.readCommitsNewProces)(config, outGitFileNewProces)
+            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(() => {
+            const outFile = (0, read_git_1.readCommits)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
+            return outFile;
+        }), (0, rxjs_1.concatMap)((outFile) => {
+            return (0, rxjs_1.forkJoin)([(0, observable_fs_1.readLinesObs)(outGitFileNewProces), (0, observable_fs_1.readLinesObs)(outFile)]);
+        }), (0, rxjs_1.tap)({
+            next: ([linesReadInOtherProces, linesReadFromFileSaved]) => {
+                linesReadFromFileSaved.forEach((line, i) => {
+                    if (line !== linesReadInOtherProces[i]) {
+                        const otherLine = linesReadInOtherProces[i];
+                        console.log(line);
+                        console.log(otherLine);
+                        throw new Error(`Error in line ${i} - ${line} vs ${otherLine}`);
+                    }
+                    (0, chai_1.expect)(line === linesReadInOtherProces[i]).true;
+                });
+                linesReadFromFileSaved.forEach((line, i) => {
+                    (0, chai_1.expect)(line === linesReadInOtherProces[i]).true;
+                });
+                (0, chai_1.expect)(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length + 1);
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
+    it.skip(`read the commits from a big git repo using git log command running on a different process - the result should be the same as 
+    when running the command that writes the result of git log into a file`, (done) => {
+        const outFileNewProces = 'this-git-repo-commits-new-process.log';
+        const outFileSameProces = 'this-git-repo-commits-same-process.log';
+        const config = {
+            repoFolderPath: 'pathToRealWorldGitRepoFolder',
+            after: '2018-01-01',
+            outDir,
+        };
+        const outGitFileNewProces = (0, read_git_1.buildGitOutfile)(Object.assign(Object.assign({}, config), { outFile: outFileNewProces }));
+        (0, read_git_1.readCommitsNewProces)(config, outGitFileNewProces)
+            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((linesReadInOtherProces) => {
+            const outFile = (0, read_git_1.readCommits)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
+            return { linesReadInOtherProces, outFile };
+        }), (0, rxjs_1.concatMap)(({ linesReadInOtherProces, outFile }) => {
+            return (0, observable_fs_1.readLinesObs)(outFile).pipe((0, rxjs_1.map)((linesReadFromFileSaved) => ({ linesReadInOtherProces, linesReadFromFileSaved })));
+        }), (0, rxjs_1.tap)({
+            next: ({ linesReadInOtherProces, linesReadFromFileSaved }) => {
+                linesReadFromFileSaved.forEach((line, i) => {
+                    if (line !== linesReadInOtherProces[i]) {
+                        const otherLine = linesReadInOtherProces[i];
+                        console.log(line);
+                        console.log(otherLine);
+                        throw new Error(`Error in line ${i} - ${line} vs ${linesReadFromFileSaved[i]}`);
+                    }
+                    (0, chai_1.expect)(line === linesReadInOtherProces[i]).true;
+                });
+                linesReadFromFileSaved.forEach((line, i) => {
+                    (0, chai_1.expect)(line === linesReadInOtherProces[i]).true;
+                });
+                (0, chai_1.expect)(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length + 1);
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(2000000);
 });
 describe(`readTagsCommand`, () => {
     it(`builds the git log command to read the tags`, () => {

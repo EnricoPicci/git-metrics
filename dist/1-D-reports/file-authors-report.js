@@ -24,6 +24,9 @@ class FileAuthorsReport extends report_1.Report {
         this.name = exports.FILE_AUTHORS_REPORT_NAME;
         this.description = `File-Authors report`;
     }
+    addConsiderations() {
+        return addConsiderationsForFileAuthorsReport(this);
+    }
 }
 exports.FileAuthorsReport = FileAuthorsReport;
 // API to be used if we want to generate the report for the general project as well as the report about file-authors
@@ -46,7 +49,7 @@ function fileAuthorsReportCore(fileAuthor, params, csvFilePath) {
     const fileAuthorSource = fileAuthor.pipe((0, operators_1.share)());
     const generateReport = fileAuthorSource.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((fileAuthors) => {
         console.log(`Processing ${fileAuthors.length} records to generate FileAuthorsReport`);
-    }), _fileAuthorsReport(params));
+    }), _fileAuthorsReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
     const concurrentStreams = [
         generateReport,
     ];
