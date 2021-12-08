@@ -36,6 +36,9 @@ export class ModuleChurnReport extends Report {
         this.name = MODULE_CHURN_REPORT_NAME;
         this.description = `Module churn report`;
     }
+    addConsiderations() {
+        return addConsiderationsForModuleChurnReport(this);
+    }
 }
 
 // API to be used if we want to generate the report for the general project as well as the report about file churn
@@ -83,7 +86,10 @@ export function moduleChurnReportCore(
         }),
         share(),
     );
-    const generateReport = moduleChurnSource.pipe(_moduleChurnReport(params));
+    const generateReport = moduleChurnSource.pipe(
+        _moduleChurnReport(params),
+        tap((report) => (report.csvFile.val = csvFilePath)),
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const concurrentStreams: [Observable<ModuleChurnReport>, Observable<{ churns: ModuleChurn[]; maxDepth: number }>?] =
         [generateReport as Observable<ModuleChurnReport>];

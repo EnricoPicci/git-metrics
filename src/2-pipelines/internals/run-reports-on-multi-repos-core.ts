@@ -19,7 +19,7 @@ export function runAllReportsOnMultiRepos(
     outFilePrefix: string,
     clocDefsPath: string,
     depthInFilesCoupling: number,
-    parallelReadOfCommits: boolean,
+    concurrentReadOfCommits: boolean,
     noRenames: boolean,
 ) {
     // create the output directory if not existing
@@ -36,7 +36,7 @@ export function runAllReportsOnMultiRepos(
             commitLogPath,
             clocLogPath,
             clocSummaryPath,
-            parallelReadOfCommits,
+            concurrentReadOfCommits,
             after,
             before,
         );

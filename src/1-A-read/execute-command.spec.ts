@@ -1,5 +1,10 @@
 import { expect } from 'chai';
-import { executeCommand, executeCommandObs } from './execute-command';
+import {
+    executeCommand,
+    executeCommandNewProcessObs,
+    executeCommandNewProcessToLinesObs,
+    executeCommandObs,
+} from './execute-command';
 
 describe(`When executing a command`, () => {
     it(`returns the console output if the command is correct`, () => {
@@ -49,6 +54,44 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
             },
             complete: () => {
                 done(`should not arrive here since it should error`);
+            },
+        });
+    });
+});
+
+describe(`executeCommandNewProcessObs`, () => {
+    it(`the data notified is of type Buffer`, (done) => {
+        const cmd = process.platform === 'win32' ? 'dir' : 'ls';
+        const args = process.platform === 'win32' ? [] : ['-l'];
+        executeCommandNewProcessObs('Test-1', cmd, args).subscribe({
+            next: (data) => {
+                expect(data).not.undefined;
+                expect(data instanceof Buffer).true;
+            },
+            error: (err) => {
+                done(`should not arrive here with error: ${err}`);
+            },
+            complete: () => {
+                done();
+            },
+        });
+    });
+});
+
+describe(`executeCommandNewProcessToLinesObs`, () => {
+    it(`the data notified is of type string`, (done) => {
+        const cmd = process.platform === 'win32' ? 'dir' : 'ls';
+        const args = process.platform === 'win32' ? [] : ['-l'];
+        executeCommandNewProcessToLinesObs('Test-1', cmd, args).subscribe({
+            next: (data) => {
+                expect(data).not.undefined;
+                expect(typeof data).equal('string');
+            },
+            error: (err) => {
+                done(`should not arrive here with error: ${err}`);
+            },
+            complete: () => {
+                done();
             },
         });
     });

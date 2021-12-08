@@ -5,6 +5,7 @@ import { readAll } from '../../1-A-read/read-all';
 import { filesStream } from '../../1-B-git-enriched-streams/files';
 
 import { repoCouplingReport } from '../../1-D-reports/repo-coupling-report';
+import { fileTuplesDict } from '../../1-C-aggregate-in-memory/repo-coupling-aggregate';
 
 export function runRepoCouplingReport(
     repoFolderPaths: string[],
@@ -27,5 +28,7 @@ export function runRepoCouplingReport(
         return filesStream(commitLogPath, clocLogPath);
     });
 
-    return repoCouplingReport(fileStreams, timeWindowLengthInDays, csvFilePath);
+    const fileTupleDict = fileTuplesDict(fileStreams, timeWindowLengthInDays);
+
+    return repoCouplingReport(fileTupleDict, csvFilePath);
 }

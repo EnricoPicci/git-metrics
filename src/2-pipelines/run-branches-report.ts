@@ -32,8 +32,8 @@ export function launchBranchesReport() {
             `10`,
         )
         .option(
-            '-p, --parallelReadOfCommits',
-            `if this opion is specified, then the file containing the commit records is read in parallel in the processing of all reports, this can reduce the memory consumption`,
+            '-c, --concurrentReadOfCommits',
+            `if this opion is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption`,
         )
         .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`);
     program.parse(process.argv);

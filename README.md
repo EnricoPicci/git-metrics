@@ -78,7 +78,7 @@ where 'path_1' and 'path_2' represent the paths to the folders that contain the 
 -   '-d, --outDir <string>': folder where the log file created by git log command will be written
 -   '-o, --outFilePrefix <string>': the prefix of the name of the log file written as result of creating a report (default is the name of the repo)
 -   '--depthInFilesCoupling <string>': if we sort the files for number of commits, we consider for coupling only the ones with more commits, i.e. the ones which remain within depthInFilesCoupling (default value is 10)`
--   '-p, --parallelReadOfCommits': if this option is specified, then the file containing the commit records is read in parallel in the processing of all reports, this can reduce the memory consumption
+-   '-c, --concurrentReadOfCommits'': if this option is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption
 -   '--noRenames': if this opion is specified, then the no-renames option is used in the git log command
 
 ## Results produced

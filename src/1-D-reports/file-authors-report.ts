@@ -33,6 +33,9 @@ export class FileAuthorsReport extends Report {
         this.name = FILE_AUTHORS_REPORT_NAME;
         this.description = `File-Authors report`;
     }
+    addConsiderations() {
+        return addConsiderationsForFileAuthorsReport(this);
+    }
 }
 
 // API to be used if we want to generate the report for the general project as well as the report about file-authors
@@ -74,6 +77,7 @@ export function fileAuthorsReportCore(
             console.log(`Processing ${fileAuthors.length} records to generate FileAuthorsReport`);
         }),
         _fileAuthorsReport(params),
+        tap((report) => (report.csvFile.val = csvFilePath)),
     );
     const concurrentStreams: [Observable<FileAuthorsReport>, Observable<string>?] = [
         generateReport as Observable<FileAuthorsReport>,

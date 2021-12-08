@@ -1,18 +1,17 @@
 import path from 'path';
 import { forkJoin, Observable } from 'rxjs';
-import { concatMap, filter, map, share } from 'rxjs/operators';
+import { concatMap, filter, map, share, toArray } from 'rxjs/operators';
 
 import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
-import { readAll } from '../../1-A-read/read-all';
+import { readAll, readAllParallel, readStreamsDistinctProcesses } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryStream } from '../../1-A-read/cloc';
 
-import { enrichedCommitsStream } from '../../1-B-git-enriched-streams/commits';
+import { enrichedCommitsStream, newGitCommit, toCommits } from '../../1-B-git-enriched-streams/commits';
 import { filesStream, filesStreamFromEnrichedCommitsStream } from '../../1-B-git-enriched-streams/files';
 import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 
 import { projectInfo } from '../../1-C-aggregate-in-memory/project-info-aggregate';
-import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
 
 import { FileChurnReport } from '../../1-D-reports/file-churn-report';
 import { AuthorChurnReport } from '../../1-D-reports/author-churn-report';
@@ -28,6 +27,8 @@ import {
     fileAuthorsReportGenerator,
     fileCouplingReportGenerator,
 } from './report-generators';
+import { toClocFileDict } from '../../1-B-git-enriched-streams/read-cloc-log';
+import { addProjectInfo } from '../../1-D-reports/add-project-info';
 
 export const allReports = [
     FileChurnReport.name,
@@ -36,7 +37,8 @@ export const allReports = [
     FileAuthorsReport.name,
     FilesCouplingReport.name,
 ];
-export function runReports(
+
+export function runReportsSingleThread(
     reports: string[],
     repoFolderPath: string,
     filter: string[],
@@ -45,7 +47,7 @@ export function runReports(
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
-    parallelReadOfCommits: boolean,
+    concurrentReadOfCommits: boolean,
     noRenames: boolean,
     depthInFilesCoupling?: number,
 ) {
@@ -62,7 +64,7 @@ export function runReports(
         commitLogPath,
         clocLogPath,
         clocSummaryPath,
-        parallelReadOfCommits,
+        concurrentReadOfCommits,
         after,
         before,
     );
@@ -72,6 +74,115 @@ export function runReports(
         reports,
         repoFolderPath,
         filter,
+        after,
+        before,
+        outDir,
+        outFilePrefix,
+        clocDefsPath,
+        depthInFilesCoupling,
+        _commitStream,
+        _filesStream,
+        _clocSummaryStream,
+    );
+}
+
+export function runReportsParallelReads(
+    reports: string[],
+    repoFolderPath: string,
+    filter: string[],
+    after: string,
+    before: string,
+    outDir: string,
+    outFilePrefix: string,
+    clocDefsPath: string,
+    concurrentReadOfCommits: boolean,
+    noRenames: boolean,
+    depthInFilesCoupling?: number,
+) {
+    // create the output directory if not existing
+    createDirIfNotExisting(outDir);
+
+    // read from git loc and cloc
+    const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames, reverse: true };
+    const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
+    return readAllParallel(commitOptions, readClocOptions).pipe(
+        // prepare the streams of git enriched objects
+        map(([commitLogPath, clocLogPath, clocSummaryPath]) =>
+            _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before),
+        ),
+        // run the aggregation logic and the reports
+        concatMap(({ _commitStream, _filesStream, _clocSummaryStream }) =>
+            runReportsFromStreams(
+                reports,
+                repoFolderPath,
+                filter,
+                after,
+                before,
+                outDir,
+                outFilePrefix,
+                clocDefsPath,
+                depthInFilesCoupling,
+                _commitStream,
+                _filesStream,
+                _clocSummaryStream,
+            ),
+        ),
+    );
+}
+
+export function runReportsOneStream(
+    reports: string[],
+    repoFolderPath: string,
+    _filter: string[],
+    after: string,
+    before: string,
+    outDir: string,
+    outFilePrefix: string,
+    clocDefsPath: string,
+    noRenames: boolean,
+    depthInFilesCoupling?: number,
+) {
+    // create the output directory if not existing
+    createDirIfNotExisting(outDir);
+
+    const _after = new Date(after);
+    const _before = new Date(before);
+
+    // streams that read from git loc and cloc
+    const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
+    const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
+    const { gitLogCommits, cloc, clocSummary } = readStreamsDistinctProcesses(commitOptions, readClocOptions);
+
+    // enrich git log streams
+    const clocDict = cloc.pipe(toArray(), toClocFileDict());
+    let _commitStream = clocDict.pipe(
+        concatMap((clocDict) =>
+            gitLogCommits.pipe(
+                filter((line) => line.length > 0),
+                toCommits(),
+                map((commit) => newGitCommit(commit, clocDict)),
+            ),
+        ),
+    );
+    _commitStream = after ? _commitStream.pipe(filter((c) => c.committerDate > _after)) : _commitStream;
+    _commitStream = _commitStream.pipe(share());
+
+    const _filesStream = filesStreamFromEnrichedCommitsStream(_commitStream).pipe(
+        filter((file) => {
+            const commitDate = new Date(file.committerDate);
+            const isAfter = after ? commitDate > _after : true;
+            const isBefore = before ? commitDate < _before : true;
+            return isAfter && isBefore;
+        }),
+        share(),
+    );
+
+    const _clocSummaryStream = clocSummary.pipe(toArray());
+
+    return runReportsFromStreams(
+        reports,
+        repoFolderPath,
+        _filter,
         after,
         before,
         outDir,
@@ -153,7 +264,7 @@ export function runReportsFromStreams(
         }),
     );
 
-    const generators: ((_projectInfo: ProjectInfo) => Observable<Report>)[] = [];
+    const generators: Observable<Report>[] = [];
 
     if (!reports || reports.length === 0) {
         reports = allReports;
@@ -181,8 +292,13 @@ export function runReportsFromStreams(
         }
     });
 
-    return projectInfo(_commitStream, _clocSummaryStream).pipe(
-        map((prjInfo) => generators.map((g) => g(prjInfo))),
-        concatMap((generators) => forkJoin(generators)),
+    return forkJoin([projectInfo(_commitStream, _clocSummaryStream), ...generators]).pipe(
+        map((prjInfoAndReports) => {
+            const prjInfo = prjInfoAndReports[0];
+            return prjInfoAndReports.slice(1).map((report: Report) => {
+                addProjectInfo(report, prjInfo);
+                return report.addConsiderations();
+            });
+        }),
     );
 }

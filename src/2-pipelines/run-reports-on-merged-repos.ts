@@ -46,8 +46,8 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
             `10`,
         )
         .option(
-            '-p, --parallelReadOfCommits',
-            `if this opion is specified, then the file containing the commit records is read in parallel in the processing of all reports, this can reduce the memory consumption`,
+            '-c, --concurrentReadOfCommits',
+            `if this opion is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption`,
         )
         .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`);
 
@@ -68,7 +68,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         _options.outFilePrefix,
         _options.clocDefsFile,
         _depthInFilesCoupling,
-        _options.parallelReadOfCommits,
+        _options.concurrentReadOfCommits,
         _options.noRenames,
     ).subscribe({
         next: (reports) => {

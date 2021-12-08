@@ -21,7 +21,7 @@ export function runAllReportsOnMergedRepos(
     outFilePrefix: string,
     clocDefsPath: string,
     depthInFilesCoupling: number,
-    parallelReadOfCommits: boolean,
+    concurrentReadOfCommits: boolean,
     noRenames: boolean,
 ) {
     // create the output directory if not existing
@@ -51,7 +51,7 @@ export function runAllReportsOnMergedRepos(
                     commitLogPath,
                     clocLogPath,
                     clocSummaryPath,
-                    parallelReadOfCommits,
+                    concurrentReadOfCommits,
                     after,
                     before,
                 );

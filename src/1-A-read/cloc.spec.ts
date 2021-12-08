@@ -1,8 +1,16 @@
 import { expect } from 'chai';
 import path from 'path';
-import { tap, concatMap } from 'rxjs/operators';
+import { tap, concatMap, toArray, map } from 'rxjs/operators';
 import { readLinesObs } from 'observable-fs';
-import { createClocLog, createMultiClocLogs, createSummaryClocLog } from './cloc';
+import {
+    buildClocOutfile,
+    buildSummaryClocOutfile,
+    createClocLog,
+    createClocNewProcess,
+    createMultiClocLogs,
+    createSummaryClocLog,
+    createSummaryClocNewProcess,
+} from './cloc';
 import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 
 describe(`createClocLog`, () => {
@@ -32,6 +40,101 @@ describe(`createClocLog`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
+    }).timeout(20000);
+});
+
+describe(`createClocNewProcess`, () => {
+    it(`read the number of lines for each file from the folder named as the repo and saves them in a file - uses a different process`, (done) => {
+        const repo = 'git-repo-with-code';
+        const outDir = path.join(process.cwd(), './temp');
+        const config: ConfigReadCloc = {
+            repoFolderPath: `./test-data/${repo}`,
+            outDir,
+        };
+        // executes the cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
+        const returnedOutFilePath = createClocLog(config, 'test');
+
+        const outFileNewProcess = buildClocOutfile({ ...config, outClocFilePrefix: 'new-process' });
+
+        createClocNewProcess(config, outFileNewProcess, 'test')
+            .pipe(
+                toArray(),
+                concatMap((linesReadInNewProcess) =>
+                    readLinesObs(returnedOutFilePath).pipe(
+                        map((linesReadFromFilecreatedSynchronously) => ({
+                            linesReadInNewProcess,
+                            linesReadFromFilecreatedSynchronously,
+                        })),
+                    ),
+                ),
+                tap({
+                    next: ({ linesReadInNewProcess, linesReadFromFilecreatedSynchronously }) => {
+                        // ignore the first line since contains statistical infor which may vary between the 2 executions
+                        let _linesReadInNewProcess = linesReadInNewProcess.slice(1);
+                        const _linesReadFromFilecreatedSynchronously = linesReadFromFilecreatedSynchronously.slice(1);
+                        // the execution in a new process adds an empty line at the end of the file
+                        _linesReadInNewProcess = _linesReadInNewProcess.slice(0, _linesReadInNewProcess.length - 1);
+
+                        _linesReadInNewProcess.forEach((line, i) => {
+                            const theOtherLine = _linesReadFromFilecreatedSynchronously[i];
+                            expect(line).equal(theOtherLine);
+                        });
+                        expect(_linesReadInNewProcess.length).equal(_linesReadFromFilecreatedSynchronously.length);
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    }).timeout(20000);
+});
+
+describe(`createSummaryClocNewProcess`, () => {
+    it(`read the cloc summary and saves it in a file - uses a different process`, (done) => {
+        const repo = 'git-repo-with-code';
+        const outDir = path.join(process.cwd(), './temp');
+        const config: ConfigReadCloc = {
+            repoFolderPath: `./test-data/${repo}`,
+            outDir,
+        };
+        // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
+        const outFileSameProcess = createSummaryClocLog({ ...config, outClocFilePrefix: 'same-process' }, 'test');
+
+        const outFileNewProcess = buildSummaryClocOutfile({ ...config, outClocFilePrefix: 'new-process' });
+
+        createSummaryClocNewProcess(config, outFileNewProcess, 'test')
+            .pipe(
+                toArray(),
+                concatMap((linesReadInNewProcess) =>
+                    readLinesObs(outFileSameProcess).pipe(
+                        map((linesReadFromFilecreatedSynchronously) => ({
+                            linesReadInNewProcess,
+                            linesReadFromFilecreatedSynchronously,
+                        })),
+                    ),
+                ),
+                tap({
+                    next: ({ linesReadInNewProcess, linesReadFromFilecreatedSynchronously }) => {
+                        // skip the first line which contains statistical data which vary between the different executions
+                        // skip the last line which in one case is the empty string and in the other is null
+                        const _linesReadInNewProcess = linesReadInNewProcess.slice(1, linesReadInNewProcess.length - 1);
+                        // skip the first line which contains statistical data which vary between the different executions
+                        const _linesReadFromFilecreatedSynchronously = linesReadFromFilecreatedSynchronously.slice(1);
+                        _linesReadInNewProcess.forEach((line, i) => {
+                            //  v 1.92  T=0.01 s (294.9 files/s, 1671.1 lines/s
+                            //  v 1.92  T=0.01 s (283.7 files/s, 1607.7 lines/s)
+                            const theOtherLine = _linesReadFromFilecreatedSynchronously[i];
+                            expect(line).equal(theOtherLine);
+                        });
+                        expect(linesReadInNewProcess.length).equal(linesReadFromFilecreatedSynchronously.length + 1);
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
     }).timeout(20000);
 });
 

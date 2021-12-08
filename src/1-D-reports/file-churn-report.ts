@@ -46,6 +46,9 @@ export class FileChurnReport extends Report {
         this.name = FILE_CHURN_REPORT_NAME;
         this.description = `File churn report`;
     }
+    addConsiderations() {
+        return addConsiderationsForFileChurnReport(this);
+    }
 }
 
 // API to be used if we want to generate the report for the general project as well as the report about file churn
@@ -89,7 +92,10 @@ export function fileChurnReportCore(
         }),
         share(),
     );
-    const generateReport = fileChurnSource.pipe(_fileChurnReport(params));
+    const generateReport = fileChurnSource.pipe(
+        _fileChurnReport(params),
+        tap((report) => (report.csvFile.val = csvFilePath)),
+    );
     const concurrentStreams: [Observable<FileChurnReport>, Observable<FileChurn[]>?] = [
         generateReport as Observable<FileChurnReport>,
     ];

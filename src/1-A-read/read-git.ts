@@ -1,13 +1,15 @@
 import path = require('path');
-import { forkJoin } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
+import { forkJoin, merge, of } from 'rxjs';
+import { appendFileObs, deleteFileObs } from 'observable-fs';
+
+import { catchError, concatMap, ignoreElements, map, share, tap } from 'rxjs/operators';
 import {
     ConfigReadBrachesGraph,
     ConfigReadCommits,
     ConfigReadMultiReposCommits,
     ConfigReadTags,
 } from './read-params/read-params';
-import { executeCommand, executeCommandObs } from './execute-command';
+import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from './execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
 
 const SEP = DEFAUL_CONFIG.SEP;
@@ -27,6 +29,41 @@ export function readCommits(config: ConfigReadCommits) {
     console.log(`====>>>> Output saved on file ${out}`);
     return out;
 }
+export function readCommitsObs(config: ConfigReadCommits) {
+    const [cmd, out] = readCommitsCommand(config);
+    return executeCommandObs('readCommits', cmd).pipe(
+        tap({
+            complete: () => {
+                console.log(
+                    `====>>>> Commits read from repo in folder ${
+                        config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
+                    }`,
+                );
+                console.log(`====>>>> Output saved on file ${out}`);
+            },
+        }),
+        map(() => out),
+    );
+}
+export function readCommitsNewProces(config: ConfigReadCommits, outFile: string) {
+    const { cmd, args } = readCommitsCommandWithArgs(config);
+    const _readCommits = executeCommandNewProcessToLinesObs('readCommits', cmd, args).pipe(share());
+    const _writeFile = deleteFileObs(outFile).pipe(
+        catchError((err) => {
+            if (err.code === 'ENOENT') {
+                // emit something so that the next operation can continue
+                return of(null);
+            }
+        }),
+        concatMap(() => _readCommits),
+        concatMap((line) => {
+            const _line = `${line}\n`;
+            return appendFileObs(outFile, _line);
+        }),
+        ignoreElements(),
+    );
+    return merge(_readCommits, _writeFile);
+}
 
 // returns an Observable which notifies when all git log commands on all repos have been executed, errors if one of the commands errors
 export function readMultiReposCommits(config: ConfigReadMultiReposCommits) {
@@ -41,22 +78,7 @@ export function readMultiReposCommits(config: ConfigReadMultiReposCommits) {
             };
             return readSingleRepoConfig;
         })
-        .map((config) => {
-            const [cmd, out] = readCommitsCommand(config);
-            return executeCommandObs('readCommits', cmd).pipe(
-                tap({
-                    complete: () => {
-                        console.log(
-                            `====>>>> Commits read from repo in folder ${
-                                config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
-                            }`,
-                        );
-                        console.log(`====>>>> Output saved on file ${out}`);
-                    },
-                }),
-                map(() => out),
-            );
-        });
+        .map((config) => readCommitsObs(config));
     return forkJoin(readSingleRepoConfigs);
 }
 
@@ -84,30 +106,58 @@ export function readBranchesGraph(config: ConfigReadTags) {
     return out;
 }
 
-// private function exported only for test purposes
-export function readCommitsCommand(config: ConfigReadCommits) {
-    const repoFolder = config.repoFolderPath ? `-C ${config.repoFolderPath}` : '';
-    const after = config.after ? `--after=${config.after}` : '';
-    const before = config.before ? ` --before=${config.before} ` : '';
-    let filter = '';
-    if (config.filter) {
-        const filters = config.filter.map((f) => `'${f}'`);
-        filter = `${filters.join(' ')}`;
-    }
-    const _noRenames = config.noRenames ? '--no-renames ' : '';
-    const _reverse = config.reverse ? '--reverse ' : '';
-    const _includeMergeCommits = config.includeMergeCommits ? '-m ' : '';
-    const _firstParent = config.firstParent ? '--first-parent' : '';
-
+export function buildGitOutfile(config: ConfigReadCommits) {
     let outDir = config.outDir ? config.outDir : DEFAULT_OUT_DIR;
     outDir = path.resolve(outDir);
     const _postfix = config.reverse ? COMMITS_FILE_REVERSE_POSTFIX : COMMITS_FILE_POSTFIX;
     const outFile = getOutfileName(config.outFile, config.outFilePrefix, config.repoFolderPath, _postfix);
     const out = path.join(outDir, outFile);
-    return [
-        `git ${repoFolder} log --all --numstat --date=short --pretty=format:'${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p' ${_reverse}${_noRenames}${_includeMergeCommits}${_firstParent}${after}${before} ${filter} > ${out}`,
-        out,
+    return out;
+}
+
+// private function exported only for test purposes
+export function readCommitsCommand(config: ConfigReadCommits) {
+    const { cmd, args } = readCommitsCommandWithArgs(config);
+    const cmdWithArgs = `${cmd} ${args.join(' ')}`;
+    const out = buildGitOutfile(config);
+    return [`${cmdWithArgs} > ${out}`, out];
+}
+export function readCommitsCommandWithArgs(config: ConfigReadCommits) {
+    const repoFolder = config.repoFolderPath ? ['-C', `${config.repoFolderPath}`] : [];
+    const after = config.after ? `--after=${config.after.trim()}` : '';
+    const before = config.before ? `--before=${config.before.trim()} ` : '';
+    let filters = [];
+    if (config.filter) {
+        filters = config.filter.map((f) => `${f}`);
+    }
+    const _noRenames = config.noRenames ? '--no-renames' : '';
+    const _reverse = config.reverse ? '--reverse' : '';
+    const _includeMergeCommits = config.includeMergeCommits ? '-m' : '';
+    const _firstParent = config.firstParent ? '--first-parent' : '';
+
+    const _args = [
+        ...repoFolder,
+        'log',
+        '--all',
+        '--numstat',
+        '--date=short',
+        `--pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p`,
+        _reverse,
+        _noRenames,
+        _includeMergeCommits,
+        _firstParent,
+        after,
+        before,
+        ...filters,
     ];
+    const args = _args.filter((a) => {
+        const resp = !!a && a.length > 0;
+        return resp;
+    });
+    return {
+        cmd: `git`,
+        args,
+    };
 }
 
 // private function exported only for test purposes

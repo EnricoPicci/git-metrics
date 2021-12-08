@@ -70,10 +70,8 @@ describe(`runAllReportsOnMultiRepos`, () => {
                     readsInParallelStream = COMMIT_RECORD_COUNTER.numberOfCommitLines;
                 }),
                 tap(() => {
-                    // in the single stream mode we read twice the file containing the commit log: once for to build the project info aand once to actually
-                    // produce all the reports (all the reports are build with just one read stream which is shared among all report builders). Therefore
-                    // to calculate how many reads are done in one round of reads of the commit log we have to divide the readsInSingleStream by 2
-                    const readsOfCommitLog = readsInSingleStream / 2;
+                    // in the single stream mode we read once the file containing the commit log
+                    const readsOfCommitLog = readsInSingleStream;
                     // With parallel streams there is the same read of the file containing the commit log to build the project info and then there are as many
                     // reads of that file as there are reports to be built
                     expect(readsOfCommitLog + readsOfCommitLog * reports.length).equal(readsInParallelStream);

@@ -1,21 +1,16 @@
 import path from 'path';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { authorChurn } from '../../1-C-aggregate-in-memory/author-churn-aggregate';
 import { fileAuthors } from '../../1-C-aggregate-in-memory/file-authors-aggregate';
 import { fileChurn } from '../../1-C-aggregate-in-memory/file-churn-aggregate';
 import { fileCoupling } from '../../1-C-aggregate-in-memory/file-coupling-aggregate';
 import { moduleChurns } from '../../1-C-aggregate-in-memory/module-churn-aggregate';
-import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
 import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
-import { addProjectInfo } from '../../1-D-reports/add-project-info';
-import { authorChurnReportCore, addConsiderationsForAuthorChurnReport } from '../../1-D-reports/author-churn-report';
-import { fileAuthorsReportCore, addConsiderationsForFileAuthorsReport } from '../../1-D-reports/file-authors-report';
-import { fileChurnReportCore, addConsiderationsForFileChurnReport } from '../../1-D-reports/file-churn-report';
-import {
-    fileCouplingReportCore,
-    addConsiderationsForFilesCouplingReport,
-} from '../../1-D-reports/file-coupling-report';
-import { moduleChurnReportCore, addConsiderationsForModuleChurnReport } from '../../1-D-reports/module-churn-report';
+import { authorChurnReportCore } from '../../1-D-reports/author-churn-report';
+import { fileAuthorsReportCore } from '../../1-D-reports/file-authors-report';
+import { fileChurnReportCore } from '../../1-D-reports/file-churn-report';
+import { fileCouplingReportCore } from '../../1-D-reports/file-coupling-report';
+import { moduleChurnReportCore } from '../../1-D-reports/module-churn-report';
 import { ReportParams } from '../../1-D-reports/report';
 
 export function fileChurnReportGenerator(
@@ -30,13 +25,7 @@ export function fileChurnReportGenerator(
     // aggregation
     const _fileChurn = fileChurn(_filesStream, params.after);
     // report generations
-    return (_projectInfo: ProjectInfo) =>
-        fileChurnReportCore(_fileChurn, params, csvFilePath).pipe(
-            map((_report) => {
-                addProjectInfo(_report, _projectInfo, csvFilePath);
-                return addConsiderationsForFileChurnReport(_report);
-            }),
-        );
+    return fileChurnReportCore(_fileChurn, params, csvFilePath);
 }
 
 export function moduleChurnReportGenerator(
@@ -56,13 +45,7 @@ export function moduleChurnReportGenerator(
     const _secondFileChurn = fileChurn(_filesStream, params.after);
     const _moduleChurn = moduleChurns(_secondFileChurn);
     // report generations
-    return (_projectInfo: ProjectInfo) =>
-        moduleChurnReportCore(_moduleChurn, params, csvFilePath).pipe(
-            map((_report) => {
-                addProjectInfo(_report, _projectInfo, csvFilePath);
-                return addConsiderationsForModuleChurnReport(_report);
-            }),
-        );
+    return moduleChurnReportCore(_moduleChurn, params, csvFilePath);
 }
 
 export function authorChurnReportGenerator(
@@ -77,13 +60,7 @@ export function authorChurnReportGenerator(
     // aggregation
     const _authorChurn = authorChurn(_commitStream, params.after);
     // report generations
-    return (_projectInfo: ProjectInfo) =>
-        authorChurnReportCore(_authorChurn, params, csvFilePath).pipe(
-            map((_report) => {
-                addProjectInfo(_report, _projectInfo, csvFilePath);
-                return addConsiderationsForAuthorChurnReport(_report);
-            }),
-        );
+    return authorChurnReportCore(_authorChurn, params, csvFilePath);
 }
 
 export function fileAuthorsReportGenerator(
@@ -98,13 +75,7 @@ export function fileAuthorsReportGenerator(
     // aggregation
     const _fileAuthors = fileAuthors(_filesStream, params.after);
     // report generations
-    return (_projectInfo: ProjectInfo) =>
-        fileAuthorsReportCore(_fileAuthors, params, csvFilePath).pipe(
-            map((_report) => {
-                addProjectInfo(_report, _projectInfo, csvFilePath);
-                return addConsiderationsForFileAuthorsReport(_report);
-            }),
-        );
+    return fileAuthorsReportCore(_fileAuthors, params, csvFilePath);
 }
 
 export function fileCouplingReportGenerator(
@@ -120,11 +91,5 @@ export function fileCouplingReportGenerator(
     // aggregation
     const _fileCoupling = fileCoupling(_commitStream, depthInFilesCoupling, params.after);
     // report generations
-    return (_projectInfo: ProjectInfo) =>
-        fileCouplingReportCore(_fileCoupling, params, csvFilePath).pipe(
-            map((_report) => {
-                addProjectInfo(_report, _projectInfo, csvFilePath);
-                return addConsiderationsForFilesCouplingReport(_report);
-            }),
-        );
+    return fileCouplingReportCore(_fileCoupling, params, csvFilePath);
 }

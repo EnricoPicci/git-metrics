@@ -101,13 +101,13 @@ export function splitCommits(logFilePath: string) {
         : _readLineObs;
     return _readLineObs.pipe(
         filter((line) => line.length > 0),
-        _splitCommit(logFilePath),
+        toCommits(logFilePath),
     );
 }
 // Custom operator which splits the content of a git log into buffers of lines whereeach buffer contains all the info
 // relative to a single git commit
 // https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
-function _splitCommit(logFilePath: string) {
+export function toCommits(logFilePath?: string) {
     return (source: Observable<string>) => {
         return new Observable((subscriber: Subscriber<string[]>) => {
             let buffer: string[];
@@ -125,7 +125,8 @@ function _splitCommit(logFilePath: string) {
                 error: (err) => subscriber.error(err),
                 complete: () => {
                     if (!buffer) {
-                        subscriber.error(`!!!!!!!!!!!!! >>>>  No commits found in file ${logFilePath}`);
+                        const logPathMsg = logFilePath ? `in file ${logFilePath}` : '';
+                        subscriber.error(`!!!!!!!!!!!!! >>>>  No commits found ${logPathMsg}`);
                     }
                     subscriber.next(buffer);
                     subscriber.complete();
