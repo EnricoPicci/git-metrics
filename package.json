@@ -4,7 +4,7 @@
   "description": "tools to calculate some metrics out of git repos",
   "main": "index.js",
   "bin": {
-    "git-metrics": "./dist/lib/srun-reports-on-repo-parallel-reads.js",
+    "git-metrics": "./dist/lib/run-reports-on-repo-parallel-reads.js",
     "run-reports": "./dist/lib/run-reports-on-repo-parallel-reads.js",
     "run-reports-single-thread": "./dist/lib/run-reports-on-repo-single-thread.js",
     "run-branches-report": "./dist/lib/run-branches-report.js",
