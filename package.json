@@ -4,14 +4,14 @@
   "description": "tools to calculate some metrics out of git repos",
   "main": "index.js",
   "bin": {
-    "git-metrics": "./dist/lib/run-reports-on-repo-parallel-reads.js",
-    "run-reports": "./dist/lib/run-reports-on-repo-parallel-reads.js",
-    "run-reports-single-thread": "./dist/lib/run-reports-on-repo-single-thread.js",
-    "run-branches-report": "./dist/lib/run-branches-report.js",
-    "run-all-reports-on-merged-repos": "./dist/lib/run-reports-on-merged-repos.js",
-    "run-all-reports-on-multi-repos": "./dist/lib/run-reports-on-multi-repos.js",
-    "load-mongo-run-reports": "./dist/lib/launch-load-mongo-run-reports.js",
-    "run-repo-coupling-report": "./dist/lib/run-repo-coupling-report.js"
+    "git-metrics": "./dist/3-lib/run-reports-on-repo-parallel-reads.js",
+    "run-reports": "./dist/3-lib/run-reports-on-repo-parallel-reads.js",
+    "run-reports-single-thread": "./dist/3-lib/run-reports-on-repo-single-thread.js",
+    "run-branches-report": "./dist/3-lib/run-branches-report.js",
+    "run-all-reports-on-merged-repos": "./dist/3-lib/run-reports-on-merged-repos.js",
+    "run-all-reports-on-multi-repos": "./dist/3-lib/run-reports-on-multi-repos.js",
+    "load-mongo-run-reports": "./dist/3-lib/launch-load-mongo-run-reports.js",
+    "run-repo-coupling-report": "./dist/3-lib/run-repo-coupling-report.js"
   },
   "scripts": {
     "test": "mocha -r ts-node/register src/**/*.spec.ts src/**/**/*.spec.ts",

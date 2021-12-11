@@ -1,15 +1,20 @@
 import path = require('path');
-import { forkJoin, merge, of } from 'rxjs';
+import { forkJoin, merge, Observable, of, pipe } from 'rxjs';
 import { appendFileObs, deleteFileObs } from 'observable-fs';
 
-import { catchError, concatMap, ignoreElements, map, share, tap } from 'rxjs/operators';
+import { catchError, concatMap, defaultIfEmpty, ignoreElements, last, map, share, tap } from 'rxjs/operators';
 import {
     ConfigReadBrachesGraph,
     ConfigReadCommits,
     ConfigReadMultiReposCommits,
     ConfigReadTags,
 } from './read-params/read-params';
-import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from './execute-command';
+import {
+    executeCommand,
+    executeCommandInShellNewProcessObs,
+    executeCommandNewProcessToLinesObs,
+    executeCommandObs,
+} from './execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
 
 const SEP = DEFAUL_CONFIG.SEP;
@@ -29,6 +34,7 @@ export function readCommits(config: ConfigReadCommits) {
     console.log(`====>>>> Output saved on file ${out}`);
     return out;
 }
+
 export function readCommitsObs(config: ConfigReadCommits) {
     const [cmd, out] = readCommitsCommand(config);
     return executeCommandObs('readCommits', cmd).pipe(
@@ -45,9 +51,18 @@ export function readCommitsObs(config: ConfigReadCommits) {
         map(() => out),
     );
 }
-export function readCommitsNewProces(config: ConfigReadCommits, outFile: string) {
-    const { cmd, args } = readCommitsCommandWithArgs(config);
+
+// reads the commits with git log and return them as a stream of lines
+export function readAndStreamCommitsNewProces(config: ConfigReadCommits, outFile: string, writeFileOnly = false) {
+    const { cmd, args } = readCommitsCommandWithArgs(config, false);
     const _readCommits = executeCommandNewProcessToLinesObs('readCommits', cmd, args).pipe(share());
+
+    const emitOutFileOrIgnoreElements = writeFileOnly
+        ? pipe(
+              last(),
+              map(() => outFile),
+          )
+        : ignoreElements();
     const _writeFile = deleteFileObs(outFile).pipe(
         catchError((err) => {
             if (err.code === 'ENOENT') {
@@ -60,9 +75,31 @@ export function readCommitsNewProces(config: ConfigReadCommits, outFile: string)
             const _line = `${line}\n`;
             return appendFileObs(outFile, _line);
         }),
-        ignoreElements(),
+        emitOutFileOrIgnoreElements,
     );
-    return merge(_readCommits, _writeFile);
+    const _streams: Observable<never | string>[] = [_writeFile];
+    if (!writeFileOnly) {
+        _streams.push(_readCommits);
+    }
+    return merge(..._streams);
+}
+
+export function readCommitsNewProcess(config: ConfigReadCommits) {
+    const [cmd, out] = readCommitsCommand(config);
+    return executeCommandInShellNewProcessObs('writeCommitsToFile', cmd).pipe(
+        ignoreElements(),
+        defaultIfEmpty(out),
+        tap({
+            next: (outFile) => {
+                console.log(
+                    `====>>>> Commits read from repo in folder ${
+                        config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
+                    }`,
+                );
+                console.log(`====>>>> Output saved on file ${outFile}`);
+            },
+        }),
+    );
 }
 
 // returns an Observable which notifies when all git log commands on all repos have been executed, errors if one of the commands errors
@@ -117,18 +154,19 @@ export function buildGitOutfile(config: ConfigReadCommits) {
 
 // private function exported only for test purposes
 export function readCommitsCommand(config: ConfigReadCommits) {
-    const { cmd, args } = readCommitsCommandWithArgs(config);
+    const { cmd, args } = readCommitsCommandWithArgs(config, true);
     const cmdWithArgs = `${cmd} ${args.join(' ')}`;
     const out = buildGitOutfile(config);
     return [`${cmdWithArgs} > ${out}`, out];
 }
-export function readCommitsCommandWithArgs(config: ConfigReadCommits) {
+export function readCommitsCommandWithArgs(config: ConfigReadCommits, quotesForFilters: boolean) {
     const repoFolder = config.repoFolderPath ? ['-C', `${config.repoFolderPath}`] : [];
     const after = config.after ? `--after=${config.after.trim()}` : '';
     const before = config.before ? `--before=${config.before.trim()} ` : '';
     let filters = [];
+    const _quotesForFilters = quotesForFilters ? `'` : '';
     if (config.filter) {
-        filters = config.filter.map((f) => `${f}`);
+        filters = config.filter.map((f) => `${_quotesForFilters}${f}${_quotesForFilters}`);
     }
     const _noRenames = config.noRenames ? '--no-renames' : '';
     const _reverse = config.reverse ? '--reverse' : '';

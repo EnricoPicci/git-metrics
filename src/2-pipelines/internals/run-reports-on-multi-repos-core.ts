@@ -7,7 +7,7 @@ import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/re
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 
-import { runReportsFromStreams, _streams } from './run-reports-on-repo-core';
+import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
 
 export function runAllReportsOnMultiRepos(
     reports: string[],
@@ -42,7 +42,7 @@ export function runAllReportsOnMultiRepos(
         );
 
         // run the reports
-        return runReportsFromStreams(
+        return _runReportsFromStreams(
             reports,
             repoFolderPath,
             filter,

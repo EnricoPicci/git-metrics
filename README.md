@@ -22,6 +22,8 @@ We say that this logic implements "in memory" aggregagtion since all the aggrega
 
 This design though allows also to use an external DB to run at least part of the aggregation logic. An initial implementation of this different approach is contained in the "mongo" folder and its logic is described later.
 
+See also the architectural diagrams at the end of this README for a more visual description of the steps.
+
 ## RUN TOOLS TO ANALYZE A SINGLE REPO
 
 To run the tool you should move to the folder containing the git repo and, from there, use the tool via npx like this
@@ -37,6 +39,14 @@ For example, the following command analyzes the repo contained in the current fo
 You can also install the 'git-metrics' package from npm, move to the directory containing the git repo and launch the command
 
 `node path-to-git-metrics/dist/lib/run-reports-on-repo.js`
+
+### PARALLEL READS
+
+By default all the read operations, i.e. the execution of the `git log` and `npx cloc` commands, are performed in distinct separate processes which are spawned by the main Node process. When all the read operations complete and produce their respective output files, such files are read concurrently in the main Node process and the reports are generated out of them.
+
+It is possible also run the reports using only the main Node process by launching the command
+
+`npx -p git-metrics run-reports-single-thread`
 
 ### RUN BRANCHES REPORT
 

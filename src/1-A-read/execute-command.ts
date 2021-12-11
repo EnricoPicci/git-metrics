@@ -42,6 +42,9 @@ export function executeCommandNewProcessObs(
         console.log(`====>>>> Action: ${action} -- Executing command in new process`);
         console.log(`====>>>> Command: ${command}`);
         console.log(`====>>>> Arguments: ${args.join(' ')}`);
+        if (options) {
+            console.log(`====>>>> Options: ${JSON.stringify(options)}`);
+        }
 
         const cmd = spawn(
             command,
@@ -93,4 +96,13 @@ function dataToLines() {
             };
         });
     };
+}
+
+export function executeCommandInShellNewProcessObs(
+    action: string,
+    command: string,
+    options?: SpawnOptionsWithoutStdio,
+) {
+    const _options = { ...options, shell: true };
+    return executeCommandNewProcessObs(action, command, [], _options);
 }

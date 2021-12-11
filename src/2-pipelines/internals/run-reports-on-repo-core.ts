@@ -38,6 +38,11 @@ export const allReports = [
     FilesCouplingReport.name,
 ];
 
+/*********************************************/
+//********************* APIs *****************/
+/*********************************************/
+
+// runs the reports in the same main Node thread
 export function runReportsSingleThread(
     reports: string[],
     repoFolderPath: string,
@@ -70,7 +75,7 @@ export function runReportsSingleThread(
     );
 
     // run the reports
-    return runReportsFromStreams(
+    return _runReportsFromStreams(
         reports,
         repoFolderPath,
         filter,
@@ -86,6 +91,8 @@ export function runReportsSingleThread(
     );
 }
 
+// runs the read operations which create the commit and the cloc files in parallel distinct processes and then reads the output files created
+// by the read operations to generate teh reports - the report generation is performend concurrently in the main Node process
 export function runReportsParallelReads(
     reports: string[],
     repoFolderPath: string,
@@ -107,12 +114,12 @@ export function runReportsParallelReads(
     const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
     return readAllParallel(commitOptions, readClocOptions).pipe(
         // prepare the streams of git enriched objects
-        map(([commitLogPath, clocLogPath, clocSummaryPath]) =>
-            _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before),
-        ),
+        map(([commitLogPath, clocLogPath, clocSummaryPath]) => {
+            return _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before);
+        }),
         // run the aggregation logic and the reports
         concatMap(({ _commitStream, _filesStream, _clocSummaryStream }) =>
-            runReportsFromStreams(
+            _runReportsFromStreams(
                 reports,
                 repoFolderPath,
                 filter,
@@ -130,6 +137,9 @@ export function runReportsParallelReads(
     );
 }
 
+// runs the read operations, i.e. reads the commits and executes the cloc commands, in separate processes which stream the output of the read operations
+// into the main Node process. Such streams are then used to generate the reports. This means that we can generate the reports without having to
+// write the output of "git log" and "cloc" commands into intermediate files.
 export function runReportsOneStream(
     reports: string[],
     repoFolderPath: string,
@@ -179,7 +189,7 @@ export function runReportsOneStream(
 
     const _clocSummaryStream = clocSummary.pipe(toArray());
 
-    return runReportsFromStreams(
+    return _runReportsFromStreams(
         reports,
         repoFolderPath,
         _filter,
@@ -195,6 +205,7 @@ export function runReportsOneStream(
     );
 }
 
+//********************* Internal functions exported becaused used by APIs defined in other files *****************/
 export function _streams(
     commitLogPath: string,
     clocLogPath: string,
@@ -229,7 +240,7 @@ export function _streams(
     return { _commitStream, _filesStream, _clocSummaryStream };
 }
 
-export function runReportsFromStreams(
+export function _runReportsFromStreams(
     reports: string[],
     repoFolderPath: string,
     _filter: string[],

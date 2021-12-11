@@ -12,11 +12,13 @@ import {
     COMMITS_FILE_POSTFIX,
     readBranchesGraphCommand,
     readBranchesGraph,
-    readCommitsNewProces,
+    readAndStreamCommitsNewProces,
     buildGitOutfile,
+    readCommitsNewProcess,
 } from './read-git';
 
 import { DEFAUL_CONFIG } from '../0-config/config';
+import { deleteFile } from '../0-tools/test-helpers/delete-file';
 
 const SEP = DEFAUL_CONFIG.SEP;
 
@@ -35,7 +37,7 @@ describe(`readCommitsCommand`, () => {
         // the command build should be equivalent to this
         // git -C ./test-data/git-repo log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renames --after=2018-01-01 '*.txt' > ./test-data/output/git-repo-commits.log`;
         const expectedOutfile = path.resolve(path.join(outDir, outFile));
-        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --no-renames --after=2018-01-01 *.txt > ${expectedOutfile}`;
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --no-renames --after=2018-01-01 '*.txt' > ${expectedOutfile}`;
         const [cmd, out] = readCommitsCommand(config);
         expect(cmd).equal(expected);
         expect(out).equal(expectedOutfile);
@@ -51,7 +53,7 @@ describe(`readCommitsCommand`, () => {
             outFile,
         };
         const expectedOutfile = path.resolve(path.join(outDir, outFile));
-        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --after=2018-01-01 *.c *.sh > ${expectedOutfile}`;
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --after=2018-01-01 '*.c' '*.sh' > ${expectedOutfile}`;
         const [cmd, out] = readCommitsCommand(config);
         expect(cmd).equal(expected);
         expect(out).equal(expectedOutfile);
@@ -66,7 +68,7 @@ describe(`readCommitsCommand`, () => {
             outFile,
         };
         const expectedOutfile = path.resolve(path.join(outDir, outFile));
-        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --after=2018-01-01 --before=2019-01-01  *.c *.sh > ${expectedOutfile}`;
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --after=2018-01-01 --before=2019-01-01  '*.c' '*.sh' > ${expectedOutfile}`;
         const [cmd, out] = readCommitsCommand(config);
         expect(cmd).equal(expected);
         expect(out).equal(expectedOutfile);
@@ -81,7 +83,7 @@ describe(`readCommitsCommand`, () => {
             firstParent: true,
         };
         const expectedOutfile = path.resolve(path.join(outDir, outFile));
-        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p -m --first-parent *.txt > ${expectedOutfile}`;
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p -m --first-parent '*.txt' > ${expectedOutfile}`;
         const [cmd, out] = readCommitsCommand(config);
         expect(cmd).equal(expected);
         expect(out).equal(expectedOutfile);
@@ -136,7 +138,7 @@ describe(`readCommitsNewProces`, () => {
 
         const outGitFile = buildGitOutfile(config);
 
-        readCommitsNewProces(config, outGitFile)
+        readAndStreamCommitsNewProces(config, outGitFile)
             .pipe(
                 tap({
                     next: (data) => {
@@ -156,6 +158,44 @@ describe(`readCommitsNewProces`, () => {
                 complete: () => done(),
             });
     });
+    it(`read the commits from a git repo and write them on a file running on a different process`, (done) => {
+        const outFile = 'this-git-repo-commits-write-only.log';
+        const config: ConfigReadCommits = {
+            repoFolderPath: process.cwd(),
+            filter: ['test-data/git-repo-with-code/*.java'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+
+        let outFileNotified: string;
+
+        const outGitFile = buildGitOutfile(config);
+
+        readAndStreamCommitsNewProces(config, outGitFile, true)
+            .pipe(
+                tap({
+                    next: (filePath) => {
+                        outFileNotified = filePath;
+                        expect(filePath).equal(outGitFile);
+                    },
+                }),
+                concatMap((filePath) => readLinesObs(filePath)),
+                tap({
+                    next: (lines) => {
+                        expect(lines.length).gt(2);
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => {
+                    // check that actually the outfile has been notified
+                    expect(outFileNotified).equal(outGitFile);
+                    done();
+                },
+            });
+    });
     it(`read the commits from a git repo using git log command running on a different process - the result should be the same as 
     when running the command that writes the result of git log into a file`, (done) => {
         const outFileNewProces = 'this-git-repo-commits-new-process.log';
@@ -168,7 +208,7 @@ describe(`readCommitsNewProces`, () => {
 
         const outGitFileNewProces = buildGitOutfile({ ...config, outFile: outFileNewProces });
 
-        readCommitsNewProces(config, outGitFileNewProces)
+        readAndStreamCommitsNewProces(config, outGitFileNewProces)
             .pipe(
                 toArray(),
                 map((linesReadInOtherProces) => {
@@ -216,7 +256,7 @@ describe(`readCommitsNewProces`, () => {
 
         const outGitFileNewProces = buildGitOutfile({ ...config, outFile: outFileNewProces });
 
-        readCommitsNewProces(config, outGitFileNewProces)
+        readAndStreamCommitsNewProces(config, outGitFileNewProces)
             .pipe(
                 toArray(),
                 map(() => {
@@ -249,56 +289,52 @@ describe(`readCommitsNewProces`, () => {
                 complete: () => done(),
             });
     }).timeout(200000);
-    it.skip(
-        `read the commits from a big git repo using git log command running on a different process - the result should be the same as 
-    when running the command that writes the result of git log into a file`,
-        (done) => {
-            const outFileNewProces = 'this-git-repo-commits-new-process.log';
-            const outFileSameProces = 'this-git-repo-commits-same-process.log';
-            const config: ConfigReadCommits = {
-                repoFolderPath: 'pathToRealWorldGitRepoFolder',
-                after: '2018-01-01',
-                outDir,
-            };
+});
 
-            const outGitFileNewProces = buildGitOutfile({ ...config, outFile: outFileNewProces });
+describe(`readCommitsNewProcess`, () => {
+    const outDir = './temp';
+    it(`read the commits from a git repo and write them on a file running on a different process`, (done) => {
+        const outFile = 'this-git-repo-commits-export-new-process.log';
+        const config: ConfigReadCommits = {
+            repoFolderPath: process.cwd(),
+            filter: ['test-data/git-repo-with-code/*.java'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
 
-            readCommitsNewProces(config, outGitFileNewProces)
-                .pipe(
-                    toArray(),
-                    map((linesReadInOtherProces) => {
-                        const outFile = readCommits({ ...config, outFile: outFileSameProces });
-                        return { linesReadInOtherProces, outFile };
-                    }),
-                    concatMap(({ linesReadInOtherProces, outFile }) => {
-                        return readLinesObs(outFile).pipe(
-                            map((linesReadFromFileSaved) => ({ linesReadInOtherProces, linesReadFromFileSaved })),
-                        );
-                    }),
-                    tap({
-                        next: ({ linesReadInOtherProces, linesReadFromFileSaved }) => {
-                            linesReadFromFileSaved.forEach((line, i) => {
-                                if (line !== linesReadInOtherProces[i]) {
-                                    const otherLine = linesReadInOtherProces[i];
-                                    console.log(line);
-                                    console.log(otherLine);
-                                    throw new Error(`Error in line ${i} - ${line} vs ${linesReadFromFileSaved[i]}`);
-                                }
-                                expect(line === linesReadInOtherProces[i]).true;
-                            });
-                            linesReadFromFileSaved.forEach((line, i) => {
-                                expect(line === linesReadInOtherProces[i]).true;
-                            });
-                            expect(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length + 1);
-                        },
-                    }),
-                )
-                .subscribe({
-                    error: (err) => done(err),
-                    complete: () => done(),
-                });
-        },
-    ).timeout(2000000);
+        let outFileNotified: string;
+
+        const outGitFile = buildGitOutfile(config);
+        let counter = 0;
+
+        deleteFile(outGitFile)
+            .pipe(
+                concatMap(() => readCommitsNewProcess(config)),
+                tap({
+                    next: (filePath) => {
+                        outFileNotified = filePath;
+                        expect(filePath).equal(outGitFile);
+                        counter++;
+                    },
+                }),
+                concatMap((filePath) => readLinesObs(filePath)),
+                tap({
+                    next: (lines) => {
+                        expect(lines.length).gt(2);
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => {
+                    // check that actually the outfile has been notifie
+                    expect(outFileNotified).equal(outGitFile);
+                    expect(counter).equal(1);
+                    done();
+                },
+            });
+    });
 });
 
 describe(`readTagsCommand`, () => {

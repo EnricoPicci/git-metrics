@@ -9,7 +9,7 @@ import { clocSummaryStream, createSummaryClocLog } from '../../1-A-read/cloc';
 import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 
 import { gitRepos } from './run-reports-on-multi-repos-core';
-import { runReportsFromStreams, _streams } from './run-reports-on-repo-core';
+import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
 
 export function runAllReportsOnMergedRepos(
     reports: string[],
@@ -79,7 +79,7 @@ export function runAllReportsOnMergedRepos(
         }),
         concatMap(({ allCommitStreamsMerged, allFileStreamsMerged, _clocSummaryStream }) => {
             // run the reports
-            return runReportsFromStreams(
+            return _runReportsFromStreams(
                 reports,
                 repoContainerFolderPath,
                 filter,

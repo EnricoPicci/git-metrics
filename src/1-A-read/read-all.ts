@@ -2,13 +2,15 @@ import {
     buildClocOutfile,
     buildSummaryClocOutfile,
     createClocLog,
-    createClocNewProcess,
+    streamClocNewProcess,
     createSummaryClocLog,
+    streamSummaryClocNewProcess,
+    createClocLogNewProcess,
     createSummaryClocNewProcess,
 } from './cloc';
 import { ConfigReadCommits, ConfigReadCloc } from './read-params/read-params';
-import { buildGitOutfile, readCommits, readCommitsNewProces } from './read-git';
-import { forkJoin, last, map } from 'rxjs';
+import { buildGitOutfile, readCommits, readAndStreamCommitsNewProces, readCommitsNewProcess } from './read-git';
+import { forkJoin } from 'rxjs';
 
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
 export function readAll(commitOptions: ConfigReadCommits, readClocOptions: ConfigReadCloc) {
@@ -22,35 +24,14 @@ export function readAll(commitOptions: ConfigReadCommits, readClocOptions: Confi
     return [commitLogPath, clocLogPath, clocSummaryPath];
 }
 
-// performs all the read operations against a git repo in parallel distinct processes and return an Observable which emits
-// the file paths of the logs created out of the read operations
+// read the git log and runs the cloc operations against a folder containing a repo. The read operations are performed in parallel distinct processes
+// Return an Observable which emits the file paths of the logs created out of the read operations
 export function readAllParallel(commitOptions: ConfigReadCommits, readClocOptions: ConfigReadCloc) {
-    const outGitFile = buildGitOutfile(commitOptions);
-    const outClocFile = buildClocOutfile(readClocOptions);
-    const outClocSummaryFile = buildSummaryClocOutfile(readClocOptions);
+    const gitLogCommits = readCommitsNewProcess(commitOptions);
+    const cloc = createClocLogNewProcess(readClocOptions);
+    const clocSummary = createSummaryClocNewProcess(readClocOptions);
 
-    const { gitLogCommits, cloc, clocSummary } = _readStreamsDistinctProcesses(
-        commitOptions,
-        readClocOptions,
-        outGitFile,
-        outClocFile,
-        outClocSummaryFile,
-    );
-
-    const _gitLogCommits = gitLogCommits.pipe(
-        last(),
-        map(() => outGitFile),
-    );
-    const _cloc = cloc.pipe(
-        last(),
-        map(() => outClocFile),
-    );
-    const _clocSummary = clocSummary.pipe(
-        last(),
-        map(() => outClocSummaryFile),
-    );
-
-    return forkJoin([_gitLogCommits, _cloc, _clocSummary]);
+    return forkJoin([gitLogCommits, cloc, clocSummary]);
 }
 
 // builds the Observables that perform the read operations against a git repo in separate processes
@@ -59,22 +40,35 @@ export function readStreamsDistinctProcesses(commitOptions: ConfigReadCommits, r
     const outClocFile = buildClocOutfile(readClocOptions);
     const outClocSummaryFile = buildSummaryClocOutfile(readClocOptions);
 
-    return _readStreamsDistinctProcesses(commitOptions, readClocOptions, outGitFile, outClocFile, outClocSummaryFile);
+    return _streamsDistinctProcesses(
+        commitOptions,
+        readClocOptions,
+        outGitFile,
+        outClocFile,
+        outClocSummaryFile,
+        false,
+    );
 }
 
-function _readStreamsDistinctProcesses(
+function _streamsDistinctProcesses(
     commitOptions: ConfigReadCommits,
     readClocOptions: ConfigReadCloc,
     outGitFile: string,
     outClocFile: string,
     outClocSummaryFile: string,
+    writeFileOnly: boolean,
 ) {
     // build the stream of commits
-    const gitLogCommits = readCommitsNewProces(commitOptions, outGitFile);
+    const gitLogCommits = readAndStreamCommitsNewProces(commitOptions, outGitFile, writeFileOnly);
 
     // build the streams of cloc info
-    const cloc = createClocNewProcess(readClocOptions, outClocFile, 'create cloc log');
-    const clocSummary = createSummaryClocNewProcess(readClocOptions, outClocSummaryFile, 'create cloc summary log');
+    const cloc = streamClocNewProcess(readClocOptions, outClocFile, 'create cloc log', writeFileOnly);
+    const clocSummary = streamSummaryClocNewProcess(
+        readClocOptions,
+        outClocSummaryFile,
+        'create cloc summary log',
+        writeFileOnly,
+    );
 
     return { gitLogCommits, cloc, clocSummary };
 }

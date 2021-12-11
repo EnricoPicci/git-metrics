@@ -1,6 +1,9 @@
 import { expect } from 'chai';
+import { deleteFileObs, readLinesObs } from 'observable-fs';
+import { catchError, concatMap, defaultIfEmpty, of, tap } from 'rxjs';
 import {
     executeCommand,
+    executeCommandInShellNewProcessObs,
     executeCommandNewProcessObs,
     executeCommandNewProcessToLinesObs,
     executeCommandObs,
@@ -94,5 +97,48 @@ describe(`executeCommandNewProcessToLinesObs`, () => {
                 done();
             },
         });
+    });
+});
+
+describe(`executeCommandInShellNewProcessObs`, () => {
+    it(`execute the command in a shell`, (done) => {
+        const outFile = `./temp/abc.txt`;
+        const cmd = process.platform === 'win32' ? `dir > ${outFile}` : `ls -l > ${outFile}`;
+
+        const defaultIfEmptyValue = 'The only value notified';
+        let numberOfNotifications = 0;
+
+        deleteFileObs(outFile)
+            .pipe(
+                catchError((err) => {
+                    if (err.code === 'ENOENT') {
+                        return of(null);
+                    }
+                }),
+                concatMap(() => executeCommandInShellNewProcessObs('Test-2', cmd)),
+                defaultIfEmpty(defaultIfEmptyValue),
+                tap({
+                    next: (valueNotified) => {
+                        numberOfNotifications++;
+                        expect(valueNotified).equal(defaultIfEmptyValue);
+                    },
+                    error: (err) => {
+                        done(`should not arrive here with error: ${err}`);
+                    },
+                    complete: () => {
+                        expect(numberOfNotifications).equal(1);
+                        done();
+                    },
+                }),
+                concatMap(() => {
+                    return readLinesObs(outFile);
+                }),
+                tap({
+                    next: (lines) => {
+                        expect(lines.length).gt(0);
+                    },
+                }),
+            )
+            .subscribe();
     });
 });

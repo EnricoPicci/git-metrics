@@ -4,7 +4,7 @@ import { concatMap, forkJoin, tap } from 'rxjs';
 import { readAllParallel } from './read-all';
 import { ConfigReadCloc, ConfigReadCommits } from './read-params/read-params';
 
-describe(`readAllConcurrent`, () => {
+describe(`readWriteFilesAllParallel`, () => {
     it(`performs all the read operations concurrently`, () => {
         const repoFolderPath = process.cwd();
         const outDir = `${process.cwd()}/temp`;
