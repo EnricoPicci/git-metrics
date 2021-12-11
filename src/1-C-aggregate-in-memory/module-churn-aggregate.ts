@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { map, reduce, share } from 'rxjs/operators';
+import { map, share } from 'rxjs/operators';
 
 import { FileChurn } from '../1-C-aggregate-types/file-churn';
 import { ModuleChurn, newModuleChurn } from '../1-C-aggregate-types/module-churn';
@@ -9,7 +9,7 @@ type ModuleChurnDict = {
     [module: string]: ModuleChurn;
 };
 
-export function moduleChurns(fileChurns: Observable<FileChurn>) {
+export function moduleChurns(fileChurns: Observable<FileChurn[]>) {
     return _moduleChurns(fileChurns).pipe(
         map((modulesDict) => {
             return Object.values(modulesDict);
@@ -17,13 +17,15 @@ export function moduleChurns(fileChurns: Observable<FileChurn>) {
     );
 }
 
-function _moduleChurns(fileChurns: Observable<FileChurn>) {
+function _moduleChurns(fileChurns: Observable<FileChurn[]>) {
     const modulesDict: ModuleChurnDict = {};
     return fileChurns.pipe(
-        reduce((acc, fileChurn) => {
-            acc = fillModulesDict(fileChurn, acc);
-            return acc;
-        }, modulesDict),
+        map((_fileChurns) =>
+            _fileChurns.reduce((acc, fileChurn) => {
+                acc = fillModulesDict(fileChurn, acc);
+                return acc;
+            }, modulesDict),
+        ),
         share(),
     );
 }

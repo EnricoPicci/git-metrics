@@ -1,4 +1,4 @@
-import { map, tap, concatMap } from 'rxjs/operators';
+import { map, tap, concatMap, toArray } from 'rxjs/operators';
 import {
     addConsiderationsForFileAuthorsReport,
     FileAuthorsReport,
@@ -41,6 +41,8 @@ export function mongoFileAuthorReport(
 // exported only to allow the tests
 // produce a report about authors that have contributed to files reading from a mongo db (previously loaded with files info)
 export function _mongoFileAuthorReport(params: MongoFileAuthorReportParams, csvFilePath?: string) {
-    const fileAuthor = fileAuthors(params.connectionString, params.dbName, params.filesCollection, params.after);
+    const fileAuthor = fileAuthors(params.connectionString, params.dbName, params.filesCollection, params.after).pipe(
+        toArray(),
+    );
     return fileAuthorsReportCore(fileAuthor, params, csvFilePath);
 }

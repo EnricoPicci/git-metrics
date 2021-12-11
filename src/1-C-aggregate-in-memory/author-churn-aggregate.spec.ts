@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { tap, toArray } from 'rxjs';
+import { tap } from 'rxjs';
 import { commitsStream } from '../1-B-git-enriched-streams/commits';
 import { authorChurn, authorChurnDictionary } from './author-churn-aggregate';
 
@@ -85,7 +85,6 @@ describe(`authorChurn`, () => {
         const commits = commitsStream(commitLogPath);
         authorChurn(commits)
             .pipe(
-                toArray(),
                 tap({
                     next: (authorChurns) => {
                         expect(authorChurns.length).equal(3);
@@ -110,7 +109,6 @@ describe(`authorChurn`, () => {
         const after = new Date('2021-01-01');
         authorChurn(commits, after)
             .pipe(
-                toArray(),
                 tap({
                     next: (authorChurns) => {
                         expect(authorChurns.length).equal(1);

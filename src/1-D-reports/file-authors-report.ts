@@ -41,7 +41,7 @@ export class FileAuthorsReport extends Report {
 // API to be used if we want to generate the report for the general project as well as the report about file-authors
 // reads also from the repo folder for information about the files currently in the project
 export function projectAndFileAuthorsReport(
-    fileAuthors: Observable<FileAuthors>,
+    fileAuthors: Observable<FileAuthors[]>,
     projectInfo: Observable<ProjectInfo>,
     params: FileAuthorsReportParams,
     csvFilePath?: string,
@@ -51,7 +51,7 @@ export function projectAndFileAuthorsReport(
 // API to be used if we want to generate the full report including the general project info (e.g. total numnber of lines of code)
 // Starts from a stream of FileGitCommit
 export function fileAuthorsReport(
-    fileCommits: Observable<FileAuthors>,
+    fileCommits: Observable<FileAuthors[]>,
     params: FileAuthorsReportParams,
     projectInfo: ProjectInfo,
     csvFilePath?: string,
@@ -66,13 +66,12 @@ export function fileAuthorsReport(
 // API to be used if we want to generate the core of the report info and not also the general project info
 // Starts from a stream of FileAuthors objects, like when we create the report from a Mongo query
 export function fileAuthorsReportCore(
-    fileAuthor: Observable<FileAuthors>,
+    fileAuthor: Observable<FileAuthors[]>,
     params: FileAuthorsReportParams,
     csvFilePath?: string,
 ) {
     const fileAuthorSource = fileAuthor.pipe(share());
     const generateReport = fileAuthorSource.pipe(
-        toArray(),
         tap((fileAuthors) => {
             console.log(`Processing ${fileAuthors.length} records to generate FileAuthorsReport`);
         }),
@@ -144,11 +143,13 @@ export function mapToCsvAndWriteFileAuthor(csvFilePath: string) {
 
 function mapFileAuthorToCsv() {
     return pipe(
-        map((fileAuthors: FileAuthors) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const _fileAuthors: any = { ...fileAuthors };
-            _fileAuthors.created = fileAuthors.created.toISOString();
-            return _fileAuthors;
+        concatMap((fileAuthors: FileAuthors[]) => {
+            return fileAuthors.map((fileAuthor) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const _fileAuthor: any = { ...fileAuthor };
+                _fileAuthor.created = fileAuthor.created.toISOString();
+                return _fileAuthor;
+            });
         }),
         toCsvObs(),
     );

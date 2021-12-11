@@ -1,5 +1,5 @@
-import { from, Observable } from 'rxjs';
-import { concatMap, filter, reduce } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, filter, reduce } from 'rxjs/operators';
 import { GitCommitEnriched } from '../1-B-git-enriched-types/git-types';
 import { AuthorChurn } from '../1-C-aggregate-types/author-churn';
 
@@ -7,9 +7,8 @@ import { AuthorChurn } from '../1-C-aggregate-types/author-churn';
 
 export function authorChurn(commits: Observable<GitCommitEnriched>, after?: Date) {
     return authorChurnDictionary(commits, after).pipe(
-        concatMap((authChurnDict) => {
-            const fileChurns = Object.values(authChurnDict).sort((a, b) => b.linesAddDel - a.linesAddDel);
-            return from(fileChurns);
+        map((authChurnDict) => {
+            return Object.values(authChurnDict).sort((a, b) => b.linesAddDel - a.linesAddDel);
         }),
     );
 }

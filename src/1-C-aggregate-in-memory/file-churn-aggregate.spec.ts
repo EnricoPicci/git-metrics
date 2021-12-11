@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { tap, toArray } from 'rxjs';
+import { tap } from 'rxjs';
 import { fileChurn, fileChurnDictionary } from './file-churn-aggregate';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 
@@ -44,7 +44,6 @@ describe(`fileChurn`, () => {
         const fileCommits = filesStream(commitLogPath, clocLogPath);
         fileChurn(fileCommits)
             .pipe(
-                toArray(),
                 tap({
                     next: (fileChurns) => {
                         expect(fileChurns).not.undefined;
@@ -77,7 +76,6 @@ describe(`fileChurn`, () => {
         const after = new Date('2021-01-01');
         fileChurn(fileCommits, after)
             .pipe(
-                toArray(),
                 tap({
                     next: (fileChurns) => {
                         expect(fileChurns).not.undefined;

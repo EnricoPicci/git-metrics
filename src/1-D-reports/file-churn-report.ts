@@ -1,5 +1,5 @@
 import { pipe, Observable, forkJoin } from 'rxjs';
-import { map, share, toArray, tap, concatMap } from 'rxjs/operators';
+import { map, share, tap, concatMap } from 'rxjs/operators';
 import { writeFileObs } from 'observable-fs';
 
 import { addProjectInfo } from './add-project-info';
@@ -54,7 +54,7 @@ export class FileChurnReport extends Report {
 // API to be used if we want to generate the report for the general project as well as the report about file churn
 // reads also from the repo folder for information about the files currently in the project
 export function projectAndFileChurnReport(
-    fileChurns: Observable<FileChurn>,
+    fileChurns: Observable<FileChurn[]>,
     projectInfo: Observable<ProjectInfo>,
     params: FileChurnReportParams,
     csvFilePath?: string,
@@ -65,7 +65,7 @@ export function projectAndFileChurnReport(
 // API to be used if we want to generate the full report including the general project info (e.g. total numnber of lines of code)
 // Starts from a stream of FileGitCommit
 export function fileChurnReport(
-    fileChurns: Observable<FileChurn>,
+    fileChurns: Observable<FileChurn[]>,
     params: FileChurnReportParams,
     projectInfo: ProjectInfo,
     csvFilePath?: string,
@@ -81,12 +81,11 @@ export function fileChurnReport(
 // API to be used if we want to generate the core of the report info and not also the general project info
 // Starts from a stream of FileChurn objects, like when we create the report from a Mongo query
 export function fileChurnReportCore(
-    fileChurns: Observable<FileChurn>,
+    fileChurns: Observable<FileChurn[]>,
     params: FileChurnReportParams,
     csvFilePath?: string,
 ): Observable<FileChurnReport> {
     const fileChurnSource = fileChurns.pipe(
-        toArray(),
         tap((fileChurns) => {
             console.log(`Processing ${fileChurns.length} records to generate FileChurnReport`);
         }),

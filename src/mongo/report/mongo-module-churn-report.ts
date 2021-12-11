@@ -1,4 +1,4 @@
-import { map, tap, concatMap, share } from 'rxjs/operators';
+import { map, tap, concatMap, share, toArray } from 'rxjs/operators';
 import {
     addConsiderationsForModuleChurnReport,
     ModuleChurnReport,
@@ -56,7 +56,7 @@ export function _mongoModuleChurnReport(params: MongoModuleChurnReportParams, cs
         params.dbName,
         params.filesCollection,
         params.after,
-    ).pipe(share());
+    ).pipe(toArray(), share());
     const moduleChurnsStream = moduleChurns(fileChurnSource);
     return moduleChurnReportCore(moduleChurnsStream, params, csvFilePath);
 }

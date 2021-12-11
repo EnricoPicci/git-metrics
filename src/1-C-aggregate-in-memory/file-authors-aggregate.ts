@@ -1,5 +1,5 @@
-import { from, Observable } from 'rxjs';
-import { concatMap, map, reduce } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, reduce } from 'rxjs/operators';
 
 import { FileGitCommitEnriched } from '../1-B-git-enriched-types/git-types';
 import { FileAuthors } from '../1-C-aggregate-types/file-authors';
@@ -7,9 +7,8 @@ import { FileAuthors } from '../1-C-aggregate-types/file-authors';
 // reads a commitLog and the cloc data from log files and returns a stream of FileAuthors objects
 export function fileAuthors(fileCommits: Observable<FileGitCommitEnriched>, after?: Date) {
     return fileAuthorsDictionary(fileCommits, after).pipe(
-        concatMap((fileWithAuthorsDict) => {
-            const _fileAuthors = Object.values(fileWithAuthorsDict).sort((a, b) => b.authors - a.authors);
-            return from(_fileAuthors);
+        map((fileWithAuthorsDict) => {
+            return Object.values(fileWithAuthorsDict).sort((a, b) => b.authors - a.authors);
         }),
     );
 }

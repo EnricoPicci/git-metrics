@@ -1,4 +1,4 @@
-import { map, tap, share, concatMap } from 'rxjs/operators';
+import { map, tap, share, concatMap, toArray } from 'rxjs/operators';
 import {
     addConsiderationsForAuthorChurnReport,
     AuthorChurnReport,
@@ -47,6 +47,6 @@ export function _mongoAuthorChurnReport(params: MongoAuthorChurnReportParams, cs
         params.filesCollection,
         params.commitsCollection,
         params.after,
-    ).pipe(share());
+    ).pipe(toArray(), share());
     return authorChurnReportCore(authorChurnSource, params, csvFilePath);
 }

@@ -1,5 +1,5 @@
 import { pipe, Observable, forkJoin } from 'rxjs';
-import { map, share, concatMap, toArray, tap } from 'rxjs/operators';
+import { map, share, concatMap, tap } from 'rxjs/operators';
 import { writeFileObs } from 'observable-fs';
 
 import { addProjectInfo } from './add-project-info';
@@ -43,7 +43,7 @@ export class FilesCouplingReport extends Report {
 // API to be used if we want to generate the report for the general project as well as the report about file churn
 // reads also from the repo folder for information about the files currently in the project
 export function projectAndFileCouplingReport(
-    fileCoupling: Observable<FileCoupling>,
+    fileCoupling: Observable<FileCoupling[]>,
     projectInfo: Observable<ProjectInfo>,
     params: FilesCouplingReportParams,
     csvFilePath?: string,
@@ -54,7 +54,7 @@ export function projectAndFileCouplingReport(
 // API to be used if we want to generate the full report including the general project info (e.g. total numnber of lines of code)
 // Starts from a stream of GitCommit
 export function filesCouplingReport(
-    fileCoupling: Observable<FileCoupling>,
+    fileCoupling: Observable<FileCoupling[]>,
     params: FilesCouplingReportParams,
     projectInfo: ProjectInfo,
     csvFilePath?: string,
@@ -69,12 +69,11 @@ export function filesCouplingReport(
 // API to be used if we want to generate the core of the report info and not also the general project info
 // Starts from a stream of GitCommit objects, like when we create the report from a Mongo query
 export function fileCouplingReportCore(
-    fileCoupling: Observable<FileCoupling>,
+    fileCoupling: Observable<FileCoupling[]>,
     params: FilesCouplingReportParams,
     csvFilePath?: string,
 ) {
     const fileCouplingSource = fileCoupling.pipe(
-        toArray(),
         tap((fileCouplings) => {
             console.log(`Processing ${fileCouplings.length} records to generate FileCouplingReport`);
         }),

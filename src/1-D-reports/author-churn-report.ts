@@ -43,7 +43,7 @@ export class AuthorChurnReport extends Report {
 // API to be used if we want to generate the report for the general project as well as the report about author churn
 // reads also from the repo folder for information about the files currently in the project
 export function projectAndAuthorChurnReport(
-    authorChurns: Observable<AuthorChurn>,
+    authorChurns: Observable<AuthorChurn[]>,
     projectInfo: Observable<ProjectInfo>,
     params: AuthorChurnReportParams,
     csvFilePath?: string,
@@ -54,7 +54,7 @@ export function projectAndAuthorChurnReport(
 // API to be used if we want to generate the full report including the general project info (e.g. total numnber of lines of code)
 // Starts from a stream of FileGitCommit
 export function authorChurnReport(
-    authorChurns: Observable<AuthorChurn>,
+    authorChurns: Observable<AuthorChurn[]>,
     params: AuthorChurnReportParams,
     projectInfo: ProjectInfo,
     csvFilePath?: string,
@@ -70,13 +70,12 @@ export function authorChurnReport(
 // API to be used if we want to generate the core of the report info and not also the general project info
 // Starts from a stream of AuthorChurn objects, like when we create the report from a Mongo query
 export function authorChurnReportCore(
-    authorChurns: Observable<AuthorChurn>,
+    authorChurns: Observable<AuthorChurn[]>,
     params: AuthorChurnReportParams,
     csvFilePath?: string,
 ) {
     const authorChurnsSource = authorChurns.pipe(share());
     const generateReport = authorChurnsSource.pipe(
-        toArray(),
         tap((authorChurns) => {
             console.log(`Processing ${authorChurns.length} records to generate AuthorChurnReport`);
         }),
@@ -140,12 +139,14 @@ export function mapToCsvAndWriteAuthorChurn(csvFilePath: string) {
 
 function mapAuthorsChurnToCsv() {
     return pipe(
-        map((author: AuthorChurn) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const _author: any = { ...author };
-            _author.firstCommit = _author.firstCommit.toISOString();
-            _author.lastCommit = _author.lastCommit.toISOString();
-            return _author;
+        concatMap((authorChurns: AuthorChurn[]) => {
+            return authorChurns.map((author) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const _author: any = { ...author };
+                _author.firstCommit = _author.firstCommit.toISOString();
+                _author.lastCommit = _author.lastCommit.toISOString();
+                return _author;
+            });
         }),
         toCsvObs(),
     );

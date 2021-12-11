@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { tap, toArray } from 'rxjs';
+import { tap } from 'rxjs';
 import { fileAuthors, fileAuthorsDictionary } from './file-authors-aggregate';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 
@@ -47,7 +47,6 @@ describe(`fileAuthors`, () => {
         const fileCommits = filesStream(_commitLogPath, _clocLogPath);
         fileAuthors(fileCommits)
             .pipe(
-                toArray(),
                 tap({
                     next: (fileAuthors) => {
                         expect(fileAuthors.length).equal(2);

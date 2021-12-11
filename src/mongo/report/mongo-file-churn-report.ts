@@ -1,4 +1,4 @@
-import { map, tap, concatMap } from 'rxjs/operators';
+import { map, tap, concatMap, toArray } from 'rxjs/operators';
 import {
     addConsiderationsForFileChurnReport,
     FileChurnReport,
@@ -43,6 +43,11 @@ export function mongoFileChurnReport(
 // exported only to allow the tests
 // produce a report about file churn reading from a mongo db (previously loaded with files info)
 export function _mongoFileChurnReport(params: MongoFileChurnReportParams, csvFilePath?: string) {
-    const fileChurnSource = fileChurn(params.connectionString, params.dbName, params.filesCollection, params.after);
+    const fileChurnSource = fileChurn(
+        params.connectionString,
+        params.dbName,
+        params.filesCollection,
+        params.after,
+    ).pipe(toArray());
     return fileChurnReportCore(fileChurnSource, params, csvFilePath);
 }

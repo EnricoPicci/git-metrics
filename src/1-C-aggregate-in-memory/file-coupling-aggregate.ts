@@ -1,15 +1,11 @@
-import { Observable, pipe, from } from 'rxjs';
-import { reduce, map, concatMap } from 'rxjs/operators';
+import { Observable, pipe } from 'rxjs';
+import { reduce, map } from 'rxjs/operators';
 import { FileCoupling } from '../1-C-aggregate-types/file-coupling';
 import { GitCommitEnriched } from '../1-B-git-enriched-types/git-types';
 
 // receives a stream of FileGitCommitEnriched objects and returns a stream of FileCoupling objects
 export function fileCoupling(commits: Observable<GitCommitEnriched>, depthInFilesCoupling: number, after?: Date) {
-    return couplingDict(commits, after).pipe(
-        couplingList(),
-        filterFilesWithMinNumOfCommits(depthInFilesCoupling),
-        concatMap((couplings) => from(couplings)),
-    );
+    return couplingDict(commits, after).pipe(couplingList(), filterFilesWithMinNumOfCommits(depthInFilesCoupling));
 }
 
 type CouplingDict = {

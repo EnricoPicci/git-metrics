@@ -1,14 +1,13 @@
-import { from, Observable } from 'rxjs';
-import { concatMap, reduce } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, reduce } from 'rxjs/operators';
 import { FileChurn } from '../1-C-aggregate-types/file-churn';
 import { FileGitCommitEnriched } from '../1-B-git-enriched-types/git-types';
 
 // receives a stream of FileGitCommitEnriched objects and returns a stream of FileChurn objects
 export function fileChurn(fileCommits: Observable<FileGitCommitEnriched>, after?: Date) {
     return fileChurnDictionary(fileCommits, after).pipe(
-        concatMap((fileChurnDictionary) => {
-            const fileChurns = Object.values(fileChurnDictionary).sort((a, b) => b.linesAddDel - a.linesAddDel);
-            return from(fileChurns);
+        map((fileChurnDictionary) => {
+            return Object.values(fileChurnDictionary).sort((a, b) => b.linesAddDel - a.linesAddDel);
         }),
     );
 }
