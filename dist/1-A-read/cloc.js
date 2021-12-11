@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clocSummaryStream = exports.clocSummaryInfo = exports.createMultiClocLogs = exports.buildSummaryClocOutfile = exports.buildClocOutfile = exports.createSummaryClocNewProcess = exports.createSummaryClocLog = exports.createClocNewProcess = exports.createClocLog = void 0;
+exports.clocSummaryStream = exports.clocSummaryInfo = exports.createMultiClocLogs = exports.buildSummaryClocOutfile = exports.buildClocOutfile = exports.createSummaryClocNewProcess = exports.streamSummaryClocNewProcess = exports.createSummaryClocLog = exports.createClocLogNewProcess = exports.streamClocNewProcess = exports.createClocLog = void 0;
 const path = require("path");
 const observable_fs_1 = require("observable-fs");
 const execute_command_1 = require("./execute-command");
@@ -14,9 +14,13 @@ function createClocLog(config, action) {
     return out;
 }
 exports.createClocLog = createClocLog;
-function createClocNewProcess(config, outFile, action) {
+// runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
+function streamClocNewProcess(config, outFile, action, writeFileOnly = false) {
     const { cmd, args, options } = clocCommandwWithArgs(config);
     const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe(_filterClocHeader('language,filename,blank,comment,code'), (0, rxjs_1.share)());
+    const emitOutFileOrIgnoreElements = writeFileOnly
+        ? (0, rxjs_1.pipe)((0, rxjs_1.last)(), (0, rxjs_1.map)(() => outFile))
+        : (0, rxjs_1.ignoreElements)();
     const _writeFile = (0, observable_fs_1.deleteFileObs)(outFile).pipe((0, rxjs_1.catchError)((err) => {
         if (err.code === 'ENOENT') {
             // emit something so that the next operation can continue
@@ -25,10 +29,24 @@ function createClocNewProcess(config, outFile, action) {
     }), (0, rxjs_1.concatMap)(() => _cloc), (0, rxjs_1.concatMap)((line) => {
         const _line = `${line}\n`;
         return (0, observable_fs_1.appendFileObs)(outFile, _line);
-    }), (0, rxjs_1.ignoreElements)());
-    return (0, rxjs_1.merge)(_cloc, _writeFile);
+    }), emitOutFileOrIgnoreElements);
+    const _streams = [_writeFile];
+    if (!writeFileOnly) {
+        _streams.push(_cloc);
+    }
+    return (0, rxjs_1.merge)(..._streams);
 }
-exports.createClocNewProcess = createClocNewProcess;
+exports.streamClocNewProcess = streamClocNewProcess;
+function createClocLogNewProcess(config, action = 'cloc') {
+    const [cmd, out] = clocCommand(config);
+    return (0, execute_command_1.executeCommandInShellNewProcessObs)(action, cmd).pipe((0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(out), (0, rxjs_1.tap)({
+        next: (outFile) => {
+            console.log(`====>>>> Number of lines in the files contained in the repo folder ${config.repoFolderPath} calculated`);
+            console.log(`====>>>> cloc info saved on file ${outFile}`);
+        },
+    }));
+}
+exports.createClocLogNewProcess = createClocLogNewProcess;
 function createSummaryClocLog(config, action = 'clocSummary') {
     const [cmd, out] = clocSummaryCommand(config);
     (0, execute_command_1.executeCommand)(action, cmd);
@@ -37,9 +55,13 @@ function createSummaryClocLog(config, action = 'clocSummary') {
     return out;
 }
 exports.createSummaryClocLog = createSummaryClocLog;
-function createSummaryClocNewProcess(config, outFile, action) {
+// runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
+function streamSummaryClocNewProcess(config, outFile, action, writeFileOnly = false) {
     const { cmd, args, options } = clocSummaryCommandWithArgs(config);
     const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe(_filterClocHeader('files,language,blank,comment,code'), (0, rxjs_1.share)());
+    const emitOutFileOrIgnoreElements = writeFileOnly
+        ? (0, rxjs_1.pipe)((0, rxjs_1.last)(), (0, rxjs_1.map)(() => outFile))
+        : (0, rxjs_1.ignoreElements)();
     const _writeFile = (0, observable_fs_1.deleteFileObs)(outFile).pipe((0, rxjs_1.catchError)((err) => {
         if (err.code === 'ENOENT') {
             // emit something so that the next operation can continue
@@ -48,8 +70,22 @@ function createSummaryClocNewProcess(config, outFile, action) {
     }), (0, rxjs_1.concatMap)(() => _cloc), (0, rxjs_1.concatMap)((line) => {
         const _line = `${line}\n`;
         return (0, observable_fs_1.appendFileObs)(outFile, _line);
-    }), (0, rxjs_1.ignoreElements)());
-    return (0, rxjs_1.merge)(_cloc, _writeFile);
+    }), emitOutFileOrIgnoreElements);
+    const _streams = [_writeFile];
+    if (!writeFileOnly) {
+        _streams.push(_cloc);
+    }
+    return (0, rxjs_1.merge)(..._streams);
+}
+exports.streamSummaryClocNewProcess = streamSummaryClocNewProcess;
+function createSummaryClocNewProcess(config, action = 'clocSummary') {
+    const [cmd, out] = clocSummaryCommand(config);
+    return (0, execute_command_1.executeCommandInShellNewProcessObs)(action, cmd).pipe((0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(out), (0, rxjs_1.tap)({
+        next: (outFile) => {
+            console.log(`====>>>> Number of lines in the files contained in the repo folder ${config.repoFolderPath} calculated`);
+            console.log(`====>>>> cloc info saved on file ${outFile}`);
+        },
+    }));
 }
 exports.createSummaryClocNewProcess = createSummaryClocNewProcess;
 function buildClocOutfile(config) {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runReportsFromStreams = exports._streams = exports.runReportsOneStream = exports.runReportsParallelReads = exports.runReportsSingleThread = exports.allReports = void 0;
+exports._runReportsFromStreams = exports._streams = exports.runReportsOneStream = exports.runReportsParallelReads = exports.runReportsSingleThread = exports.allReports = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
@@ -28,6 +28,10 @@ exports.allReports = [
     file_authors_report_1.FileAuthorsReport.name,
     file_coupling_report_1.FilesCouplingReport.name,
 ];
+/*********************************************/
+//********************* APIs *****************/
+/*********************************************/
+// runs the reports in the same main Node thread
 function runReportsSingleThread(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, depthInFilesCoupling) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
@@ -38,9 +42,11 @@ function runReportsSingleThread(reports, repoFolderPath, filter, after, before, 
     // generation of the source streams
     const { _commitStream, _filesStream, _clocSummaryStream } = _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before);
     // run the reports
-    return runReportsFromStreams(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream);
+    return _runReportsFromStreams(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream);
 }
 exports.runReportsSingleThread = runReportsSingleThread;
+// runs the read operations which create the commit and the cloc files in parallel distinct processes and then reads the output files created
+// by the read operations to generate teh reports - the report generation is performend concurrently in the main Node process
 function runReportsParallelReads(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, depthInFilesCoupling) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
@@ -49,11 +55,16 @@ function runReportsParallelReads(reports, repoFolderPath, filter, after, before,
     const readClocOptions = { repoFolderPath, outDir };
     return (0, read_all_1.readAllParallel)(commitOptions, readClocOptions).pipe(
     // prepare the streams of git enriched objects
-    (0, operators_1.map)(([commitLogPath, clocLogPath, clocSummaryPath]) => _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before)), 
+    (0, operators_1.map)(([commitLogPath, clocLogPath, clocSummaryPath]) => {
+        return _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before);
+    }), 
     // run the aggregation logic and the reports
-    (0, operators_1.concatMap)(({ _commitStream, _filesStream, _clocSummaryStream }) => runReportsFromStreams(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream)));
+    (0, operators_1.concatMap)(({ _commitStream, _filesStream, _clocSummaryStream }) => _runReportsFromStreams(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream)));
 }
 exports.runReportsParallelReads = runReportsParallelReads;
+// runs the read operations, i.e. reads the commits and executes the cloc commands, in separate processes which stream the output of the read operations
+// into the main Node process. Such streams are then used to generate the reports. This means that we can generate the reports without having to
+// write the output of "git log" and "cloc" commands into intermediate files.
 function runReportsOneStream(reports, repoFolderPath, _filter, after, before, outDir, outFilePrefix, clocDefsPath, noRenames, depthInFilesCoupling) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
@@ -75,9 +86,10 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
         return isAfter && isBefore;
     }), (0, operators_1.share)());
     const _clocSummaryStream = clocSummary.pipe((0, operators_1.toArray)());
-    return runReportsFromStreams(reports, repoFolderPath, _filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream);
+    return _runReportsFromStreams(reports, repoFolderPath, _filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream);
 }
 exports.runReportsOneStream = runReportsOneStream;
+//********************* Internal functions exported becaused used by APIs defined in other files *****************/
 function _streams(commitLogPath, clocLogPath, clocSummaryPath, parallelRead, after, before) {
     const _after = new Date(after);
     const _before = new Date(before);
@@ -100,7 +112,7 @@ function _streams(commitLogPath, clocLogPath, clocSummaryPath, parallelRead, aft
     return { _commitStream, _filesStream, _clocSummaryStream };
 }
 exports._streams = _streams;
-function runReportsFromStreams(reports, repoFolderPath, _filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream) {
+function _runReportsFromStreams(reports, repoFolderPath, _filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream) {
     const params = {
         repoFolderPath,
         outDir,
@@ -152,5 +164,5 @@ function runReportsFromStreams(reports, repoFolderPath, _filter, after, before, 
         });
     }));
 }
-exports.runReportsFromStreams = runReportsFromStreams;
+exports._runReportsFromStreams = _runReportsFromStreams;
 //# sourceMappingURL=run-reports-on-repo-core.js.map

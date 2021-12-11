@@ -69,25 +69,6 @@ describe(`runReportsSingleThread`, () => {
             complete: () => done(),
         });
     }).timeout(600000);
-    it.skip(`runs some reports on any project project`, (done) => {
-        const reports = [file_churn_report_1.FileChurnReport.name];
-        const repoFolderPath = process.cwd();
-        const filter = ['*.ts'];
-        const after = '2021-01-01';
-        const before = undefined;
-        const outDir = `${process.cwd()}/temp`;
-        const outFile = undefined;
-        const clocDefsPath = undefined;
-        const depthInFilesCoupling = 10;
-        (0, run_reports_on_repo_core_1.runReportsSingleThread)(reports, repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, false, false, depthInFilesCoupling)
-            .pipe((0, rxjs_1.tap)((_reports) => {
-            (0, chai_1.expect)(_reports.length).equal(reports.length);
-        }))
-            .subscribe({
-            error: (err) => done(err),
-            complete: () => done(),
-        });
-    }).timeout(600000);
 });
 describe(`runReportsParallelReads`, () => {
     it(`runs all the reports on this project - the initial read operations are concurrent`, (done) => {

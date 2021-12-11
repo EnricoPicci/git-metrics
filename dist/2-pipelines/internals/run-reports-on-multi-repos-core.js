@@ -22,7 +22,7 @@ function runAllReportsOnMultiRepos(reports, repoFolderPaths, filter, after, befo
         // generation of the source streams
         const { _commitStream, _filesStream, _clocSummaryStream } = (0, run_reports_on_repo_core_1._streams)(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before);
         // run the reports
-        return (0, run_reports_on_repo_core_1.runReportsFromStreams)(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream).pipe((0, operators_1.map)((reports) => {
+        return (0, run_reports_on_repo_core_1._runReportsFromStreams)(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream).pipe((0, operators_1.map)((reports) => {
             return { reports, repoFolderPath };
         }));
     });

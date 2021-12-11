@@ -1,7 +1,7 @@
 "use strict";
 // https://gist.github.com/wosephjeber/212f0ca7fea740c3a8b03fc2283678d3
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.executeCommandNewProcessToLinesObs = exports.executeCommandNewProcessObs = exports.executeCommandObs = exports.executeCommand = void 0;
+exports.executeCommandInShellNewProcessObs = exports.executeCommandNewProcessToLinesObs = exports.executeCommandNewProcessObs = exports.executeCommandObs = exports.executeCommand = void 0;
 const child_process_1 = require("child_process");
 const rxjs_1 = require("rxjs");
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -40,6 +40,9 @@ function executeCommandNewProcessObs(action, command, args, options) {
         console.log(`====>>>> Action: ${action} -- Executing command in new process`);
         console.log(`====>>>> Command: ${command}`);
         console.log(`====>>>> Arguments: ${args.join(' ')}`);
+        if (options) {
+            console.log(`====>>>> Options: ${JSON.stringify(options)}`);
+        }
         const cmd = (0, child_process_1.spawn)(command, args.filter((a) => a.length > 0), options);
         cmd.stdout.on('data', (data) => {
             subscriber.next(data);
@@ -84,4 +87,9 @@ function dataToLines() {
         });
     };
 }
+function executeCommandInShellNewProcessObs(action, command, options) {
+    const _options = Object.assign(Object.assign({}, options), { shell: true });
+    return executeCommandNewProcessObs(action, command, [], _options);
+}
+exports.executeCommandInShellNewProcessObs = executeCommandInShellNewProcessObs;
 //# sourceMappingURL=execute-command.js.map

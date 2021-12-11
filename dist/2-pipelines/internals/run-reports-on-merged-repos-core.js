@@ -50,7 +50,7 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
         };
     }), (0, rxjs_1.concatMap)(({ allCommitStreamsMerged, allFileStreamsMerged, _clocSummaryStream }) => {
         // run the reports
-        return (0, run_reports_on_repo_core_1.runReportsFromStreams)(reports, repoContainerFolderPath, filter, after, before, _outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, allCommitStreamsMerged, allFileStreamsMerged, _clocSummaryStream);
+        return (0, run_reports_on_repo_core_1._runReportsFromStreams)(reports, repoContainerFolderPath, filter, after, before, _outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, allCommitStreamsMerged, allFileStreamsMerged, _clocSummaryStream);
     }));
 }
 exports.runAllReportsOnMergedRepos = runAllReportsOnMergedRepos;
