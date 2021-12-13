@@ -42,7 +42,7 @@ describe(`fileAuthors`, () => {
         const _clocLogPath = `${process.cwd()}/test-data/output/a-git-repo-with-author-with-many-cloc.gitlog`;
         const fileCommits = (0, files_1.filesStream)(_commitLogPath, _clocLogPath);
         (0, file_authors_aggregate_1.fileAuthors)(fileCommits)
-            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            .pipe((0, rxjs_1.tap)({
             next: (fileAuthors) => {
                 (0, chai_1.expect)(fileAuthors.length).equal(2);
             },

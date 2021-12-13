@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fileChurnDictionary = exports.fileChurn = void 0;
-const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 // receives a stream of FileGitCommitEnriched objects and returns a stream of FileChurn objects
 function fileChurn(fileCommits, after) {
-    return fileChurnDictionary(fileCommits, after).pipe((0, operators_1.concatMap)((fileChurnDictionary) => {
-        const fileChurns = Object.values(fileChurnDictionary).sort((a, b) => b.linesAddDel - a.linesAddDel);
-        return (0, rxjs_1.from)(fileChurns);
+    return fileChurnDictionary(fileCommits, after).pipe((0, operators_1.map)((fileChurnDictionary) => {
+        return Object.values(fileChurnDictionary).sort((a, b) => b.linesAddDel - a.linesAddDel);
     }));
 }
 exports.fileChurn = fileChurn;

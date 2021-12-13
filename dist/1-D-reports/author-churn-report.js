@@ -48,7 +48,7 @@ exports.authorChurnReport = authorChurnReport;
 // Starts from a stream of AuthorChurn objects, like when we create the report from a Mongo query
 function authorChurnReportCore(authorChurns, params, csvFilePath) {
     const authorChurnsSource = authorChurns.pipe((0, operators_1.share)());
-    const generateReport = authorChurnsSource.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((authorChurns) => {
+    const generateReport = authorChurnsSource.pipe((0, operators_1.tap)((authorChurns) => {
         console.log(`Processing ${authorChurns.length} records to generate AuthorChurnReport`);
     }), _authorChurnReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
     const concurrentStreams = [
@@ -89,12 +89,14 @@ function mapToCsvAndWriteAuthorChurn(csvFilePath) {
 }
 exports.mapToCsvAndWriteAuthorChurn = mapToCsvAndWriteAuthorChurn;
 function mapAuthorsChurnToCsv() {
-    return (0, rxjs_1.pipe)((0, operators_1.map)((author) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const _author = Object.assign({}, author);
-        _author.firstCommit = _author.firstCommit.toISOString();
-        _author.lastCommit = _author.lastCommit.toISOString();
-        return _author;
+    return (0, rxjs_1.pipe)((0, operators_1.concatMap)((authorChurns) => {
+        return authorChurns.map((author) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const _author = Object.assign({}, author);
+            _author.firstCommit = _author.firstCommit.toISOString();
+            _author.lastCommit = _author.lastCommit.toISOString();
+            return _author;
+        });
     }), (0, to_csv_1.toCsvObs)());
 }
 function addConsiderationsForAuthorChurnReport(r) {

@@ -28,7 +28,7 @@ exports.mongoModuleChurnReport = mongoModuleChurnReport;
 // produce a report about module churn reading from a mongo db (previously loaded with files info)
 // if csvFilePath is specified, is the path of the file where the data coming from the files collection query is saved
 function _mongoModuleChurnReport(params, csvFilePath) {
-    const fileChurnSource = (0, file_churn_query_1.fileChurn)(params.connectionString, params.dbName, params.filesCollection, params.after).pipe((0, operators_1.share)());
+    const fileChurnSource = (0, file_churn_query_1.fileChurn)(params.connectionString, params.dbName, params.filesCollection, params.after).pipe((0, operators_1.toArray)(), (0, operators_1.share)());
     const moduleChurnsStream = (0, module_churn_aggregate_1.moduleChurns)(fileChurnSource);
     return (0, module_churn_report_1.moduleChurnReportCore)(moduleChurnsStream, params, csvFilePath);
 }

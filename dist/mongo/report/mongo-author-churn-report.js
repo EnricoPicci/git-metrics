@@ -20,7 +20,7 @@ exports.mongoAuthorChurnReport = mongoAuthorChurnReport;
 // exported only to allow the tests
 // produce a report about author churn reading from a mongo db (previously loaded with files info)
 function _mongoAuthorChurnReport(params, csvFilePath) {
-    const authorChurnSource = (0, author_churn_query_1.authorChurn)(params.connectionString, params.dbName, params.filesCollection, params.commitsCollection, params.after).pipe((0, operators_1.share)());
+    const authorChurnSource = (0, author_churn_query_1.authorChurn)(params.connectionString, params.dbName, params.filesCollection, params.commitsCollection, params.after).pipe((0, operators_1.toArray)(), (0, operators_1.share)());
     return (0, author_churn_report_1.authorChurnReportCore)(authorChurnSource, params, csvFilePath);
 }
 exports._mongoAuthorChurnReport = _mongoAuthorChurnReport;

@@ -22,7 +22,7 @@ exports.mongoFileChurnReport = mongoFileChurnReport;
 // exported only to allow the tests
 // produce a report about file churn reading from a mongo db (previously loaded with files info)
 function _mongoFileChurnReport(params, csvFilePath) {
-    const fileChurnSource = (0, file_churn_query_1.fileChurn)(params.connectionString, params.dbName, params.filesCollection, params.after);
+    const fileChurnSource = (0, file_churn_query_1.fileChurn)(params.connectionString, params.dbName, params.filesCollection, params.after).pipe((0, operators_1.toArray)());
     return (0, file_churn_report_1.fileChurnReportCore)(fileChurnSource, params, csvFilePath);
 }
 exports._mongoFileChurnReport = _mongoFileChurnReport;

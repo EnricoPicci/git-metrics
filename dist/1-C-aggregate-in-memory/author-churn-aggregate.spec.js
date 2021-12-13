@@ -76,7 +76,7 @@ describe(`authorChurn`, () => {
     it(`reads the commit info and generates a stream of AuthorChurn objects`, (done) => {
         const commits = (0, commits_1.commitsStream)(commitLogPath);
         (0, author_churn_aggregate_1.authorChurn)(commits)
-            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            .pipe((0, rxjs_1.tap)({
             next: (authorChurns) => {
                 (0, chai_1.expect)(authorChurns.length).equal(3);
                 const oneAuthor = authorChurns.find((a) => a.authorName === 'Picci-1');
@@ -98,7 +98,7 @@ describe(`authorChurn`, () => {
         const commits = (0, commits_1.commitsStream)(commitLogPath);
         const after = new Date('2021-01-01');
         (0, author_churn_aggregate_1.authorChurn)(commits, after)
-            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            .pipe((0, rxjs_1.tap)({
             next: (authorChurns) => {
                 (0, chai_1.expect)(authorChurns.length).equal(1);
                 const oneAuthor = authorChurns.find((a) => a.authorName === 'Picci-3');

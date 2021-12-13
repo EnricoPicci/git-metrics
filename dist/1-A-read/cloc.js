@@ -163,7 +163,7 @@ function clocSummaryCommand(config) {
     return [`cd ${config.repoFolderPath} && ${cmdWithArgs}`, out];
 }
 function clocSummaryCommandWithArgs(config, outFile) {
-    const args = ['cloc', '.', '--exclude-dir=node_modules', '--csv', clocDefsPath(config)];
+    const args = ['cloc', '.', '--vcs=git', '--csv', clocDefsPath(config)];
     if (outFile) {
         const outArg = `--out=${outFile}`;
         args.push(outArg);

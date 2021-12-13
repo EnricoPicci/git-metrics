@@ -47,7 +47,7 @@ exports.fileAuthorsReport = fileAuthorsReport;
 // Starts from a stream of FileAuthors objects, like when we create the report from a Mongo query
 function fileAuthorsReportCore(fileAuthor, params, csvFilePath) {
     const fileAuthorSource = fileAuthor.pipe((0, operators_1.share)());
-    const generateReport = fileAuthorSource.pipe((0, operators_1.toArray)(), (0, operators_1.tap)((fileAuthors) => {
+    const generateReport = fileAuthorSource.pipe((0, operators_1.tap)((fileAuthors) => {
         console.log(`Processing ${fileAuthors.length} records to generate FileAuthorsReport`);
     }), _fileAuthorsReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
     const concurrentStreams = [
@@ -97,11 +97,13 @@ function mapToCsvAndWriteFileAuthor(csvFilePath) {
 }
 exports.mapToCsvAndWriteFileAuthor = mapToCsvAndWriteFileAuthor;
 function mapFileAuthorToCsv() {
-    return (0, rxjs_1.pipe)((0, operators_1.map)((fileAuthors) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const _fileAuthors = Object.assign({}, fileAuthors);
-        _fileAuthors.created = fileAuthors.created.toISOString();
-        return _fileAuthors;
+    return (0, rxjs_1.pipe)((0, operators_1.concatMap)((fileAuthors) => {
+        return fileAuthors.map((fileAuthor) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const _fileAuthor = Object.assign({}, fileAuthor);
+            _fileAuthor.created = fileAuthor.created.toISOString();
+            return _fileAuthor;
+        });
     }), (0, to_csv_1.toCsvObs)());
 }
 function addConsiderationsForFileAuthorsReport(r) {

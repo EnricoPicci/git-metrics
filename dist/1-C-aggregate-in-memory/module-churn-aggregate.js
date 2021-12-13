@@ -12,10 +12,10 @@ function moduleChurns(fileChurns) {
 exports.moduleChurns = moduleChurns;
 function _moduleChurns(fileChurns) {
     const modulesDict = {};
-    return fileChurns.pipe((0, operators_1.reduce)((acc, fileChurn) => {
+    return fileChurns.pipe((0, operators_1.map)((_fileChurns) => _fileChurns.reduce((acc, fileChurn) => {
         acc = fillModulesDict(fileChurn, acc);
         return acc;
-    }, modulesDict), (0, operators_1.share)());
+    }, modulesDict)), (0, operators_1.share)());
 }
 function fillModulesDict(file, modulesDict) {
     const pathFolders = foldersInPathForFile(file.path);

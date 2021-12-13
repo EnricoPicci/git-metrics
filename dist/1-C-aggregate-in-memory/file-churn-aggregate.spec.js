@@ -39,7 +39,7 @@ describe(`fileChurn`, () => {
     it(`reads the commit and cloc info and generates a stream of FileChurn objects`, (done) => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         (0, file_churn_aggregate_1.fileChurn)(fileCommits)
-            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            .pipe((0, rxjs_1.tap)({
             next: (fileChurns) => {
                 (0, chai_1.expect)(fileChurns).not.undefined;
                 // the numebr of file churns notified is equal to the number of files in the commit log
@@ -68,7 +68,7 @@ describe(`fileChurn`, () => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const after = new Date('2021-01-01');
         (0, file_churn_aggregate_1.fileChurn)(fileCommits, after)
-            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            .pipe((0, rxjs_1.tap)({
             next: (fileChurns) => {
                 (0, chai_1.expect)(fileChurns).not.undefined;
                 // the numebr of file churns notified is equal to the number of files in the commit log after the after date

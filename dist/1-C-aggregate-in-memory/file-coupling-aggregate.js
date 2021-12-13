@@ -5,7 +5,7 @@ const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 // receives a stream of FileGitCommitEnriched objects and returns a stream of FileCoupling objects
 function fileCoupling(commits, depthInFilesCoupling, after) {
-    return couplingDict(commits, after).pipe(couplingList(), filterFilesWithMinNumOfCommits(depthInFilesCoupling), (0, operators_1.concatMap)((couplings) => (0, rxjs_1.from)(couplings)));
+    return couplingDict(commits, after).pipe(couplingList(), filterFilesWithMinNumOfCommits(depthInFilesCoupling));
 }
 exports.fileCoupling = fileCoupling;
 // builds a dictionary where there is an entry for each file present in the stream of commits received

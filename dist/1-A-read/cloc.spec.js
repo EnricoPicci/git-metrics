@@ -28,7 +28,7 @@ describe(`createClocLog`, () => {
                 const _fileName = 'hallo.java';
                 const [language, filename, blank, comment, code] = lines.find((l) => l.includes(_fileName)).split(',');
                 (0, chai_1.expect)(language).equal('Java');
-                (0, chai_1.expect)(filename).equal(`./${_fileName}`);
+                (0, chai_1.expect)(filename).equal(`${_fileName}`);
                 (0, chai_1.expect)(parseInt(blank)).equal(3);
                 (0, chai_1.expect)(parseInt(comment)).equal(1);
                 (0, chai_1.expect)(parseInt(code)).equal(5);
@@ -141,7 +141,7 @@ describe(`createClocLogNewProcess`, () => {
                     .find((l) => l.includes(_fileName))
                     .split(',');
                 (0, chai_1.expect)(language).equal('Java');
-                (0, chai_1.expect)(filename).equal(`./${_fileName}`);
+                (0, chai_1.expect)(filename).equal(`${_fileName}`);
                 (0, chai_1.expect)(parseInt(blank)).equal(3);
                 (0, chai_1.expect)(parseInt(comment)).equal(1);
                 (0, chai_1.expect)(parseInt(code)).equal(5);
@@ -183,7 +183,7 @@ describe(`createMultiClocLogs`, () => {
                     .find((l) => l.includes(_fileName))
                     .split(',');
                 (0, chai_1.expect)(language).equal('Java');
-                (0, chai_1.expect)(filename).equal(`./${_fileName}`);
+                (0, chai_1.expect)(filename).equal(`${_fileName}`);
                 (0, chai_1.expect)(parseInt(blank)).equal(3);
                 (0, chai_1.expect)(parseInt(comment)).equal(2);
                 (0, chai_1.expect)(parseInt(code)).equal(5);
@@ -198,7 +198,7 @@ describe(`createMultiClocLogs`, () => {
                     .find((l) => l.includes(_fileName))
                     .split(',');
                 (0, chai_1.expect)(language).equal('Java');
-                (0, chai_1.expect)(filename).equal(`./${_fileName}`);
+                (0, chai_1.expect)(filename).equal(`${_fileName}`);
                 (0, chai_1.expect)(parseInt(blank)).equal(3);
                 (0, chai_1.expect)(parseInt(comment)).equal(2);
                 (0, chai_1.expect)(parseInt(code)).equal(5);

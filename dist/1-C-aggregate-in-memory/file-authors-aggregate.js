@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fileAuthorsDictionary = exports.fileAuthors = void 0;
-const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 // reads a commitLog and the cloc data from log files and returns a stream of FileAuthors objects
 function fileAuthors(fileCommits, after) {
-    return fileAuthorsDictionary(fileCommits, after).pipe((0, operators_1.concatMap)((fileWithAuthorsDict) => {
-        const _fileAuthors = Object.values(fileWithAuthorsDict).sort((a, b) => b.authors - a.authors);
-        return (0, rxjs_1.from)(_fileAuthors);
+    return fileAuthorsDictionary(fileCommits, after).pipe((0, operators_1.map)((fileWithAuthorsDict) => {
+        return Object.values(fileWithAuthorsDict).sort((a, b) => b.authors - a.authors);
     }));
 }
 exports.fileAuthors = fileAuthors;

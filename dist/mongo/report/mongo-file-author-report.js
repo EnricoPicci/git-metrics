@@ -21,7 +21,7 @@ exports.mongoFileAuthorReport = mongoFileAuthorReport;
 // exported only to allow the tests
 // produce a report about authors that have contributed to files reading from a mongo db (previously loaded with files info)
 function _mongoFileAuthorReport(params, csvFilePath) {
-    const fileAuthor = (0, files_authors_query_1.fileAuthors)(params.connectionString, params.dbName, params.filesCollection, params.after);
+    const fileAuthor = (0, files_authors_query_1.fileAuthors)(params.connectionString, params.dbName, params.filesCollection, params.after).pipe((0, operators_1.toArray)());
     return (0, file_authors_report_1.fileAuthorsReportCore)(fileAuthor, params, csvFilePath);
 }
 exports._mongoFileAuthorReport = _mongoFileAuthorReport;

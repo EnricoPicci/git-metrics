@@ -14,7 +14,7 @@ describe(`clocFileDict`, () => {
         (0, read_cloc_log_1.clocFileDict)(logFilePath)
             .pipe((0, rxjs_1.tap)((dict) => {
             (0, chai_1.expect)(Object.keys(dict).length).equal(3);
-            const _fileName = './hallo.java';
+            const _fileName = 'hallo.java';
             (0, chai_1.expect)(dict[_fileName].language).equal('Java');
             (0, chai_1.expect)(dict[_fileName].filename).equal(_fileName);
             (0, chai_1.expect)(dict[_fileName].blank).equal(3);

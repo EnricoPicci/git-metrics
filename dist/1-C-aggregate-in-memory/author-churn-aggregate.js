@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorChurnDictionary = exports.authorChurn = void 0;
-const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 // reads a commitLog and the cloc data from log files and returns a stream of AuthorChurn objects
 function authorChurn(commits, after) {
-    return authorChurnDictionary(commits, after).pipe((0, operators_1.concatMap)((authChurnDict) => {
-        const fileChurns = Object.values(authChurnDict).sort((a, b) => b.linesAddDel - a.linesAddDel);
-        return (0, rxjs_1.from)(fileChurns);
+    return authorChurnDictionary(commits, after).pipe((0, operators_1.map)((authChurnDict) => {
+        return Object.values(authChurnDict).sort((a, b) => b.linesAddDel - a.linesAddDel);
     }));
 }
 exports.authorChurn = authorChurn;
