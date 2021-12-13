@@ -1,5 +1,5 @@
 language,filename,blank,comment,code,"github.com/AlDanial/cloc v 1.90  T=0.01 s (231.4 files/s, 1388.7 lines/s)"
-Java,./java/good-by.java,0,2,5
-Java,./java/hallo.java,3,2,5
-Python,./good-by.py,0,0,1
+Java,java/good-by.java,0,2,5
+Java,java/hallo.java,3,2,5
+Python,good-by.py,0,0,1
 SUM,,3,4,11

@@ -12,7 +12,7 @@ describe(`clocFileDict`, () => {
             .pipe(
                 tap((dict) => {
                     expect(Object.keys(dict).length).equal(3);
-                    const _fileName = './hallo.java';
+                    const _fileName = 'hallo.java';
                     expect(dict[_fileName].language).equal('Java');
                     expect(dict[_fileName].filename).equal(_fileName);
                     expect(dict[_fileName].blank).equal(3);

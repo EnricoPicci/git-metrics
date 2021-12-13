@@ -35,7 +35,7 @@ describe(`createClocLog`, () => {
                 const _fileName = 'hallo.java';
                 const [language, filename, blank, comment, code] = lines.find((l) => l.includes(_fileName)).split(',');
                 expect(language).equal('Java');
-                expect(filename).equal(`./${_fileName}`);
+                expect(filename).equal(`${_fileName}`);
                 expect(parseInt(blank)).equal(3);
                 expect(parseInt(comment)).equal(1);
                 expect(parseInt(code)).equal(5);
@@ -186,7 +186,7 @@ describe(`createClocLogNewProcess`, () => {
                             .find((l) => l.includes(_fileName))
                             .split(',');
                         expect(language).equal('Java');
-                        expect(filename).equal(`./${_fileName}`);
+                        expect(filename).equal(`${_fileName}`);
                         expect(parseInt(blank)).equal(3);
                         expect(parseInt(comment)).equal(1);
                         expect(parseInt(code)).equal(5);
@@ -231,7 +231,7 @@ describe(`createMultiClocLogs`, () => {
                             .find((l) => l.includes(_fileName))
                             .split(',');
                         expect(language).equal('Java');
-                        expect(filename).equal(`./${_fileName}`);
+                        expect(filename).equal(`${_fileName}`);
                         expect(parseInt(blank)).equal(3);
                         expect(parseInt(comment)).equal(2);
                         expect(parseInt(code)).equal(5);
@@ -248,7 +248,7 @@ describe(`createMultiClocLogs`, () => {
                             .find((l) => l.includes(_fileName))
                             .split(',');
                         expect(language).equal('Java');
-                        expect(filename).equal(`./${_fileName}`);
+                        expect(filename).equal(`${_fileName}`);
                         expect(parseInt(blank)).equal(3);
                         expect(parseInt(comment)).equal(2);
                         expect(parseInt(code)).equal(5);

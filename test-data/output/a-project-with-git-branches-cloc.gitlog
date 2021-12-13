@@ -1,10 +1,10 @@
 language,filename,blank,comment,code,"github.com/AlDanial/cloc v 1.90  T=0.01 s (231.4 files/s, 1388.7 lines/s)"
-TXT,./file-1.txt,0,0,1
-TXT,./file-2.txt,0,0,1
-TXT,./file-4.txt,0,0,1
-TXT,./file-5.txt,0,0,1
-TXT,./file-6.txt,0,0,1
-TXT,./file-7.txt,0,0,1
-TXT,./file-8.txt,0,0,1
-TXT,./file-9.txt,0,0,1
+TXT,file-1.txt,0,0,1
+TXT,file-2.txt,0,0,1
+TXT,file-4.txt,0,0,1
+TXT,file-5.txt,0,0,1
+TXT,file-6.txt,0,0,1
+TXT,file-7.txt,0,0,1
+TXT,file-8.txt,0,0,1
+TXT,file-9.txt,0,0,1
 SUM,,0,0,6

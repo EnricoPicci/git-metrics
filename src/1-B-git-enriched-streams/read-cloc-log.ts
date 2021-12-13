@@ -35,12 +35,8 @@ export function toClocFileDict(clocLogPath?: string) {
                     throw new Error(`Format of cloc line not as expected: ${line} ${clocFileMsg}`);
                 }
                 const [language, filename, blank, comment, code] = clocInfo;
-                if (filename.length < 3 || filename.slice(0, 2) !== './') {
-                    // the log file produced by the command build by the "clocCommand" function should all have the path starting with "./"
-                    // the path info contained in the commits of git do not have this "./"
-                    throw new Error(
-                        `all lines in the cloc log should start with "./" - one does not: ${filename} ${clocFileMsg}`,
-                    );
+                if (filename.trim().length === 0) {
+                    throw new Error(`The file neme in line ${clocInfo} is the empty string ${clocFileMsg}`);
                 }
                 if (dict[filename]) {
                     throw new Error(`File ${filename} present more than once in cloc log ${clocFileMsg}`);

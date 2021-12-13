@@ -1,4 +1,4 @@
 language,filename,blank,comment,code,"github.com/AlDanial/cloc v 1.90  T=0.01 s (231.4 files/s, 1388.7 lines/s)"
-Java,./touched-by-Authors-1-only.java,0,2,5
-Java,./touched-by-Authors-1-2.java,3,2,5
+Java,touched-by-Authors-1-only.java,0,2,5
+Java,touched-by-Authors-1-2.java,3,2,5
 SUM,,3,4,10
