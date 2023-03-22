@@ -4,6 +4,20 @@ Tools to calculate some metrics out of git.
 
 There are tools that analyze a single repo and there are tools that analyze more than one repo, the latter with the objective to highlight signals of potential copling among the repos.
 
+# WARNINGS
+
+The tool can be run via the command `npx git-metrics` (with parameters if required, e.g. like `npx git-metrics -f '*.ts*' -a 2021-01-01 -d ../logs`).
+
+It fails though if we attempt to run commands other the the main (default) one using the `-p` option, e.g. it fails with a command like this
+
+`npx -p git-metrics run-reports-single-thread`
+
+In order to run such commands, we need to install locally the package (as development dependency) and the run the command directly with node, e.g.
+
+`node ./dist/3-lib/run-branches-report.js `.
+
+All the commands available are listed in the `bin` property of `package.json`.
+
 # TOOLS TO ANALYZE A SINGLE REPO - IN MEMORY AGGREGATION
 
 ## BASIC LOGICAL STEPS
