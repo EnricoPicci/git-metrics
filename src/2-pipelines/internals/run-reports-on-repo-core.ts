@@ -326,7 +326,7 @@ export function _runReportsFromStreams(
         map((workbookAndReports) => {
             const { workbook, reports } = workbookAndReports;
             const wb = writeWorkbook(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
-            console.log(`Summary report excel written to ${wb}`);
+            console.log(`====>>>> Summary report excel written to ${wb}`);
             return reports;
         }),
     );

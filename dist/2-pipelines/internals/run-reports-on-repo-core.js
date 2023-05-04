@@ -21,6 +21,7 @@ const module_churn_report_1 = require("../../1-D-reports/module-churn-report");
 const report_generators_1 = require("./report-generators");
 const read_cloc_log_1 = require("../../1-B-git-enriched-streams/read-cloc-log");
 const add_project_info_1 = require("../../1-D-reports/add-project-info");
+const summary_excel_1 = require("../../1-E-summary-excel/summary-excel");
 exports.allReports = [
     file_churn_report_1.FileChurnReport.name,
     module_churn_report_1.ModuleChurnReport.name,
@@ -46,11 +47,11 @@ function runReportsSingleThread(reports, repoFolderPath, filter, after, before, 
 }
 exports.runReportsSingleThread = runReportsSingleThread;
 // runs the read operations which create the commit and the cloc files in parallel distinct processes and then reads the output files created
-// by the read operations to generate teh reports - the report generation is performend concurrently in the main Node process
+// by the read operations to generate the reports - the report generation is performend concurrently in the main Node process
 function runReportsParallelReads(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, depthInFilesCoupling) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
-    // read from git loc and cloc
+    // read from git log and cloc
     const commitOptions = { repoFolderPath, outDir, filter, noRenames, reverse: true };
     const readClocOptions = { repoFolderPath, outDir };
     return (0, read_all_1.readAllParallel)(commitOptions, readClocOptions).pipe(
@@ -70,7 +71,7 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
     const _after = new Date(after);
     const _before = new Date(before);
-    // streams that read from git loc and cloc
+    // streams that read from git log and cloc
     const commitOptions = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
     const readClocOptions = { repoFolderPath, outDir };
     const { gitLogCommits, cloc, clocSummary } = (0, read_all_1.readStreamsDistinctProcesses)(commitOptions, readClocOptions);
@@ -162,6 +163,19 @@ function _runReportsFromStreams(reports, repoFolderPath, _filter, after, before,
             (0, add_project_info_1.addProjectInfo)(report, prjInfo);
             return report.addConsiderations();
         });
+    }), (0, operators_1.concatMap)((reports) => {
+        const workbook = (0, summary_excel_1.summaryWorkbook)();
+        const addSheetsForReports = reports.map((report) => {
+            return (0, summary_excel_1.addWorksheet)(workbook, report.name, report.csvFile.val);
+        });
+        return (0, rxjs_1.forkJoin)(addSheetsForReports).pipe((0, operators_1.map)(() => {
+            return { workbook, reports };
+        }));
+    }), (0, operators_1.map)((workbookAndReports) => {
+        const { workbook, reports } = workbookAndReports;
+        const wb = (0, summary_excel_1.writeWorkbook)(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
+        console.log(`====>>>> Summary report excel written to ${wb}`);
+        return reports;
     }));
 }
 exports._runReportsFromStreams = _runReportsFromStreams;

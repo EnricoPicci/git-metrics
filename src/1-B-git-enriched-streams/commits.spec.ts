@@ -67,6 +67,38 @@ describe(`enrichedCommitsStream`, () => {
                 complete: () => done(),
             });
     });
+    it(`reads the commit and cloc info and generates a stream of commitDocs - the files in the commit are not in the 
+    cloc to simulate files that were present in an old commit but heve been deleted since then.
+    Even in this case though the cloc, comment and blank must not be undefined but need to be 0.
+    This is required otherwise the file coupling records would have information missing and the cvs file could
+    not be created correctly`, (done) => {
+        const emptyClocLogPath = `${process.cwd()}/test-data/output/a-git-repo-cloc-empty.gitlog`;
+        enrichedCommitsStream(commitLogPath, emptyClocLogPath)
+            .pipe(
+                tap({
+                    next: (commit) => {
+                        expect(commit).not.undefined;
+                        expect(commit.files).not.undefined;
+                        expect(commit.files.length).gt(0);
+                        commit.files.forEach((f) => {
+                            expect(f.cloc).equal(0);
+                            expect(f.comment).equal(0);
+                            expect(f.blank).equal(0);
+                        });
+                    },
+                }),
+                toArray(),
+                tap({
+                    next: (allCommits) => {
+                        expect(allCommits.length).equal(3);
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    });
 });
 
 describe(`commitsStream`, () => {

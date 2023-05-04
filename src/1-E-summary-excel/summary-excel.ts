@@ -23,8 +23,9 @@ export function addWorksheet(workbook: XLSX.WorkBook, sheetName: string, csvFile
 }
 
 // writes a workbook to a file
-export function writeWorkbook(workbook: XLSX.WorkBook, outDir: string, summaryFileName: string) {
-    const fileName = path.join(outDir, `${summaryFileName}.xlsx`);
+export function writeWorkbook(workbook: XLSX.WorkBook, outDir: string, workbookFileName: string) {
+    const fileName = path.join(outDir, `${workbookFileName}.xlsx`);
     XLSX.writeFile(workbook, fileName);
+    console.log(`====>>>> Workbook written ${fileName}`);
     return fileName;
 }

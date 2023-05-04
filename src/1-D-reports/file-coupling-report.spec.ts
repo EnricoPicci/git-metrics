@@ -15,8 +15,8 @@ import {
     projectAndFileCouplingReport,
 } from './file-coupling-report';
 
-describe(`fileCouplingReport`, () => {
-    it(`generates the report about the churn of files and checks that the filesCouplingInfo has been filled`, (done) => {
+describe(`fileCouplingReportCore`, () => {
+    it(`generates the report about the churn of files and checks that the report has been filled`, (done) => {
         const repoName = 'io-backend';
         const commitLogPath = path.join(process.cwd(), `/test-data/output/${repoName}.gitlog`);
         const clocLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
@@ -44,8 +44,8 @@ describe(`fileCouplingReport`, () => {
     }).timeout(20000);
 });
 
-describe(`fileCouplingReportWithProjectInfo`, () => {
-    it(`generates the report about file couplings and checks that the filesCouplingInfo has been filled with something`, (done) => {
+describe(`projectAndFileCouplingReport`, () => {
+    it(`generates the report about file couplings and checks that the report has been filled with something`, (done) => {
         const repoName = 'a-git-repo';
         const outDir = `${process.cwd()}/temp`;
         const after = undefined;

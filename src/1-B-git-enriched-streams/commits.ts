@@ -68,10 +68,13 @@ function newGitFileNumstat(fileInfo: string, clocDict?: ClocDictionary) {
         linesAdded,
         linesDeleted,
         path: fileNumstatData[2],
+        cloc: 0,
+        comment: 0,
+        blank: 0,
     };
     if (clocDict) {
         const _path = `${fileNumstat.path}`;
-        // it may be that cloc does not read info for files which are considered not relevant, e.g. *.txt or files withou extensions
+        // it may be that cloc does not read info for files which are considered not relevant, e.g. *.txt or files without extensions
         // such files though may be tracked by git, therefore we need to check that the file path is actually one of the keys of the
         // dictionary built with cloc
         if (clocDict[_path]) {

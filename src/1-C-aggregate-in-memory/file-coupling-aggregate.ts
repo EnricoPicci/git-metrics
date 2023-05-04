@@ -12,7 +12,7 @@ type CouplingDict = {
     [path: string]: {
         path: string;
         totCommitForFile: number;
-        cloc?: number;
+        cloc: number;
         linesAdded: number;
         linesDeleted: number;
         togetherWith?: {

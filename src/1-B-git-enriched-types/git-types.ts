@@ -6,9 +6,9 @@ export type GitFileNumstatEnriched = {
     linesAdded: number | undefined; // undefined in case of binary files,
     linesDeleted: number | undefined; // undefined in case of binary files
     path: string;
-    cloc?: number;
-    comment?: number;
-    blank?: number;
+    cloc: number;
+    comment: number;
+    blank: number;
 };
 
 // https://git-scm.com/docs/pretty-formats
