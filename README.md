@@ -2,7 +2,7 @@
 
 Tools to calculate some metrics out of git.
 
-There are tools that analyze a single repo and there are tools that analyze more than one repo, the latter with the objective to highlight signals of potential copling among the repos.
+There are tools that analyze a single repo and there are tools that analyze more than one repo, the latter with the objective to highlight signals of potential coupling among the repos.
 
 # WARNINGS
 
@@ -52,7 +52,7 @@ For example, the following command analyzes the repo contained in the current fo
 
 You can also install the 'git-metrics' package from npm, move to the directory containing the git repo and launch the command
 
-`node path-to-git-metrics/dist/lib/run-reports-on-repo.js`
+`node path-to-git-metrics/dist/3-lib/run-reports-on-repo-parallel-reads.js`
 
 ### PARALLEL READS
 
@@ -169,7 +169,7 @@ The number of authors that have contributed to the change of a file is considere
 
 There is a line for each pair of files which have changed together in the same commits.
 
-For each pair (let's cal the 2 files in the pair: firstFile and scondFile) this is the data calculated
+For each pair (let's cal the 2 files in the pair: firstFile and secondFile) this is the data calculated
 
 -   linesAdded: number of lines added to firstFle in the period considered (i.e. after the date, if any, specified with the --after option) from git log
 -   linesDeleted: number of lines deleted to firstFle in the period considered (i.e. after the date, if any, specified with the --after option) from git log

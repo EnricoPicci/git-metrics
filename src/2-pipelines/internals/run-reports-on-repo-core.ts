@@ -29,6 +29,7 @@ import {
 } from './report-generators';
 import { toClocFileDict } from '../../1-B-git-enriched-streams/read-cloc-log';
 import { addProjectInfo } from '../../1-D-reports/add-project-info';
+import { addWorksheet, summaryWorkbook, writeWorkbook } from '../../1-E-summary-excel/summary-excel';
 
 export const allReports = [
     FileChurnReport.name,
@@ -92,7 +93,7 @@ export function runReportsSingleThread(
 }
 
 // runs the read operations which create the commit and the cloc files in parallel distinct processes and then reads the output files created
-// by the read operations to generate teh reports - the report generation is performend concurrently in the main Node process
+// by the read operations to generate the reports - the report generation is performend concurrently in the main Node process
 export function runReportsParallelReads(
     reports: string[],
     repoFolderPath: string,
@@ -109,7 +110,7 @@ export function runReportsParallelReads(
     // create the output directory if not existing
     createDirIfNotExisting(outDir);
 
-    // read from git loc and cloc
+    // read from git log and cloc
     const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames, reverse: true };
     const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
     return readAllParallel(commitOptions, readClocOptions).pipe(
@@ -158,7 +159,7 @@ export function runReportsOneStream(
     const _after = new Date(after);
     const _before = new Date(before);
 
-    // streams that read from git loc and cloc
+    // streams that read from git log and cloc
     const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
     const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
     const { gitLogCommits, cloc, clocSummary } = readStreamsDistinctProcesses(commitOptions, readClocOptions);
@@ -310,6 +311,23 @@ export function _runReportsFromStreams(
                 addProjectInfo(report, prjInfo);
                 return report.addConsiderations();
             });
+        }),
+        concatMap((reports) => {
+            const workbook = summaryWorkbook();
+            const addSheetsForReports = reports.map((report) => {
+                return addWorksheet(workbook, report.name, report.csvFile.val);
+            });
+            return forkJoin(addSheetsForReports).pipe(
+                map(() => {
+                    return { workbook, reports };
+                }),
+            );
+        }),
+        map((workbookAndReports) => {
+            const { workbook, reports } = workbookAndReports;
+            const wb = writeWorkbook(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
+            console.log(`Summary report excel written to ${wb}`);
+            return reports;
         }),
     );
 }
