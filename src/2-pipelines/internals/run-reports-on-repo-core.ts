@@ -313,21 +313,25 @@ export function _runReportsFromStreams(
             });
         }),
         concatMap((reports) => {
-            const workbook = summaryWorkbook();
-            const addSheetsForReports = reports.map((report) => {
-                return addWorksheet(workbook, report.name, report.csvFile.val);
-            });
-            return forkJoin(addSheetsForReports).pipe(
+            return writeSummaryWorkbook(reports, outDir, repoName).pipe(
                 map(() => {
-                    return { workbook, reports };
+                    return reports;
                 }),
             );
         }),
-        map((workbookAndReports) => {
-            const { workbook, reports } = workbookAndReports;
-            const wb = writeWorkbook(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
-            console.log(`====>>>> Summary report excel written to ${wb}`);
-            return reports;
+    );
+}
+
+function writeSummaryWorkbook(reports: Report[], outDir: string, repoName: string) {
+    const workbook = summaryWorkbook();
+    const addSheetsForReports = reports.map((report) => {
+        return addWorksheet(workbook, report.name, report.csvFile.val);
+    });
+    return forkJoin(addSheetsForReports).pipe(
+        map(() => {
+            const wbName = writeWorkbook(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
+            console.log(`====>>>> Summary report excel written to ${wbName}`);
+            return wbName;
         }),
     );
 }

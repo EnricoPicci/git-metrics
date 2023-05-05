@@ -6,13 +6,14 @@ import path from 'path';
 
 // returns a workbook read from the summary template file which contains the sheets with the graphs already created
 export function summaryWorkbook() {
-    return XLSX.readFile(DEFAUL_CONFIG.SUMMARY_WORKBOOK_TEMPLATE);
+    const xlsFilePath = path.join(__dirname, '..', '..', DEFAUL_CONFIG.SUMMARY_WORKBOOK_TEMPLATE);
+    return XLSX.readFile(xlsFilePath);
 }
 
 // adds a new worksheet to the workbook filled with the data contained in the csv file
 export function addWorksheet(workbook: XLSX.WorkBook, sheetName: string, csvFile: string) {
     return readLineObs(csvFile).pipe(
-        map((line) => line.split(',')),
+        map((line) => line.split(DEFAUL_CONFIG.CSV_SEP)),
         toArray(),
         tap((data) => {
             const worksheet = XLSX.utils.aoa_to_sheet(data);

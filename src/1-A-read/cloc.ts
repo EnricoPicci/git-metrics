@@ -229,7 +229,7 @@ function clocSummaryCommand(config: ConfigReadCloc) {
     return [`cd ${config.repoFolderPath} && ${cmdWithArgs}`, out];
 }
 function clocSummaryCommandWithArgs(config: ConfigReadCloc, outFile?: string) {
-    const args = ['cloc', '.', '--vcs=git', '--csv', clocDefsPath(config), `--timeout ${DEFAUL_CONFIG.CLOC_TIMEOUT}`];
+    const args = ['cloc', '.', '--vcs=git', '--csv', clocDefsPath(config), `--timeout=${DEFAUL_CONFIG.CLOC_TIMEOUT}`];
     if (outFile) {
         const outArg = `--out=${outFile}`;
         args.push(outArg);

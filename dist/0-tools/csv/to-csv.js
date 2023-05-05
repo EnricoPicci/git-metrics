@@ -1,10 +1,9 @@
 "use strict";
-// Custom operator which uses the data notified with the first notification to build the header, which is then emitted first.
-// Then all other notifications of the source Observable are notified.
-// https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
+// Functions to transform an array of objects to an array of csv lines
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toCsvObs = exports.toCsv = void 0;
 const rxjs_1 = require("rxjs");
+const config_1 = require("../../0-config/config");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toCsv(objects) {
     const csvLines = [];
@@ -12,11 +11,14 @@ function toCsv(objects) {
         throw new Error(`An array with at least one element is expected`);
     }
     const header = objects[0];
-    csvLines.push(Object.keys(header).join(','));
-    objects.forEach((obj) => csvLines.push(Object.values(obj).join(',')));
+    csvLines.push(Object.keys(header).join(config_1.DEFAUL_CONFIG.CSV_SEP));
+    objects.forEach((obj) => csvLines.push(valuesWithNoCsvSeparator(obj).join(config_1.DEFAUL_CONFIG.CSV_SEP)));
     return csvLines;
 }
 exports.toCsv = toCsv;
+// Custom operator which uses the first object notified by upstream to build the header, which is then emitted first.
+// All objects notified by the source Observable are transformed to csv records and notified downstream.
+// https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
 function toCsvObs() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (source) => {
@@ -26,9 +28,9 @@ function toCsvObs() {
                 next: (obj) => {
                     if (isFirst) {
                         isFirst = false;
-                        subscriber.next(Object.keys(obj).join(','));
+                        subscriber.next(Object.keys(obj).join(config_1.DEFAUL_CONFIG.CSV_SEP));
                     }
-                    subscriber.next(Object.values(obj).join(','));
+                    subscriber.next(valuesWithNoCsvSeparator(obj).join(config_1.DEFAUL_CONFIG.CSV_SEP));
                 },
                 error: (err) => subscriber.error(err),
                 complete: () => {
@@ -42,4 +44,10 @@ function toCsvObs() {
     };
 }
 exports.toCsvObs = toCsvObs;
+// valuesWithNoCsvSeparator returns an array of values of the object, with the csv separator replaced by space if present
+function valuesWithNoCsvSeparator(obj) {
+    return Object.values(obj).map((value) => {
+        return typeof value === 'string' ? value.replace(config_1.DEFAUL_CONFIG.CSV_SEP, ' ') : value;
+    });
+}
 //# sourceMappingURL=to-csv.js.map

@@ -17,7 +17,7 @@ import {
 } from './execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
 
-const SEP = DEFAUL_CONFIG.SEP;
+const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
 export const DEFAULT_OUT_DIR = './';
 export const COMMITS_FILE_POSTFIX = '-commits.log';

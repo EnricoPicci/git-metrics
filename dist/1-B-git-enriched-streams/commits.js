@@ -6,7 +6,7 @@ const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
 const read_cloc_log_1 = require("./read-cloc-log");
 const config_1 = require("../0-config/config");
-const SEP = config_1.DEFAUL_CONFIG.SEP;
+const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // returns a stream of commits in the form of an Observable which notifies GitCommitEnriched objects reading data from files containing
 // the git log and cloc data

@@ -55,7 +55,7 @@ function executeCommandNewProcessObs(action, command, args, options) {
         });
         cmd.on('close', (code) => {
             subscriber.complete();
-            console.log(`====>>>> Command ${command} with args ${args} executed successfully - exit code ${code}`);
+            console.log(`====>>>> Command ${command} with args ${args} executed - exit code ${code}`);
         });
     });
 }

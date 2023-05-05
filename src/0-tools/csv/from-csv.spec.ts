@@ -1,10 +1,12 @@
 import { expect } from 'chai';
 import { fromCsv } from './from-csv';
+import { DEFAUL_CONFIG } from '../../0-config/config';
 
 describe(`fromCsv`, () => {
     it(`create an array of objects starting from an header and an array of lines`, () => {
-        const header = 'col_1, col_2, col_3';
-        const lines = ['1,2,3', 'a,b,c'];
+        const sep = DEFAUL_CONFIG.CSV_SEP;
+        const header = `col_1${sep} col_2${sep} col_3`;
+        const lines = [`1${sep}2${sep}3`, `a${sep}b${sep}c`];
 
         type objType = { col_1: string; col_2: string; col_3: string };
 

@@ -12,8 +12,8 @@ const cloc_1 = require("../1-A-read/cloc");
 const commits_1 = require("../1-B-git-enriched-streams/commits");
 const read_all_1 = require("../1-A-read/read-all");
 const file_coupling_report_1 = require("./file-coupling-report");
-describe(`fileCouplingReport`, () => {
-    it(`generates the report about the churn of files and checks that the filesCouplingInfo has been filled`, (done) => {
+describe(`fileCouplingReportCore`, () => {
+    it(`generates the report about the churn of files and checks that the report has been filled`, (done) => {
         const repoName = 'io-backend';
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}.gitlog`);
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
@@ -35,8 +35,8 @@ describe(`fileCouplingReport`, () => {
         });
     }).timeout(20000);
 });
-describe(`fileCouplingReportWithProjectInfo`, () => {
-    it(`generates the report about file couplings and checks that the filesCouplingInfo has been filled with something`, (done) => {
+describe(`projectAndFileCouplingReport`, () => {
+    it(`generates the report about file couplings and checks that the report has been filled with something`, (done) => {
         const repoName = 'a-git-repo';
         const outDir = `${process.cwd()}/temp`;
         const after = undefined;

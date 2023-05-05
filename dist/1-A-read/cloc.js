@@ -6,6 +6,7 @@ const observable_fs_1 = require("observable-fs");
 const execute_command_1 = require("./execute-command");
 const read_git_1 = require("./read-git");
 const rxjs_1 = require("rxjs");
+const config_1 = require("../0-config/config");
 function createClocLog(config, action) {
     const [cmd, out] = clocCommand(config);
     (0, execute_command_1.executeCommand)(action, cmd);
@@ -163,7 +164,7 @@ function clocSummaryCommand(config) {
     return [`cd ${config.repoFolderPath} && ${cmdWithArgs}`, out];
 }
 function clocSummaryCommandWithArgs(config, outFile) {
-    const args = ['cloc', '.', '--vcs=git', '--csv', clocDefsPath(config)];
+    const args = ['cloc', '.', '--vcs=git', '--csv', clocDefsPath(config), `--timeout=${config_1.DEFAUL_CONFIG.CLOC_TIMEOUT}`];
     if (outFile) {
         const outArg = `--out=${outFile}`;
         args.push(outArg);

@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { from } from 'rxjs';
 import { toArray, tap } from 'rxjs/operators';
 import { toCsv, toCsvObs } from './to-csv';
+import { DEFAUL_CONFIG } from '../../0-config/config';
 
 describe(`toCsv`, () => {
     it(`create, from an array of objects, an array of lines, the first one being the header the other being the rows in comma separated value (csv) format`, () => {
@@ -10,9 +11,10 @@ describe(`toCsv`, () => {
         const obj_2: objType = { col_1: 'a', col_2: 'b', col_3: 'c' };
         const objs = [obj_1, obj_2];
 
-        const header = `col_1,col_2,col_3`;
-        const row_1 = `1,2,3`;
-        const row_2 = `a,b,c`;
+        const sep = DEFAUL_CONFIG.CSV_SEP;
+        const header = `col_1${sep}col_2${sep}col_3`;
+        const row_1 = `1${sep}2${sep}3`;
+        const row_2 = `a${sep}b${sep}c`;
 
         const linesFromObjects = toCsv(objs);
 
@@ -33,9 +35,10 @@ describe(`toCsvObs`, () => {
         const obj_2: objType = { col_1: 'a', col_2: 'b', col_3: 'c' };
         const objs = [obj_1, obj_2];
 
-        const header = `col_1,col_2,col_3`;
-        const row_1 = `1,2,3`;
-        const row_2 = `a,b,c`;
+        const sep = DEFAUL_CONFIG.CSV_SEP;
+        const header = `col_1${sep}col_2${sep}col_3`;
+        const row_1 = `1${sep}2${sep}3`;
+        const row_2 = `a${sep}b${sep}c`;
 
         from(objs)
             .pipe(

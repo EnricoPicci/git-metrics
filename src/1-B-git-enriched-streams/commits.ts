@@ -6,7 +6,7 @@ import { GitCommitEnriched, GitFileNumstatEnriched } from '../1-B-git-enriched-t
 
 import { DEFAUL_CONFIG } from '../0-config/config';
 
-const SEP = DEFAUL_CONFIG.SEP;
+const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 

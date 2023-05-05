@@ -4,14 +4,16 @@ const chai_1 = require("chai");
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const to_csv_1 = require("./to-csv");
+const config_1 = require("../../0-config/config");
 describe(`toCsv`, () => {
     it(`create, from an array of objects, an array of lines, the first one being the header the other being the rows in comma separated value (csv) format`, () => {
         const obj_1 = { col_1: '1', col_2: '2', col_3: '3' };
         const obj_2 = { col_1: 'a', col_2: 'b', col_3: 'c' };
         const objs = [obj_1, obj_2];
-        const header = `col_1,col_2,col_3`;
-        const row_1 = `1,2,3`;
-        const row_2 = `a,b,c`;
+        const sep = config_1.DEFAUL_CONFIG.CSV_SEP;
+        const header = `col_1${sep}col_2${sep}col_3`;
+        const row_1 = `1${sep}2${sep}3`;
+        const row_2 = `a${sep}b${sep}c`;
         const linesFromObjects = (0, to_csv_1.toCsv)(objs);
         // there are as many lines as objects in the array passed to the toCsv function plus 1 for the header
         (0, chai_1.expect)(linesFromObjects.length).equal(objs.length + 1);
@@ -27,9 +29,10 @@ describe(`toCsvObs`, () => {
         const obj_1 = { col_1: '1', col_2: '2', col_3: '3' };
         const obj_2 = { col_1: 'a', col_2: 'b', col_3: 'c' };
         const objs = [obj_1, obj_2];
-        const header = `col_1,col_2,col_3`;
-        const row_1 = `1,2,3`;
-        const row_2 = `a,b,c`;
+        const sep = config_1.DEFAUL_CONFIG.CSV_SEP;
+        const header = `col_1${sep}col_2${sep}col_3`;
+        const row_1 = `1${sep}2${sep}3`;
+        const row_2 = `a${sep}b${sep}c`;
         (0, rxjs_1.from)(objs)
             .pipe((0, to_csv_1.toCsvObs)(), (0, operators_1.toArray)(), (0, operators_1.tap)({
             next: (linesFromObjects) => {

@@ -20,7 +20,7 @@ import {
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { deleteFile } from '../0-tools/test-helpers/delete-file';
 
-const SEP = DEFAUL_CONFIG.SEP;
+const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
 describe(`readCommitsCommand`, () => {
     const outDir = './temp';

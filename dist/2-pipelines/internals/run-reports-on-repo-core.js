@@ -164,19 +164,21 @@ function _runReportsFromStreams(reports, repoFolderPath, _filter, after, before,
             return report.addConsiderations();
         });
     }), (0, operators_1.concatMap)((reports) => {
-        const workbook = (0, summary_excel_1.summaryWorkbook)();
-        const addSheetsForReports = reports.map((report) => {
-            return (0, summary_excel_1.addWorksheet)(workbook, report.name, report.csvFile.val);
-        });
-        return (0, rxjs_1.forkJoin)(addSheetsForReports).pipe((0, operators_1.map)(() => {
-            return { workbook, reports };
+        return writeSummaryWorkbook(reports, outDir, repoName).pipe((0, operators_1.map)(() => {
+            return reports;
         }));
-    }), (0, operators_1.map)((workbookAndReports) => {
-        const { workbook, reports } = workbookAndReports;
-        const wb = (0, summary_excel_1.writeWorkbook)(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
-        console.log(`====>>>> Summary report excel written to ${wb}`);
-        return reports;
     }));
 }
 exports._runReportsFromStreams = _runReportsFromStreams;
+function writeSummaryWorkbook(reports, outDir, repoName) {
+    const workbook = (0, summary_excel_1.summaryWorkbook)();
+    const addSheetsForReports = reports.map((report) => {
+        return (0, summary_excel_1.addWorksheet)(workbook, report.name, report.csvFile.val);
+    });
+    return (0, rxjs_1.forkJoin)(addSheetsForReports).pipe((0, operators_1.map)(() => {
+        const wbName = (0, summary_excel_1.writeWorkbook)(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
+        console.log(`====>>>> Summary report excel written to ${wbName}`);
+        return wbName;
+    }));
+}
 //# sourceMappingURL=run-reports-on-repo-core.js.map
