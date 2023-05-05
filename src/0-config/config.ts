@@ -4,4 +4,7 @@ export const DEFAUL_CONFIG = {
 
     // summary workbook template file name
     SUMMARY_WORKBOOK_TEMPLATE: 'summary-template.xlsx',
+
+    // Default timeout for the cloc command - used to avoid timout errors
+    CLOC_TIMEOUT: 1000000,
 };

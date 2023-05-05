@@ -22,6 +22,7 @@ import {
     defaultIfEmpty,
     tap,
 } from 'rxjs';
+import { DEFAUL_CONFIG } from '../0-config/config';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
     const [cmd, out] = clocCommand(config);
@@ -228,7 +229,7 @@ function clocSummaryCommand(config: ConfigReadCloc) {
     return [`cd ${config.repoFolderPath} && ${cmdWithArgs}`, out];
 }
 function clocSummaryCommandWithArgs(config: ConfigReadCloc, outFile?: string) {
-    const args = ['cloc', '.', '--vcs=git', '--csv', clocDefsPath(config)];
+    const args = ['cloc', '.', '--vcs=git', '--csv', clocDefsPath(config), `--timeout ${DEFAUL_CONFIG.CLOC_TIMEOUT}`];
     if (outFile) {
         const outArg = `--out=${outFile}`;
         args.push(outArg);
