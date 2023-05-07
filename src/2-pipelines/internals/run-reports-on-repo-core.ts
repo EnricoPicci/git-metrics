@@ -55,6 +55,7 @@ export function runReportsSingleThread(
     clocDefsPath: string,
     concurrentReadOfCommits: boolean,
     noRenames: boolean,
+    ignoreClocZero: boolean,
     depthInFilesCoupling?: number,
 ) {
     // create the output directory if not existing
@@ -71,8 +72,6 @@ export function runReportsSingleThread(
         clocLogPath,
         clocSummaryPath,
         concurrentReadOfCommits,
-        after,
-        before,
     );
 
     // run the reports
@@ -85,6 +84,7 @@ export function runReportsSingleThread(
         outDir,
         outFilePrefix,
         clocDefsPath,
+        ignoreClocZero,
         depthInFilesCoupling,
         _commitStream,
         _filesStream,
@@ -105,6 +105,7 @@ export function runReportsParallelReads(
     clocDefsPath: string,
     concurrentReadOfCommits: boolean,
     noRenames: boolean,
+    ignoreClocZero: boolean,
     depthInFilesCoupling?: number,
 ) {
     // create the output directory if not existing
@@ -116,7 +117,7 @@ export function runReportsParallelReads(
     return readAllParallel(commitOptions, readClocOptions).pipe(
         // prepare the streams of git enriched objects
         map(([commitLogPath, clocLogPath, clocSummaryPath]) => {
-            return _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before);
+            return _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits);
         }),
         // run the aggregation logic and the reports
         concatMap(({ _commitStream, _filesStream, _clocSummaryStream }) =>
@@ -129,6 +130,7 @@ export function runReportsParallelReads(
                 outDir,
                 outFilePrefix,
                 clocDefsPath,
+                ignoreClocZero,
                 depthInFilesCoupling,
                 _commitStream,
                 _filesStream,
@@ -151,6 +153,7 @@ export function runReportsOneStream(
     outFilePrefix: string,
     clocDefsPath: string,
     noRenames: boolean,
+    ignoreClocZero: boolean,
     depthInFilesCoupling?: number,
 ) {
     // create the output directory if not existing
@@ -199,6 +202,7 @@ export function runReportsOneStream(
         outDir,
         outFilePrefix,
         clocDefsPath,
+        ignoreClocZero,
         depthInFilesCoupling,
         _commitStream,
         _filesStream,
@@ -207,36 +211,12 @@ export function runReportsOneStream(
 }
 
 //********************* Internal functions exported becaused used by APIs defined in other files *****************/
-export function _streams(
-    commitLogPath: string,
-    clocLogPath: string,
-    clocSummaryPath: string,
-    parallelRead: boolean,
-    after: string,
-    before: string,
-) {
-    const _after = new Date(after);
-    const _before = new Date(before);
+export function _streams(commitLogPath: string, clocLogPath: string, clocSummaryPath: string, parallelRead: boolean) {
     const _enrichedCommitsStream = enrichedCommitsStream(commitLogPath, clocLogPath);
     const _commitStream = parallelRead ? _enrichedCommitsStream : _enrichedCommitsStream.pipe(share());
     const _filesStream = parallelRead
-        ? filesStream(commitLogPath, clocLogPath).pipe(
-              filter((file) => {
-                  const commitDate = new Date(file.committerDate);
-                  const isAfter = after ? commitDate > _after : true;
-                  const isBefore = before ? commitDate < _before : true;
-                  return isAfter && isBefore;
-              }),
-          )
-        : filesStreamFromEnrichedCommitsStream(_commitStream).pipe(
-              filter((file) => {
-                  const commitDate = new Date(file.committerDate);
-                  const isAfter = after ? commitDate > _after : true;
-                  const isBefore = before ? commitDate < _before : true;
-                  return isAfter && isBefore;
-              }),
-              share(),
-          );
+        ? filesStream(commitLogPath, clocLogPath)
+        : filesStreamFromEnrichedCommitsStream(_commitStream).pipe(share());
     const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
     return { _commitStream, _filesStream, _clocSummaryStream };
 }
@@ -250,6 +230,7 @@ export function _runReportsFromStreams(
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
+    ignoreClocZero: boolean,
     depthInFilesCoupling: number,
     _commitStream: Observable<GitCommitEnriched>,
     _filesStream: Observable<FileGitCommitEnriched>,
@@ -285,7 +266,7 @@ export function _runReportsFromStreams(
     reports.forEach((r) => {
         switch (r) {
             case FileChurnReport.name:
-                generators.push(fileChurnReportGenerator(_filesStream, params, repoName));
+                generators.push(fileChurnReportGenerator(_filesStream, params, repoName, ignoreClocZero));
                 break;
             case ModuleChurnReport.name:
                 generators.push(moduleChurnReportGenerator(_filesStream, params, repoName));

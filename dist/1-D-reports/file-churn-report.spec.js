@@ -21,7 +21,7 @@ describe(`fileChurnReportCore`, () => {
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true);
         const outDir = `${process.cwd()}/temp`;
         const params = {
             commitLog: commitLogPath,
@@ -60,7 +60,7 @@ describe(`fileChurnReportCore - test the internals of the report generation logi
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
         const outDir = './temp';
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true);
         const params = {
             commitLog: commitLogPath,
             outDir,
@@ -83,7 +83,7 @@ describe(`fileChurnReportCore - test the internals of the report generation logi
         const percentThreshold = 20;
         const outDir = './temp';
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true);
         const params = {
             commitLog: commitLogPath,
             outDir,
@@ -107,7 +107,7 @@ describe(`fileChurnReportCore - test the internals of the report generation logi
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
         const outDir = './temp';
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true);
         const params = {
             commitLog: commitLogPath,
             outDir,
@@ -142,7 +142,7 @@ describe(`projectAndFileChurnReport`, () => {
             after,
         };
         // aggregation
-        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, params.after);
+        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, true, params.after);
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         (0, file_churn_report_1.projectAndFileChurnReport)(_fileChurn, _projectInfo, params)
             .pipe((0, rxjs_1.tap)((report) => {
@@ -177,7 +177,7 @@ describe(`projectAndFileChurnReport`, () => {
             after,
         };
         // aggregation
-        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, params.after);
+        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, true, params.after);
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         (0, file_churn_report_1.projectAndFileChurnReport)(_fileChurn, _projectInfo, params, csvFile)
             .pipe((0, rxjs_1.concatMap)((report) => {
@@ -218,7 +218,7 @@ describe(`projectAndFileChurnReport`, () => {
             after,
         };
         // aggregation
-        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, params.after);
+        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, true, params.after);
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         (0, file_churn_report_1.projectAndFileChurnReport)(_fileChurn, _projectInfo, params)
             .pipe((0, rxjs_1.tap)((report) => {
@@ -252,7 +252,7 @@ describe(`projectAndFileChurnReport`, () => {
             after,
         };
         // aggregation
-        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, params.after);
+        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, true, params.after);
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryStream);
         (0, file_churn_report_1.projectAndFileChurnReport)(_fileChurn, _projectInfo, params)
             .pipe((0, rxjs_1.tap)((report) => {

@@ -17,13 +17,14 @@ export function fileChurnReportGenerator(
     _filesStream: Observable<FileGitCommitEnriched>,
     params: ReportParams,
     repoName: string,
+    ignoreClocZero: boolean,
 ) {
     const outDir = params.outDir;
     const outFilePrefix = params.outFilePrefix;
     const _outFileChurn = outFilePrefix ? `${outFilePrefix}-files-churn.csv` : `${repoName}-files-churn.csv`;
     const csvFilePath = path.join(outDir, _outFileChurn);
     // aggregation
-    const _fileChurn = fileChurn(_filesStream, params.after);
+    const _fileChurn = fileChurn(_filesStream, ignoreClocZero, params.after);
     // report generations
     return fileChurnReportCore(_fileChurn, params, csvFilePath);
 }
@@ -38,11 +39,12 @@ export function moduleChurnReportGenerator(
     const _outModuleChurn = outFilePrefix ? `${outFilePrefix}-module-churn.csv` : `${repoName}-module-churn.csv`;
     const csvFilePath = path.join(outDir, _outModuleChurn);
     // aggregation
-    // we need an instance of stream of FileChurn objects, different from the one used for FileChurnReport, since such stream contains state, e.g. the dictionary of files
-    // which is built by looping through all files in the files stream
-    // if we do not have a different instance, we end up having a state which is wrong since it is built by looping too many times over the same
-    // files stream
-    const _secondFileChurn = fileChurn(_filesStream, params.after);
+    // we can not reuse the same stream of FileChurn objects used for FileChurnReport,
+    // we need an instance of stream of FileChurn objects, different from the one used for FileChurnReport,
+    // since such stream contains state, e.g. the dictionary of files which is built by looping through all files in the files stream
+    // if we do not have a different instance, we end up having a state which is wrong since it is built by looping
+    // too many times over the same files stream
+    const _secondFileChurn = fileChurn(_filesStream, true, params.after);
     const _moduleChurn = moduleChurns(_secondFileChurn);
     // report generations
     return moduleChurnReportCore(_moduleChurn, params, csvFilePath);

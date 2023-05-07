@@ -14,7 +14,8 @@ class ModuleChurnReport extends report_1.Report {
     constructor(_params) {
         super(_params);
         this.numFiles = { val: 0, description: `Number of files with churn` };
-        this.numModules = { val: 0, description: `Number of modules with churn` };
+        this.numModules = { val: 0, description: `Total number of modules` };
+        this.numChangedModules = { val: 0, description: `Number of modules with churn` };
         this.maxModuleDepth = { val: 0, description: `Max number of folders in the path of the modules` };
         this.clocTot = { val: 0, description: `Current total number of lines in the files selected for the report` };
         this.totChurn = {
@@ -31,14 +32,14 @@ class ModuleChurnReport extends report_1.Report {
     }
 }
 exports.ModuleChurnReport = ModuleChurnReport;
-// API to be used if we want to generate the report for the general project as well as the report about file churn
+// API to be used if we want to generate the report for the general project as well as the report about module churn
 // reads also from the repo folder for information about the files currently in the project
 function projectAndModuleChurnReport(moduleChurns, projectInfo, params, csvFilePrefix) {
     return projectInfo.pipe((0, operators_1.concatMap)((prjInfo) => moduleChurnReport(moduleChurns, params, prjInfo, csvFilePrefix)));
 }
 exports.projectAndModuleChurnReport = projectAndModuleChurnReport;
 // API to be used if we want to generate the full report including the general project info (e.g. total numnber of lines of code)
-// Starts from a stream of FileGitCommit
+// Starts from a stream of ModuleChurn objects
 function moduleChurnReport(moduleChurns, params, projectInfo, csvFilePrefix) {
     return moduleChurnReportCore(moduleChurns, params, csvFilePrefix).pipe((0, operators_1.tap)((report) => {
         (0, add_project_info_1.addProjectInfo)(report, projectInfo, report.csvFile.val);
@@ -46,7 +47,7 @@ function moduleChurnReport(moduleChurns, params, projectInfo, csvFilePrefix) {
 }
 exports.moduleChurnReport = moduleChurnReport;
 // API to be used if we want to generate the core of the report info and not also the general project info
-// Starts from a stream of FileChurn objects, like when we create the report from a Mongo query
+// Starts from a stream of ModuleChurn objects, like when we create the report from a Mongo query
 function moduleChurnReportCore(moduleChurns, params, csvFilePath) {
     const moduleChurnSource = moduleChurns.pipe((0, operators_1.map)((churns) => {
         const churnsSorted = churns.sort((a, b) => (0, split_path_1.splitPath)(b.path).length - (0, split_path_1.splitPath)(a.path).length);
@@ -118,6 +119,7 @@ function _moduleChurnReport(params) {
         }
         r.churn_vs_cloc.val = r.totChurn.val / r.clocTot.val;
         r.numModules.val = churns.length;
+        r.numChangedModules.val = churns.filter((c) => c.linesAddDel > 0).length;
         r.topChurnedModules.val = _modulesSortedPerChurn.slice(0, params.numberOfTopChurnModules);
         r.maxModuleDepth.val = maxDepth;
         return r;

@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { concatMap, tap } from 'rxjs';
 import { COMMIT_RECORD_COUNTER } from '../../1-B-git-enriched-streams/commits';
-import { AuthorChurnReport, AUTHOR_CHURN_REPORT_NAME } from '../../1-D-reports/author-churn-report';
 import { FileChurnReport, FILE_CHURN_REPORT_NAME } from '../../1-D-reports/file-churn-report';
 import {
     allReports,
@@ -9,6 +8,7 @@ import {
     runReportsParallelReads,
     runReportsOneStream,
 } from './run-reports-on-repo-core';
+import { MODULE_CHURN_REPORT_NAME, ModuleChurnReport } from '../../1-D-reports/module-churn-report';
 
 describe(`runReportsSingleThread`, () => {
     it(`runs all the reports on this project`, (done) => {
@@ -19,6 +19,7 @@ describe(`runReportsSingleThread`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
+        const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
 
         runReportsSingleThread(
@@ -32,6 +33,7 @@ describe(`runReportsSingleThread`, () => {
             clocDefsPath,
             false,
             false,
+            ignoreClocZero,
             depthInFilesCoupling,
         )
             .pipe(
@@ -49,7 +51,7 @@ describe(`runReportsSingleThread`, () => {
             });
     }).timeout(600000);
     it(`runs some reports on this project both in single and parallel stream mode`, (done) => {
-        const reports = [AuthorChurnReport.name, FileChurnReport.name];
+        const reports = [FileChurnReport.name, ModuleChurnReport.name];
 
         const repoFolderPath = process.cwd();
         const filter = ['*.ts'];
@@ -58,6 +60,7 @@ describe(`runReportsSingleThread`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
+        const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
 
         COMMIT_RECORD_COUNTER.count = true;
@@ -72,8 +75,9 @@ describe(`runReportsSingleThread`, () => {
             outDir,
             outFile,
             clocDefsPath,
+            false, // parallel commit read
             false,
-            false,
+            ignoreClocZero,
             depthInFilesCoupling,
         );
 
@@ -86,8 +90,9 @@ describe(`runReportsSingleThread`, () => {
             outDir,
             outFile,
             clocDefsPath,
-            true,
+            true, // parallel commit read
             false,
+            ignoreClocZero,
             depthInFilesCoupling,
         );
 
@@ -103,10 +108,10 @@ describe(`runReportsSingleThread`, () => {
                 concatMap(() => runParallelStream),
                 tap((_reports) => {
                     const fileChurnRep = _reports.find((r) => r.name === FILE_CHURN_REPORT_NAME) as FileChurnReport;
-                    const authorChurnRep = _reports.find(
-                        (r) => r.name === AUTHOR_CHURN_REPORT_NAME,
-                    ) as AuthorChurnReport;
-                    expect(fileChurnRep.totChurn.val).equal(authorChurnRep.totChurn.val);
+                    const moduleChurnRep = _reports.find(
+                        (r) => r.name === MODULE_CHURN_REPORT_NAME,
+                    ) as ModuleChurnReport;
+                    expect(fileChurnRep.totChurn.val).equal(moduleChurnRep.totChurn.val);
                 }),
                 tap((_reports) => {
                     expect(_reports.length).equal(reports.length);
@@ -136,6 +141,7 @@ describe(`runReportsParallelReads`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
+        const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
 
         runReportsParallelReads(
@@ -149,6 +155,7 @@ describe(`runReportsParallelReads`, () => {
             clocDefsPath,
             false,
             false,
+            ignoreClocZero,
             depthInFilesCoupling,
         )
             .pipe(
@@ -166,7 +173,7 @@ describe(`runReportsParallelReads`, () => {
             });
     }).timeout(600000);
     it(`runs all the reports on this project both in single and parallel stream mode - the initial read operations are concurrent`, (done) => {
-        const reports = [AuthorChurnReport.name, FileChurnReport.name];
+        const reports = [FileChurnReport.name, ModuleChurnReport.name];
 
         const repoFolderPath = process.cwd();
         const filter = ['*.ts'];
@@ -175,6 +182,7 @@ describe(`runReportsParallelReads`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
+        const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
 
         COMMIT_RECORD_COUNTER.count = true;
@@ -191,6 +199,7 @@ describe(`runReportsParallelReads`, () => {
             clocDefsPath,
             false,
             false,
+            ignoreClocZero,
             depthInFilesCoupling,
         );
 
@@ -205,6 +214,7 @@ describe(`runReportsParallelReads`, () => {
             clocDefsPath,
             true,
             false,
+            ignoreClocZero,
             depthInFilesCoupling,
         );
 
@@ -220,10 +230,10 @@ describe(`runReportsParallelReads`, () => {
                 concatMap(() => runParallelStream),
                 tap((_reports) => {
                     const fileChurnRep = _reports.find((r) => r.name === FILE_CHURN_REPORT_NAME) as FileChurnReport;
-                    const authorChurnRep = _reports.find(
-                        (r) => r.name === AUTHOR_CHURN_REPORT_NAME,
-                    ) as AuthorChurnReport;
-                    expect(fileChurnRep.totChurn.val).equal(authorChurnRep.totChurn.val);
+                    const moduleChurnRep = _reports.find(
+                        (r) => r.name === MODULE_CHURN_REPORT_NAME,
+                    ) as ModuleChurnReport;
+                    expect(fileChurnRep.totChurn.val).equal(moduleChurnRep.totChurn.val);
                 }),
                 tap((_reports) => {
                     expect(_reports.length).equal(reports.length);
@@ -253,6 +263,7 @@ describe(`runReportsOneStream`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
+        const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
 
         runReportsOneStream(
@@ -265,6 +276,7 @@ describe(`runReportsOneStream`, () => {
             outFile,
             clocDefsPath,
             false,
+            ignoreClocZero,
             depthInFilesCoupling,
         )
             .pipe(

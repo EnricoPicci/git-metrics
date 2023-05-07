@@ -26,7 +26,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(repoFolderPath, outDir);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits).pipe((0, rxjs_1.share)());
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true).pipe((0, rxjs_1.share)());
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         const moduleChurnsStream = (0, module_churn_aggregate_1.moduleChurns)(fileChurns);
         const numberOfTopChurnModules = 3;
@@ -66,7 +66,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(repoFolderPath, outDir);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits).pipe((0, rxjs_1.share)());
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true).pipe((0, rxjs_1.share)());
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         const moduleChurnsStream = (0, module_churn_aggregate_1.moduleChurns)(fileChurns);
         const numberOfTopChurnModules = 3;
@@ -106,7 +106,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(repoFolderPath, outDir);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits).pipe((0, rxjs_1.share)());
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true).pipe((0, rxjs_1.share)());
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         const moduleChurnsStream = (0, module_churn_aggregate_1.moduleChurns)(fileChurns);
         const numberOfTopChurnModules = 3;
@@ -153,7 +153,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(repoFolderPath, outDir);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, after).pipe((0, rxjs_1.share)());
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true, after).pipe((0, rxjs_1.share)());
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         const moduleChurnsStream = (0, module_churn_aggregate_1.moduleChurns)(fileChurns);
         const numberOfTopChurnModules = 10;
@@ -168,21 +168,22 @@ describe(`projectAndModuleChurnReport`, () => {
             .pipe((0, rxjs_1.tap)((report) => {
             (0, chai_1.expect)(report).not.undefined;
             const modules = report.topChurnedModules.val;
-            (0, chai_1.expect)(Object.keys(modules).length).equal(4);
+            (0, chai_1.expect)(Object.values(modules).filter((m) => m.linesAddDel > 0).length).equal(4);
             //
             const srcServices = modules.find((m) => m.path === './src/services');
-            (0, chai_1.expect)(srcServices.numFiles).equal(1);
+            (0, chai_1.expect)(srcServices.numFiles).equal(3);
             (0, chai_1.expect)(srcServices.linesAdded).equal(2);
             (0, chai_1.expect)(srcServices.linesDeleted).equal(1);
             (0, chai_1.expect)(srcServices.linesAddDel).equal(3);
             //
             const srcServicesTests = modules.find((m) => m.path === './src/services/__tests__');
-            (0, chai_1.expect)(srcServicesTests.numFiles).equal(1);
+            (0, chai_1.expect)(srcServicesTests.numFiles).equal(2);
             (0, chai_1.expect)(srcServicesTests.linesAdded).equal(2);
             (0, chai_1.expect)(srcServicesTests.linesDeleted).equal(1);
             (0, chai_1.expect)(srcServicesTests.linesAddDel).equal(3);
             //
-            (0, chai_1.expect)(report.numModules.val).equal(4);
+            (0, chai_1.expect)(report.numModules.val).equal(8);
+            (0, chai_1.expect)(report.numChangedModules.val).equal(4);
         }))
             .subscribe({
             error: (err) => done(err),
@@ -210,7 +211,7 @@ describe(`projectAndModuleChurnReport`, () => {
             after,
         };
         // aggregation
-        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, params.after);
+        const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, true, params.after);
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryStream);
         const moduleChurnsStream = (0, module_churn_aggregate_1.moduleChurns)(_fileChurn);
         (0, module_churn_report_1.projectAndModuleChurnReport)(moduleChurnsStream, _projectInfo, params)

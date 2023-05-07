@@ -13,7 +13,7 @@ describe(`moduleChurns`, () => {
         const clocLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
 
         const fileCommits = filesStream(commitLogPath, clocLogPath);
-        const fileChurns = fileChurn(fileCommits);
+        const fileChurns = fileChurn(fileCommits, true);
 
         moduleChurns(fileChurns)
             .pipe(
@@ -56,7 +56,7 @@ describe(`moduleChurns`, () => {
         const clocLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
 
         const fileCommits = filesStream(commitLogPath, clocLogPath);
-        const fileChurns = fileChurn(fileCommits);
+        const fileChurns = fileChurn(fileCommits, true);
 
         moduleChurns(fileChurns)
             .pipe(
@@ -82,7 +82,7 @@ describe(`moduleChurns`, () => {
         const clocLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
 
         const fileCommits = filesStream(commitLogPath, clocLogPath);
-        const fileChurns = fileChurn(fileCommits);
+        const fileChurns = fileChurn(fileCommits, true);
 
         moduleChurns(fileChurns)
             .pipe(

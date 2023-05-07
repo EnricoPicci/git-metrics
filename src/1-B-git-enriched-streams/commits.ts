@@ -67,13 +67,14 @@ function newGitFileNumstat(fileInfo: string, clocDict?: ClocDictionary) {
     const fileNumstat: GitFileNumstatEnriched = {
         linesAdded,
         linesDeleted,
-        path: fileNumstatData[2],
+        path: filePathFromCommitPath(fileNumstatData[2]),
         cloc: 0,
         comment: 0,
         blank: 0,
     };
     if (clocDict) {
-        const _path = `${fileNumstat.path}`;
+        let _path = fileNumstat.path;
+        _path = filePathFromCommitPath(_path);
         // it may be that cloc does not read info for files which are considered not relevant, e.g. *.txt or files without extensions
         // such files though may be tracked by git, therefore we need to check that the file path is actually one of the keys of the
         // dictionary built with cloc
@@ -84,6 +85,47 @@ function newGitFileNumstat(fileInfo: string, clocDict?: ClocDictionary) {
         }
     }
     return fileNumstat;
+}
+
+// In case of rename the file path braces adn '=>' fat arrow are used like in these examples:
+//// clients/src/main/java/org/apache/kafka/clients/admin/{DecommissionBrokerOptions.java => UnregisterBrokerOptions.java}
+//// storage/src/main/java/org/apache/kafka/{server/log/internals => storage/internals/log}/EpochEntry.java
+//// metadata/src/test/java/org/apache/kafka/controller/ControllerPurgatoryTest.java => server-common/src/test/java/org/apache/kafka/deferred/DeferredEventQueueTest.java
+//// {metadata/src/main/java/org/apache/kafka/controller => server-common/src/main/java/org/apache/kafka/deferred}/DeferredEvent.java
+//// clients/src/main/java/org/apache/kafka/clients/{consumer/internals => }/StaleMetadataException.java
+//
+// This function returns the path part only with the rename part removed
+// Exported for testing purposes only
+export function filePathFromCommitPath(fPath: string) {
+    // if fPath contains ' => ' then it is a rename
+    const pathParts = fPath.split(' => ');
+    if (pathParts.length === 2) {
+        // manages the case where the rename is in the form of 'oldPath => newPath' with no braces like this:
+        // metadata/src/test/java/org/apache/kafka/controller/ControllerPurgatoryTest.java => server-common/src/test/java/org/apache/kafka/deferred/DeferredEventQueueTest.java
+        if (!pathParts[0].includes('{')) {
+            // we expect no occurrences of '}' in the second part
+            if (pathParts[1].includes('}')) {
+                console.error(`ERROR: we found an '}' without an '{' in ${fPath}`);
+                return fPath;
+            }
+            return pathParts[1];
+        }
+        const parts_0 = pathParts[0].split('{');
+        const parts_1 = pathParts[1].split('}');
+        // we expect only 1 occurrence of '{' in the first piece and only 1 occurrence of '}' in the second piece
+        if (parts_0.length != 2 || parts_1.length != 2) {
+            console.error(
+                `ERROR: in case of rename there should be exactly one '{' and one '}' - instead found ${fPath}`,
+            );
+            return fPath;
+        }
+        const firstPathPart = parts_0[0];
+        // if the second part starts with a '/' then we need to remove it - example
+        // clients/src/main/java/org/apache/kafka/clients/{consumer/internals => }/StaleMetadataException.java
+        const secondPathPart = parts_1[0] === '' ? parts_1[1].slice(1) : parts_1[0] + parts_1[1];
+        return firstPathPart + secondPathPart;
+    }
+    return fPath;
 }
 
 // counter of the lines in the file containing the commit log

@@ -7,9 +7,9 @@ const files_1 = require("../1-B-git-enriched-streams/files");
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
 const clocLogPath = `${process.cwd()}/test-data/output/a-git-repo-cloc.gitlog`;
 describe(`fileChurnDictionary`, () => {
-    it(`reads the commit and cloc info and generates a dictionary of FileDocs, where each FileDoc has its properties filled`, (done) => {
+    it(`reads the commit and cloc info and generates a dictionary of FileChurn, where each FileChurn has its properties filled`, (done) => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        (0, file_churn_aggregate_1.fileChurnDictionary)(fileCommits)
+        (0, file_churn_aggregate_1.fileChurnDictionary)(fileCommits, false)
             .pipe((0, rxjs_1.tap)({
             next: (fileCommitDictionary) => {
                 (0, chai_1.expect)(fileCommitDictionary).not.undefined;
@@ -27,6 +27,9 @@ describe(`fileChurnDictionary`, () => {
                 (0, chai_1.expect)(halloJavaFileCommit.created.getFullYear()).equal(2019);
                 (0, chai_1.expect)(halloJavaFileCommit.created.getMonth()).equal(8);
                 (0, chai_1.expect)(halloJavaFileCommit.created.getDate()).equal(22);
+                (0, chai_1.expect)(halloJavaFileCommit.lastCommit.getFullYear()).equal(2021);
+                (0, chai_1.expect)(halloJavaFileCommit.lastCommit.getMonth()).equal(8);
+                (0, chai_1.expect)(halloJavaFileCommit.lastCommit.getDate()).equal(22);
             },
         }))
             .subscribe({
@@ -38,7 +41,7 @@ describe(`fileChurnDictionary`, () => {
 describe(`fileChurn`, () => {
     it(`reads the commit and cloc info and generates a stream of FileChurn objects`, (done) => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        (0, file_churn_aggregate_1.fileChurn)(fileCommits)
+        (0, file_churn_aggregate_1.fileChurn)(fileCommits, true)
             .pipe((0, rxjs_1.tap)({
             next: (fileChurns) => {
                 (0, chai_1.expect)(fileChurns).not.undefined;
@@ -67,12 +70,15 @@ describe(`fileChurn`, () => {
     it(`reads the commit and cloc info and generates a stream of FileChurn objects considering only the commits after a certain date`, (done) => {
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const after = new Date('2021-01-01');
-        (0, file_churn_aggregate_1.fileChurn)(fileCommits, after)
+        (0, file_churn_aggregate_1.fileChurn)(fileCommits, true, after)
             .pipe((0, rxjs_1.tap)({
             next: (fileChurns) => {
                 (0, chai_1.expect)(fileChurns).not.undefined;
-                // the numebr of file churns notified is equal to the number of files in the commit log after the after date
-                (0, chai_1.expect)(fileChurns.length).equal(1);
+                // all files in the commit are present in the file churns array even if they have no commits after the after date
+                (0, chai_1.expect)(fileChurns.length).equal(3);
+                // the number of file churns with lines added or delted > 0 is equal to the number of files in the commit log
+                // after the after date
+                (0, chai_1.expect)(fileChurns.filter((f) => f.linesAddDel > 0).length).equal(1);
             },
         }), (0, rxjs_1.tap)({
             next: (fileChurns) => {

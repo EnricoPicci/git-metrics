@@ -1,0 +1,9 @@
+§§§642da2f28c§§§2011-08-01§§§Edward Jay Kreps§§§Edward Jay Kreps§§§2011-08-01§§§Initial-checkin-of-Kafka-to-Apache-SVN.-This-corresponds-to-https-github.com-kafka-dev-kafka-commit-709afe4ec75489bc00a44335de8821fa726bb97e-except-that-git-specific-files-have-been-removed-and-code-has-been-put-into-trunk-branches-site-etc.-This-is-just-a-copy-of-master-branches-and-history-are-not-being-converted-since-we-can-t-find-a-good-tool-for-it§§§
+10	0	contrib/hadoop-consumer/src/main/java/kafka/etl/KafkaETLContext.java
+10	0	contrib/hadoop-consumer/src/main/java/kafka/etl/KafkaETLInputFormat.java
+
+§§§8d275d4741§§§2019-04-26§§§Greg Harris§§§Chris Egerton§§§2019-05-02§§§KAFKA-14666-Add-MM2-in-memory-offset-translation-index-for-offsets-behind-replication-13429§§§7127a22570
+10	10	connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java
+
+§§§8d275d4741§§§2023-04-26§§§Greg Harris§§§Chris Egerton§§§2023-05-02§§§KAFKA-14666-Add-MM2-in-memory-offset-translation-index-for-offsets-behind-replication-13429§§§7127a22570
+11	11	connect/mirror/src/main/java/org/apache/kafka/connect/mirror/MirrorCheckpointTask.java

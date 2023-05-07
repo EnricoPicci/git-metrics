@@ -45,6 +45,7 @@ function toCsvObs() {
 }
 exports.toCsvObs = toCsvObs;
 // valuesWithNoCsvSeparator returns an array of values of the object, with the csv separator replaced by space if present
+// this is to avoid the csv parser to split the value in two columns
 function valuesWithNoCsvSeparator(obj) {
     return Object.values(obj).map((value) => {
         return typeof value === 'string' ? value.replace(config_1.DEFAUL_CONFIG.CSV_SEP, ' ') : value;

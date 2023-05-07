@@ -49,7 +49,12 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
             '-c, --concurrentReadOfCommits',
             `if this opion is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption`,
         )
-        .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`);
+        .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`)
+        .option(
+            '--countClocZero',
+            `if this opion is specified, then also the files that have 0 lines of code are counted (this can 
+            be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`,
+        );
 
     program.parse(process.argv);
 
@@ -67,6 +72,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         _options.outDir,
         _options.outFilePrefix,
         _options.clocDefsFile,
+        !_options.countClocZero,
         _depthInFilesCoupling,
         _options.concurrentReadOfCommits,
         _options.noRenames,

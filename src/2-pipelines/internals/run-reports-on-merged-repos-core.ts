@@ -20,6 +20,7 @@ export function runAllReportsOnMergedRepos(
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
+    ignoreClocZero: boolean,
     depthInFilesCoupling: number,
     concurrentReadOfCommits: boolean,
     noRenames: boolean,
@@ -52,8 +53,6 @@ export function runAllReportsOnMergedRepos(
                     clocLogPath,
                     clocSummaryPath,
                     concurrentReadOfCommits,
-                    after,
-                    before,
                 );
                 allCommitStreams.push(
                     _commitStream.pipe(
@@ -88,6 +87,7 @@ export function runAllReportsOnMergedRepos(
                 _outDir,
                 outFilePrefix,
                 clocDefsPath,
+                ignoreClocZero,
                 depthInFilesCoupling,
                 allCommitStreamsMerged,
                 allFileStreamsMerged,

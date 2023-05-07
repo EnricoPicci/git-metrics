@@ -18,6 +18,7 @@ export function runAllReportsOnMultiRepos(
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
+    ignoreClocZero: boolean,
     depthInFilesCoupling: number,
     concurrentReadOfCommits: boolean,
     noRenames: boolean,
@@ -37,8 +38,6 @@ export function runAllReportsOnMultiRepos(
             clocLogPath,
             clocSummaryPath,
             concurrentReadOfCommits,
-            after,
-            before,
         );
 
         // run the reports
@@ -51,6 +50,7 @@ export function runAllReportsOnMultiRepos(
             outDir,
             outFilePrefix,
             clocDefsPath,
+            ignoreClocZero,
             depthInFilesCoupling,
             _commitStream,
             _filesStream,

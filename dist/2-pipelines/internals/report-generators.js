@@ -15,13 +15,13 @@ const file_authors_report_1 = require("../../1-D-reports/file-authors-report");
 const file_churn_report_1 = require("../../1-D-reports/file-churn-report");
 const file_coupling_report_1 = require("../../1-D-reports/file-coupling-report");
 const module_churn_report_1 = require("../../1-D-reports/module-churn-report");
-function fileChurnReportGenerator(_filesStream, params, repoName) {
+function fileChurnReportGenerator(_filesStream, params, repoName, ignoreClocZero) {
     const outDir = params.outDir;
     const outFilePrefix = params.outFilePrefix;
     const _outFileChurn = outFilePrefix ? `${outFilePrefix}-files-churn.csv` : `${repoName}-files-churn.csv`;
     const csvFilePath = path_1.default.join(outDir, _outFileChurn);
     // aggregation
-    const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, params.after);
+    const _fileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, ignoreClocZero, params.after);
     // report generations
     return (0, file_churn_report_1.fileChurnReportCore)(_fileChurn, params, csvFilePath);
 }
@@ -32,11 +32,12 @@ function moduleChurnReportGenerator(_filesStream, params, repoName) {
     const _outModuleChurn = outFilePrefix ? `${outFilePrefix}-module-churn.csv` : `${repoName}-module-churn.csv`;
     const csvFilePath = path_1.default.join(outDir, _outModuleChurn);
     // aggregation
-    // we need an instance of stream of FileChurn objects, different from the one used for FileChurnReport, since such stream contains state, e.g. the dictionary of files
-    // which is built by looping through all files in the files stream
-    // if we do not have a different instance, we end up having a state which is wrong since it is built by looping too many times over the same
-    // files stream
-    const _secondFileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, params.after);
+    // we can not reuse the same stream of FileChurn objects used for FileChurnReport,
+    // we need an instance of stream of FileChurn objects, different from the one used for FileChurnReport,
+    // since such stream contains state, e.g. the dictionary of files which is built by looping through all files in the files stream
+    // if we do not have a different instance, we end up having a state which is wrong since it is built by looping
+    // too many times over the same files stream
+    const _secondFileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, true, params.after);
     const _moduleChurn = (0, module_churn_aggregate_1.moduleChurns)(_secondFileChurn);
     // report generations
     return (0, module_churn_report_1.moduleChurnReportCore)(_moduleChurn, params, csvFilePath);

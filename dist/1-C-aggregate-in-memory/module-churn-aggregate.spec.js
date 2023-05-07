@@ -15,7 +15,7 @@ describe(`moduleChurns`, () => {
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true);
         (0, module_churn_aggregate_1.moduleChurns)(fileChurns)
             .pipe((0, operators_1.tap)((moduleChurns) => {
             (0, chai_1.expect)(moduleChurns.length).equal(8);
@@ -54,7 +54,7 @@ describe(`moduleChurns`, () => {
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true);
         (0, module_churn_aggregate_1.moduleChurns)(fileChurns)
             .pipe((0, operators_1.tap)((moduleChurns) => {
             (0, chai_1.expect)(moduleChurns.length).equal(1);
@@ -76,7 +76,7 @@ describe(`moduleChurns`, () => {
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
         const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true);
         (0, module_churn_aggregate_1.moduleChurns)(fileChurns)
             .pipe((0, operators_1.tap)((moduleChurns) => {
             (0, chai_1.expect)(moduleChurns.length).equal(2);

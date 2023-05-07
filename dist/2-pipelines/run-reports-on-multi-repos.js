@@ -23,14 +23,16 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         .option('--clocDefsFile <string>', `path of the file that contains the language definitions used by cloc (sse "force-lang-def" in http://cloc.sourceforge.net/#Options)`)
         .option('--depthInFilesCoupling <string>', `if we sort the files for number of commits, we consider for coupling only the ones with more commits, i.e. the ones which remain within depthInFilesCoupling (default value is 10)`, `10`)
         .option('-c, --concurrentReadOfCommits', `if this opion is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption`)
-        .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`);
+        .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`)
+        .option('--countClocZero', `if this opion is specified, then also the files that have 0 lines of code are counted (this can 
+            be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`);
     program.parse(process.argv);
     const _options = program.opts();
     const _reports = (_a = _options.reports) !== null && _a !== void 0 ? _a : run_reports_on_repo_core_1.allReports;
     const _repoFolderPaths = _options.repoFolderPaths ? (0, rxjs_1.of)(_options.repoFolderPaths) : (0, run_reports_on_multi_repos_core_1.gitRepos)();
     const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
     _repoFolderPaths
-        .pipe((0, operators_1.concatMap)((folders) => (0, run_reports_on_multi_repos_core_1.runAllReportsOnMultiRepos)(_reports, folders, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _depthInFilesCoupling, _options.concurrentReadOfCommits, _options.noRenames)))
+        .pipe((0, operators_1.concatMap)((folders) => (0, run_reports_on_multi_repos_core_1.runAllReportsOnMultiRepos)(_reports, folders, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, !_options.countClocZero, _depthInFilesCoupling, _options.concurrentReadOfCommits, _options.noRenames)))
         .subscribe({
         next: (reportsOnMultiRepos) => {
             reportsOnMultiRepos.forEach(({ reports, repoFolderPath }) => {

@@ -15,7 +15,7 @@ describe(`runReportsSingleThread`, () => {
         const outFile = undefined;
         const clocDefsPath = undefined;
         const depthInFilesCoupling = 10;
-        (0, run_reports_on_repo_core_1.runReportsSingleThread)(reports, repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, false, false, depthInFilesCoupling)
+        (0, run_reports_on_repo_core_1.runReportsSingleThread)(reports, repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, false, false, true, depthInFilesCoupling)
             .pipe((0, rxjs_1.tap)((_reports) => {
             (0, chai_1.expect)(_reports.length).equal(reports.length);
         }))

@@ -2,11 +2,11 @@ import { expect } from 'chai';
 import path from 'path';
 import { concatMap, tap } from 'rxjs';
 import { COMMIT_RECORD_COUNTER } from '../../1-B-git-enriched-streams/commits';
-import { AuthorChurnReport, AUTHOR_CHURN_REPORT_NAME } from '../../1-D-reports/author-churn-report';
+import { AuthorChurnReport } from '../../1-D-reports/author-churn-report';
 import { FileAuthorsReport } from '../../1-D-reports/file-authors-report';
 import { FileChurnReport, FILE_CHURN_REPORT_NAME } from '../../1-D-reports/file-churn-report';
 import { FilesCouplingReport } from '../../1-D-reports/file-coupling-report';
-import { ModuleChurnReport } from '../../1-D-reports/module-churn-report';
+import { MODULE_CHURN_REPORT_NAME, ModuleChurnReport } from '../../1-D-reports/module-churn-report';
 import { gitRepos, runAllReportsOnMultiRepos } from './run-reports-on-multi-repos-core';
 
 describe(`runAllReportsOnMultiRepos`, () => {
@@ -21,6 +21,7 @@ describe(`runAllReportsOnMultiRepos`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
+        const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
 
         COMMIT_RECORD_COUNTER.count = true;
@@ -35,8 +36,9 @@ describe(`runAllReportsOnMultiRepos`, () => {
             outDir,
             outFile,
             clocDefsPath,
+            ignoreClocZero,
             depthInFilesCoupling,
-            false,
+            false, // single stream mode
             false,
         );
 
@@ -49,8 +51,9 @@ describe(`runAllReportsOnMultiRepos`, () => {
             outDir,
             outFile,
             clocDefsPath,
+            ignoreClocZero,
             depthInFilesCoupling,
-            true,
+            true, // parallel stream mode
             false,
         );
 
@@ -100,12 +103,12 @@ describe(`runAllReportsOnMultiRepos`, () => {
         expect(data[1].reports.length).equal(3);
         //
         const fileChurnRep_0 = data[0].reports.find((r) => r.name === FILE_CHURN_REPORT_NAME) as FileChurnReport;
-        const authorChurnRep_0 = data[0].reports.find((r) => r.name === AUTHOR_CHURN_REPORT_NAME) as AuthorChurnReport;
-        expect(fileChurnRep_0.totChurn.val).equal(authorChurnRep_0.totChurn.val);
+        const moduleChurnRep_0 = data[0].reports.find((r) => r.name === MODULE_CHURN_REPORT_NAME) as ModuleChurnReport;
+        expect(fileChurnRep_0.totChurn.val).equal(moduleChurnRep_0.totChurn.val);
         //
         const fileChurnRep_1 = data[1].reports.find((r) => r.name === FILE_CHURN_REPORT_NAME) as FileChurnReport;
-        const authorChurnRep_1 = data[1].reports.find((r) => r.name === AUTHOR_CHURN_REPORT_NAME) as AuthorChurnReport;
-        expect(fileChurnRep_1.totChurn.val).equal(authorChurnRep_1.totChurn.val);
+        const moduleChurnRep_1 = data[1].reports.find((r) => r.name === MODULE_CHURN_REPORT_NAME) as ModuleChurnReport;
+        expect(fileChurnRep_1.totChurn.val).equal(moduleChurnRep_1.totChurn.val);
         //
         expect(data[0].repoFolderPath).equal(process.cwd());
         expect(data[1].repoFolderPath).equal(process.cwd());

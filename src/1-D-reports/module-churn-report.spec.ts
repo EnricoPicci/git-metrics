@@ -26,7 +26,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const _commitStream = commitsStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryInfo(repoFolderPath, outDir);
 
-        const fileChurns = fileChurn(fileCommits).pipe(share());
+        const fileChurns = fileChurn(fileCommits, true).pipe(share());
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);
         const moduleChurnsStream = moduleChurns(fileChurns);
 
@@ -73,7 +73,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const _commitStream = commitsStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryInfo(repoFolderPath, outDir);
 
-        const fileChurns = fileChurn(fileCommits).pipe(share());
+        const fileChurns = fileChurn(fileCommits, true).pipe(share());
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);
         const moduleChurnsStream = moduleChurns(fileChurns);
 
@@ -120,7 +120,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const _commitStream = commitsStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryInfo(repoFolderPath, outDir);
 
-        const fileChurns = fileChurn(fileCommits).pipe(share());
+        const fileChurns = fileChurn(fileCommits, true).pipe(share());
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);
         const moduleChurnsStream = moduleChurns(fileChurns);
 
@@ -177,7 +177,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const _commitStream = commitsStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryInfo(repoFolderPath, outDir);
 
-        const fileChurns = fileChurn(fileCommits, after).pipe(share());
+        const fileChurns = fileChurn(fileCommits, true, after).pipe(share());
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);
         const moduleChurnsStream = moduleChurns(fileChurns);
 
@@ -195,21 +195,22 @@ describe(`projectAndModuleChurnReport`, () => {
                 tap((report) => {
                     expect(report).not.undefined;
                     const modules = report.topChurnedModules.val;
-                    expect(Object.keys(modules).length).equal(4);
+                    expect(Object.values(modules).filter((m) => m.linesAddDel > 0).length).equal(4);
                     //
                     const srcServices = modules.find((m) => m.path === './src/services');
-                    expect(srcServices.numFiles).equal(1);
+                    expect(srcServices.numFiles).equal(3);
                     expect(srcServices.linesAdded).equal(2);
                     expect(srcServices.linesDeleted).equal(1);
                     expect(srcServices.linesAddDel).equal(3);
                     //
                     const srcServicesTests = modules.find((m) => m.path === './src/services/__tests__');
-                    expect(srcServicesTests.numFiles).equal(1);
+                    expect(srcServicesTests.numFiles).equal(2);
                     expect(srcServicesTests.linesAdded).equal(2);
                     expect(srcServicesTests.linesDeleted).equal(1);
                     expect(srcServicesTests.linesAddDel).equal(3);
                     //
-                    expect(report.numModules.val).equal(4);
+                    expect(report.numModules.val).equal(8);
+                    expect(report.numChangedModules.val).equal(4);
                 }),
             )
             .subscribe({
@@ -241,7 +242,7 @@ describe(`projectAndModuleChurnReport`, () => {
         };
 
         // aggregation
-        const _fileChurn = fileChurn(_filesStream, params.after);
+        const _fileChurn = fileChurn(_filesStream, true, params.after);
         const _projectInfo = projectInfo(_commitStream, _clocSummaryStream);
         const moduleChurnsStream = moduleChurns(_fileChurn);
 

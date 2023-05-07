@@ -22,7 +22,8 @@ export type ModuleChurnReportParams = {
 export const MODULE_CHURN_REPORT_NAME = 'ModuleChurnReport';
 export class ModuleChurnReport extends Report {
     numFiles = { val: 0, description: `Number of files with churn` };
-    numModules = { val: 0, description: `Number of modules with churn` };
+    numModules = { val: 0, description: `Total number of modules` };
+    numChangedModules = { val: 0, description: `Number of modules with churn` };
     maxModuleDepth = { val: 0, description: `Max number of folders in the path of the modules` };
     clocTot = { val: 0, description: `Current total number of lines in the files selected for the report` };
     totChurn = {
@@ -41,7 +42,7 @@ export class ModuleChurnReport extends Report {
     }
 }
 
-// API to be used if we want to generate the report for the general project as well as the report about file churn
+// API to be used if we want to generate the report for the general project as well as the report about module churn
 // reads also from the repo folder for information about the files currently in the project
 export function projectAndModuleChurnReport(
     moduleChurns: Observable<ModuleChurn[]>,
@@ -53,7 +54,7 @@ export function projectAndModuleChurnReport(
 }
 
 // API to be used if we want to generate the full report including the general project info (e.g. total numnber of lines of code)
-// Starts from a stream of FileGitCommit
+// Starts from a stream of ModuleChurn objects
 export function moduleChurnReport(
     moduleChurns: Observable<ModuleChurn[]>,
     params: ModuleChurnReportParams,
@@ -69,7 +70,7 @@ export function moduleChurnReport(
 }
 
 // API to be used if we want to generate the core of the report info and not also the general project info
-// Starts from a stream of FileChurn objects, like when we create the report from a Mongo query
+// Starts from a stream of ModuleChurn objects, like when we create the report from a Mongo query
 export function moduleChurnReportCore(
     moduleChurns: Observable<ModuleChurn[]>,
     params: ModuleChurnReportParams,
@@ -168,6 +169,7 @@ export function _moduleChurnReport(params: ModuleChurnReportParams) {
             }
             r.churn_vs_cloc.val = r.totChurn.val / r.clocTot.val;
             r.numModules.val = churns.length;
+            r.numChangedModules.val = churns.filter((c) => c.linesAddDel > 0).length;
             r.topChurnedModules.val = _modulesSortedPerChurn.slice(0, params.numberOfTopChurnModules);
             r.maxModuleDepth.val = maxDepth;
             return r;

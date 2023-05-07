@@ -16,6 +16,7 @@ export function launchReportsSingleThread() {
         _options.clocDefsFile,
         _options.concurrentReadOfCommits,
         _options.noRenames,
+        !_options.countClocZero,
         _depthInFilesCoupling,
     ).subscribe({
         next: (reports) => {
@@ -47,6 +48,7 @@ export function launchReportsParallelReads() {
         _options.clocDefsFile,
         _options.concurrentReadOfCommits,
         _options.noRenames,
+        !_options.countClocZero,
         _depthInFilesCoupling,
     ).subscribe({
         next: (reports) => {
@@ -106,6 +108,11 @@ If more than one filter has to be specified, make sure they are separated by a s
             `if this opion is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption`,
         )
         .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`)
+        .option(
+            '--countClocZero',
+            `if this opion is specified, then also the files that have 0 lines of code are counted (this can 
+            be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`,
+        )
         .option(
             '--depthInFilesCoupling <string>',
             `if we sort the files for number of commits, we consider for coupling only the ones with more commits, i.e. the ones which remain within depthInFilesCoupling (default value is 10)`,

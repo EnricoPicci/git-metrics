@@ -14,6 +14,7 @@ export function summaryWorkbook() {
 export function addWorksheet(workbook: XLSX.WorkBook, sheetName: string, csvFile: string) {
     return readLineObs(csvFile).pipe(
         map((line) => line.split(DEFAUL_CONFIG.CSV_SEP)),
+        map((csvRec) => csvRec.map((field) => (isNaN(Number(field)) ? field : Number(field)))),
         toArray(),
         tap((data) => {
             const worksheet = XLSX.utils.aoa_to_sheet(data);

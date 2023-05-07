@@ -60,11 +60,13 @@ function executeCommandNewProcessObs(action, command, args, options) {
     });
 }
 exports.executeCommandNewProcessObs = executeCommandNewProcessObs;
+// executes a command in a separate process and returns an Observable which is the stream of lines output of the command execution
 function executeCommandNewProcessToLinesObs(action, command, args, options) {
-    return executeCommandNewProcessObs(action, command, args, options).pipe(dataToLines());
+    return executeCommandNewProcessObs(action, command, args, options).pipe(bufferToLines());
 }
 exports.executeCommandNewProcessToLinesObs = executeCommandNewProcessToLinesObs;
-function dataToLines() {
+// custom operator that converts a buffer to lines, i.e. splits on \n to emit each line
+function bufferToLines() {
     return (source) => {
         return new rxjs_1.Observable((subscriber) => {
             let remainder = '';

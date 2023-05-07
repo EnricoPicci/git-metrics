@@ -18,17 +18,7 @@ function _moduleChurns(fileChurns) {
     }, modulesDict)), (0, operators_1.share)());
 }
 function fillModulesDict(file, modulesDict) {
-    const pathFolders = foldersInPathForFile(file.path);
-    const modules = pathFolders.reduce((acc, val, i) => {
-        if (acc.length === 0) {
-            acc.push(val);
-        }
-        else {
-            const next = `${acc[i - 1]}/${val}`;
-            acc.push(next);
-        }
-        return acc;
-    }, []);
+    const modules = foldersInPath(file.path);
     modules.forEach((m) => {
         if (!modulesDict[m]) {
             modulesDict[m] = (0, module_churn_1.newModuleChurn)(m);
@@ -49,11 +39,21 @@ function fillModulesDict(file, modulesDict) {
     });
     return modulesDict;
 }
-function foldersInPathForFile(filePath) {
+function foldersInPath(filePath) {
     const pathElements = (0, split_path_1.splitPath)(filePath);
     // the folders are all the elements of the path with the exclusion of the last one which is the file name
-    const folders = pathElements.slice(0, pathElements.length - 1);
+    let folders = pathElements.slice(0, pathElements.length - 1);
     // if the file is in the root of the repo, we return the symbol .
-    return folders.length === 0 ? ['.'] : ['.', ...folders];
+    folders = folders.length === 0 ? ['.'] : ['.', ...folders];
+    return folders.reduce((acc, val, i) => {
+        if (acc.length === 0) {
+            acc.push(val);
+        }
+        else {
+            const next = `${acc[i - 1]}/${val}`;
+            acc.push(next);
+        }
+        return acc;
+    }, []);
 }
 //# sourceMappingURL=module-churn-aggregate.js.map

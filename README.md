@@ -4,19 +4,17 @@ Tools to calculate some metrics out of git.
 
 There are tools that analyze a single repo and there are tools that analyze more than one repo, the latter with the objective to highlight signals of potential coupling among the repos.
 
-# WARNINGS
-
 The tool can be run via the command `npx git-metrics` (with parameters if required, e.g. like `npx git-metrics -f '*.ts*' -a 2021-01-01 -d ../logs`).
 
-It fails though if we attempt to run commands other the the main (default) one using the `-p` option, e.g. it fails with a command like this
-
-`npx -p git-metrics run-reports-single-thread`
-
-In order to run such commands, we need to install locally the package (as development dependency) and the run the command directly with node, e.g.
+We can also install the package locally and the run the command directly with node, e.g.
 
 `node ./dist/3-lib/run-branches-report.js `.
 
-All the commands available are listed in the `bin` property of `package.json`.
+The package contains other subcommands other than the main (default) one. Such subcommands can be launched using the `-p` option, like this
+
+`npx -p git-metrics run-reports-single-thread`
+
+All the subcommands available are listed in the `bin` property of `package.json`.
 
 # TOOLS TO ANALYZE A SINGLE REPO - IN MEMORY AGGREGATION
 
@@ -104,6 +102,8 @@ where 'path_1' and 'path_2' represent the paths to the folders that contain the 
 -   '--depthInFilesCoupling <string>': if we sort the files for number of commits, we consider for coupling only the ones with more commits, i.e. the ones which remain within depthInFilesCoupling (default value is 10)`
 -   '-c, --concurrentReadOfCommits'': if this option is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption
 -   '--noRenames': if this opion is specified, then the no-renames option is used in the git log command
+    npx -p git-metrics run-reports-single-thread
+-   '--countClocZero': if this opion is specified, then also the files that have 0 lines of code are counted (this can be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`,
 
 ## Results produced
 
@@ -112,6 +112,7 @@ The goal of the git-metrics tool is to run some analysis on a code base which us
 The results of the analysis are:
 
 -   some files (_.csv and _.log) containing the details produced by the analysis
+-   a summary excel file containing the data of the various csv files in different tabs (currentlyh written only by the commands 'run-reports' and 'run-reports-single-thread')
 -   some print outs containing higher level considerations drawn from the details of the analysis
 
 ## csv files

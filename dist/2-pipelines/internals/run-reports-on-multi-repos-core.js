@@ -11,7 +11,7 @@ const observable_fs_1 = require("observable-fs");
 const read_all_1 = require("../../1-A-read/read-all");
 const create_outdir_1 = require("../../1-A-read/create-outdir");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
-function runAllReportsOnMultiRepos(reports, repoFolderPaths, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, concurrentReadOfCommits, noRenames) {
+function runAllReportsOnMultiRepos(reports, repoFolderPaths, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, noRenames) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
     const allReports = repoFolderPaths.map((repoFolderPath) => {
@@ -20,9 +20,9 @@ function runAllReportsOnMultiRepos(reports, repoFolderPaths, filter, after, befo
         const readClocOptions = { repoFolderPath, outDir };
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
         // generation of the source streams
-        const { _commitStream, _filesStream, _clocSummaryStream } = (0, run_reports_on_repo_core_1._streams)(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits, after, before);
+        const { _commitStream, _filesStream, _clocSummaryStream } = (0, run_reports_on_repo_core_1._streams)(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits);
         // run the reports
-        return (0, run_reports_on_repo_core_1._runReportsFromStreams)(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream).pipe((0, operators_1.map)((reports) => {
+        return (0, run_reports_on_repo_core_1._runReportsFromStreams)(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, _commitStream, _filesStream, _clocSummaryStream).pipe((0, operators_1.map)((reports) => {
             return { reports, repoFolderPath };
         }));
     });

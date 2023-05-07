@@ -23,11 +23,14 @@ describe(`runAllReportsOnMultiRepos`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
+        const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
         commits_1.COMMIT_RECORD_COUNTER.count = true;
         commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
-        const runSingleStream = (0, run_reports_on_multi_repos_core_1.runAllReportsOnMultiRepos)(reports, repoFolderPaths, filter, after, before, outDir, outFile, clocDefsPath, depthInFilesCoupling, false, false);
-        const runParallelStream = (0, run_reports_on_multi_repos_core_1.runAllReportsOnMultiRepos)(reports, repoFolderPaths, filter, after, before, outDir, outFile, clocDefsPath, depthInFilesCoupling, true, false);
+        const runSingleStream = (0, run_reports_on_multi_repos_core_1.runAllReportsOnMultiRepos)(reports, repoFolderPaths, filter, after, before, outDir, outFile, clocDefsPath, ignoreClocZero, depthInFilesCoupling, false, // single stream mode
+        false);
+        const runParallelStream = (0, run_reports_on_multi_repos_core_1.runAllReportsOnMultiRepos)(reports, repoFolderPaths, filter, after, before, outDir, outFile, clocDefsPath, ignoreClocZero, depthInFilesCoupling, true, // parallel stream mode
+        false);
         let readsInSingleStream = 0;
         let readsInParallelStream = 0;
         runSingleStream
@@ -54,12 +57,12 @@ describe(`runAllReportsOnMultiRepos`, () => {
         (0, chai_1.expect)(data[1].reports.length).equal(3);
         //
         const fileChurnRep_0 = data[0].reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
-        const authorChurnRep_0 = data[0].reports.find((r) => r.name === author_churn_report_1.AUTHOR_CHURN_REPORT_NAME);
-        (0, chai_1.expect)(fileChurnRep_0.totChurn.val).equal(authorChurnRep_0.totChurn.val);
+        const moduleChurnRep_0 = data[0].reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
+        (0, chai_1.expect)(fileChurnRep_0.totChurn.val).equal(moduleChurnRep_0.totChurn.val);
         //
         const fileChurnRep_1 = data[1].reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
-        const authorChurnRep_1 = data[1].reports.find((r) => r.name === author_churn_report_1.AUTHOR_CHURN_REPORT_NAME);
-        (0, chai_1.expect)(fileChurnRep_1.totChurn.val).equal(authorChurnRep_1.totChurn.val);
+        const moduleChurnRep_1 = data[1].reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
+        (0, chai_1.expect)(fileChurnRep_1.totChurn.val).equal(moduleChurnRep_1.totChurn.val);
         //
         (0, chai_1.expect)(data[0].repoFolderPath).equal(process.cwd());
         (0, chai_1.expect)(data[1].repoFolderPath).equal(process.cwd());

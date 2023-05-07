@@ -6,4 +6,5 @@ export type FileChurn = {
     linesAddDel: number;
     commits: number;
     created: Date;
+    lastCommit: Date;
 };
