@@ -91,6 +91,8 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
 }
 exports.runReportsOneStream = runReportsOneStream;
 //********************* Internal functions exported becaused used by APIs defined in other files *****************/
+// If parallelRead is true, then the cloc log is read in parallel to create the commitStream and the filesStream.
+// Otherwise, the cloc log is read only once to create the commitStream and the filesStream is created from the commitStream.
 function _streams(commitLogPath, clocLogPath, clocSummaryPath, parallelRead) {
     const _enrichedCommitsStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
     const _commitStream = parallelRead ? _enrichedCommitsStream : _enrichedCommitsStream.pipe((0, operators_1.share)());

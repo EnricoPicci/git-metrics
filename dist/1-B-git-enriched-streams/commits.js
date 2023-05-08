@@ -9,7 +9,7 @@ const config_1 = require("../0-config/config");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // returns a stream of commits in the form of an Observable which notifies GitCommitEnriched objects reading data from files containing
-// the git log and cloc data
+// the git log and cloc data (commit data read from the git repo are enriched with data coming from the cloc tool)
 function enrichedCommitsStream(commitLogPath, clocLogPath, after) {
     const commitStream = (0, read_cloc_log_1.clocFileDict)(clocLogPath).pipe((0, operators_1.concatMap)((clocDict) => gitCommitStream(commitLogPath, clocDict)));
     return after ? commitStream.pipe((0, operators_1.filter)((c) => c.committerDate > after)) : commitStream;
@@ -71,6 +71,7 @@ function newGitFileNumstat(fileInfo, clocDict) {
         let _path = fileNumstat.path;
         _path = filePathFromCommitPath(_path);
         // it may be that cloc does not read info for files which are considered not relevant, e.g. *.txt or files without extensions
+        // or old files which are not part of the current project. These files will not be in the cloc dictionary. Some of
         // such files though may be tracked by git, therefore we need to check that the file path is actually one of the keys of the
         // dictionary built with cloc
         if (clocDict[_path]) {
