@@ -95,4 +95,48 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
                 complete: () => done(),
             });
     }).timeout(20000);
+
+    it(`Generates the reports and verifies that the total churn for authorChurnReport is equal to the one for fileChurnReport. 
+    The churn is the the same because fileChurnReport considers also the files with cloc zero.
+    Therefore also the churn of the files that are not currently in the project is considered, which is the same logic
+    applied when calculating the authorChurnReport`, (done) => {
+        const repoName = 'kafka-commits-reverse-1.gitlog';
+
+        const commitLogPath = path.join(process.cwd(), `/test-data/output/${repoName}`);
+        const clocLogPath = path.join(process.cwd(), `/test-data/output/kafka-cloc.csv`);
+        const outDir = `${process.cwd()}/temp`;
+
+        const ignoreClocZero = false;
+
+        // build the file churn report
+        const fileCommits = filesStream(commitLogPath, clocLogPath);
+        const fileChurns = fileChurn(fileCommits, ignoreClocZero);
+        const fParams: FileChurnReportParams = {
+            commitLog: commitLogPath,
+            outDir,
+        };
+        const fChurnReport = fileChurnReportCore(fileChurns, fParams);
+
+        // build the author churn report
+        const commits = commitsStream(commitLogPath);
+        const authorChurns = authorChurn(commits);
+        const params: AuthorChurnReportParams = {
+            commitLog: commitLogPath,
+            outDir,
+        };
+        const authChurnReport = authorChurnReportCore(authorChurns, params);
+
+        forkJoin([fChurnReport, authChurnReport])
+            .pipe(
+                tap((reports) => {
+                    const fReport = reports[0];
+                    const aReport = reports[1];
+                    expect(fReport.totChurn.val).equal(aReport.totChurn.val);
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    }).timeout(20000);
 });
