@@ -21,7 +21,7 @@ export type ModuleChurnReportParams = {
 
 export const MODULE_CHURN_REPORT_NAME = 'ModuleChurnReport';
 export class ModuleChurnReport extends Report {
-    numFiles = { val: 0, description: `Number of files with churn` };
+    numChurnedFiles = { val: 0, description: `Number of files with churn` };
     numModules = { val: 0, description: `Total number of modules` };
     numChangedModules = { val: 0, description: `Number of modules with churn` };
     maxModuleDepth = { val: 0, description: `Max number of folders in the path of the modules` };
@@ -156,7 +156,7 @@ export function _moduleChurnReport(params: ModuleChurnReportParams) {
 
             _topLevelModules.forEach((mc) => {
                 r.clocTot.val = r.clocTot.val + mc.cloc;
-                r.numFiles.val = r.numFiles.val + mc.numFiles;
+                r.numChurnedFiles.val = r.numChurnedFiles.val + mc.numChurnedFiles;
                 r.totChurn.val = r.totChurn.val + mc.linesAddDel;
             });
 

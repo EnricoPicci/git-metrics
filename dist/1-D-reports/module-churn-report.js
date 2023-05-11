@@ -13,7 +13,7 @@ exports.MODULE_CHURN_REPORT_NAME = 'ModuleChurnReport';
 class ModuleChurnReport extends report_1.Report {
     constructor(_params) {
         super(_params);
-        this.numFiles = { val: 0, description: `Number of files with churn` };
+        this.numChurnedFiles = { val: 0, description: `Number of files with churn` };
         this.numModules = { val: 0, description: `Total number of modules` };
         this.numChangedModules = { val: 0, description: `Number of modules with churn` };
         this.maxModuleDepth = { val: 0, description: `Max number of folders in the path of the modules` };
@@ -107,7 +107,7 @@ function _moduleChurnReport(params) {
         const _topLevelModules = churns.filter((mc) => (0, split_path_1.splitPath)(mc.path).length === 1);
         _topLevelModules.forEach((mc) => {
             r.clocTot.val = r.clocTot.val + mc.cloc;
-            r.numFiles.val = r.numFiles.val + mc.numFiles;
+            r.numChurnedFiles.val = r.numChurnedFiles.val + mc.numChurnedFiles;
             r.totChurn.val = r.totChurn.val + mc.linesAddDel;
         });
         // set the default values in the params so that they are correctly reported in the report

@@ -7,7 +7,8 @@ import { fileChurn } from './file-churn-aggregate';
 import { moduleChurns } from './module-churn-aggregate';
 
 describe(`moduleChurns`, () => {
-    it(`generates a stream of ModuleChurn objects`, (done) => {
+    it(`generates a stream of ModuleChurn objects starting from a git commit log file and enriching
+    the commit data with the data from cloc log`, (done) => {
         const repoName = 'a-real-world-git-repo';
         const commitLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
         const clocLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
@@ -32,14 +33,29 @@ describe(`moduleChurns`, () => {
                     const srcTypesModuleChurn = srcTypes[0];
                     const srcControllersModuleChurn = srcControllers[0];
                     const srcModuleChurn = src[0];
+                    expect(srcTypesModuleChurn.depth).equal(2);
+                    expect(srcTypesModuleChurn.numChurnedFiles).equal(1);
+                    expect(srcTypesModuleChurn.cloc).equal(11);
+                    expect(srcTypesModuleChurn.cloc_own).equal(11);
                     expect(srcTypesModuleChurn.linesAdded).equal(100);
+                    expect(srcTypesModuleChurn.linesAdded_own).equal(100);
                     expect(srcTypesModuleChurn.linesDeleted).equal(5);
+                    expect(srcTypesModuleChurn.linesDeleted_own).equal(5);
                     expect(srcTypesModuleChurn.linesAddDel).equal(105);
-                    expect(srcControllersModuleChurn.numFiles).equal(2);
+                    expect(srcTypesModuleChurn.linesAddDel_own).equal(105);
+                    expect(srcControllersModuleChurn.depth).equal(2);
+                    expect(srcControllersModuleChurn.numChurnedFiles).equal(2);
+                    expect(srcControllersModuleChurn.cloc).equal(103);
+                    expect(srcControllersModuleChurn.cloc_own).equal(49);
                     expect(srcControllersModuleChurn.linesAdded).equal(126);
+                    expect(srcControllersModuleChurn.linesAdded_own).equal(60);
                     expect(srcControllersModuleChurn.linesDeleted).equal(6);
+                    expect(srcControllersModuleChurn.linesDeleted_own).equal(5);
                     expect(srcControllersModuleChurn.linesAddDel).equal(132);
-                    expect(srcModuleChurn.numFiles).equal(11);
+                    expect(srcControllersModuleChurn.linesAddDel_own).equal(65);
+                    expect(srcModuleChurn.depth).equal(1);
+                    expect(srcModuleChurn.numChurnedFiles).equal(11);
+                    expect(srcModuleChurn.cloc_own).equal(1439);
                     expect(srcModuleChurn.linesAdded).equal(468);
                     expect(srcModuleChurn.linesDeleted).equal(17);
                     expect(srcModuleChurn.linesAddDel).equal(485);
@@ -68,7 +84,7 @@ describe(`moduleChurns`, () => {
                     expect(rootModule.linesAdded).equal(23);
                     expect(rootModule.linesDeleted).equal(5);
                     expect(rootModule.linesAddDel).equal(28);
-                    expect(rootModule.numFiles).equal(3);
+                    expect(rootModule.numChurnedFiles).equal(3);
                 }),
             )
             .subscribe({
@@ -93,13 +109,13 @@ describe(`moduleChurns`, () => {
                     expect(rootModule.linesAdded).equal(23);
                     expect(rootModule.linesDeleted).equal(5);
                     expect(rootModule.linesAddDel).equal(28);
-                    expect(rootModule.numFiles).equal(3);
+                    expect(rootModule.numChurnedFiles).equal(3);
                     //
                     const folderModule = moduleChurns.find((m) => m.path === './java');
                     expect(folderModule.linesAdded).equal(21);
                     expect(folderModule.linesDeleted).equal(4);
                     expect(folderModule.linesAddDel).equal(25);
-                    expect(folderModule.numFiles).equal(2);
+                    expect(folderModule.numChurnedFiles).equal(2);
                 }),
             )
             .subscribe({

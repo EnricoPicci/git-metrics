@@ -198,13 +198,13 @@ describe(`projectAndModuleChurnReport`, () => {
                     expect(Object.values(modules).filter((m) => m.linesAddDel > 0).length).equal(4);
                     //
                     const srcServices = modules.find((m) => m.path === './src/services');
-                    expect(srcServices.numFiles).equal(3);
+                    expect(srcServices.numChurnedFiles).equal(3);
                     expect(srcServices.linesAdded).equal(2);
                     expect(srcServices.linesDeleted).equal(1);
                     expect(srcServices.linesAddDel).equal(3);
                     //
                     const srcServicesTests = modules.find((m) => m.path === './src/services/__tests__');
-                    expect(srcServicesTests.numFiles).equal(2);
+                    expect(srcServicesTests.numChurnedFiles).equal(2);
                     expect(srcServicesTests.linesAdded).equal(2);
                     expect(srcServicesTests.linesDeleted).equal(1);
                     expect(srcServicesTests.linesAddDel).equal(3);
@@ -257,7 +257,7 @@ describe(`projectAndModuleChurnReport`, () => {
                     //
                     const srcModule = modules.find((m) => m.path === './src');
                     expect(srcModule).not.undefined;
-                    expect(srcModule.numFiles).gt(0);
+                    expect(srcModule.numChurnedFiles).gt(0);
                     expect(srcModule.linesAdded).gt(0);
                     expect(srcModule.linesDeleted).gt(0);
                     expect(srcModule.linesAddDel).equal(srcModule.linesAdded + srcModule.linesDeleted);

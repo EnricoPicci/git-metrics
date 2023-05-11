@@ -10,7 +10,8 @@ const files_1 = require("../1-B-git-enriched-streams/files");
 const file_churn_aggregate_1 = require("./file-churn-aggregate");
 const module_churn_aggregate_1 = require("./module-churn-aggregate");
 describe(`moduleChurns`, () => {
-    it(`generates a stream of ModuleChurn objects`, (done) => {
+    it(`generates a stream of ModuleChurn objects starting from a git commit log file and enriching
+    the commit data with the data from cloc log`, (done) => {
         const repoName = 'a-real-world-git-repo';
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
@@ -32,14 +33,29 @@ describe(`moduleChurns`, () => {
             const srcTypesModuleChurn = srcTypes[0];
             const srcControllersModuleChurn = srcControllers[0];
             const srcModuleChurn = src[0];
+            (0, chai_1.expect)(srcTypesModuleChurn.depth).equal(2);
+            (0, chai_1.expect)(srcTypesModuleChurn.numChurnedFiles).equal(1);
+            (0, chai_1.expect)(srcTypesModuleChurn.cloc).equal(11);
+            (0, chai_1.expect)(srcTypesModuleChurn.cloc_own).equal(11);
             (0, chai_1.expect)(srcTypesModuleChurn.linesAdded).equal(100);
+            (0, chai_1.expect)(srcTypesModuleChurn.linesAdded_own).equal(100);
             (0, chai_1.expect)(srcTypesModuleChurn.linesDeleted).equal(5);
+            (0, chai_1.expect)(srcTypesModuleChurn.linesDeleted_own).equal(5);
             (0, chai_1.expect)(srcTypesModuleChurn.linesAddDel).equal(105);
-            (0, chai_1.expect)(srcControllersModuleChurn.numFiles).equal(2);
+            (0, chai_1.expect)(srcTypesModuleChurn.linesAddDel_own).equal(105);
+            (0, chai_1.expect)(srcControllersModuleChurn.depth).equal(2);
+            (0, chai_1.expect)(srcControllersModuleChurn.numChurnedFiles).equal(2);
+            (0, chai_1.expect)(srcControllersModuleChurn.cloc).equal(103);
+            (0, chai_1.expect)(srcControllersModuleChurn.cloc_own).equal(49);
             (0, chai_1.expect)(srcControllersModuleChurn.linesAdded).equal(126);
+            (0, chai_1.expect)(srcControllersModuleChurn.linesAdded_own).equal(60);
             (0, chai_1.expect)(srcControllersModuleChurn.linesDeleted).equal(6);
+            (0, chai_1.expect)(srcControllersModuleChurn.linesDeleted_own).equal(5);
             (0, chai_1.expect)(srcControllersModuleChurn.linesAddDel).equal(132);
-            (0, chai_1.expect)(srcModuleChurn.numFiles).equal(11);
+            (0, chai_1.expect)(srcControllersModuleChurn.linesAddDel_own).equal(65);
+            (0, chai_1.expect)(srcModuleChurn.depth).equal(1);
+            (0, chai_1.expect)(srcModuleChurn.numChurnedFiles).equal(11);
+            (0, chai_1.expect)(srcModuleChurn.cloc_own).equal(1439);
             (0, chai_1.expect)(srcModuleChurn.linesAdded).equal(468);
             (0, chai_1.expect)(srcModuleChurn.linesDeleted).equal(17);
             (0, chai_1.expect)(srcModuleChurn.linesAddDel).equal(485);
@@ -64,7 +80,7 @@ describe(`moduleChurns`, () => {
             (0, chai_1.expect)(rootModule.linesAdded).equal(23);
             (0, chai_1.expect)(rootModule.linesDeleted).equal(5);
             (0, chai_1.expect)(rootModule.linesAddDel).equal(28);
-            (0, chai_1.expect)(rootModule.numFiles).equal(3);
+            (0, chai_1.expect)(rootModule.numChurnedFiles).equal(3);
         }))
             .subscribe({
             error: (err) => done(err),
@@ -85,13 +101,13 @@ describe(`moduleChurns`, () => {
             (0, chai_1.expect)(rootModule.linesAdded).equal(23);
             (0, chai_1.expect)(rootModule.linesDeleted).equal(5);
             (0, chai_1.expect)(rootModule.linesAddDel).equal(28);
-            (0, chai_1.expect)(rootModule.numFiles).equal(3);
+            (0, chai_1.expect)(rootModule.numChurnedFiles).equal(3);
             //
             const folderModule = moduleChurns.find((m) => m.path === './java');
             (0, chai_1.expect)(folderModule.linesAdded).equal(21);
             (0, chai_1.expect)(folderModule.linesDeleted).equal(4);
             (0, chai_1.expect)(folderModule.linesAddDel).equal(25);
-            (0, chai_1.expect)(folderModule.numFiles).equal(2);
+            (0, chai_1.expect)(folderModule.numChurnedFiles).equal(2);
         }))
             .subscribe({
             error: (err) => done(err),

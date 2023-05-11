@@ -171,13 +171,13 @@ describe(`projectAndModuleChurnReport`, () => {
             (0, chai_1.expect)(Object.values(modules).filter((m) => m.linesAddDel > 0).length).equal(4);
             //
             const srcServices = modules.find((m) => m.path === './src/services');
-            (0, chai_1.expect)(srcServices.numFiles).equal(3);
+            (0, chai_1.expect)(srcServices.numChurnedFiles).equal(3);
             (0, chai_1.expect)(srcServices.linesAdded).equal(2);
             (0, chai_1.expect)(srcServices.linesDeleted).equal(1);
             (0, chai_1.expect)(srcServices.linesAddDel).equal(3);
             //
             const srcServicesTests = modules.find((m) => m.path === './src/services/__tests__');
-            (0, chai_1.expect)(srcServicesTests.numFiles).equal(2);
+            (0, chai_1.expect)(srcServicesTests.numChurnedFiles).equal(2);
             (0, chai_1.expect)(srcServicesTests.linesAdded).equal(2);
             (0, chai_1.expect)(srcServicesTests.linesDeleted).equal(1);
             (0, chai_1.expect)(srcServicesTests.linesAddDel).equal(3);
@@ -224,7 +224,7 @@ describe(`projectAndModuleChurnReport`, () => {
             //
             const srcModule = modules.find((m) => m.path === './src');
             (0, chai_1.expect)(srcModule).not.undefined;
-            (0, chai_1.expect)(srcModule.numFiles).gt(0);
+            (0, chai_1.expect)(srcModule.numChurnedFiles).gt(0);
             (0, chai_1.expect)(srcModule.linesAdded).gt(0);
             (0, chai_1.expect)(srcModule.linesDeleted).gt(0);
             (0, chai_1.expect)(srcModule.linesAddDel).equal(srcModule.linesAdded + srcModule.linesDeleted);

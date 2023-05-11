@@ -4,6 +4,11 @@ import { map, share } from 'rxjs/operators';
 import { FileChurn } from '../1-C-aggregate-types/file-churn';
 import { ModuleChurn, newModuleChurn } from '../1-C-aggregate-types/module-churn';
 import { splitPath } from '../0-tools/split-path/split-path';
+import path from 'path';
+
+export const ROOT_DIR_SYMBOL = '.';
+// exported for testing purposes only
+export const ROOT_DIR_SYMBOL_BACKSLASH = ROOT_DIR_SYMBOL + '/';
 
 type ModuleChurnDict = {
     [module: string]: ModuleChurn;
@@ -38,7 +43,7 @@ function fillModulesDict(file: FileChurn, modulesDict: ModuleChurnDict) {
         }
         Object.keys(modulesDict).forEach((k) => {
             if (k === m) {
-                modulesDict[k].numFiles++;
+                modulesDict[k].numChurnedFiles++;
                 modulesDict[k].cloc = modulesDict[k].cloc + file.cloc;
                 modulesDict[k].created =
                     !modulesDict[k].created || file.created < modulesDict[k].created
@@ -47,6 +52,14 @@ function fillModulesDict(file: FileChurn, modulesDict: ModuleChurnDict) {
                 modulesDict[k].linesAddDel = modulesDict[k].linesAddDel + file.linesAddDel;
                 modulesDict[k].linesAdded = modulesDict[k].linesAdded + file.linesAdded;
                 modulesDict[k].linesDeleted = modulesDict[k].linesDeleted + file.linesDeleted;
+                // if the file is in the root of the module, we add the lines to the own lines
+                const fileFolder = ROOT_DIR_SYMBOL_BACKSLASH + path.dirname(file.path);
+                if (fileFolder === m) {
+                    modulesDict[k].cloc_own = modulesDict[k].cloc_own + file.cloc;
+                    modulesDict[k].linesAddDel_own = modulesDict[k].linesAddDel_own + file.linesAddDel;
+                    modulesDict[k].linesAdded_own = modulesDict[k].linesAdded_own + file.linesAdded;
+                    modulesDict[k].linesDeleted_own = modulesDict[k].linesDeleted_own + file.linesDeleted;
+                }
             }
         });
     });
@@ -57,7 +70,7 @@ function foldersInPath(filePath: string) {
     // the folders are all the elements of the path with the exclusion of the last one which is the file name
     let folders = pathElements.slice(0, pathElements.length - 1);
     // if the file is in the root of the repo, we return the symbol .
-    folders = folders.length === 0 ? ['.'] : ['.', ...folders];
+    folders = folders.length === 0 ? [ROOT_DIR_SYMBOL] : [ROOT_DIR_SYMBOL, ...folders];
     return folders.reduce((acc, val, i) => {
         if (acc.length === 0) {
             acc.push(val);
