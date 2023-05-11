@@ -1,6 +1,43 @@
 # git-metrics
 
-Tools to calculate some metrics out of git.
+Tools to calculate some metrics out of git. This [article](https://betterprogramming.pub/a-data-driven-approach-to-improve-systems-understandability-d66369f75db) describes the spirit of this tools.
+
+# Table of Contents
+
+1. [Overview](#overview)
+2. [TOOLS TO ANALYZE A SINGLE REPO - IN MEMORY AGGREGATION](#tools-to-analyze-a-single-repo---in-memory-aggregation)
+    1. [BASIC LOGICAL STEPS](#basic-logical-steps)
+    2. [RUN TOOLS TO ANALYZE A SINGLE REPO](#run-tools-to-analyze-a-single-repo)
+        1. [PARALLEL READS](#parallel-reads)
+    3. [RUN BRANCHES REPORT](#run-branches-report)
+    4. [RUN TOOLS TO MERGE AND ANALYZE ALL THE REPOS CONTAINED IN A FOLDER AS A SINGLE PROJECT](#run-tools-to-merge-and-analyze-all-the-repos-contained-in-a-folder-as-a-single-project)
+    5. [RUN TOOLS TO ANALYZE MANY REPOS](#run-tools-to-analyze-many-repos)
+    6. [Options](#options)
+    7. [Results](#results-produced)
+        1. [summary excel file](#summary-excel-file)
+        2. [cvs files](#csv-files)
+            1. [\*-files-chrn.csv](#*-files-chrn.csv)
+            2. [\*-writeModulesChurCsv.csv](#*-writeModulesChurCsv.csv)
+            3. [\*-authors-churn.csv](#*-authors-churn.csv)
+            4. [\*-files-authors.csv](#*-files-authors.csv)
+            5. [\*-writeFilesCouplingCsv.csv](#*-writeFilesCouplingCsv.csv)
+            6. [\*-branches.csv](#*-branches.csv)
+3. [TOOLS TO ANALYZE MULTIPLE REPOS FOR TRACES OF COUPLING](#tools-to-analyze-multiple-repos-for-traces-of-coupling)
+    1. [THE INTUITION](#the-intuition)
+    2. [EXAMPLE](#example)
+    3. [BASIC LOGICAL STEPS](#basic-logical-steps-1)
+    4. [Example of logical steps](#example-of-logical-steps)
+    5. [RUN TOOLS TO ANALYZE MULTIPLE REPOS FOR TRACES OF COUPLING](#run-tools-to-analyze-multiple-repos-for-traces-of-coupling)
+        1. [Options](#options-1)
+4. [DESIGN](#design)
+    1. [Mapping of pipelines phases to code](#mapping-of-pipelines-phases-to-code)
+    2. [Folder dependency tree](#folder-dependency-tree)
+5. [TOOLS TO ANALYZE A SINGLE REPO - PARTIAL AGGREGATION IN MONGO](#tools-to-analyze-a-single-repo---partial-aggregation-in-mongo)
+    1. [BASIC LOGICAL STEPS IF MONGODB IS USED](#basic-logical-steps-if-mongodb-is-used)
+    2. [RUN TOOLS TO ANALYZE A SINGLE REPO WITH MONGODB](#run-tools-to-analyze-a-single-repo-with-mongodb)
+        1. [Options that can be used when using Mongo](#options-that-can-be-used-when-using-mongo)
+
+# Overview
 
 There are tools that analyze a single repo and there are tools that analyze more than one repo, the latter with the objective to highlight signals of potential coupling among the repos.
 
@@ -60,7 +97,7 @@ It is possible also run the reports using only the main Node process by launchin
 
 `npx -p git-metrics run-reports-single-thread`
 
-### RUN BRANCHES REPORT
+## RUN BRANCHES REPORT
 
 The BranchesReport is different from the other reports in the sense that, in order for it work correctly, it has to consider ALL commits since the birth of the repo. This means that neither `filter` nor `after` options can be used.
 
@@ -114,6 +151,10 @@ The results of the analysis are:
 -   some files (_.csv and _.log) containing the details produced by the analysis
 -   a summary excel file containing the data of the various csv files in different tabs (currentlyh written only by the commands 'run-reports' and 'run-reports-single-thread')
 -   some print outs containing higher level considerations drawn from the details of the analysis
+
+## summary excel file
+
+When we run the git-metrics tool a summary excel is produces. This excel file will contain a sheet for each csv file produced with all the csv records turned into sheet's rows. The summary file is not produced for the Branches Report.
 
 ## csv files
 
@@ -221,7 +262,7 @@ For each day this is the data calculated
 
 The intuition is to see if a certain file of one repo is committed often together with other specific files coming from other repos. Since the repos are independent units, we can rely only on the time dimension to give us indications about the potential coupling of 2 or more files. Therefore, to say that a file in one repo is committed **together with** another file from another repo, we have to see if the 2 files are committed in the same time period.
 
-### EXAMPLE
+## EXAMPLE
 
 Let's consider 2 repos, _Repo_1_ and _Repo_2_. _Repo_1_ contains _File_A_ wwhile _Repo_2_ contains _File_B_.
 
@@ -238,7 +279,7 @@ But what does it mean the **very often** written above since the 2 repos are ind
 -   Then all tuples are grouped. In other words we count in how many time windows a certain tuple has appeared.
 -   Once we know in how many time windows a certain tuple has appeared and in how many time windows a file contained in the tuple has been committed, then we can calculate an index of potential coupling as the ratio between **"number of time windows where a certain tuple appears"** vs **"number of time windows where a certain file has been committed"**.
 
-### Example
+### Example of logical steps
 
 Let's consider 2 repos, _Repo_1_ and _Repo_2_. _Repo_1_ contains _File_A_ wwhile _Repo_2_ contains _File_B_.
 
