@@ -53,6 +53,34 @@ describe(`fileChurnReportCore`, () => {
                 complete: () => done(),
             });
     }).timeout(20000);
+    it(`generates the report about the churn of files - unfortunately there are no files (e.g. because the filter is too restrictive)`, (done) => {
+        const repoName = 'a-git-repo-with-one-lazy-author';
+        const commitLogPath = path.join(process.cwd(), `/test-data/output/empty-gitlog.gitlog`);
+        const clocLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
+
+        const fileCommits = filesStream(commitLogPath, clocLogPath);
+        const fileChurns = fileChurn(fileCommits, true);
+        const outDir = `${process.cwd()}/temp`;
+        const params: FileChurnReportParams = {
+            commitLog: commitLogPath,
+            outDir,
+        };
+
+        fileChurnReportCore(fileChurns, params)
+            .pipe(
+                tap((report) => {
+                    // general tests on the files churn report created
+                    expect(report).not.undefined;
+                    expect(report.numFiles.val).equal(0);
+                    expect(report.totChurn.val).equal(0);
+                    expect(report.clocTot.val).equal(0);
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    }).timeout(20000);
 });
 
 describe(`fileChurnReportCore - test the internals of the report generation logic for specific cases`, () => {

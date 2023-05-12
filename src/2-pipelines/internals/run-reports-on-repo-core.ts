@@ -1,6 +1,5 @@
 import path from 'path';
-import { forkJoin, Observable } from 'rxjs';
-import { concatMap, filter, map, share, toArray } from 'rxjs/operators';
+import { forkJoin, Observable, concatMap, filter, map, share, toArray } from 'rxjs';
 
 import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll, readAllParallel, readStreamsDistinctProcesses } from '../../1-A-read/read-all';

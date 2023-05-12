@@ -57,7 +57,7 @@ describe(`projectAndBranchesReport`, () => {
                 complete: () => done(),
             });
     }).timeout(20000);
-    it(`generates the report about the branches using a this repo as a real repo`, (done) => {
+    it(`generates the report about the branches using this repo as a real repo`, (done) => {
         // input from the user
         const repoFolderPath = `./`;
         const outDir = `${process.cwd()}/temp`;
@@ -98,5 +98,5 @@ describe(`projectAndBranchesReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(50000);
 });

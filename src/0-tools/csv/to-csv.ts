@@ -7,7 +7,8 @@ import { DEFAUL_CONFIG } from '../../0-config/config';
 export function toCsv(objects: any[]) {
     const csvLines: string[] = [];
     if (objects.length < 1) {
-        throw new Error(`An array with at least one element is expected`);
+        console.log('====>>>> NO CSV RECORDS TO GENERATE');
+        return [];
     }
     const header = objects[0];
     csvLines.push(Object.keys(header).join(DEFAUL_CONFIG.CSV_SEP));

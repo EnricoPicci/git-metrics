@@ -78,6 +78,9 @@ export function moduleChurnReportCore(
 ) {
     const moduleChurnSource = moduleChurns.pipe(
         map((churns) => {
+            if (churns.length === 0) {
+                return { churns, maxDepth: 0 };
+            }
             const churnsSorted = churns.sort((a, b) => splitPath(b.path).length - splitPath(a.path).length);
             const maxDepth = splitPath(churnsSorted[0].path).length;
             return { churns, maxDepth };

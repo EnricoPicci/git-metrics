@@ -1,7 +1,7 @@
 import XLSX from 'xlsx';
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { readLineObs } from 'observable-fs';
-import { map, tap, toArray } from 'rxjs';
+import { catchError, map, of, tap, toArray } from 'rxjs';
 import path from 'path';
 
 // returns a workbook read from the summary template file which contains the sheets with the graphs already created
@@ -21,6 +21,13 @@ export function addWorksheet(workbook: XLSX.WorkBook, sheetName: string, csvFile
             XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
         }),
         map(() => sheetName),
+        catchError((err) => {
+            if (err.code === 'ENOENT') {
+                console.log(`====>>>> File ${csvFile} not found`);
+                return of('');
+            }
+            throw err;
+        }),
     );
 }
 

@@ -45,7 +45,7 @@ The tool can be run via the command `npx git-metrics` (with parameters if requir
 
 We can also install the package locally and the run the command directly with node, e.g.
 
-`node ./dist/3-lib/run-branches-report.js `.
+`node ./dist/3-lib/run-reports-single-thread.js `.
 
 The package contains other subcommands other than the main (default) one. Such subcommands can be launched using the `-p` option, like this
 

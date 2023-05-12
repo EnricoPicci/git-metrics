@@ -1,4 +1,4 @@
-import { pipe, Observable, forkJoin } from 'rxjs';
+import { pipe, Observable, forkJoin, of } from 'rxjs';
 import { map, share, tap, concatMap } from 'rxjs/operators';
 import { writeFileObs } from 'observable-fs';
 
@@ -104,6 +104,9 @@ export function fileChurnReportCore(
         concurrentStreams.push(allChurns);
         return forkJoin(concurrentStreams).pipe(
             concatMap(([report, allFileChurns]) => {
+                if (allFileChurns.length === 0) {
+                    return of([report, null]);
+                }
                 report.csvFile.val = csvFilePath;
                 const csvLines = mapFileChurnToCsv(allFileChurns, report);
                 return writeFileObs(csvFilePath, csvLines).pipe(
@@ -112,6 +115,12 @@ export function fileChurnReportCore(
             }),
             tap({
                 next: ([, csvFile]) => {
+                    if (!csvFile) {
+                        console.log(
+                            `====>>>> NO FILE CHURN DATA FOUND for folder ${params.repoFolderPath} and filter ${params.filter} -- no csv file created`,
+                        );
+                        return;
+                    }
                     console.log(`====>>>> FILE CHURN REPORT GENERATED -- data saved in ${csvFile}`);
                 },
             }),

@@ -1,11 +1,20 @@
-import { map, pipe, tap } from 'rxjs';
+import { catchError, map, of, pipe, tap } from 'rxjs';
 import { readLinesObs } from 'observable-fs';
 
 export type ClocInfo = { language: string; filename: string; blank: number; comment: number; code: number };
 export type ClocDictionary = { [path: string]: ClocInfo };
 // creates a dictionary where the key is the file path and the value is the ClocInfo for that file
 export function clocFileDict(clocLogPath: string) {
-    return readLinesObs(clocLogPath).pipe(toClocFileDict(clocLogPath));
+    return readLinesObs(clocLogPath).pipe(
+        catchError((e) => {
+            if (e.code === 'ENOENT') {
+                console.log(`====>>>> cloc log file ${clocLogPath} not found`);
+                return of([]);
+            }
+            throw e;
+        }),
+        toClocFileDict(clocLogPath),
+    );
 }
 
 export function toClocFileDict(clocLogPath?: string) {
@@ -16,6 +25,10 @@ export function toClocFileDict(clocLogPath?: string) {
         map((lines: string[]) => lines.slice(1)),
         // remove the last line which contains the total
         map((lines) => {
+            if (lines.length === 0) {
+                // if the file is not found, the lines array is empty
+                return lines;
+            }
             let sumLineIndex: number;
             for (let i = lines.length - 1; i >= 0; i--) {
                 if (lines[i].slice(0, 3) === 'SUM') {

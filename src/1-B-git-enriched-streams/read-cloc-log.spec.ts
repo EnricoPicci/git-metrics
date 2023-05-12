@@ -25,4 +25,20 @@ describe(`clocFileDict`, () => {
                 complete: () => done(),
             });
     });
+
+    it(`try to create a dictionary with a file wihch is not found`, (done) => {
+        const logName = 'not-existing-log.gitlog';
+        const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}`);
+
+        clocFileDict(logFilePath)
+            .pipe(
+                tap((dict) => {
+                    expect(Object.keys(dict).length).equal(0);
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    });
 });
