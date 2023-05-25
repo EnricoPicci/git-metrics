@@ -89,7 +89,7 @@ You can also install the 'git-metrics' package from npm, move to the directory c
 
 `node path-to-git-metrics/dist/3-lib/run-reports-on-repo-parallel-reads.js`
 
-### PARALLEL READS
+### PARALLEL READS VS ONE PROCESS ONLY
 
 By default all the read operations, i.e. the execution of the `git log` and `npx cloc` commands, are performed in distinct separate processes which are spawned by the main Node process. When all the read operations complete and produce their respective output files, such files are read concurrently in the main Node process and the reports are generated out of them.
 
