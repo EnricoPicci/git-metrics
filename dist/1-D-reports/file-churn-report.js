@@ -64,11 +64,18 @@ function fileChurnReportCore(fileChurns, params, csvFilePath) {
         const allChurns = fileChurnSource;
         concurrentStreams.push(allChurns);
         return (0, rxjs_1.forkJoin)(concurrentStreams).pipe((0, operators_1.concatMap)(([report, allFileChurns]) => {
+            if (allFileChurns.length === 0) {
+                return (0, rxjs_1.of)([report, null]);
+            }
             report.csvFile.val = csvFilePath;
             const csvLines = mapFileChurnToCsv(allFileChurns, report);
             return (0, observable_fs_1.writeFileObs)(csvFilePath, csvLines).pipe((0, operators_1.map)((csvFile) => [report, csvFile]));
         }), (0, operators_1.tap)({
             next: ([, csvFile]) => {
+                if (!csvFile) {
+                    console.log(`====>>>> NO FILE CHURN DATA FOUND for folder ${params.repoFolderPath} and filter ${params.filter} -- no csv file created`);
+                    return;
+                }
                 console.log(`====>>>> FILE CHURN REPORT GENERATED -- data saved in ${csvFile}`);
             },
         }), (0, operators_1.map)(([report]) => report));

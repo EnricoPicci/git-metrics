@@ -60,7 +60,7 @@ describe(`enrichedCommitsStream`, () => {
         });
     });
     it(`reads the commit and cloc info and generates a stream of commitDocs - the files in the commit are not in the 
-    cloc to simulate files that were present in an old commit but heve been deleted since then.
+    cloc to simulate files that were present in an old commit but have been deleted since then.
     Even in this case though the cloc, comment and blank must not be undefined but need to be 0.
     This is required otherwise the file coupling records would have information missing and the cvs file could
     not be created correctly`, (done) => {
@@ -80,6 +80,34 @@ describe(`enrichedCommitsStream`, () => {
         }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
             next: (allCommits) => {
                 (0, chai_1.expect)(allCommits.length).equal(3);
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+});
+describe(`enrichedCommitsStream`, () => {
+    const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
+    const clocLogPath = `${process.cwd()}/test-data/output/a-non-existing-clof.gitlog`;
+    it.only(`reads the commit info but does not find a cloc file, maybe because it has not been generated
+    because the cloc tool can not work (e.g. there is no perl installed on the machine) - it generates a stream of 
+    commitDocs where the number of lines of code, comments and blanks are set to 0 (and not null) so that the csv files can
+    be generated with the correct records`, (done) => {
+        (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath)
+            .pipe((0, rxjs_1.tap)({
+            next: (commit) => {
+                (0, chai_1.expect)(commit).not.undefined;
+            },
+        }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            next: (allCommits) => {
+                (0, chai_1.expect)(allCommits.length).equal(3);
+                allCommits[0].files.forEach((f) => {
+                    (0, chai_1.expect)(f.cloc).equal(0);
+                    (0, chai_1.expect)(f.comment).equal(0);
+                    (0, chai_1.expect)(f.blank).equal(0);
+                });
             },
         }))
             .subscribe({
@@ -109,6 +137,9 @@ describe(`filePathFromCommitPath`, () => {
         const path = (0, commits_1.filePathFromCommitPath)(commitPath);
         (0, chai_1.expect)(path).equal(commitPath);
     });
+});
+describe(`filePathFromCommitPath in case of renames`, () => {
+    // examples of renames
     //// clients/src/main/java/org/apache/kafka/clients/admin/{DecommissionBrokerOptions.java => UnregisterBrokerOptions.java}
     //// storage/src/main/java/org/apache/kafka/{server/log/internals => storage/internals/log}/EpochEntry.java
     //// metadata/src/test/java/org/apache/kafka/controller/ControllerPurgatoryTest.java => server-common/src/test/java/org/apache/kafka/deferred/DeferredEventQueueTest.java

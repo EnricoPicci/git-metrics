@@ -236,5 +236,36 @@ describe(`projectAndModuleChurnReport`, () => {
             complete: () => done(),
         });
     }).timeout(20000);
+    it(`generates the report about the churn of modules - 
+    unfortunately there are no files (e.g. because the filter is too restrictive)`, (done) => {
+        const repoName = 'a-real-world-git-repo';
+        const repoFolderPath = `./test-data/${repoName}`;
+        const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/empty-gitlog.gitlog`);
+        const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
+        const outDir = `${process.cwd()}/temp`;
+        const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
+        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(repoFolderPath, outDir);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true).pipe((0, rxjs_1.share)());
+        const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
+        const moduleChurnsStream = (0, module_churn_aggregate_1.moduleChurns)(fileChurns);
+        const numberOfTopChurnModules = 3;
+        const params = {
+            repoFolderPath,
+            commitLog: commitLogPath,
+            outDir,
+            numberOfTopChurnModules,
+        };
+        (0, module_churn_report_1.projectAndModuleChurnReport)(moduleChurnsStream, _projectInfo, params)
+            .pipe((0, rxjs_1.tap)((report) => {
+            (0, chai_1.expect)(report.numModules.val).equal(0);
+            //
+            (0, chai_1.expect)(report.topChurnedModules.val.length).equal(0);
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(20000);
 });
 //# sourceMappingURL=module-churn-report.spec.js.map

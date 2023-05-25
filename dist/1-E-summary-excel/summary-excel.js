@@ -20,7 +20,13 @@ function addWorksheet(workbook, sheetName, csvFile) {
     return (0, observable_fs_1.readLineObs)(csvFile).pipe((0, rxjs_1.map)((line) => line.split(config_1.DEFAUL_CONFIG.CSV_SEP)), (0, rxjs_1.map)((csvRec) => csvRec.map((field) => (isNaN(Number(field)) ? field : Number(field)))), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)((data) => {
         const worksheet = xlsx_1.default.utils.aoa_to_sheet(data);
         xlsx_1.default.utils.book_append_sheet(workbook, worksheet, sheetName);
-    }), (0, rxjs_1.map)(() => sheetName));
+    }), (0, rxjs_1.map)(() => sheetName), (0, rxjs_1.catchError)((err) => {
+        if (err.code === 'ENOENT') {
+            console.log(`====>>>> File ${csvFile} not found`);
+            return (0, rxjs_1.of)('');
+        }
+        throw err;
+    }));
 }
 exports.addWorksheet = addWorksheet;
 // writes a workbook to a file

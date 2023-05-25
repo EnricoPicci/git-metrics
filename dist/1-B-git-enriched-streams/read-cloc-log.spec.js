@@ -26,5 +26,17 @@ describe(`clocFileDict`, () => {
             complete: () => done(),
         });
     });
+    it(`try to create a dictionary with a file wihch is not found`, (done) => {
+        const logName = 'not-existing-log.gitlog';
+        const logFilePath = path_1.default.join(process.cwd(), `/test-data/output/${logName}`);
+        (0, read_cloc_log_1.clocFileDict)(logFilePath)
+            .pipe((0, rxjs_1.tap)((dict) => {
+            (0, chai_1.expect)(Object.keys(dict).length).equal(0);
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
 });
 //# sourceMappingURL=read-cloc-log.spec.js.map

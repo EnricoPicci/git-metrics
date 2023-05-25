@@ -8,7 +8,8 @@ const config_1 = require("../../0-config/config");
 function toCsv(objects) {
     const csvLines = [];
     if (objects.length < 1) {
-        throw new Error(`An array with at least one element is expected`);
+        console.log('====>>>> NO CSV RECORDS TO GENERATE');
+        return [];
     }
     const header = objects[0];
     csvLines.push(Object.keys(header).join(config_1.DEFAUL_CONFIG.CSV_SEP));

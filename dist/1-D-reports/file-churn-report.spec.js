@@ -52,6 +52,30 @@ describe(`fileChurnReportCore`, () => {
             complete: () => done(),
         });
     }).timeout(20000);
+    it(`generates the report about the churn of files - unfortunately there are no files (e.g. because the filter is too restrictive)`, (done) => {
+        const repoName = 'a-git-repo-with-one-lazy-author';
+        const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/empty-gitlog.gitlog`);
+        const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
+        const fileCommits = (0, files_1.filesStream)(commitLogPath, clocLogPath);
+        const fileChurns = (0, file_churn_aggregate_1.fileChurn)(fileCommits, true);
+        const outDir = `${process.cwd()}/temp`;
+        const params = {
+            commitLog: commitLogPath,
+            outDir,
+        };
+        (0, file_churn_report_1.fileChurnReportCore)(fileChurns, params)
+            .pipe((0, rxjs_1.tap)((report) => {
+            // general tests on the files churn report created
+            (0, chai_1.expect)(report).not.undefined;
+            (0, chai_1.expect)(report.numFiles.val).equal(0);
+            (0, chai_1.expect)(report.totChurn.val).equal(0);
+            (0, chai_1.expect)(report.clocTot.val).equal(0);
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(20000);
 });
 describe(`fileChurnReportCore - test the internals of the report generation logic for specific cases`, () => {
     it(`generates the report about the churn of files with only 1 top churned file`, (done) => {

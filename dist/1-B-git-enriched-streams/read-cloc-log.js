@@ -5,7 +5,13 @@ const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 // creates a dictionary where the key is the file path and the value is the ClocInfo for that file
 function clocFileDict(clocLogPath) {
-    return (0, observable_fs_1.readLinesObs)(clocLogPath).pipe(toClocFileDict(clocLogPath));
+    return (0, observable_fs_1.readLinesObs)(clocLogPath).pipe((0, rxjs_1.catchError)((e) => {
+        if (e.code === 'ENOENT') {
+            console.log(`====>>>> cloc log file ${clocLogPath} not found`);
+            return (0, rxjs_1.of)([]);
+        }
+        throw e;
+    }), toClocFileDict(clocLogPath));
 }
 exports.clocFileDict = clocFileDict;
 function toClocFileDict(clocLogPath) {
@@ -15,6 +21,10 @@ function toClocFileDict(clocLogPath) {
     (0, rxjs_1.map)((lines) => lines.slice(1)), 
     // remove the last line which contains the total
     (0, rxjs_1.map)((lines) => {
+        if (lines.length === 0) {
+            // if the file is not found, the lines array is empty
+            return lines;
+        }
         let sumLineIndex;
         for (let i = lines.length - 1; i >= 0; i--) {
             if (lines[i].slice(0, 3) === 'SUM') {

@@ -159,7 +159,8 @@ function toCommits(logFilePath) {
                 complete: () => {
                     if (!buffer) {
                         const logPathMsg = logFilePath ? `in file ${logFilePath}` : '';
-                        subscriber.error(`!!!!!!!!!!!!! >>>>  No commits found ${logPathMsg}`);
+                        console.warn(`!!!!!!!!!!!!!>>>>  No commits found ${logPathMsg}`);
+                        subscriber.complete();
                     }
                     subscriber.next(buffer);
                     subscriber.complete();

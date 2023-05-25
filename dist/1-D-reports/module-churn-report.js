@@ -50,6 +50,9 @@ exports.moduleChurnReport = moduleChurnReport;
 // Starts from a stream of ModuleChurn objects, like when we create the report from a Mongo query
 function moduleChurnReportCore(moduleChurns, params, csvFilePath) {
     const moduleChurnSource = moduleChurns.pipe((0, operators_1.map)((churns) => {
+        if (churns.length === 0) {
+            return { churns, maxDepth: 0 };
+        }
         const churnsSorted = churns.sort((a, b) => (0, split_path_1.splitPath)(b.path).length - (0, split_path_1.splitPath)(a.path).length);
         const maxDepth = (0, split_path_1.splitPath)(churnsSorted[0].path).length;
         return { churns, maxDepth };
