@@ -91,6 +91,9 @@ export function fileCouplingReportCore(
         return forkJoin(concurrentStreams).pipe(
             concatMap(([report, allFileCouplings]) => {
                 report.csvFile.val = csvFilePath;
+                if (allFileCouplings.length === 0) {
+                    console.log('!!!!!!!! no data on file couplings');
+                }
                 const csvLines = toCsv(allFileCouplings);
                 return writeFileObs(csvFilePath, csvLines).pipe(
                     map((csvFile) => [report, csvFile] as [FilesCouplingReport, string]),

@@ -235,6 +235,9 @@ function mapDaylySummariesToCsv(allCommitDaylySummaries: CommitDaylySummary[]) {
         };
         return csvRec;
     });
+    if (allCommitDaylySummariesCsvRecords.length === 0) {
+        console.log('!!!!!!!! no data on commit dayly summaries');
+    }
     return toCsv(allCommitDaylySummariesCsvRecords);
 }
 function weeklySummariesToCsv(allCommitDaylySummaries: CommitDaylySummary[]) {
@@ -298,6 +301,9 @@ function weeklySummariesToCsv(allCommitDaylySummaries: CommitDaylySummary[]) {
     const allCommitWeeklySummariesCsvRecords = Object.values(weeklySummaryDict).sort(
         (a, b) => new Date(a.weekStart).getTime() - new Date(b.weekStart).getTime(),
     );
+    if (allCommitWeeklySummariesCsvRecords.length === 0) {
+        console.log('!!!!!!!! no data on commit weekly summaries');
+    }
     return toCsv(allCommitWeeklySummariesCsvRecords);
 }
 

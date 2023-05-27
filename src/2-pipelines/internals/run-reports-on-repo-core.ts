@@ -270,7 +270,7 @@ export function _runReportsFromStreams(
                 generators.push(fileChurnReportGenerator(_filesStream, params, repoName, ignoreClocZero));
                 break;
             case ModuleChurnReport.name:
-                generators.push(moduleChurnReportGenerator(_filesStream, params, repoName));
+                generators.push(moduleChurnReportGenerator(_filesStream, params, repoName, ignoreClocZero));
                 break;
             case AuthorChurnReport.name:
                 generators.push(authorChurnReportGenerator(_commmitStreamFiltered, params, repoName));

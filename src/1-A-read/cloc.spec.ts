@@ -12,6 +12,7 @@ import {
     streamSummaryClocNewProcess,
     createClocLogNewProcess,
     createSummaryClocNewProcess,
+    clocSummaryStream,
 } from './cloc';
 import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 import { deleteFile } from '../0-tools/test-helpers/delete-file';
@@ -392,6 +393,16 @@ describe(`streamSummaryClocNewProcess`, () => {
                     done();
                 },
             });
+    }).timeout(20000);
+
+    it(`tries to read a cloc summary file that does not exist and returns an empty array`, (done) => {
+        clocSummaryStream('not-existing-file').subscribe({
+            next: (lines) => {
+                expect(lines).empty;
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
     }).timeout(20000);
 });
 

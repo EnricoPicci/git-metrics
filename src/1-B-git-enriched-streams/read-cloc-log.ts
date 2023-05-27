@@ -6,14 +6,14 @@ export type ClocDictionary = { [path: string]: ClocInfo };
 // creates a dictionary where the key is the file path and the value is the ClocInfo for that file
 export function clocFileDict(clocLogPath: string) {
     return readLinesObs(clocLogPath).pipe(
-        catchError((e) => {
-            if (e.code === 'ENOENT') {
-                console.log(`====>>>> cloc log file ${clocLogPath} not found`);
-                return of([]);
-            }
-            throw e;
-        }),
         toClocFileDict(clocLogPath),
+        catchError((err) => {
+            if (err.code === 'ENOENT') {
+                console.log(`!!!!!!!! file ${clocLogPath} not found`);
+                return of({} as ClocDictionary);
+            }
+            throw err;
+        }),
     );
 }
 
@@ -25,10 +25,6 @@ export function toClocFileDict(clocLogPath?: string) {
         map((lines: string[]) => lines.slice(1)),
         // remove the last line which contains the total
         map((lines) => {
-            if (lines.length === 0) {
-                // if the file is not found, the lines array is empty
-                return lines;
-            }
             let sumLineIndex: number;
             for (let i = lines.length - 1; i >= 0; i--) {
                 if (lines[i].slice(0, 3) === 'SUM') {

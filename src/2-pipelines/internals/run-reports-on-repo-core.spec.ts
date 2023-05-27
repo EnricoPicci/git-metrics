@@ -19,7 +19,7 @@ describe(`runReportsSingleThread`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
-        const ignoreClocZero = true;
+        const ignoreClocZero = false;
         const depthInFilesCoupling = 10;
 
         runReportsSingleThread(

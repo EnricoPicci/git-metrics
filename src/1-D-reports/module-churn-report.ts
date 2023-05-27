@@ -78,7 +78,7 @@ export function moduleChurnReportCore(
 ) {
     const moduleChurnSource = moduleChurns.pipe(
         map((churns) => {
-            if (churns.length === 0) {
+            if (churns.length < 1) {
                 return { churns, maxDepth: 0 };
             }
             const churnsSorted = churns.sort((a, b) => splitPath(b.path).length - splitPath(a.path).length);
@@ -103,6 +103,9 @@ export function moduleChurnReportCore(
         return forkJoin(concurrentStreams).pipe(
             concatMap(([report, { churns, maxDepth }]) => {
                 const churnsEnriched = churns.map((c) => enrichForCsv(c, maxDepth));
+                if (churnsEnriched.length === 0) {
+                    console.log('!!!!!!!! no data on file churns to calculate module churns');
+                }
                 const csvLines = toCsv(churnsEnriched);
 
                 report.csvFile.val = csvFilePath;

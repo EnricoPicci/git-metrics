@@ -253,9 +253,17 @@ export function clocSummaryInfo(repoFolderPath: string, outDir: string, clocDefs
 
 function clocSummary(config: ConfigReadCloc, action: string) {
     const clocSummaryLogPath = createSummaryClocLog(config, action);
-    return readLinesObs(clocSummaryLogPath);
+    return clocSummaryStream(clocSummaryLogPath);
 }
 
 export function clocSummaryStream(clocSummaryLogPath: string) {
-    return readLinesObs(clocSummaryLogPath);
+    return readLinesObs(clocSummaryLogPath).pipe(
+        catchError((err) => {
+            if (err.code === 'ENOENT') {
+                console.log(`!!!!!!!! file ${clocSummaryLogPath} not found`);
+                return of([] as string[]);
+            }
+            throw err;
+        }),
+    );
 }

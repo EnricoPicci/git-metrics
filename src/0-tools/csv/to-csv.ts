@@ -7,8 +7,7 @@ import { DEFAUL_CONFIG } from '../../0-config/config';
 export function toCsv(objects: any[]) {
     const csvLines: string[] = [];
     if (objects.length < 1) {
-        console.log('====>>>> NO CSV RECORDS TO GENERATE');
-        return [];
+        return [] as string[];
     }
     const header = objects[0];
     csvLines.push(Object.keys(header).join(DEFAUL_CONFIG.CSV_SEP));
