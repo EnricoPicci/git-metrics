@@ -131,7 +131,7 @@ function _runReportsFromStreams(reports, repoFolderPath, _filter, after, before,
                 generators.push((0, report_generators_1.fileChurnReportGenerator)(_filesStream, params, repoName, ignoreClocZero));
                 break;
             case module_churn_report_1.ModuleChurnReport.name:
-                generators.push((0, report_generators_1.moduleChurnReportGenerator)(_filesStream, params, repoName));
+                generators.push((0, report_generators_1.moduleChurnReportGenerator)(_filesStream, params, repoName, ignoreClocZero));
                 break;
             case author_churn_report_1.AuthorChurnReport.name:
                 generators.push((0, report_generators_1.authorChurnReportGenerator)(_commmitStreamFiltered, params, repoName));

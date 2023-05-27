@@ -51,6 +51,9 @@ function fileCouplingReportCore(fileCoupling, params, csvFilePath) {
         concurrentStreams.push(fileCouplingSource);
         return (0, rxjs_1.forkJoin)(concurrentStreams).pipe((0, operators_1.concatMap)(([report, allFileCouplings]) => {
             report.csvFile.val = csvFilePath;
+            if (allFileCouplings.length === 0) {
+                console.log('!!!!!!!! no data on file couplings');
+            }
             const csvLines = (0, to_csv_1.toCsv)(allFileCouplings);
             return (0, observable_fs_1.writeFileObs)(csvFilePath, csvLines).pipe((0, operators_1.map)((csvFile) => [report, csvFile]));
         }), (0, operators_1.tap)({

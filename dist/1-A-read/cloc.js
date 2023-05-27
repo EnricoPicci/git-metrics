@@ -187,10 +187,16 @@ function clocSummaryInfo(repoFolderPath, outDir, clocDefsPath) {
 exports.clocSummaryInfo = clocSummaryInfo;
 function clocSummary(config, action) {
     const clocSummaryLogPath = createSummaryClocLog(config, action);
-    return (0, observable_fs_1.readLinesObs)(clocSummaryLogPath);
+    return clocSummaryStream(clocSummaryLogPath);
 }
 function clocSummaryStream(clocSummaryLogPath) {
-    return (0, observable_fs_1.readLinesObs)(clocSummaryLogPath);
+    return (0, observable_fs_1.readLinesObs)(clocSummaryLogPath).pipe((0, rxjs_1.catchError)((err) => {
+        if (err.code === 'ENOENT') {
+            console.log(`!!!!!!!! file ${clocSummaryLogPath} not found`);
+            return (0, rxjs_1.of)([]);
+        }
+        throw err;
+    }));
 }
 exports.clocSummaryStream = clocSummaryStream;
 //# sourceMappingURL=cloc.js.map

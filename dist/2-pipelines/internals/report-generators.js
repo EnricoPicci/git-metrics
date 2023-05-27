@@ -26,7 +26,7 @@ function fileChurnReportGenerator(_filesStream, params, repoName, ignoreClocZero
     return (0, file_churn_report_1.fileChurnReportCore)(_fileChurn, params, csvFilePath);
 }
 exports.fileChurnReportGenerator = fileChurnReportGenerator;
-function moduleChurnReportGenerator(_filesStream, params, repoName) {
+function moduleChurnReportGenerator(_filesStream, params, repoName, ignoreClocZero) {
     const outDir = params.outDir;
     const outFilePrefix = params.outFilePrefix;
     const _outModuleChurn = outFilePrefix ? `${outFilePrefix}-module-churn.csv` : `${repoName}-module-churn.csv`;
@@ -37,7 +37,7 @@ function moduleChurnReportGenerator(_filesStream, params, repoName) {
     // since such stream contains state, e.g. the dictionary of files which is built by looping through all files in the files stream
     // if we do not have a different instance, we end up having a state which is wrong since it is built by looping
     // too many times over the same files stream
-    const _secondFileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, true, params.after);
+    const _secondFileChurn = (0, file_churn_aggregate_1.fileChurn)(_filesStream, ignoreClocZero, params.after);
     const _moduleChurn = (0, module_churn_aggregate_1.moduleChurns)(_secondFileChurn);
     // report generations
     return (0, module_churn_report_1.moduleChurnReportCore)(_moduleChurn, params, csvFilePath);
@@ -46,7 +46,7 @@ exports.moduleChurnReportGenerator = moduleChurnReportGenerator;
 function authorChurnReportGenerator(_commitStream, params, repoName) {
     const outDir = params.outDir;
     const outFilePrefix = params.outFilePrefix;
-    const _outAuthorChurn = outFilePrefix ? `${outFilePrefix}-authors-churn..csv` : `${repoName}-authors-churn.csv`;
+    const _outAuthorChurn = outFilePrefix ? `${outFilePrefix}-authors-churn.csv` : `${repoName}-authors-churn.csv`;
     const csvFilePath = path_1.default.join(outDir, _outAuthorChurn);
     // aggregation
     const _authorChurn = (0, author_churn_aggregate_1.authorChurn)(_commitStream, params.after);

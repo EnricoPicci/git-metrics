@@ -91,7 +91,7 @@ describe(`enrichedCommitsStream`, () => {
 describe(`enrichedCommitsStream`, () => {
     const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
     const clocLogPath = `${process.cwd()}/test-data/output/a-non-existing-clof.gitlog`;
-    it.only(`reads the commit info but does not find a cloc file, maybe because it has not been generated
+    it(`reads the commit info but does not find a cloc file, maybe because it has not been generated
     because the cloc tool can not work (e.g. there is no perl installed on the machine) - it generates a stream of 
     commitDocs where the number of lines of code, comments and blanks are set to 0 (and not null) so that the csv files can
     be generated with the correct records`, (done) => {

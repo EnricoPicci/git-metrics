@@ -313,6 +313,15 @@ describe(`streamSummaryClocNewProcess`, () => {
             },
         });
     }).timeout(20000);
+    it(`tries to read a cloc summary file that does not exist and returns an empty array`, (done) => {
+        (0, cloc_1.clocSummaryStream)('not-existing-file').subscribe({
+            next: (lines) => {
+                (0, chai_1.expect)(lines).empty;
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(20000);
 });
 describe(`createSummaryClocNewProcess`, () => {
     it(`read the cloc summary and saves it in a file - uses a different process`, (done) => {

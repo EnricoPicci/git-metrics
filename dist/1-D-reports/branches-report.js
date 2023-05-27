@@ -145,6 +145,9 @@ function mapDaylySummariesToCsv(allCommitDaylySummaries) {
         };
         return csvRec;
     });
+    if (allCommitDaylySummariesCsvRecords.length === 0) {
+        console.log('!!!!!!!! no data on commit dayly summaries');
+    }
     return (0, to_csv_1.toCsv)(allCommitDaylySummariesCsvRecords);
 }
 function weeklySummariesToCsv(allCommitDaylySummaries) {
@@ -204,6 +207,9 @@ function weeklySummariesToCsv(allCommitDaylySummaries) {
         previousCommitSummaryDate = commitSummary.day;
     });
     const allCommitWeeklySummariesCsvRecords = Object.values(weeklySummaryDict).sort((a, b) => new Date(a.weekStart).getTime() - new Date(b.weekStart).getTime());
+    if (allCommitWeeklySummariesCsvRecords.length === 0) {
+        console.log('!!!!!!!! no data on commit weekly summaries');
+    }
     return (0, to_csv_1.toCsv)(allCommitWeeklySummariesCsvRecords);
 }
 function addConsiderationsForBranchesReport(r) {

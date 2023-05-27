@@ -15,7 +15,7 @@ describe(`runReportsSingleThread`, () => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = undefined;
         const clocDefsPath = undefined;
-        const ignoreClocZero = true;
+        const ignoreClocZero = false;
         const depthInFilesCoupling = 10;
         (0, run_reports_on_repo_core_1.runReportsSingleThread)(undefined, repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, false, false, ignoreClocZero, depthInFilesCoupling)
             .pipe((0, rxjs_1.tap)((_reports) => {

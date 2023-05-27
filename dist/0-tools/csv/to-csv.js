@@ -8,7 +8,6 @@ const config_1 = require("../../0-config/config");
 function toCsv(objects) {
     const csvLines = [];
     if (objects.length < 1) {
-        console.log('====>>>> NO CSV RECORDS TO GENERATE');
         return [];
     }
     const header = objects[0];
