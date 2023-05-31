@@ -4,16 +4,16 @@ Tools to calculate some metrics out of git. This [article](https://betterprogram
 
 # Table of Contents
 
-1. [Overview](#overview)
-2. [TOOLS TO ANALYZE A SINGLE REPO - IN MEMORY AGGREGATION](#tools-to-analyze-a-single-repo---in-memory-aggregation)
+1. [OVERVIEW](#overview)
+2. [TOOLS TO ANALYZE REPOS - IN MEMORY AGGREGATION](#tools-to-analyze-repos---in-memory-aggregation)
     1. [BASIC LOGICAL STEPS](#basic-logical-steps)
     2. [RUN TOOLS TO ANALYZE A SINGLE REPO](#run-tools-to-analyze-a-single-repo)
         1. [PARALLEL READS](#parallel-reads)
     3. [RUN BRANCHES REPORT](#run-branches-report)
     4. [RUN TOOLS TO MERGE AND ANALYZE ALL THE REPOS CONTAINED IN A FOLDER AS A SINGLE PROJECT](#run-tools-to-merge-and-analyze-all-the-repos-contained-in-a-folder-as-a-single-project)
     5. [RUN TOOLS TO ANALYZE MANY REPOS](#run-tools-to-analyze-many-repos)
-    6. [Options](#options)
-    7. [Results](#results-produced)
+    6. [OPTIONS](#options)
+    7. [RESULTS PRODUCED](#results-produced)
         1. [summary excel file](#summary-excel-file)
         2. [cvs files](#csv-files)
             1. [\*-files-chrn.csv](#*-files-chrn.csv)
@@ -37,7 +37,7 @@ Tools to calculate some metrics out of git. This [article](https://betterprogram
     2. [RUN TOOLS TO ANALYZE A SINGLE REPO WITH MONGODB](#run-tools-to-analyze-a-single-repo-with-mongodb)
         1. [Options that can be used when using Mongo](#options-that-can-be-used-when-using-mongo)
 
-# Overview
+# OVERVIEW
 
 There are tools that analyze a single repo and there are tools that analyze more than one repo, the latter with the objective to highlight signals of potential coupling among the repos.
 
@@ -53,7 +53,7 @@ The package contains other subcommands other than the main (default) one. Such s
 
 All the subcommands available are listed in the `bin` property of `package.json`.
 
-# TOOLS TO ANALYZE A SINGLE REPO - IN MEMORY AGGREGATION
+# TOOLS TO ANALYZE REPOS - IN MEMORY AGGREGATION
 
 ## BASIC LOGICAL STEPS
 
@@ -117,7 +117,7 @@ This can be achieved using the command like this
 
 `npx -p git-metrics run-all-reports-on-merged-repos`
 
-The reports produced merge the git logs of the different reports and treat them as a single logical git log.
+The reports produced merge the git logs of the different repos and treat them as a single logical git log.
 
 ## RUN TOOLS TO ANALYZE MANY REPOS
 
@@ -127,11 +127,11 @@ We can also run the tool to analyze many repos which are passed as parameters. I
 
 where 'path_1' and 'path_2' represent the paths to the folders that contain the repos we want to analyze.
 
-## options
+## OPTIONS
 
 -   '--reports <string...>': reports to be run (the default is all reports) - report names have to be specified with single quotes and have to be separated by spaces like this --reports 'FileChurnReport' 'ModuleChurnReport'
 -   '-r, --repo <string>': path to the folder containing the repo (the current folder name is the default)
--   '-f, --filter <string...>': optional filter(s) to be used (e.g. '_.ts_' to select typescript files - make sure the filer is between single quotes)
+-   '-f, --filter <string...>': optional filter(s) to be used (e.g. '_.ts_' to select typescript files - make sure the filter is between single quotes)
 -   '-a, --after <string>': the date from which the analysis starts from (format YYYY-MM-DD), commits previous to this date are ignored
 -   '-b, --before <string>': the date in which the analysis ends (format YYYY-MM-DD), commits after this date are ignored
 -   '-d, --outDir <string>': folder where the log file created by git log command will be written
@@ -142,7 +142,7 @@ where 'path_1' and 'path_2' represent the paths to the folders that contain the 
     npx -p git-metrics run-reports-single-thread
 -   '--countClocZero': if this opion is specified, then also the files that have 0 lines of code are counted (this can be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`,
 
-## Results produced
+## RESULTS PRODUCED
 
 The goal of the git-metrics tool is to run some analysis on a code base which uses git as its CVS.
 

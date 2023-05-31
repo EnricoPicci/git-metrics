@@ -85,7 +85,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         )
         .option(
             '-f, --filter <string...>',
-            `optional filters to be used (e.g. '*.ts*' or to select typescript files - make sure the filer is between single quotes. 
+            `optional filters to be used (e.g. '*.ts*' or to select typescript files - make sure the filter is between single quotes. 
 If more than one filter has to be specified, make sure they are separated by a space like this -f '*.c' '*.sh')`,
         )
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)

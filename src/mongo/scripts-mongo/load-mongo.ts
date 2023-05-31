@@ -17,7 +17,7 @@ program
     )
     .option(
         '-f, --filter <string...>',
-        `optional filter to be used (e.g. '*.ts*' - make sure the filer is between single quotes)`,
+        `optional filter to be used (e.g. '*.ts*' - make sure the filter is between single quotes)`,
     )
     .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
     .option(

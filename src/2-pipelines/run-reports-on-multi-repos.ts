@@ -23,7 +23,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         )
         .option(
             '-f, --filter <string...>',
-            `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filer is between single quotes)`,
+            `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filter is between single quotes)`,
         )
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
         .option('-b, --before <string>', `date to end (format YYYY-MM-DD)`)
