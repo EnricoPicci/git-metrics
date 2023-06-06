@@ -22,6 +22,7 @@ Tools to calculate some metrics out of git. This [article](https://betterprogram
             4. [\*-files-authors.csv](#*-files-authors.csv)
             5. [\*-writeFilesCouplingCsv.csv](#*-writeFilesCouplingCsv.csv)
             6. [\*-branches.csv](#*-branches.csv)
+    8.
 3. [TOOLS TO ANALYZE MULTIPLE REPOS FOR TRACES OF COUPLING](#tools-to-analyze-multiple-repos-for-traces-of-coupling)
     1. [THE INTUITION](#the-intuition)
     2. [EXAMPLE](#example)
@@ -255,6 +256,32 @@ For each day this is the data calculated
 -   numberOfCommitsWithNoFutureChildren: number of commits which have no children, at least up until now
 -   numberOfBranchTipsWhichWillHaveChildren: number of commits which represent branch tips at the end of this day, but the eventually will have childred and therefore are not branch tips any more
 -   commitsWithNoFutureChildren: commit hashes which have no children, at least up until now
+
+## DOCKER
+
+### build
+
+To build a docker image run the command `docker build -t git-metrics .`
+
+### Publish
+
+To publish the image to docker hub run the command first tag the image with the command
+
+`docker tag git-metrics 290764/git-metrics:git-metrics`
+
+and then push it with the command
+
+`docker push 290764/git-metrics:git-metrics`
+
+### Run
+
+To run the local image (assuming the local directory ~/my-repo/ contains the git repo)
+
+`docker run --rm -v ~/my-repo/:/usr/src/app -v ~/logs/:/outdir git-metrics -f '*.java' '*.ts' -a 2023-01-01 -d /outdir`
+
+To run the published image (assuming the local directory ~/my-repo/ contains the git repo)
+
+`docker run --rm -v ~/my-repo/:/usr/src/app -v ~/logs/:/outdir 290764/git-metrics:git-metrics -f '*.java' '*.ts' -a 2023-01-01 -d /outdir`
 
 # TOOLS TO ANALYZE MULTIPLE REPOS FOR TRACES OF COUPLING
 

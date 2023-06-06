@@ -6,7 +6,7 @@
 # docker build -t git-metrics .
 
 # to publish
-# docker tag cloc-docker-image 290764/git-metrics:git-metrics
+# docker tag git-metrics 290764/git-metrics:git-metrics
 # docker push 290764/git-metrics:git-metrics
 
 # to run the local image (assuming the local directory ~/temp/kafka/ contains the git repo)
@@ -19,9 +19,26 @@
 FROM node:16
 
 # Create app directory
+WORKDIR /git-metrics
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
+
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --omit=dev
+
+# Bundle app source
+COPY . .
+
 WORKDIR /usr/src/app
 
-ENTRYPOINT ["npx", "git-metrics" ]
+# npm exec --pacakge=git-metrics -- run-all-reports-on-merged-repos -f '*.java' '*.swift' -a 2021-01-01 -d ../logs
+# npx -p git-metrics run-all-reports-on-merged-repo
+# ENTRYPOINT ["npx", "git-metrics" ]
+ENTRYPOINT ["node", "/git-metrics/dist/3-lib/run-reports-on-merged-repos.js"]
 
 # default command
 CMD [ "--help" ]
