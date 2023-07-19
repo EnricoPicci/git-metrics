@@ -85,6 +85,15 @@ export function moduleChurnReportCore(
             const maxDepth = splitPath(churnsSorted[0].path).length;
             return { churns, maxDepth };
         }),
+        concatMap((moduleChurns) => {
+            const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'module-churn-csv-records.csv';
+            return writeFileObs(csvFile, toCsv(moduleChurns.churns)).pipe(
+                tap((file) => {
+                    console.log(`File ${file} written`);
+                }),
+                map(() => moduleChurns),
+            );
+        }),
         tap((moduleChurns) => {
             console.log(`Processing ${moduleChurns.churns.length} records to generate ModuleChurnReport`);
         }),

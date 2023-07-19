@@ -48,7 +48,7 @@ function readParams() {
         .option('--reports <string...>', `reports to be run (the default is all reports: ${run_reports_on_repo_core_1.allReports.join(' ')}) - report names have to be specified with single
 quotes and have to be separated by spaces like this --reports 'FileChurnReport' 'ModuleChurnReport'`)
         .option('-r, --repoFolderPath <string>', 'path to the folder containing the repo (the current folder name is the default)', `${process.cwd()}`)
-        .option('-f, --filter <string...>', `optional filters to be used (e.g. '*.ts*' or to select typescript files - make sure the filer is between single quotes. 
+        .option('-f, --filter <string...>', `optional filters to be used (e.g. '*.ts*' or to select typescript files - make sure the filter is between single quotes. 
 If more than one filter has to be specified, make sure they are separated by a space like this -f '*.c' '*.sh')`)
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
         .option('-b, --before <string>', `date to end (format YYYY-MM-DD)`)

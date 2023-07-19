@@ -13,7 +13,7 @@ function launchAllReportsOnMergedRepos() {
         .option('--reports <string...>', `reports to be run (the default is all reports: ${run_reports_on_repo_core_1.allReports.join(' ')}) - report names have to be specified with single
 quotes and have to be separated by spaces like this --reports 'FileChurnReport' 'ModuleChurnReport'`)
         .option('-r, --repoFolderPath <string>', `path to the folder containing the folders with the repos we want to merge, if no value is provided then the repos in the subfolders of the current folder will be analyzed`)
-        .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filer is between single quotes)`)
+        .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filter is between single quotes)`)
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
         .option('-b, --before <string>', `date to end (format YYYY-MM-DD)`)
         .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${read_git_1.DEFAULT_OUT_DIR})`, `${read_git_1.DEFAULT_OUT_DIR}`)

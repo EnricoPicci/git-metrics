@@ -40,7 +40,12 @@ exports.filesCouplingReport = filesCouplingReport;
 // API to be used if we want to generate the core of the report info and not also the general project info
 // Starts from a stream of GitCommit objects, like when we create the report from a Mongo query
 function fileCouplingReportCore(fileCoupling, params, csvFilePath) {
-    const fileCouplingSource = fileCoupling.pipe((0, operators_1.tap)((fileCouplings) => {
+    const fileCouplingSource = fileCoupling.pipe((0, operators_1.concatMap)((fileCouplings) => {
+        const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'file-coupling-csv-records.csv';
+        return (0, observable_fs_1.writeFileObs)(csvFile, (0, to_csv_1.toCsv)(fileCouplings)).pipe((0, operators_1.tap)((file) => {
+            console.log(`File ${file} written`);
+        }), (0, operators_1.map)(() => fileCouplings));
+    }), (0, operators_1.tap)((fileCouplings) => {
         console.log(`Processing ${fileCouplings.length} records to generate FileCouplingReport`);
     }), (0, operators_1.share)());
     const generateReport = fileCouplingSource.pipe(_fileCouplingReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));

@@ -90,6 +90,15 @@ export function branchesReportCore(
             );
             return daylyCommitSummariesSorted;
         }),
+        concatMap((commitDaylySummaries) => {
+            const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'commit-dayly-summaries-csv-records.csv';
+            return writeFileObs(csvFile, toCsv(commitDaylySummaries)).pipe(
+                tap((file) => {
+                    console.log(`File ${file} written`);
+                }),
+                map(() => commitDaylySummaries),
+            );
+        }),
         tap((commitDaylySummaries) => {
             console.log(`Processing ${commitDaylySummaries.length} records to generate BranchesReport`);
         }),

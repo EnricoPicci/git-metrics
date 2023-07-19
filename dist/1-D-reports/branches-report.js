@@ -56,6 +56,11 @@ function branchesReportCore(commitDaylySummary, params, csvFilePath, weeklyCsvFi
         // sort dayly summaries from the eldest, which has the smallest time, to the newer =, which has the biggest time
         const daylyCommitSummariesSorted = Object.values(daylySummaryDictionary).sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
         return daylyCommitSummariesSorted;
+    }), (0, operators_1.concatMap)((commitDaylySummaries) => {
+        const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'commit-dayly-summaries-csv-records.csv';
+        return (0, observable_fs_1.writeFileObs)(csvFile, (0, to_csv_1.toCsv)(commitDaylySummaries)).pipe((0, operators_1.tap)((file) => {
+            console.log(`File ${file} written`);
+        }), (0, operators_1.map)(() => commitDaylySummaries));
     }), (0, operators_1.tap)((commitDaylySummaries) => {
         console.log(`Processing ${commitDaylySummaries.length} records to generate BranchesReport`);
     }), (0, operators_1.share)());

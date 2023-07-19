@@ -1,7 +1,7 @@
 import path from 'path';
-import { forkJoin } from 'rxjs';
-import { filter, map, mergeMap, toArray } from 'rxjs/operators';
-import { dirNamesListObs } from 'observable-fs';
+import fs from 'fs';
+import { forkJoin, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
@@ -66,15 +66,36 @@ export function runAllReportsOnMultiRepos(
 }
 
 export function gitRepos(startingFolder = './') {
-    return dirNamesListObs(startingFolder).pipe(
-        mergeMap((folders) => folders.map((folder) => path.join(startingFolder, folder))),
-        mergeMap((folder) => {
-            return dirNamesListObs(folder).pipe(map((folderDirs) => ({ folder, folderDirs })));
-        }),
-        filter(({ folderDirs }) => {
-            return folderDirs.some((dir) => dir === '.git');
-        }),
-        map(({ folder }) => folder),
-        toArray(),
-    );
+    const repos = fetchAllGitReposFromGivenFolder(startingFolder);
+    console.log(`>>>>>>>>>> Found ${repos.length} git repos in ${startingFolder}`);
+    return of(repos);
+}
+
+export function fetchAllDirsFromGivenFolder(fullPath: string) {
+    let dirs: string[] = [];
+    fs.readdirSync(fullPath).forEach((fileOrDir) => {
+        const absolutePath = path.join(fullPath, fileOrDir);
+        if (fs.statSync(absolutePath).isDirectory()) {
+            dirs.push(absolutePath);
+            const _subDirs = fetchAllDirsFromGivenFolder(absolutePath);
+            dirs = dirs.concat(_subDirs);
+        }
+    });
+    return dirs;
+}
+
+export function fetchAllGitReposFromGivenFolder(fullPath: string) {
+    let gitRepos: string[] = [];
+    const filesAndDirs = fs.readdirSync(fullPath);
+    if (filesAndDirs.some((fileOrDir) => fileOrDir === '.git')) {
+        gitRepos.push(fullPath);
+    }
+    filesAndDirs.forEach((fileOrDir) => {
+        const absolutePath = path.join(fullPath, fileOrDir);
+        if (fs.statSync(absolutePath).isDirectory()) {
+            const subRepos = fetchAllGitReposFromGivenFolder(absolutePath);
+            gitRepos = gitRepos.concat(subRepos);
+        }
+    });
+    return gitRepos;
 }

@@ -56,6 +56,11 @@ function moduleChurnReportCore(moduleChurns, params, csvFilePath) {
         const churnsSorted = churns.sort((a, b) => (0, split_path_1.splitPath)(b.path).length - (0, split_path_1.splitPath)(a.path).length);
         const maxDepth = (0, split_path_1.splitPath)(churnsSorted[0].path).length;
         return { churns, maxDepth };
+    }), (0, operators_1.concatMap)((moduleChurns) => {
+        const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'module-churn-csv-records.csv';
+        return (0, observable_fs_1.writeFileObs)(csvFile, (0, to_csv_1.toCsv)(moduleChurns.churns)).pipe((0, operators_1.tap)((file) => {
+            console.log(`File ${file} written`);
+        }), (0, operators_1.map)(() => moduleChurns));
     }), (0, operators_1.tap)((moduleChurns) => {
         console.log(`Processing ${moduleChurns.churns.length} records to generate ModuleChurnReport`);
     }), (0, operators_1.share)());

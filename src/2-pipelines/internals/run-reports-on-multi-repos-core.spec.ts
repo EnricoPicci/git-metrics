@@ -7,7 +7,12 @@ import { FileAuthorsReport } from '../../1-D-reports/file-authors-report';
 import { FileChurnReport, FILE_CHURN_REPORT_NAME } from '../../1-D-reports/file-churn-report';
 import { FilesCouplingReport } from '../../1-D-reports/file-coupling-report';
 import { MODULE_CHURN_REPORT_NAME, ModuleChurnReport } from '../../1-D-reports/module-churn-report';
-import { gitRepos, runAllReportsOnMultiRepos } from './run-reports-on-multi-repos-core';
+import {
+    fetchAllDirsFromGivenFolder,
+    fetchAllGitReposFromGivenFolder,
+    gitRepos,
+    runAllReportsOnMultiRepos,
+} from './run-reports-on-multi-repos-core';
 
 describe(`runAllReportsOnMultiRepos`, () => {
     it(`runs all the reports on an array of projects which happen to be the same current project 
@@ -134,14 +139,14 @@ describe(`gitRepos`, () => {
                 complete: () => done(),
             });
     }).timeout(20000);
-    it(`returns no folders since we start from the folder containing the current project and this folder does not have any folder which has its own git repo`, (done) => {
+    it(`returns one folder since we start from the folder containing the current project and this folder is a git repo`, (done) => {
         const start = process.cwd();
         gitRepos(start)
             .pipe(
                 tap({
                     next: (repos) => {
                         expect(repos).not.undefined;
-                        expect(repos.length).equal(0);
+                        expect(repos.length).equal(1);
                     },
                 }),
             )
@@ -150,4 +155,32 @@ describe(`gitRepos`, () => {
                 complete: () => done(),
             });
     }).timeout(20000);
+});
+
+describe(`fetchAllDirsFromGivenFolder`, () => {
+    it(`returns all the subfolders contained in the folder of this project`, () => {
+        const start = process.cwd();
+        const dirs = fetchAllDirsFromGivenFolder(start);
+        // we specify a big number of dirs since, in this folder, there the node_modules folder
+        // which contains a lot of subfolders
+        // This is to avoid that the test succeeds even if the function fetchAllDirsFromGivenFolder
+        // returns just the directories found at the top level of the folder of this project
+        const aBigNumberOfDirs = 100;
+        expect(dirs.length).gt(aBigNumberOfDirs);
+    });
+});
+
+describe(`fetchAllGitReposFromGivenFolder`, () => {
+    it(`returns the folders that contain git repos starting from the folder containing this project`, () => {
+        const start = path.parse(process.cwd()).dir;
+        const repos = fetchAllGitReposFromGivenFolder(start);
+        // in the parent folder of this folder there cab be other git repos
+        expect(repos.length).gte(1);
+    });
+    it(`returns no folders since we start from the folder containing the current project and this folder does not have any folder which has its own git repo`, () => {
+        const start = process.cwd();
+        const repos = fetchAllGitReposFromGivenFolder(start);
+        // in the folder of this project there is just one git repo
+        expect(repos.length).equal(1);
+    });
 });

@@ -3,11 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gitRepos = exports.runAllReportsOnMultiRepos = void 0;
+exports.fetchAllGitReposFromGivenFolder = exports.fetchAllDirsFromGivenFolder = exports.gitRepos = exports.runAllReportsOnMultiRepos = void 0;
 const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
-const observable_fs_1 = require("observable-fs");
 const read_all_1 = require("../../1-A-read/read-all");
 const create_outdir_1 = require("../../1-A-read/create-outdir");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
@@ -30,11 +30,38 @@ function runAllReportsOnMultiRepos(reports, repoFolderPaths, filter, after, befo
 }
 exports.runAllReportsOnMultiRepos = runAllReportsOnMultiRepos;
 function gitRepos(startingFolder = './') {
-    return (0, observable_fs_1.dirNamesListObs)(startingFolder).pipe((0, operators_1.mergeMap)((folders) => folders.map((folder) => path_1.default.join(startingFolder, folder))), (0, operators_1.mergeMap)((folder) => {
-        return (0, observable_fs_1.dirNamesListObs)(folder).pipe((0, operators_1.map)((folderDirs) => ({ folder, folderDirs })));
-    }), (0, operators_1.filter)(({ folderDirs }) => {
-        return folderDirs.some((dir) => dir === '.git');
-    }), (0, operators_1.map)(({ folder }) => folder), (0, operators_1.toArray)());
+    const repos = fetchAllGitReposFromGivenFolder(startingFolder);
+    console.log(`>>>>>>>>>> Found ${repos.length} git repos in ${startingFolder}`);
+    return (0, rxjs_1.of)(repos);
 }
 exports.gitRepos = gitRepos;
+function fetchAllDirsFromGivenFolder(fullPath) {
+    let dirs = [];
+    fs_1.default.readdirSync(fullPath).forEach((fileOrDir) => {
+        const absolutePath = path_1.default.join(fullPath, fileOrDir);
+        if (fs_1.default.statSync(absolutePath).isDirectory()) {
+            dirs.push(absolutePath);
+            const _subDirs = fetchAllDirsFromGivenFolder(absolutePath);
+            dirs = dirs.concat(_subDirs);
+        }
+    });
+    return dirs;
+}
+exports.fetchAllDirsFromGivenFolder = fetchAllDirsFromGivenFolder;
+function fetchAllGitReposFromGivenFolder(fullPath) {
+    let gitRepos = [];
+    const filesAndDirs = fs_1.default.readdirSync(fullPath);
+    if (filesAndDirs.some((fileOrDir) => fileOrDir === '.git')) {
+        gitRepos.push(fullPath);
+    }
+    filesAndDirs.forEach((fileOrDir) => {
+        const absolutePath = path_1.default.join(fullPath, fileOrDir);
+        if (fs_1.default.statSync(absolutePath).isDirectory()) {
+            const subRepos = fetchAllGitReposFromGivenFolder(absolutePath);
+            gitRepos = gitRepos.concat(subRepos);
+        }
+    });
+    return gitRepos;
+}
+exports.fetchAllGitReposFromGivenFolder = fetchAllGitReposFromGivenFolder;
 //# sourceMappingURL=run-reports-on-multi-repos-core.js.map

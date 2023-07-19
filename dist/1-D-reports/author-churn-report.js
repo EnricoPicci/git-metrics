@@ -48,7 +48,12 @@ exports.authorChurnReport = authorChurnReport;
 // Starts from a stream of AuthorChurn objects, like when we create the report from a Mongo query
 function authorChurnReportCore(authorChurns, params, csvFilePath) {
     const authorChurnsSource = authorChurns.pipe((0, operators_1.share)());
-    const generateReport = authorChurnsSource.pipe((0, operators_1.tap)((authorChurns) => {
+    const generateReport = authorChurnsSource.pipe((0, operators_1.concatMap)((authorChurns) => {
+        const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'author-churn-csv-records.csv';
+        return (0, observable_fs_1.writeFileObs)(csvFile, (0, to_csv_1.toCsv)(authorChurns)).pipe((0, operators_1.tap)((file) => {
+            console.log(`File ${file} written`);
+        }), (0, operators_1.map)(() => authorChurns));
+    }), (0, operators_1.tap)((authorChurns) => {
         console.log(`Processing ${authorChurns.length} records to generate AuthorChurnReport`);
     }), _authorChurnReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
     const concurrentStreams = [

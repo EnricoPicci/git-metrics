@@ -12,7 +12,7 @@ function launchRunRepoCouplingReport() {
         .requiredOption('-r, --repoFolderPaths <string...>', `path to the folders containing the repos which we want to analize for coupling ('path_1' 'path_2')`)
         .option('-t, --timeWindowDays <number>', `lenght of the time window in days, defualt is 1`, '1')
         .option('--csvFilePath <string>', `path of the csv file built (default is repo-coupling.csv in the outDir folder)`)
-        .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filer is between single quotes)`)
+        .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filter is between single quotes)`)
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
         .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${read_git_1.DEFAULT_OUT_DIR})`, `${read_git_1.DEFAULT_OUT_DIR}`)
         .option('-o, --outFile <string>', `name of the log file written (default is the name of the repo)`)

@@ -9,7 +9,7 @@ const program = new commander_1.Command();
 program
     .description('A command to read a git repo and load the commit and files info into a mongo db')
     .option('-r, --repo <string>', 'path to the folder containing the repo (the current folder name is the default)', `${process.cwd()}`)
-    .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' - make sure the filer is between single quotes)`)
+    .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' - make sure the filter is between single quotes)`)
     .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
     .option('-d, --outDir <string>', `folder where the log file will be written (default ${read_git_1.DEFAULT_OUT_DIR})`, `${read_git_1.DEFAULT_OUT_DIR}`)
     .option('-o, --outFile <string>', `name of the log file written (default is the name of the repo)`)
