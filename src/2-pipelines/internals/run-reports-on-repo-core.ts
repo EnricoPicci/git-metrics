@@ -12,11 +12,11 @@ import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched
 
 import { projectInfo } from '../../1-C-aggregate-in-memory/project-info-aggregate';
 
-import { FileChurnReport } from '../../1-D-reports/file-churn-report';
-import { AuthorChurnReport } from '../../1-D-reports/author-churn-report';
-import { FileAuthorsReport } from '../../1-D-reports/file-authors-report';
+import { FILE_CHURN_REPORT_NAME, FileChurnReport } from '../../1-D-reports/file-churn-report';
+import { AUTHOR_CHURN_REPORT_NAME, AuthorChurnReport } from '../../1-D-reports/author-churn-report';
+import { FILE_AUTHORS_REPORT_NAME, FileAuthorsReport } from '../../1-D-reports/file-authors-report';
 import { FilesCouplingReport } from '../../1-D-reports/file-coupling-report';
-import { ModuleChurnReport } from '../../1-D-reports/module-churn-report';
+import { MODULE_CHURN_REPORT_NAME, ModuleChurnReport } from '../../1-D-reports/module-churn-report';
 import { Report, ReportParams } from '../../1-D-reports/report';
 
 import {
@@ -31,11 +31,11 @@ import { addProjectInfo } from '../../1-D-reports/add-project-info';
 import { addWorksheet, summaryWorkbook, writeWorkbook } from '../../1-E-summary-excel/summary-excel';
 
 export const allReports = [
-    FileChurnReport.name,
-    ModuleChurnReport.name,
-    AuthorChurnReport.name,
-    FileAuthorsReport.name,
-    FilesCouplingReport.name,
+    FILE_CHURN_REPORT_NAME,
+    MODULE_CHURN_REPORT_NAME,
+    AUTHOR_CHURN_REPORT_NAME,
+    FILE_AUTHORS_REPORT_NAME,
+    // FilesCouplingReport.name,
 ];
 
 /*********************************************/

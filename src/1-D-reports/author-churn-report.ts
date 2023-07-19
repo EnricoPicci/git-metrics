@@ -6,7 +6,7 @@ import { addConsideration, addConsiderationsHeader, Report, ReportParams, topChu
 import { REPORT_CONFIG } from './config/report-config';
 import { addProjectInfo } from './add-project-info';
 
-import { toCsv, toCsvObs } from '../0-tools/csv/to-csv';
+import { toCsvObs } from '../0-tools/csv/to-csv';
 
 import { AuthorChurn } from '../1-C-aggregate-types/author-churn';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
@@ -76,15 +76,6 @@ export function authorChurnReportCore(
 ) {
     const authorChurnsSource = authorChurns.pipe(share());
     const generateReport = authorChurnsSource.pipe(
-        concatMap((authorChurns) => {
-            const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'author-churn-csv-records.csv';
-            return writeFileObs(csvFile, toCsv(authorChurns)).pipe(
-                tap((file) => {
-                    console.log(`File ${file} written`);
-                }),
-                map(() => authorChurns),
-            );
-        }),
         tap((authorChurns) => {
             console.log(`Processing ${authorChurns.length} records to generate AuthorChurnReport`);
         }),

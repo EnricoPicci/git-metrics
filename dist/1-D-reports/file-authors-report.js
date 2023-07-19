@@ -47,12 +47,7 @@ exports.fileAuthorsReport = fileAuthorsReport;
 // Starts from a stream of FileAuthors objects, like when we create the report from a Mongo query
 function fileAuthorsReportCore(fileAuthor, params, csvFilePath) {
     const fileAuthorSource = fileAuthor.pipe((0, operators_1.share)());
-    const generateReport = fileAuthorSource.pipe((0, operators_1.concatMap)((fileAuthors) => {
-        const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'file-author-csv-records.csv';
-        return (0, observable_fs_1.writeFileObs)(csvFile, (0, to_csv_1.toCsv)(fileAuthors)).pipe((0, operators_1.tap)((file) => {
-            console.log(`File ${file} written`);
-        }), (0, operators_1.map)(() => fileAuthors));
-    }), (0, operators_1.tap)((fileAuthors) => {
+    const generateReport = fileAuthorSource.pipe((0, operators_1.tap)((fileAuthors) => {
         console.log(`Processing ${fileAuthors.length} records to generate FileAuthorsReport`);
     }), _fileAuthorsReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
     const concurrentStreams = [

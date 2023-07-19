@@ -52,12 +52,7 @@ exports.fileChurnReport = fileChurnReport;
 // API to be used if we want to generate the core of the report info and not also the general project info
 // Starts from a stream of FileChurn objects, like when we create the report from a Mongo query
 function fileChurnReportCore(fileChurns, params, csvFilePath) {
-    const fileChurnSource = fileChurns.pipe((0, rxjs_1.concatMap)((fileChurns) => {
-        const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'file-churn-csv-records.csv';
-        return (0, observable_fs_1.writeFileObs)(csvFile, (0, to_csv_1.toCsv)(fileChurns)).pipe((0, rxjs_1.tap)((file) => {
-            console.log(`File ${file} written`);
-        }), (0, rxjs_1.map)(() => fileChurns));
-    }), (0, rxjs_1.tap)((fileChurns) => {
+    const fileChurnSource = fileChurns.pipe((0, rxjs_1.tap)((fileChurns) => {
         console.log(`Processing ${fileChurns.length} records to generate FileChurnReport`);
     }), (0, rxjs_1.share)());
     const generateReport = fileChurnSource.pipe(_fileChurnReport(params), (0, rxjs_1.tap)((report) => (report.csvFile.val = csvFilePath)));

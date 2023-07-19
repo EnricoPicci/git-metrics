@@ -22,11 +22,11 @@ const read_cloc_log_1 = require("../../1-B-git-enriched-streams/read-cloc-log");
 const add_project_info_1 = require("../../1-D-reports/add-project-info");
 const summary_excel_1 = require("../../1-E-summary-excel/summary-excel");
 exports.allReports = [
-    file_churn_report_1.FileChurnReport.name,
-    module_churn_report_1.ModuleChurnReport.name,
-    author_churn_report_1.AuthorChurnReport.name,
-    file_authors_report_1.FileAuthorsReport.name,
-    file_coupling_report_1.FilesCouplingReport.name,
+    file_churn_report_1.FILE_CHURN_REPORT_NAME,
+    module_churn_report_1.MODULE_CHURN_REPORT_NAME,
+    author_churn_report_1.AUTHOR_CHURN_REPORT_NAME,
+    file_authors_report_1.FILE_AUTHORS_REPORT_NAME,
+    // FilesCouplingReport.name,
 ];
 /*********************************************/
 //********************* APIs *****************/

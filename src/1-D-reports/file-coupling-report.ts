@@ -74,15 +74,6 @@ export function fileCouplingReportCore(
     csvFilePath?: string,
 ) {
     const fileCouplingSource = fileCoupling.pipe(
-        concatMap((fileCouplings) => {
-            const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'file-coupling-csv-records.csv';
-            return writeFileObs(csvFile, toCsv(fileCouplings)).pipe(
-                tap((file) => {
-                    console.log(`File ${file} written`);
-                }),
-                map(() => fileCouplings),
-            );
-        }),
         tap((fileCouplings) => {
             console.log(`Processing ${fileCouplings.length} records to generate FileCouplingReport`);
         }),

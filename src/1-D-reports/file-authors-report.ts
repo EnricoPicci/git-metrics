@@ -6,7 +6,7 @@ import { addProjectInfo } from './add-project-info';
 import { REPORT_CONFIG } from './config/report-config';
 import { addConsideration, addConsiderationsHeader, Report, ReportParams } from './report';
 
-import { toCsv, toCsvObs } from '../0-tools/csv/to-csv';
+import { toCsvObs } from '../0-tools/csv/to-csv';
 
 import { FileAuthors } from '../1-C-aggregate-types/file-authors';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
@@ -72,15 +72,6 @@ export function fileAuthorsReportCore(
 ) {
     const fileAuthorSource = fileAuthor.pipe(share());
     const generateReport = fileAuthorSource.pipe(
-        concatMap((fileAuthors) => {
-            const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'file-author-csv-records.csv';
-            return writeFileObs(csvFile, toCsv(fileAuthors)).pipe(
-                tap((file) => {
-                    console.log(`File ${file} written`);
-                }),
-                map(() => fileAuthors),
-            );
-        }),
         tap((fileAuthors) => {
             console.log(`Processing ${fileAuthors.length} records to generate FileAuthorsReport`);
         }),

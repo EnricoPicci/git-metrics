@@ -86,15 +86,6 @@ export function fileChurnReportCore(
     csvFilePath?: string,
 ): Observable<FileChurnReport> {
     const fileChurnSource = fileChurns.pipe(
-        concatMap((fileChurns) => {
-            const csvFile = csvFilePath ? csvFilePath + '-csv-records.csv' : 'file-churn-csv-records.csv';
-            return writeFileObs(csvFile, toCsv(fileChurns)).pipe(
-                tap((file) => {
-                    console.log(`File ${file} written`);
-                }),
-                map(() => fileChurns),
-            );
-        }),
         tap((fileChurns) => {
             console.log(`Processing ${fileChurns.length} records to generate FileChurnReport`);
         }),
