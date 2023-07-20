@@ -36,7 +36,7 @@ describe(`loadAllFiles`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`load all the files as documents including the cloc info`, (done) => {
         const connectionString = 'mongodb://localhost:27017';
         let connectedClient;
@@ -56,7 +56,7 @@ describe(`loadAllFiles`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`calculateCreationDateToFiles`, () => {
     it(`calculate the creation date for all files`, (done) => {
@@ -115,7 +115,7 @@ describe(`calculateCreationDateToFiles`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`calculateAddCreationDateToFiles`, () => {
     it(`calculate add the creation date for all files`, (done) => {

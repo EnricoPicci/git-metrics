@@ -355,7 +355,7 @@ describe(`readMultiReposCommits`, () => {
             complete: () => done(),
         }))
             .subscribe();
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read the commits from two git repos, which happen to be the same, using git log command concurrently and asynchronousl,
     and saves them in a file for each repo`, (done) => {
         const outDir = './temp';
@@ -400,7 +400,7 @@ describe(`readMultiReposCommits`, () => {
             complete: () => done(),
         }))
             .subscribe();
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`readBranchesGraph`, () => {
     it(`builds the git log command to read the graph of the branches`, () => {

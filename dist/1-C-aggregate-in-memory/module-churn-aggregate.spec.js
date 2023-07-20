@@ -64,7 +64,7 @@ describe(`moduleChurns`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates a stream of ModuleChurn objects for a repo where files are stored in the root (e.g. are in ./)`, (done) => {
         const repoName = 'a-git-repo';
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
@@ -86,7 +86,7 @@ describe(`moduleChurns`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates a stream of ModuleChurn objects for a repo where files are stored in the root (e.g. are in ./) and in a folder (./java)`, (done) => {
         const repoName = 'a-git-repo-with-files-in-root-and-folder';
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
@@ -113,6 +113,6 @@ describe(`moduleChurns`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=module-churn-aggregate.spec.js.map

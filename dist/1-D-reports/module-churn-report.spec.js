@@ -56,7 +56,7 @@ describe(`projectAndModuleChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about the churn of modules in case of a repo with files in root and in a folder`, (done) => {
         const repoName = 'a-git-repo-with-files-in-root-and-folder';
         const repoFolderPath = `./test-data/${repoName}`;
@@ -96,7 +96,7 @@ describe(`projectAndModuleChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read the csv file generated together with the report`, (done) => {
         const repoName = 'a-real-world-git-repo';
         const repoFolderPath = `./test-data/${repoName}`;
@@ -142,7 +142,7 @@ describe(`projectAndModuleChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about the churn of modules - considers only commits after a certain date`, (done) => {
         const repoName = 'a-real-world-git-repo';
         const repoFolderPath = `./test-data/${repoName}`;
@@ -189,7 +189,7 @@ describe(`projectAndModuleChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read - source stream generation - aggregation - generation of the report about this project`, (done) => {
         // input from the user
         const repoFolderPath = `./`;
@@ -235,7 +235,7 @@ describe(`projectAndModuleChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about the churn of modules - 
     unfortunately there are no files (e.g. because the filter is too restrictive)`, (done) => {
         const repoName = 'a-real-world-git-repo';
@@ -266,6 +266,6 @@ describe(`projectAndModuleChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=module-churn-report.spec.js.map

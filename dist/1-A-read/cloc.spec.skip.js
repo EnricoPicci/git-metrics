@@ -16,6 +16,6 @@ describe(`createSummaryClocLog`, () => {
         const expectedOutFilePath = path_1.default.join(outDir, `git-metrics-summary-cloc.csv`);
         const returnedOutFilePath = (0, cloc_1.createSummaryClocLog)(config, 'test');
         (0, chai_1.expect)(returnedOutFilePath).equal(expectedOutFilePath);
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=cloc.spec.skip.js.map

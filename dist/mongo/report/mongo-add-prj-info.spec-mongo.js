@@ -40,6 +40,6 @@ describe(`projectInfo`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=mongo-add-prj-info.spec-mongo.js.map

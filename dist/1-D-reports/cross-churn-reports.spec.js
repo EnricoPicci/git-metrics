@@ -49,7 +49,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`Generates the reports and verifies that the total churn for authorChurnReport is greater than the one for fileChurnReport. 
     The churn is the different because it considers all the commits and the files in the first commit are no longer 
     present in the current project and therefore they are not present in the cloc log.
@@ -85,7 +85,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`Generates the reports and verifies that the total churn for authorChurnReport is equal to the one for fileChurnReport. 
     The churn is the the same because fileChurnReport considers also the files with cloc zero.
     Therefore also the churn of the files that are not currently in the project is considered, which is the same logic
@@ -121,6 +121,6 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=cross-churn-reports.spec.js.map

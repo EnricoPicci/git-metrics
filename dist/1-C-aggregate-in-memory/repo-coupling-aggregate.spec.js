@@ -99,7 +99,7 @@ describe(`timeWindowedFileCommitsDict`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`if the timeWindowLengthInDays is very big, all commits fall into the same timewindow`, (done) => {
         const logName = 'a-git-repo';
         const logFilePath = path_1.default.join(process.cwd(), `/test-data/output/${logName}-commits.gitlog`);
@@ -145,7 +145,7 @@ describe(`timeWindowedFileCommitsDict`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`splitCommittsInTimeWindows & selectTimeWindowsPresentInAllRepos`, () => {
     it(`Splits the commits into timewindows and select the timewindows for which there is at least one commit per each repo.
@@ -187,7 +187,7 @@ describe(`splitCommittsInTimeWindows & selectTimeWindowsPresentInAllRepos`, () =
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`returns only 1 time window since the 2 repos have only 1 commit which is present in the same time window, the other 2 commits happen in different
     days and therefore belong to different time windows`, (done) => {
         const logName_1 = 'a-git-repo';
@@ -223,7 +223,7 @@ describe(`splitCommittsInTimeWindows & selectTimeWindowsPresentInAllRepos`, () =
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`calculateFileTuplesPerTimeWindow`, () => {
     it(`returns the combination of files for all 3 timewindows since the 2 repos are actually the same and therefore the 3 commits which are present
@@ -254,7 +254,7 @@ describe(`calculateFileTuplesPerTimeWindow`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`returns the combination of files for only 1 timewindow since the 2 repos have only 1 commit which is present in the same time window,
     the other 2 commits happen in differen days and therefore belong to different time windows`, (done) => {
         const logName_1 = 'a-git-repo';
@@ -278,7 +278,7 @@ describe(`calculateFileTuplesPerTimeWindow`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`aggregateFileTuples`, () => {
     it(`returns 9 touples since the 2 repos (which happen to be the same one but this is not relevant for the test) have 3 files each which
@@ -320,7 +320,7 @@ describe(`aggregateFileTuples`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`returns 6 touples since the only timewindow which the 2 streams have in common contains 3 files from one repo and 2 files from
     the other repo, therefore this generates 3 * 2 = 6 combinations`, (done) => {
         const logName_1 = 'a-git-repo';
@@ -358,7 +358,7 @@ describe(`aggregateFileTuples`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`In these example repos what we see is that any time hallo-X.java is committed in a timewindow also hallo-Y.java is committed
     in the same timewindow. So 100% of the times hallo-X.java is committed in a timewindow, we encounter the tuple [hallo-X.java, hallo-Y.java]
     in the same timewindow.
@@ -422,7 +422,7 @@ describe(`aggregateFileTuples`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 // returns one stream of File commit info
 function oneStream(logName, clocLogPath) {

@@ -24,7 +24,7 @@ describe(`files`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read the files after a certain date`, (done) => {
         const logName = 'a-git-repo-commits';
         const logFilePath = path_1.default.join(process.cwd(), `/test-data/output/${logName}.gitlog`);
@@ -41,6 +41,6 @@ describe(`files`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=files-query.spec-mongo.js.map

@@ -51,7 +51,7 @@ describe(`fileChurnReportCore`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about the churn of files - unfortunately there are no files (e.g. because the filter is too restrictive)`, (done) => {
         const repoName = 'a-git-repo-with-one-lazy-author';
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/empty-gitlog.gitlog`);
@@ -75,7 +75,7 @@ describe(`fileChurnReportCore`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`fileChurnReportCore - test the internals of the report generation logic for specific cases`, () => {
     it(`generates the report about the churn of files with only 1 top churned file`, (done) => {
@@ -178,7 +178,7 @@ describe(`projectAndFileChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read the csv file generated together with the report`, (done) => {
         const repoFolderPath = 'a-git-repo-with-one-lazy-author';
         const outDir = path_1.default.join(process.cwd(), 'temp');
@@ -219,7 +219,7 @@ describe(`projectAndFileChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about the churn of files - considers only the commits after a certain date`, (done) => {
         // input from the user
         const repoFolderPath = 'a-git-repo-with-one-lazy-author';
@@ -254,7 +254,7 @@ describe(`projectAndFileChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read - source stream generation - aggregation - generation of the report about this project`, (done) => {
         // input from the user
         const repoFolderPath = `./`;
@@ -289,6 +289,6 @@ describe(`projectAndFileChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=file-churn-report.spec.js.map

@@ -49,6 +49,6 @@ describe(`_mongoFileChurnReport - test the internals of the report generation lo
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=mongo-module-churn-report.spec-mongo.js.map

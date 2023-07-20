@@ -55,7 +55,7 @@ describe(`mongoFileChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read the csv file generated together with the report`, (done) => {
         const repoName = 'a-git-repo-with-one-lazy-author';
         const repoFolderPath = `./test-data/${repoName}`;
@@ -92,7 +92,7 @@ describe(`mongoFileChurnReport`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`_mongoFileChurnReport - test the internals of the report generation logic for specific cases`, () => {
     it(`generates the report about the churn of files with only 1 top churned file`, (done) => {

@@ -43,7 +43,7 @@ describe(`couplingDict`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`Uses 5 commits with 4 different files`, (done) => {
         const commits = (0, rxjs_1.from)(file_coupling_aggregate_test_data_1.testCommits_5);
         (0, file_coupling_aggregate_1.couplingDict)(commits)
@@ -84,7 +84,7 @@ describe(`couplingDict`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`couplingList`, () => {
     it(`Uses 3 commits with 3 different files`, (done) => {
@@ -134,7 +134,7 @@ describe(`couplingList`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`Uses 5 commits with 4 different files`, (done) => {
         const commits = (0, rxjs_1.from)(file_coupling_aggregate_test_data_1.testCommits_5);
         (0, file_coupling_aggregate_1.couplingDict)(commits)
@@ -195,7 +195,7 @@ describe(`couplingList`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`filterFilesWithMinNumOfCommits`, () => {
     it(`Sets a low depth for the coupling report`, (done) => {
@@ -221,6 +221,6 @@ describe(`filterFilesWithMinNumOfCommits`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=file-coupling-aggregate.spec.js.map

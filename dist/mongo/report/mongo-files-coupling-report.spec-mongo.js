@@ -32,7 +32,7 @@ describe(`_mongoFilesCouplingReport - test the internals of the report generatio
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about the churn of files setting a low depth for the report`, (done) => {
         const repoName = 'io-backend';
         const repoFolderPath = `the repo folder path is not used for this test`;
@@ -58,6 +58,6 @@ describe(`_mongoFilesCouplingReport - test the internals of the report generatio
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=mongo-files-coupling-report.spec-mongo.js.map

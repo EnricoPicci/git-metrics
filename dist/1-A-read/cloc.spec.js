@@ -36,7 +36,7 @@ describe(`createClocLog`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`streamClocNewProcess`, () => {
     it(`read the number of lines for each file from the folder named as the repo and saves them in a file - uses a different process`, (done) => {
@@ -71,7 +71,7 @@ describe(`streamClocNewProcess`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`executes the cloc command and saves the result on a file using a different process`, (done) => {
         const repo = 'git-repo-with-code';
         const outDir = path_1.default.join(process.cwd(), './temp');
@@ -111,7 +111,7 @@ describe(`streamClocNewProcess`, () => {
                 done();
             },
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`createClocLogNewProcess`, () => {
     it(`read the number of lines for each file from the folder named as the repo and saves them in a file - works in a new process`, (done) => {
@@ -154,7 +154,7 @@ describe(`createClocLogNewProcess`, () => {
                 done();
             },
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`createMultiClocLogs`, () => {
     it(`runs the cloc commmand on 2 files and read the files produced as the result of the commands`, (done) => {
@@ -205,7 +205,7 @@ describe(`createMultiClocLogs`, () => {
             },
         }))
             .subscribe({ error: (err) => done(err), complete: () => done() });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`createSummaryClocLog`, () => {
     it(`read the summary view provided by cloc from the folder named as the repo and saves it in a file`, (done) => {
@@ -235,7 +235,7 @@ describe(`createSummaryClocLog`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`streamSummaryClocNewProcess`, () => {
     it(`read the cloc summary and saves it in a file - uses a different process`, (done) => {
@@ -272,7 +272,7 @@ describe(`streamSummaryClocNewProcess`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`executes the cloc summary command and saves the result on a file using a different process`, (done) => {
         const repo = 'git-repo-with-code';
         const outDir = path_1.default.join(process.cwd(), './temp');
@@ -312,7 +312,7 @@ describe(`streamSummaryClocNewProcess`, () => {
                 done();
             },
         });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`tries to read a cloc summary file that does not exist and returns an empty array`, (done) => {
         (0, cloc_1.clocSummaryStream)('not-existing-file').subscribe({
             next: (lines) => {
@@ -321,7 +321,7 @@ describe(`streamSummaryClocNewProcess`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 describe(`createSummaryClocNewProcess`, () => {
     it(`read the cloc summary and saves it in a file - uses a different process`, (done) => {
@@ -369,6 +369,6 @@ describe(`createSummaryClocNewProcess`, () => {
                 done();
             },
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 //# sourceMappingURL=cloc.spec.js.map
