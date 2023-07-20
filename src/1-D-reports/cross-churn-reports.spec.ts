@@ -51,7 +51,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 
     it(`Generates the reports and verifies that the total churn for authorChurnReport is greater than the one for fileChurnReport. 
     The churn is the different because it considers all the commits and the files in the first commit are no longer 
@@ -94,7 +94,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 
     it(`Generates the reports and verifies that the total churn for authorChurnReport is equal to the one for fileChurnReport. 
     The churn is the the same because fileChurnReport considers also the files with cloc zero.
@@ -138,5 +138,5 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });

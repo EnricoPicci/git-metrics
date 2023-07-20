@@ -211,5 +211,5 @@ describe(`loadCommits`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });

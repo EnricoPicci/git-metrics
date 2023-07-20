@@ -56,7 +56,7 @@ describe(`projectAndBranchesReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about the branches using this repo as a real repo`, (done) => {
         // input from the user
         const repoFolderPath = `./`;

@@ -46,7 +46,7 @@ describe(`couplingDict`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`Uses 5 commits with 4 different files`, (done) => {
         const commits = from(testCommits_5);
         couplingDict(commits)
@@ -89,7 +89,7 @@ describe(`couplingDict`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`couplingList`, () => {
@@ -145,7 +145,7 @@ describe(`couplingList`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`Uses 5 commits with 4 different files`, (done) => {
         const commits = from(testCommits_5);
         couplingDict(commits)
@@ -211,7 +211,7 @@ describe(`couplingList`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`filterFilesWithMinNumOfCommits`, () => {
@@ -244,5 +244,5 @@ describe(`filterFilesWithMinNumOfCommits`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });

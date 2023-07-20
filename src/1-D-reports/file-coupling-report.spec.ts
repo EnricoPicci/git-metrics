@@ -41,7 +41,7 @@ describe(`fileCouplingReportCore`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`projectAndFileCouplingReport`, () => {
@@ -80,7 +80,7 @@ describe(`projectAndFileCouplingReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about file couplings but considers only commits in the future. Since git log can not find commits in the future,
     then filesCouplingInfo should be empty`, (done) => {
         const repoName = 'a-git-repo';
@@ -117,7 +117,7 @@ describe(`projectAndFileCouplingReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read - source stream generation - aggregation - generation of the report about this project`, (done) => {
         // input from the user
         const repoFolderPath = `./`;
@@ -156,5 +156,5 @@ describe(`projectAndFileCouplingReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });

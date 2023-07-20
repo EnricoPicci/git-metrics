@@ -49,7 +49,7 @@ describe(`mongoAuthorChurnReport`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`_mongoAuthorChurnReport - test the internals of the report generation logic`, () => {

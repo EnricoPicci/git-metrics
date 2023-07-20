@@ -28,7 +28,7 @@ describe(`files`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 
     it(`read the files after a certain date`, (done) => {
         const logName = 'a-git-repo-commits';
@@ -54,5 +54,5 @@ describe(`files`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });

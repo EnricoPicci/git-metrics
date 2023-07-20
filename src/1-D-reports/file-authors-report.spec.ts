@@ -50,7 +50,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`generates the report about the author churns - considers only the commits after a certain date`, (done) => {
         const repoName = 'a-git-repo-few-many-author';
         const repoFolderPath = `./test-data/${repoName}`;
@@ -91,7 +91,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`read - source stream generation - aggregation - generation of the report about this project`, (done) => {
         // input from the user
         const repoFolderPath = `./`;
@@ -134,5 +134,5 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });

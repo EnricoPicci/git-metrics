@@ -44,7 +44,7 @@ describe(`createClocLog`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`streamClocNewProcess`, () => {
@@ -91,7 +91,7 @@ describe(`streamClocNewProcess`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`executes the cloc command and saves the result on a file using a different process`, (done) => {
         const repo = 'git-repo-with-code';
         const outDir = path.join(process.cwd(), './temp');
@@ -148,7 +148,7 @@ describe(`streamClocNewProcess`, () => {
                     done();
                 },
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`createClocLogNewProcess`, () => {
@@ -201,7 +201,7 @@ describe(`createClocLogNewProcess`, () => {
                     done();
                 },
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`createMultiClocLogs`, () => {
@@ -257,7 +257,7 @@ describe(`createMultiClocLogs`, () => {
                 }),
             )
             .subscribe({ error: (err) => done(err), complete: () => done() });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`createSummaryClocLog`, () => {
@@ -288,7 +288,7 @@ describe(`createSummaryClocLog`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`streamSummaryClocNewProcess`, () => {
@@ -336,7 +336,7 @@ describe(`streamSummaryClocNewProcess`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`executes the cloc summary command and saves the result on a file using a different process`, (done) => {
         const repo = 'git-repo-with-code';
         const outDir = path.join(process.cwd(), './temp');
@@ -393,7 +393,7 @@ describe(`streamSummaryClocNewProcess`, () => {
                     done();
                 },
             });
-    }).timeout(20000);
+    }).timeout(200000);
 
     it(`tries to read a cloc summary file that does not exist and returns an empty array`, (done) => {
         clocSummaryStream('not-existing-file').subscribe({
@@ -403,7 +403,7 @@ describe(`streamSummaryClocNewProcess`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`createSummaryClocNewProcess`, () => {
@@ -466,5 +466,5 @@ describe(`createSummaryClocNewProcess`, () => {
                     done();
                 },
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });

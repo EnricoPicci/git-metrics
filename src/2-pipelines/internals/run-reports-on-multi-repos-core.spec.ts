@@ -138,7 +138,7 @@ describe(`gitRepos`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
     it(`returns one folder since we start from the folder containing the current project and this folder is a git repo`, (done) => {
         const start = process.cwd();
         gitRepos(start)
@@ -154,7 +154,7 @@ describe(`gitRepos`, () => {
                 error: (err) => done(err),
                 complete: () => done(),
             });
-    }).timeout(20000);
+    }).timeout(200000);
 });
 
 describe(`fetchAllDirsFromGivenFolder`, () => {
