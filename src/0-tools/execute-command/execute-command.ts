@@ -110,3 +110,31 @@ export function executeCommandInShellNewProcessObs(
     const _options = { ...options, shell: true };
     return executeCommandNewProcessObs(action, command, [], _options);
 }
+
+export function getCommandOutput(linesFromStdOutAndStdErr: string[], errorMessage: string, cmd: string) {
+    // the execution of the command is expected to write to stdout when all is good
+    // and both to stdout and stderr when there is an error
+    let output = ''
+    let outputLines = 0
+    linesFromStdOutAndStdErr.forEach((line) => {
+        if (line.startsWith('from stderr: ')) {
+            console.error(`${errorMessage}\nError: ${line}`)
+            console.error(`Command erroring:`)
+            console.error(`${cmd}`)
+        }
+        if (line.startsWith('from stdout: ')) {
+            output = line.substring('from stdout: '.length)
+            outputLines++
+        }
+        if (outputLines > 1) {
+            throw new Error(`We expect only one line to start with "from stdout: "
+Instead we received:
+${linesFromStdOutAndStdErr}`)
+        }
+    })
+    // not having received anything on stdout is an unexpected situation
+    if (!output) {
+        throw new Error('We expect one line to start with "from stdout: "')
+    }
+    return output
+}

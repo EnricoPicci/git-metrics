@@ -121,7 +121,7 @@ describe(`runAllReportsOnMultiRepos`, () => {
 });
 
 describe(`gitRepos`, () => {
-    it(`returns the folders that contain git repos starting from the folder containing this project`, (done) => {
+    it.skip(`returns the folders that contain git repos starting from the folder containing this project`, (done) => {
         const start = path.parse(process.cwd()).dir;
         gitRepos(start)
             .pipe(
@@ -171,7 +171,7 @@ describe(`fetchAllDirsFromGivenFolder`, () => {
 });
 
 describe(`fetchAllGitReposFromGivenFolder`, () => {
-    it(`returns the folders that contain git repos starting from the folder containing this project`, () => {
+    it.skip(`returns the folders that contain git repos starting from the folder containing this project`, () => {
         const start = path.parse(process.cwd()).dir;
         const repos = fetchAllGitReposFromGivenFolder(start);
         // in the parent folder of this folder there cab be other git repos

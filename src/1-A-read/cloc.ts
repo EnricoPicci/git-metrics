@@ -5,7 +5,7 @@ import {
     executeCommand,
     executeCommandInShellNewProcessObs,
     executeCommandNewProcessToLinesObs,
-} from './execute-command';
+} from '../0-tools/execute-command/execute-command';
 import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
 import {
     share,
@@ -43,9 +43,9 @@ export function streamClocNewProcess(config: ConfigReadCloc, outFile: string, ac
 
     const emitOutFileOrIgnoreElements = writeFileOnly
         ? pipe(
-              last(),
-              map(() => outFile),
-          )
+            last(),
+            map(() => outFile),
+        )
         : ignoreElements();
     const _writeFile = deleteFileObs(outFile).pipe(
         catchError((err) => {
@@ -108,9 +108,9 @@ export function streamSummaryClocNewProcess(
 
     const emitOutFileOrIgnoreElements = writeFileOnly
         ? pipe(
-              last(),
-              map(() => outFile),
-          )
+            last(),
+            map(() => outFile),
+        )
         : ignoreElements();
     const _writeFile = deleteFileObs(outFile).pipe(
         catchError((err) => {
