@@ -7,7 +7,7 @@ const file_churn_query_1 = require("../query/file-churn-query");
 const mongo_add_prj_info_1 = require("./mongo-add-prj-info");
 const add_project_info_1 = require("../../1-D-reports/add-project-info");
 const mongo_report_1 = require("./mongo-report");
-const module_churn_aggregate_1 = require("../../1-C-aggregate-in-memory/module-churn-aggregate");
+const module_churn_aggregate_1 = require("../../reports-on-repos/1-C-aggregate-in-memory/module-churn-aggregate");
 // produce a report about module churn and general project info reading from a mongo db (previously loaded with commit and files info)
 // reads also from the repo folder for information about the files currently in the project
 function mongoModuleChurnReportWithProjectInfo(params, csvFilePrefix) {

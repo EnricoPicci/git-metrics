@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const load_commits_files_1 = require("../load/load-commits-files");
-const read_git_1 = require("../../1-A-read/read-git");
-const read_all_1 = require("../../1-A-read/read-all");
+const read_git_1 = require("../../reports-on-repos/1-A-read/read-git");
+const read_all_1 = require("../../reports-on-repos/1-A-read/read-all");
 const DEFAULT_DB_NAME = 'git-metrics';
 const program = new commander_1.Command();
 program

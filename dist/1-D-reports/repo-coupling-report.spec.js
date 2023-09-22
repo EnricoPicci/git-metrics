@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const path_1 = __importDefault(require("path"));
 const operators_1 = require("rxjs/operators");
-const files_1 = require("../1-B-git-enriched-streams/files");
+const files_1 = require("../reports-on-repos/1-B-git-enriched-streams/files");
 const repo_coupling_report_1 = require("./repo-coupling-report");
-const repo_coupling_aggregate_1 = require("../1-C-aggregate-in-memory/repo-coupling-aggregate");
+const repo_coupling_aggregate_1 = require("../reports-on-repos/1-C-aggregate-in-memory/repo-coupling-aggregate");
 describe(`flatFilesCsv`, () => {
     it(`generate an array of strings, each representing one file in a specific tuple, in csv format`, (done) => {
         const logName = 'a-git-repo';

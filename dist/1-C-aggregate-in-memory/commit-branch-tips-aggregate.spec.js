@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const rxjs_1 = require("rxjs");
-const commits_1 = require("../1-B-git-enriched-streams/commits");
-const commits_and_branch_tips_1 = require("../1-B-git-enriched-streams/commits-and-branch-tips");
-const read_all_1 = require("../1-A-read/read-all");
+const commits_1 = require("../reports-on-repos/1-B-git-enriched-streams/commits");
+const commits_and_branch_tips_1 = require("../reports-on-repos/1-B-git-enriched-streams/commits-and-branch-tips");
+const read_all_1 = require("../reports-on-repos/1-A-read/read-all");
 const commit_branch_tips_aggregate_1 = require("./commit-branch-tips-aggregate");
 describe(`commitWithBranchTipsPerDayDictionary`, () => {
     it(`returns a dictionary with day as key and the array of commits for that day as value`, (done) => {

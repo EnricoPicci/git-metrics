@@ -3,11 +3,11 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function smallestDictionary(dictionaries: any[]) {
     let minSize = Infinity;
-    let smallest = undefined;
+    let smallest: any;
     dictionaries.forEach((d) => {
-        const discSize = Object.keys(d).length;
-        if (discSize < minSize) {
-            minSize = discSize;
+        const dictSize = Object.keys(d).length;
+        if (dictSize < minSize) {
+            minSize = dictSize;
             smallest = d;
         }
     });

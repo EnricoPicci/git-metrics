@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const rxjs_1 = require("rxjs");
-const commits_1 = require("../../1-B-git-enriched-streams/commits");
+const commits_1 = require("../../reports-on-repos/1-B-git-enriched-streams/commits");
 const run_branches_report_core_1 = require("./run-branches-report-core");
 describe(`runBranchesReport`, () => {
     it(`runs branches report on this project`, (done) => {

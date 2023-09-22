@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const path_1 = __importDefault(require("path"));
 const operators_1 = require("rxjs/operators");
-const files_1 = require("../1-B-git-enriched-streams/files");
+const files_1 = require("../reports-on-repos/1-B-git-enriched-streams/files");
 const file_churn_aggregate_1 = require("./file-churn-aggregate");
 const module_churn_aggregate_1 = require("./module-churn-aggregate");
 describe(`moduleChurns`, () => {

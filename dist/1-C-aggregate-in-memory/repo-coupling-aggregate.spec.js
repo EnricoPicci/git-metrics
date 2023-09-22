@@ -7,7 +7,7 @@ const chai_1 = require("chai");
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const dictionary_utils_1 = require("../0-tools/dictionary-utils/dictionary-utils");
-const files_1 = require("../1-B-git-enriched-streams/files");
+const files_1 = require("../reports-on-repos/1-B-git-enriched-streams/files");
 const repo_coupling_aggregate_1 = require("./repo-coupling-aggregate");
 describe(`timeWindowKey`, () => {
     it(`two dates which differ for 1 day generate the same timeWindowKey if the timeWindowLengthInDays is 7

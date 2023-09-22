@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toCsvObs = exports.toCsv = void 0;
 const rxjs_1 = require("rxjs");
-const config_1 = require("../../0-config/config");
+const config_1 = require("../../reports-on-repos/0-config/config");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toCsv(objects) {
     const csvLines = [];

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchBranchesReport = void 0;
 const commander_1 = require("commander");
-const read_git_1 = require("../1-A-read/read-git");
+const read_git_1 = require("../reports-on-repos/1-A-read/read-git");
 const run_branches_report_core_1 = require("./internals/run-branches-report-core");
 function launchBranchesReport() {
     const program = new commander_1.Command();

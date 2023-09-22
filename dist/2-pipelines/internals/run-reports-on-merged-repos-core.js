@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.runAllReportsOnMergedRepos = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
-const read_all_1 = require("../../1-A-read/read-all");
-const create_outdir_1 = require("../../1-A-read/create-outdir");
-const cloc_1 = require("../../1-A-read/cloc");
+const read_all_1 = require("../../reports-on-repos/1-A-read/read-all");
+const create_outdir_1 = require("../../reports-on-repos/1-A-read/create-outdir");
+const cloc_1 = require("../../reports-on-repos/1-A-read/cloc");
 const run_reports_on_multi_repos_core_1 = require("./run-reports-on-multi-repos-core");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
 function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, noRenames) {

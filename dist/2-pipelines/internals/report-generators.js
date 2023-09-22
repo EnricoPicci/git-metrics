@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fileCouplingReportGenerator = exports.fileAuthorsReportGenerator = exports.authorChurnReportGenerator = exports.moduleChurnReportGenerator = exports.fileChurnReportGenerator = void 0;
 const path_1 = __importDefault(require("path"));
-const author_churn_aggregate_1 = require("../../1-C-aggregate-in-memory/author-churn-aggregate");
-const file_authors_aggregate_1 = require("../../1-C-aggregate-in-memory/file-authors-aggregate");
-const file_churn_aggregate_1 = require("../../1-C-aggregate-in-memory/file-churn-aggregate");
-const file_coupling_aggregate_1 = require("../../1-C-aggregate-in-memory/file-coupling-aggregate");
-const module_churn_aggregate_1 = require("../../1-C-aggregate-in-memory/module-churn-aggregate");
+const author_churn_aggregate_1 = require("../../reports-on-repos/1-C-aggregate-in-memory/author-churn-aggregate");
+const file_authors_aggregate_1 = require("../../reports-on-repos/1-C-aggregate-in-memory/file-authors-aggregate");
+const file_churn_aggregate_1 = require("../../reports-on-repos/1-C-aggregate-in-memory/file-churn-aggregate");
+const file_coupling_aggregate_1 = require("../../reports-on-repos/1-C-aggregate-in-memory/file-coupling-aggregate");
+const module_churn_aggregate_1 = require("../../reports-on-repos/1-C-aggregate-in-memory/module-churn-aggregate");
 const author_churn_report_1 = require("../../1-D-reports/author-churn-report");
 const file_authors_report_1 = require("../../1-D-reports/file-authors-report");
 const file_churn_report_1 = require("../../1-D-reports/file-churn-report");

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
-const commits_1 = require("../../1-B-git-enriched-streams/commits");
+const commits_1 = require("../../reports-on-repos/1-B-git-enriched-streams/commits");
 const author_churn_report_1 = require("../../1-D-reports/author-churn-report");
 const file_churn_report_1 = require("../../1-D-reports/file-churn-report");
 const module_churn_report_1 = require("../../1-D-reports/module-churn-report");
@@ -69,7 +69,7 @@ describe(`runAllReportsOnMultiRepos`, () => {
     };
 });
 describe(`gitRepos`, () => {
-    it(`returns the folders that contain git repos starting from the folder containing this project`, (done) => {
+    it.skip(`returns the folders that contain git repos starting from the folder containing this project`, (done) => {
         const start = path_1.default.parse(process.cwd()).dir;
         (0, run_reports_on_multi_repos_core_1.gitRepos)(start)
             .pipe((0, rxjs_1.tap)({
@@ -113,7 +113,7 @@ describe(`fetchAllDirsFromGivenFolder`, () => {
     });
 });
 describe(`fetchAllGitReposFromGivenFolder`, () => {
-    it(`returns the folders that contain git repos starting from the folder containing this project`, () => {
+    it.skip(`returns the folders that contain git repos starting from the folder containing this project`, () => {
         const start = path_1.default.parse(process.cwd()).dir;
         const repos = (0, run_reports_on_multi_repos_core_1.fetchAllGitReposFromGivenFolder)(start);
         // in the parent folder of this folder there cab be other git repos

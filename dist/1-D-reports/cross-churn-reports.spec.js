@@ -8,11 +8,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
-const author_churn_aggregate_1 = require("../1-C-aggregate-in-memory/author-churn-aggregate");
-const commits_1 = require("../1-B-git-enriched-streams/commits");
+const author_churn_aggregate_1 = require("../reports-on-repos/1-C-aggregate-in-memory/author-churn-aggregate");
+const commits_1 = require("../reports-on-repos/1-B-git-enriched-streams/commits");
 const author_churn_report_1 = require("./author-churn-report");
-const files_1 = require("../1-B-git-enriched-streams/files");
-const file_churn_aggregate_1 = require("../1-C-aggregate-in-memory/file-churn-aggregate");
+const files_1 = require("../reports-on-repos/1-B-git-enriched-streams/files");
+const file_churn_aggregate_1 = require("../reports-on-repos/1-C-aggregate-in-memory/file-churn-aggregate");
 const file_churn_report_1 = require("./file-churn-report");
 describe(`fileChurnReport compare with authorChurnReport`, () => {
     it(`Generates the reports and chacks that the total churn is the same. The churn is the same because it considers

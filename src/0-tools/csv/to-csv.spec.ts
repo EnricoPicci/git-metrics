@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { from } from 'rxjs';
 import { toArray, tap } from 'rxjs/operators';
 import { toCsv, toCsvObs } from './to-csv';
-import { DEFAUL_CONFIG } from '../../0-config/config';
+import { DEFAUL_CONFIG } from '../../reports-on-repo/0-config/config';
 
 describe(`toCsv`, () => {
     it(`create, from an array of objects, an array of lines, the first one being the header the other being the rows in comma separated value (csv) format`, () => {

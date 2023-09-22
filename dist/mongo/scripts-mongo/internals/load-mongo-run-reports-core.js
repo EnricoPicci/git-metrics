@@ -11,7 +11,7 @@ exports.loadMongRunReports = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
-const read_all_1 = require("../../../1-A-read/read-all");
+const read_all_1 = require("../../../reports-on-repos/1-A-read/read-all");
 const load_commits_files_1 = require("../../load/load-commits-files");
 const mongo_file_churn_report_1 = require("../../report/mongo-file-churn-report");
 const mongo_add_prj_info_1 = require("../../report/mongo-add-prj-info");
@@ -19,7 +19,7 @@ const mongo_author_churn_report_1 = require("../../report/mongo-author-churn-rep
 const mongo_module_churn_report_1 = require("../../report/mongo-module-churn-report");
 const mongo_file_author_report_1 = require("../../report/mongo-file-author-report");
 const mongo_files_coupling_report_1 = require("../../report/mongo-files-coupling-report");
-const create_outdir_1 = require("../../../1-A-read/create-outdir");
+const create_outdir_1 = require("../../../reports-on-repos/1-A-read/create-outdir");
 function loadMongRunReports(connectionString, repoFolderPath, filter, after, outDir, outFile, outClocFile, dbName, collName, buffer, clocDefsPath, logProgress, mongoConcurrency) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);

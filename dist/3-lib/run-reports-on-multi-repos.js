@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const run_reports_on_multi_repos_1 = require("../2-pipelines/run-reports-on-multi-repos");
+const run_reports_on_multi_repos_1 = require("../reports-on-repos/2-pipelines/run-reports-on-multi-repos");
 (0, run_reports_on_multi_repos_1.launchAllReportsOnMultiRepos)();
 //# sourceMappingURL=run-reports-on-multi-repos.js.map

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const from_csv_1 = require("./from-csv");
-const config_1 = require("../../0-config/config");
+const config_1 = require("../../reports-on-repos/0-config/config");
 describe(`fromCsv`, () => {
     it(`create an array of objects starting from an header and an array of lines`, () => {
         const sep = config_1.DEFAUL_CONFIG.CSV_SEP;

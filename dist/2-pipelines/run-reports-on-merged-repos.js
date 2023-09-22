@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchAllReportsOnMergedRepos = void 0;
 const commander_1 = require("commander");
-const read_git_1 = require("../1-A-read/read-git");
+const read_git_1 = require("../reports-on-repos/1-A-read/read-git");
 const run_reports_on_merged_repos_core_1 = require("./internals/run-reports-on-merged-repos-core");
 const run_reports_on_repo_core_1 = require("./internals/run-reports-on-repo-core");
 function launchAllReportsOnMergedRepos() {

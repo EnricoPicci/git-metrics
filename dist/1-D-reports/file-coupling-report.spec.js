@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const path_1 = __importDefault(require("path"));
 const operators_1 = require("rxjs/operators");
-const file_coupling_aggregate_1 = require("../1-C-aggregate-in-memory/file-coupling-aggregate");
-const project_info_aggregate_1 = require("../1-C-aggregate-in-memory/project-info-aggregate");
-const cloc_1 = require("../1-A-read/cloc");
-const commits_1 = require("../1-B-git-enriched-streams/commits");
-const read_all_1 = require("../1-A-read/read-all");
+const file_coupling_aggregate_1 = require("../reports-on-repos/1-C-aggregate-in-memory/file-coupling-aggregate");
+const project_info_aggregate_1 = require("../reports-on-repos/1-C-aggregate-in-memory/project-info-aggregate");
+const cloc_1 = require("../reports-on-repos/1-A-read/cloc");
+const commits_1 = require("../reports-on-repos/1-B-git-enriched-streams/commits");
+const read_all_1 = require("../reports-on-repos/1-A-read/read-all");
 const file_coupling_report_1 = require("./file-coupling-report");
 describe(`fileCouplingReportCore`, () => {
     it(`generates the report about the churn of files and checks that the report has been filled`, (done) => {

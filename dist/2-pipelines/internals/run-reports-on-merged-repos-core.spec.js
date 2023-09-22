@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const rxjs_1 = require("rxjs");
-const commits_1 = require("../../1-B-git-enriched-streams/commits");
+const commits_1 = require("../../reports-on-repos/1-B-git-enriched-streams/commits");
 const author_churn_report_1 = require("../../1-D-reports/author-churn-report");
 const file_churn_report_1 = require("../../1-D-reports/file-churn-report");
 const module_churn_report_1 = require("../../1-D-reports/module-churn-report");

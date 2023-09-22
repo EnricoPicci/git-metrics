@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const rxjs_1 = require("rxjs");
 const file_authors_aggregate_1 = require("./file-authors-aggregate");
-const files_1 = require("../1-B-git-enriched-streams/files");
+const files_1 = require("../reports-on-repos/1-B-git-enriched-streams/files");
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
 const clocLogPath = `${process.cwd()}/test-data/output/a-git-repo-cloc.gitlog`;
 describe(`fileAuthorsDictionary`, () => {

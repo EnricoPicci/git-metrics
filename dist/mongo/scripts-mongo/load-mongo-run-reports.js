@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchLoadMongoRunReports = void 0;
 const path_1 = __importDefault(require("path"));
 const commander_1 = require("commander");
-const read_git_1 = require("../../1-A-read/read-git");
+const read_git_1 = require("../../reports-on-repos/1-A-read/read-git");
 const load_mongo_run_reports_core_1 = require("./internals/load-mongo-run-reports-core");
 const report_1 = require("../../1-D-reports/report");
 function launchLoadMongoRunReports() {

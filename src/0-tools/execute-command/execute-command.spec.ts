@@ -17,10 +17,10 @@ describe(`When executing a command`, () => {
         expect(ret.length).gt(0);
     });
     it(`raises an exce[tion if the command is wrong`, () => {
-        let err: Error;
+        let err: Error | undefined = undefined;
         try {
             executeCommand('Test-12', 'NotACommand');
-        } catch (e) {
+        } catch (e: any) {
             err = e;
         } finally {
             expect(err).not.undefined;
@@ -114,6 +114,7 @@ describe(`executeCommandInShellNewProcessObs`, () => {
                     if (err.code === 'ENOENT') {
                         return of(null);
                     }
+                    throw new Error(err);
                 }),
                 concatMap(() => executeCommandInShellNewProcessObs('Test-2', cmd)),
                 defaultIfEmpty(defaultIfEmptyValue),

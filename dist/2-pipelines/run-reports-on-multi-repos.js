@@ -4,7 +4,7 @@ exports.launchAllReportsOnMultiRepos = void 0;
 const commander_1 = require("commander");
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
-const read_git_1 = require("../1-A-read/read-git");
+const read_git_1 = require("../reports-on-repos/1-A-read/read-git");
 const run_reports_on_multi_repos_core_1 = require("./internals/run-reports-on-multi-repos-core");
 const run_reports_on_repo_core_1 = require("./internals/run-reports-on-repo-core");
 function launchAllReportsOnMultiRepos() {

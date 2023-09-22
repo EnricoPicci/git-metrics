@@ -8,8 +8,8 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
-const read_all_1 = require("../../1-A-read/read-all");
-const create_outdir_1 = require("../../1-A-read/create-outdir");
+const read_all_1 = require("../../reports-on-repos/1-A-read/read-all");
+const create_outdir_1 = require("../../reports-on-repos/1-A-read/create-outdir");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
 function runAllReportsOnMultiRepos(reports, repoFolderPaths, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, noRenames) {
     // create the output directory if not existing

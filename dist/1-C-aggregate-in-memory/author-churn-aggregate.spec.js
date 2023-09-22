@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const rxjs_1 = require("rxjs");
-const commits_1 = require("../1-B-git-enriched-streams/commits");
+const commits_1 = require("../reports-on-repos/1-B-git-enriched-streams/commits");
 const author_churn_aggregate_1 = require("./author-churn-aggregate");
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
 describe(`authorChurnDictionary`, () => {

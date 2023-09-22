@@ -8,6 +8,7 @@ function deleteFile(file) {
         if (err.code === 'ENOENT') {
             return (0, rxjs_1.of)(null);
         }
+        throw new Error(err);
     }));
 }
 exports.deleteFile = deleteFile;

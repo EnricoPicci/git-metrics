@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.writeWorkbook = exports.addWorksheet = exports.summaryWorkbook = void 0;
 const xlsx_1 = __importDefault(require("xlsx"));
-const config_1 = require("../0-config/config");
+const config_1 = require("../reports-on-repos/0-config/config");
 const observable_fs_1 = require("observable-fs");
 const rxjs_1 = require("rxjs");
 const path_1 = __importDefault(require("path"));

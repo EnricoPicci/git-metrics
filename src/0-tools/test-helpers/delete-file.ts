@@ -7,6 +7,7 @@ export function deleteFile(file: string) {
             if (err.code === 'ENOENT') {
                 return of(null);
             }
+            throw new Error(err);
         }),
     );
 }

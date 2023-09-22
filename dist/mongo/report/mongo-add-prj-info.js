@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.mongoProjectInfo = void 0;
 const rxjs_1 = require("rxjs");
 const all_commits_query_1 = require("../query/all-commits-query");
-const cloc_1 = require("../../1-A-read/cloc");
+const cloc_1 = require("../../reports-on-repos/1-A-read/cloc");
 function mongoProjectCommitsInfo(params) {
     return (0, all_commits_query_1.commitsInfo)(params.connectionString, params.dbName, params.commitsCollection);
 }

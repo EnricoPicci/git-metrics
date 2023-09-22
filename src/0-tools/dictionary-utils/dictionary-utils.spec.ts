@@ -62,8 +62,8 @@ describe(`utilities for dictionaries`, () => {
         it(`returns an array with 2 elements since there are 2 keys present in all dictionaries`, () => {
             const elementsInAll = keysInAll([dict_1, dict_2]);
             expect(elementsInAll.length).equal(2);
-            expect(elementsInAll.find((d) => d.key === 'a').key).equal('a');
-            expect(elementsInAll.find((d) => d.key === 'b').key).equal('b');
+            expect(elementsInAll.find((d) => d.key === 'a')!.key).equal('a');
+            expect(elementsInAll.find((d) => d.key === 'b')!.key).equal('b');
             expect(elementsInAll[0].entries.length).equal(2);
             expect(elementsInAll[0].entries.find((e) => e === 11)).equal(11);
             expect(elementsInAll[0].entries.find((e) => e === 12)).equal(12);

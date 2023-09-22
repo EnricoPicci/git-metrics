@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fromCsv = void 0;
-const config_1 = require("../../0-config/config");
+const config_1 = require("../../reports-on-repos/0-config/config");
 function fromCsv(header, lines) {
     const columns = header.split(config_1.DEFAUL_CONFIG.CSV_SEP);
     return lines.map((line, i) => {
