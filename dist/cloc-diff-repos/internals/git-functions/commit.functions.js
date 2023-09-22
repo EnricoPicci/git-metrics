@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.newCommitsByMonth = exports.buildCommitPairArray = exports.newCommitCompactFromGitlog = exports.newEmptyCommit = exports.fetchOneCommit = exports.fetchCommits = void 0;
 const rxjs_1 = require("rxjs");
-const execute_command_1 = require("../execute-command/execute-command");
+const execute_command_1 = require("../../../0-tools/execute-command/execute-command");
 const commit_model_1 = require("./commit.model");
 // fetchCommit is a function that fetched all the commits from a git repo and returns the sha of each commit and its date
 // #copilot comment - the following comment has been added by copilot

@@ -1,7 +1,7 @@
 import { toArray, map, catchError, of } from "rxjs";
 
 import { CONFIG } from "../config";
-import { executeCommandObs, getCommandOutput } from "../execute-command/execute-command";
+import { executeCommandObs, getCommandOutput } from "../../../0-tools/execute-command/execute-command";
 import { ClocDiffStats, newClocDiffStatsWithError, newClocDiffStatsZeroed } from "./cloc-diff.model";
 
 // runClocDiff is a function that runs the cloc command to calculate the differences (restricted to the selected languages) between 

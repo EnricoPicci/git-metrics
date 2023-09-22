@@ -15,7 +15,7 @@ describe('runCloc', () => {
             (0, chai_1.expect)(!!stats[0].code).to.be.true;
             done();
         });
-    });
+    }).timeout(10000);
     it('should return statistics for TypeScript files', (done) => {
         (0, cloc_functions_1.runCloc)('./src').subscribe((stats) => {
             const typescriptStats = stats.find((stat) => stat.language === 'TypeScript');
@@ -26,7 +26,7 @@ describe('runCloc', () => {
             (0, chai_1.expect)(typescriptStats.code).greaterThan(0);
             done();
         });
-    });
+    }).timeout(10000);
     it('should return statistics reading from a git repo commit - the commit is from the repo of this project', (done) => {
         (0, cloc_functions_1.runCloc)('2c6f2ae87b539590f5a0f93682f5440ca845bc9c').subscribe((stats) => {
             const typescriptStats = stats.find((stat) => stat.language === 'TypeScript');
@@ -37,6 +37,6 @@ describe('runCloc', () => {
             (0, chai_1.expect)(typescriptStats.code).greaterThan(0);
             done();
         });
-    });
+    }).timeout(10000);
 });
 //# sourceMappingURL=cloc.functions.spec.js.map

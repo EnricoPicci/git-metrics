@@ -2,15 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runCloc = void 0;
 const rxjs_1 = require("rxjs");
-const execute_command_1 = require("../execute-command/execute-command");
+const execute_command_1 = require("../../../0-tools/execute-command/execute-command");
 const config_1 = require("../config");
 // runCloc is a function that runs the cloc command and returns the result in the form of a ClocLanguageStats array
-function runCloc(repoPathOrCommitOrOtherClocId, folderPath = './') {
+function runCloc(repoPath = './', vcs) {
+    const _vcs = vcs ? `--vcs=${vcs}` : '';
     // #todo - check if we need to specify { encoding: 'utf-8' } as an argument
-    return (0, execute_command_1.executeCommandObs)('run cloc', `cd ${folderPath} && cloc --json --timeout=${config_1.CONFIG.CLOC_TIMEOUT} ${repoPathOrCommitOrOtherClocId}`).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs)('run cloc', `cloc --json ${_vcs} --timeout=${config_1.CONFIG.CLOC_TIMEOUT} ${repoPath}`).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((output) => {
         const firstLine = output[0];
         if (firstLine.startsWith('from stderr: ')) {
-            console.error(`Error in runCloc for folder "${folderPath}" and path "${repoPathOrCommitOrOtherClocId}"\nError: ${firstLine}`);
+            console.error(`Error in runCloc for folder "${repoPath}"\nError: ${firstLine}`);
             return [];
         }
         if (!firstLine.startsWith('from stdout: ')) {

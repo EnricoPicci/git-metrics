@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRemoteOriginUrl = exports.gitHttpsUrlFromGitUrl = exports.repoCommitsByMonthRecords = exports.repoCommitsByMonthRecordsDict = exports.fillMissingMonths = exports.newReposWithCommitsByMonth = exports.newRepoCompactWithCommitsByMonths = exports.newRepoCompactWithCommitPairs = exports.newRepoCompact = exports.reposCompactWithCommitsByMonthsInFolderObs = exports.isToBeExcluded = exports.reposCompactInFolderObs = exports.cloneRepo = void 0;
 const rxjs_1 = require("rxjs");
-const execute_command_1 = require("../execute-command/execute-command");
+const execute_command_1 = require("../../../0-tools/execute-command/execute-command");
 const commit_functions_1 = require("./commit.functions");
 const repos_in_folder_1 = require("../repos-functions/repos-in-folder");
 // cloneRepo clones a repo from a given url to a given path and returns the path of the cloned repo

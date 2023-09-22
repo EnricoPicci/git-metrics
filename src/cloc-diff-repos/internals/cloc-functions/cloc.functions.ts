@@ -1,5 +1,5 @@
-import { map, toArray } from "rxjs";
-import { executeCommandObs } from "../execute-command/execute-command";
+import { map } from "rxjs";
+import { executeCommandObs } from "../../../0-tools/execute-command/execute-command";
 
 import { ClocLanguageStats } from "./cloc.model";
 import { CONFIG } from "../config";
@@ -9,18 +9,8 @@ export function runCloc(repoPath = './', vcs?: string) {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
     // #todo - check if we need to specify { encoding: 'utf-8' } as an argument
     return executeCommandObs('run cloc', `cloc --json ${_vcs} --timeout=${CONFIG.CLOC_TIMEOUT} ${repoPath}`).pipe(
-        toArray(),
         map((output) => {
-            const firstLine = output[0]
-            if (firstLine.startsWith('from stderr: ')) {
-                console.error(`Error in runCloc for folder "${repoPath}"\nError: ${firstLine}`)
-                return [];
-            }
-            if (!firstLine.startsWith('from stdout: ')) {
-                throw new Error('We expect the first line to start with "from stdout: "')
-            }
-            output[0] = firstLine.substring('from stdout: '.length)
-            const clocOutputJson = JSON.parse(output.join('\n'));
+            const clocOutputJson = JSON.parse(output);
             const clocStatsArray: ClocLanguageStats[] = []
             Object.entries(clocOutputJson).forEach(([language, stats]: [string, any]) => {
                 if (language !== 'header') {

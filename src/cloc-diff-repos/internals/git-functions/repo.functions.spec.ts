@@ -325,7 +325,7 @@ describe('gitHttpsUrlFromGitSshUrl', () => {
 describe('getRemoteOriginUrl', () => {
     it('should return the remote origin url of a repo', (done) => {
         const repoPath = './'
-        getRemoteOriginUrl(repoPath, false).subscribe({
+        getRemoteOriginUrl(repoPath).subscribe({
             next: (remoteOriginUrl) => {
                 expect(typeof remoteOriginUrl).to.equal('string')
                 expect(remoteOriginUrl.startsWith('https://')).to.be.true
@@ -340,7 +340,7 @@ describe('getRemoteOriginUrl', () => {
 
     it('should throw an error if the command fails', (done) => {
         const repoPathThatDoesNotExist = 'does-not-exist'
-        getRemoteOriginUrl(repoPathThatDoesNotExist, false).subscribe({
+        getRemoteOriginUrl(repoPathThatDoesNotExist).subscribe({
             next: (remoteOriginUrl) => {
                 done(`should not return a value - unfortunately it returns: ${remoteOriginUrl}`)
             },
@@ -354,17 +354,4 @@ describe('getRemoteOriginUrl', () => {
         })
     })
 
-    // it('should throw an error if the command fails', async () => {
-    //     const repoPath = '/path/to/repo'
-    //     const expectedError = 'Error in getRemoteOriginUrl for repo "/path/to/repo"\nError: Command failed'
-    //     // mock the executeCommandObs function to throw an error
-    //     const executeCommandObs = () => throwError(new Error('Command failed'))
-    //     try {
-    //         await getRemoteOriginUrl(repoPath, false, executeCommandObs).toPromise()
-    //         // if the function doesn't throw an error, the test fails
-    //         expect.fail('Expected function to throw an error')
-    //     } catch (error) {
-    //         expect(error.message).to.equal(expectedError)
-    //     }
-    // })
 })

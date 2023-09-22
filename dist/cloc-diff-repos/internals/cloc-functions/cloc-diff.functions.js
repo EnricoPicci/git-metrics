@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildClocDiffAllCommand = exports.runClocDiff = void 0;
 const rxjs_1 = require("rxjs");
 const config_1 = require("../config");
-const execute_command_1 = require("../execute-command/execute-command");
+const execute_command_1 = require("../../../0-tools/execute-command/execute-command");
 const cloc_diff_model_1 = require("./cloc-diff.model");
 // runClocDiff is a function that runs the cloc command to calculate the differences (restricted to the selected languages) between 
 // 2 commits of the same repo and returns the result in the form of a ClocDiffLanguageStats array

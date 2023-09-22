@@ -1,6 +1,6 @@
 import { EMPTY, catchError, concatMap, filter, from, map, mergeMap, tap, toArray } from 'rxjs';
 
-import { executeCommandObs, getCommandOutput } from '../execute-command/execute-command';
+import { executeCommandObs } from '../../../0-tools/execute-command/execute-command';
 import { newCommitsByMonth, fetchCommits, buildCommitPairArray } from './commit.functions';
 import { RepoCompact, RepoCompactWithCommitPairs, RepoCompactWithCommitsByMonths, ReposWithCommitsByMonths } from './repo.model';
 import { CommitCompact } from './commit.model';
@@ -265,21 +265,13 @@ export function gitHttpsUrlFromGitUrl(gitUrl: string) {
 }
 
 // getRemoteOriginUrl returns the remote origin url of a repo
-export function getRemoteOriginUrl(repoPath: string, verbose = true) {
+export function getRemoteOriginUrl(repoPath: string) {
     const cmd = `cd ${repoPath} && git config --get remote.origin.url`
     return executeCommandObs(
         'run git  config --get remote.origin.url', cmd
     ).pipe(
-        toArray(),
-        map((linesFromStdOutAndStdErr) => {
-            const output = getCommandOutput(linesFromStdOutAndStdErr, repoPath, cmd)
+        map((output) => {
             return output.split('\n')[0]
         }),
-        catchError((error) => {
-            const err = `Error in getRemoteOriginUrl for repo "${repoPath}"\nError: ${error}`
-            if (verbose) console.error(err)
-            // in case of error we return an error
-            throw new Error(err)
-        })
     )
 }

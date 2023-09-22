@@ -1,5 +1,5 @@
 import { map, catchError, EMPTY, concatMap, from, filter, toArray } from 'rxjs';
-import { executeCommandNewProcessToLinesObs, executeCommandObs, getCommandOutput } from '../execute-command/execute-command';
+import { executeCommandNewProcessToLinesObs, executeCommandObs } from '../../../0-tools/execute-command/execute-command';
 import { CommitCompact, CommitPair, CommitsByMonths, newCommitPair, yearMonthFromDate } from './commit.model';
 
 // fetchCommit is a function that fetched all the commits from a git repo and returns the sha of each commit and its date
@@ -50,9 +50,8 @@ export function fetchOneCommit(commitSha: string, repoPath: string, verbose = tr
         'run git-log to find parent', cmd
     ).pipe(
         toArray(),
-        map((linesFromStdOutAndStdErr) => {
-            const output = getCommandOutput(linesFromStdOutAndStdErr, repoPath, cmd)
-            const commitCompact = newCommitCompactFromGitlog(output)
+        map((output) => {
+            const commitCompact = newCommitCompactFromGitlog(output[0])
             return commitCompact
         }),
         catchError((error) => {

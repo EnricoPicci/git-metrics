@@ -6,7 +6,7 @@ describe('clocOnRepos', () => {
     it(`should return an array of language statistics for each repository of the current folder
     since the current folder has just 1 repo, there will be just 2 items in the array,
     one for this repo and one that is the total`, (done) => {
-        const path = './';
+        const path = '.';
         (0, repo_cloc_functions_1.clocOnRepos)(path).subscribe((stats) => {
             (0, chai_1.expect)(stats instanceof Array).to.be.true;
             (0, chai_1.expect)(stats.length).equal(2);
