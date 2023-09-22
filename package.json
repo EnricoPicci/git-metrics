@@ -64,6 +64,7 @@
         "typescript": "^4.4.2"
     },
     "dependencies": {
+        "@enrico.piccinin/csv-tools": "^1.0.11",
         "commander": "^8.1.0",
         "observable-fs": "^2.2.6",
         "observable-mongo": "^2.3.16",

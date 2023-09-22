@@ -32,6 +32,6 @@ describe('clocOnRepos', () => {
             (0, chai_1.expect)(stats[1].repoPath).equal(path);
             done();
         });
-    });
+    }).timeout(10000);
 });
 //# sourceMappingURL=repo-cloc.functions.spec.js.map

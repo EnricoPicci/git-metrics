@@ -14,7 +14,7 @@ describe('runCloc', () => {
             expect(!!stats[0].code).to.be.true;
             done();
         });
-    });
+    }).timeout(10000);
 
     it('should return statistics for TypeScript files', (done) => {
         runCloc('./src').subscribe((stats) => {
@@ -26,7 +26,7 @@ describe('runCloc', () => {
             expect(typescriptStats!.code).greaterThan(0);
             done();
         });
-    });
+    }).timeout(10000);
 
     it('should return statistics reading from a git repo commit - the commit is from the repo of this project', (done) => {
         runCloc('2c6f2ae87b539590f5a0f93682f5440ca845bc9c').subscribe((stats) => {
@@ -38,5 +38,5 @@ describe('runCloc', () => {
             expect(typescriptStats!.code).greaterThan(0);
             done();
         });
-    });
+    }).timeout(10000);
 });

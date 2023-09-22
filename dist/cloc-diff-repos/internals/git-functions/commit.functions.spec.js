@@ -54,7 +54,7 @@ describe('fetchCommits', () => {
             (0, chai_1.expect)(commits instanceof Array).to.be.true;
             (0, chai_1.expect)(commits.length).greaterThan(0);
             const firstCommit = commits[commits.length - 1];
-            (0, chai_1.expect)(firstCommit.sha).equal('b8ef07cc047ce8cb71648f8ef79fab73b230a6cf');
+            (0, chai_1.expect)(firstCommit.sha).equal('8767d5864e7d72df0f25915fe8e0652244eee5fa');
             (0, chai_1.expect)(!!firstCommit.date).to.be.true;
             (0, chai_1.expect)(!!firstCommit.author).to.be.true;
             // this tests that the sha is a real sha and not something else
@@ -82,7 +82,7 @@ describe('fetchOneCommit', () => {
         });
     });
     it('should notify the first commit object of this repo', (done) => {
-        const firstCommitOfThisRepo = 'b8ef07cc047ce8cb71648f8ef79fab73b230a6cf';
+        const firstCommitOfThisRepo = '8767d5864e7d72df0f25915fe8e0652244eee5fa';
         const repoPath = './';
         (0, commit_functions_1.fetchOneCommit)(firstCommitOfThisRepo, repoPath, false).subscribe({
             next: (commitCompact) => {

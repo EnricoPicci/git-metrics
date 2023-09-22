@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import path from 'path';
 import { concatMap, tap } from 'rxjs';
 import { COMMIT_RECORD_COUNTER } from '../../1-B-git-enriched-streams/commits';
 import { AuthorChurnReport } from '../../1-D-reports/author-churn-report';
