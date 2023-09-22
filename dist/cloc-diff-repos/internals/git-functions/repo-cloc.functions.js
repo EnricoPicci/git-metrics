@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.clocOnRepos = void 0;
 const rxjs_1 = require("rxjs");
 const repos_in_folder_1 = require("../repos-functions/repos-in-folder");
-const cloc_functions_1 = require("../cloc-functions/cloc.functions");
-const config_1 = require("../config");
+const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
+const config_1 = require("../../../config");
 // clocOnRepos is a function that takes the path of a folder containing git repositories 
 // and returns the cloc stats for each repository
 function clocOnRepos(folderPath, concurrency = config_1.CONFIG.CONCURRENCY) {

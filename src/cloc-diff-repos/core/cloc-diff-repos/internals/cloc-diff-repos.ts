@@ -3,11 +3,11 @@ import path from "path"
 import { writeFileObs } from "observable-fs"
 
 import { concatMap, from, map, mergeMap, tap, toArray } from "rxjs"
-import { CONFIG } from "../../../internals/config"
+import { CONFIG } from "../../../../config"
 import { reposCommitsPairsDiff, calculateMonthlyClocGitDiffs, calculateClocGitDiffsChildParent } from "../../../internals/git-functions/repo-cloc-diff.functions"
 import { newReposWithCommitsByMonth, repoCommitsByMonthRecordsDict, reposCompactInFolderObs } from "../../../internals/git-functions/repo.functions"
 import { reposCompactWithCommitsByMonthsInFolderObs } from "../../../internals/git-functions/repo.functions"
-import { ClocDiffLanguageStats, ClocDiffStats, RepoMonthlyClocDiffStats } from "../../../internals/cloc-functions/cloc-diff.model"
+import { ClocDiffLanguageStats, ClocDiffStats, RepoMonthlyClocDiffStats } from "../../../../cloc-functions//cloc-diff.model"
 import { toCsv } from "@enrico.piccinin/csv-tools"
 
 // calculateCodeTurnover is a function that calculates the cloc diffs on the repos contained in a folder

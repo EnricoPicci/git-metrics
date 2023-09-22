@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchMonthlyClocDiffRepos = exports.launchClocDiffRepos = void 0;
 const commander_1 = require("commander");
 const cloc_diff_repos_1 = require("./internals/cloc-diff-repos");
-const config_1 = require("../../internals/config");
+const config_1 = require("../../../config");
 function launchClocDiffRepos() {
     console.log('====>>>> Launching Cloc diff on Repos');
     const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths } = readParams();

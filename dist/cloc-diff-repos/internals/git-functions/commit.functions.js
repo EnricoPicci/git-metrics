@@ -37,9 +37,8 @@ function fetchOneCommit(commitSha, repoPath, verbose = true) {
         throw new Error(`Repo path is mandatory`);
     // the -n 1 option limits the number of commits to 1
     const cmd = `cd ${repoPath} && git log --pretty=%H,%ad,%an ${commitSha} -n 1`;
-    return (0, execute_command_1.executeCommandObs)('run git-log to find parent', cmd).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((linesFromStdOutAndStdErr) => {
-        const output = (0, execute_command_1.getCommandOutput)(linesFromStdOutAndStdErr, repoPath, cmd);
-        const commitCompact = newCommitCompactFromGitlog(output);
+    return (0, execute_command_1.executeCommandObs)('run git-log to find parent', cmd).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((output) => {
+        const commitCompact = newCommitCompactFromGitlog(output[0]);
         return commitCompact;
     }), (0, rxjs_1.catchError)((error) => {
         const err = `Error in fetchOneCommit for repo "${repoPath} and commit ${commitSha}"\nError: ${error}

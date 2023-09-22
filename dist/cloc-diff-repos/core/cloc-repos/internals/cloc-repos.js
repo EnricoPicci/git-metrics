@@ -7,7 +7,7 @@ exports.calculateClocOnRepos = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const repo_cloc_functions_1 = require("../../../internals/git-functions/repo-cloc.functions");
-const config_1 = require("../../../internals/config");
+const config_1 = require("../../../../config");
 const observable_fs_1 = require("observable-fs");
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 // calculateClocOnRepos is a function that calculates the cloc on the repos contained in a folder

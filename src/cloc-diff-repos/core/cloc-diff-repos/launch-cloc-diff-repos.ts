@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { calculateClocDiffsOnRepos, calculateMonthlyClocDiffsOnRepos } from "./internals/cloc-diff-repos";
-import { CONFIG } from "../../internals/config";
+import { CONFIG } from "../../../config";
 
 export function launchClocDiffRepos() {
     console.log('====>>>> Launching Cloc diff on Repos')

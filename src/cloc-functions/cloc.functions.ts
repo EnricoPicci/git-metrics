@@ -1,5 +1,5 @@
 import { map } from "rxjs";
-import { executeCommandObs } from "../../../0-tools/execute-command/execute-command";
+import { executeCommandObs } from "../0-tools/execute-command/execute-command";
 
 import { ClocLanguageStats } from "./cloc.model";
 import { CONFIG } from "../config";

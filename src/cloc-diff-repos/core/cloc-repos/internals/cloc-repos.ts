@@ -3,7 +3,7 @@ import path from "path";
 import { concatMap, map, tap } from "rxjs";
 
 import { clocOnRepos } from "../../../internals/git-functions/repo-cloc.functions";
-import { CONFIG } from "../../../internals/config";
+import { CONFIG } from "../../../../config";
 import { writeFileObs } from "observable-fs";
 import { RepoClocLanguageStats } from "../../../internals/git-functions/repo-cloc.model";
 import { toCsv } from "@enrico.piccinin/csv-tools";

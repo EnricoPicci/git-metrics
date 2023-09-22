@@ -230,17 +230,10 @@ function gitHttpsUrlFromGitUrl(gitUrl) {
 }
 exports.gitHttpsUrlFromGitUrl = gitHttpsUrlFromGitUrl;
 // getRemoteOriginUrl returns the remote origin url of a repo
-function getRemoteOriginUrl(repoPath, verbose = true) {
+function getRemoteOriginUrl(repoPath) {
     const cmd = `cd ${repoPath} && git config --get remote.origin.url`;
-    return (0, execute_command_1.executeCommandObs)('run git  config --get remote.origin.url', cmd).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((linesFromStdOutAndStdErr) => {
-        const output = (0, execute_command_1.getCommandOutput)(linesFromStdOutAndStdErr, repoPath, cmd);
+    return (0, execute_command_1.executeCommandObs)('run git  config --get remote.origin.url', cmd).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n')[0];
-    }), (0, rxjs_1.catchError)((error) => {
-        const err = `Error in getRemoteOriginUrl for repo "${repoPath}"\nError: ${error}`;
-        if (verbose)
-            console.error(err);
-        // in case of error we return an error
-        throw new Error(err);
     }));
 }
 exports.getRemoteOriginUrl = getRemoteOriginUrl;

@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculateMonthlyClocGitDiffs = exports.reposCommitsPairsDiff = exports.commitDiffPairs = exports.calculateClocGitDiffsChildParent = exports.calculateClocGitDiffs = void 0;
 const rxjs_1 = require("rxjs");
-const cloc_diff_functions_1 = require("../cloc-functions/cloc-diff.functions");
-const cloc_diff_model_1 = require("../cloc-functions/cloc-diff.model");
+const cloc_diff_functions_1 = require("../../../cloc-functions/cloc-diff.functions");
+const cloc_diff_model_1 = require("../../../cloc-functions/cloc-diff.model");
 const commit_model_1 = require("./commit.model");
-const config_1 = require("../config");
+const config_1 = require("../../../config");
 const commit_functions_1 = require("./commit.functions");
 const repo_functions_1 = require("./repo.functions");
 // calculateClocGitDiffs is a function that receives a CommitPair object and calculates the cloc diff between the two commits

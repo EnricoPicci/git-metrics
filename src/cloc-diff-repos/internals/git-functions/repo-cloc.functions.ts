@@ -1,10 +1,10 @@
 import { from, map, mergeMap, toArray } from "rxjs";
 
 import { reposInFolder } from "../repos-functions/repos-in-folder";
-import { runCloc } from "../cloc-functions/cloc.functions";
-import { CONFIG } from "../config";
+import { runCloc } from "../../../cloc-functions/cloc.functions";
+import { CONFIG } from "../../../config";
 import { RepoClocLanguageStats } from "./repo-cloc.model";
-import { ClocLanguageStats } from "../cloc-functions/cloc.model";
+import { ClocLanguageStats } from "../../../cloc-functions/cloc.model";
 
 // clocOnRepos is a function that takes the path of a folder containing git repositories 
 // and returns the cloc stats for each repository

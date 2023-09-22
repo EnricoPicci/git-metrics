@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ClocDiffStats } from '../../../internals/cloc-functions/cloc-diff.model';
+import { ClocDiffStats } from '../../../../cloc-functions/cloc-diff.model';
 import { flattenMonthlyClocDiffStatsDict } from './cloc-diff-repos';
 import { reposCompactInFolderObs } from '../../../internals/git-functions/repo.functions';
 

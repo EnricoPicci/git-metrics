@@ -1,9 +1,9 @@
 import { catchError, concatMap, from, map, mergeMap, of, reduce } from "rxjs"
-import { runClocDiff } from "../cloc-functions/cloc-diff.functions"
-import { ClocDiffStats, RepoMonthlyClocDiffStats, noDiffsClocDiffStats } from "../cloc-functions/cloc-diff.model"
+import { runClocDiff } from "../../../cloc-functions/cloc-diff.functions"
+import { ClocDiffStats, RepoMonthlyClocDiffStats, noDiffsClocDiffStats } from "../../../cloc-functions/cloc-diff.model"
 import { CommitCompact, CommitPair, yearMonthFromDate } from "./commit.model"
 import { CommitTuple } from "./repo-cloc-diff.model"
-import { CONFIG } from "../config"
+import { CONFIG } from "../../../config"
 import { fetchOneCommit, newEmptyCommit } from "./commit.functions"
 import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl } from "./repo.functions"
 
