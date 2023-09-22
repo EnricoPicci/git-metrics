@@ -4,10 +4,10 @@ exports.calculateMonthlyClocGitDiffs = exports.reposCommitsPairsDiff = exports.c
 const rxjs_1 = require("rxjs");
 const cloc_diff_functions_1 = require("../../../cloc-functions/cloc-diff.functions");
 const cloc_diff_model_1 = require("../../../cloc-functions/cloc-diff.model");
-const commit_model_1 = require("./commit.model");
 const config_1 = require("../../../config");
-const commit_functions_1 = require("./commit.functions");
-const repo_functions_1 = require("./repo.functions");
+const commit_functions_1 = require("../../../git-functions/commit.functions");
+const repo_functions_1 = require("../../../git-functions/repo.functions");
+const commits_by_month_functions_1 = require("./commits-by-month.functions");
 // calculateClocGitDiffs is a function that receives a CommitPair object and calculates the cloc diff between the two commits
 // and returns an object with the yearMonth and the cloc diff
 function calculateClocGitDiffs(commitPair, languages) {
@@ -42,7 +42,7 @@ function calculateClocGitDiffsChildParent(commit, repoPath, languages) {
             const parentCommitDate = parentCommit.date.toLocaleDateString();
             return {
                 repoPath,
-                yearMonth: (0, commit_model_1.yearMonthFromDate)(commit.date),
+                yearMonth: (0, commits_by_month_functions_1.yearMonthFromDate)(commit.date),
                 mostRecentCommitDate: commit.date.toLocaleDateString(),
                 leastRecentCommitDate: parentCommitDate,
                 clocDiff

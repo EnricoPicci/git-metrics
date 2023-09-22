@@ -1,8 +1,7 @@
 // Functions to transform an array of objects to an array of csv lines
 
 import { Observable, Subscriber } from 'rxjs';
-import { DEFAUL_CONFIG } from '../../reports-on-repo/0-config/config';
-
+import { DEFAUL_CONFIG } from '../../apps/reports-on-repo/0-config/config';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toCsv(objects: any[]) {
     const csvLines: string[] = [];

@@ -8,17 +8,17 @@ const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
-const repo_functions_1 = require("../../../internals/git-functions/repo.functions");
-const repo_functions_2 = require("../../../internals/git-functions/repo.functions");
+const repos_by_month_functions_1 = require("../../../internals/git-functions/repos-by-month.functions");
+const repos_by_month_functions_2 = require("../../../internals/git-functions/repos-by-month.functions");
 // readReposCommits reeads all the repos contained in a directory and returns an observable of an array of RepoCompact
 function readReposCommits(folderPath, outdir, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = 1) {
     const folderName = path_1.default.basename(folderPath);
-    return (0, repo_functions_1.reposCompactWithCommitsByMonthsInFolderObs)(folderPath, fromDate, toDate, concurrency).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.concatMap)((repos) => {
+    return (0, repos_by_month_functions_1.reposCompactWithCommitsByMonthsInFolderObs)(folderPath, fromDate, toDate, concurrency).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.concatMap)((repos) => {
         const outFile = path_1.default.join(outdir, `${folderName}.json`);
         return writeReposJson(repos, outFile);
     }), (0, rxjs_1.concatMap)((repos) => {
         const outFile = path_1.default.join(outdir, `${folderName}-repos-commits-by-month.json`);
-        const repoCommitsByMonth = (0, repo_functions_2.newReposWithCommitsByMonth)(repos);
+        const repoCommitsByMonth = (0, repos_by_month_functions_2.newReposWithCommitsByMonth)(repos);
         return writeReposCommitsByMonthJson(repoCommitsByMonth, outFile);
     }), (0, rxjs_1.concatMap)((repoCommitsByMonth) => {
         const outFile = path_1.default.join(outdir, `${folderName}-repos-commits-by-month.csv`);
@@ -43,7 +43,7 @@ const writeReposCommitsByMonthJson = (repoCommitsByMonth, outFile) => {
     }), (0, rxjs_1.map)(() => repoCommitsByMonth));
 };
 const writeReposCommitsByMonthCsv = (repoCommitsByMonth, outFile) => {
-    const repoCommitsByMonthRecs = (0, repo_functions_2.repoCommitsByMonthRecords)(repoCommitsByMonth);
+    const repoCommitsByMonthRecs = (0, repos_by_month_functions_2.repoCommitsByMonthRecords)(repoCommitsByMonth);
     const repoCommitsByMonthCsvs = (0, csv_tools_1.toCsv)(repoCommitsByMonthRecs);
     return (0, observable_fs_1.writeFileObs)(outFile, repoCommitsByMonthCsvs).pipe((0, rxjs_1.tap)({
         next: () => console.log(`====>>>> Repos commits by month csv records written in file: ${outFile}`),

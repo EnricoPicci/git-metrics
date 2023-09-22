@@ -1,4 +1,4 @@
-import { DEFAUL_CONFIG } from '../../reports-on-repo/0-config/config';
+import { DEFAUL_CONFIG } from "../../apps/reports-on-repo/0-config/config";
 
 export function fromCsv(header: string, lines: string[]) {
     const columns = header.split(DEFAUL_CONFIG.CSV_SEP);

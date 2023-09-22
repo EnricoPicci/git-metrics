@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { fromCsv } from './from-csv';
-import { DEFAUL_CONFIG } from '../../reports-on-repo/0-config/config';
+import { DEFAUL_CONFIG } from '../../apps/reports-on-repo/0-config/config';
 
 describe(`fromCsv`, () => {
     it(`create an array of objects starting from an header and an array of lines`, () => {
