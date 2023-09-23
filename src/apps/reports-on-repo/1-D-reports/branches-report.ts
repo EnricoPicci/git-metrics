@@ -9,7 +9,7 @@ import { ProjectInfo } from '../1-C-aggregate-types/project-info';
 import { CommitDaylySummary } from '../1-C-aggregate-types/commit-dayly-summary';
 import { DaylySummaryDictionary } from '../1-C-aggregate-in-memory/commit-branch-tips-aggregate';
 import { toCsv } from '@enrico.piccinin/csv-tools';
-import { dayToWeekDictionary } from '../../../0-tools/dates/date-functions';
+import { dayToWeekDictionary } from '../../../tools/dates/date-functions';
 
 export type BranchesReportParams = {
     //
@@ -93,9 +93,7 @@ export function branchesReportCore(
         share(),
     );
     const generateReport = commitDaylySummarySource.pipe(_branchesReport(params));
-    const concurrentStreams: Observable<any>[] = [
-        generateReport as Observable<BranchesReport>,
-    ];
+    const concurrentStreams: Observable<any>[] = [generateReport as Observable<BranchesReport>];
 
     if (csvFilePath) {
         if (!weeklyCsvFilePath) {

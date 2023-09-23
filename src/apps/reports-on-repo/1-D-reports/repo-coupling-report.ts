@@ -5,8 +5,8 @@ import { writeFileObs } from 'observable-fs';
 import { REPORT_CONFIG } from './config/report-config';
 import { Report, ReportParams } from './report';
 
-import { toCsvObs } from '../../../0-tools/csv/to-csv';
-import { TUPLE_KEY_SEPARATOR } from '../../../0-tools/dictionary-utils/dictionary-utils';
+import { toCsvObs } from '../../../tools/csv/to-csv';
+import { TUPLE_KEY_SEPARATOR } from '../../../tools/dictionary-utils/dictionary-utils';
 
 import { FileTuplesDict } from '../1-C-aggregate-types/file-tuples';
 

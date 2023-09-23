@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runCloc = void 0;
 const rxjs_1 = require("rxjs");
-const execute_command_1 = require("../0-tools/execute-command/execute-command");
+const execute_command_1 = require("../tools/execute-command/execute-command");
 const config_1 = require("../config");
 // runCloc is a function that runs the cloc command and returns the result in the form of a ClocLanguageStats array
 function runCloc(repoPath = './', vcs) {

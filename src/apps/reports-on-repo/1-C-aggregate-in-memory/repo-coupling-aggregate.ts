@@ -1,6 +1,6 @@
 import { pipe, Observable, forkJoin, of } from 'rxjs';
 import { reduce, map, concatMap } from 'rxjs/operators';
-import { allTuples, keysInAll } from '../../../0-tools/dictionary-utils/dictionary-utils';
+import { allTuples, keysInAll } from '../../../tools/dictionary-utils/dictionary-utils';
 import { FileGitCommitEnriched } from '../1-B-git-enriched-types/git-types';
 import { FileTuplesDict } from '../1-C-aggregate-types/file-tuples';
 

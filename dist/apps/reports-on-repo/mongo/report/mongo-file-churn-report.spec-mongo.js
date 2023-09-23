@@ -7,7 +7,7 @@ const chai_1 = require("chai");
 const observable_fs_1 = require("observable-fs");
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
-const from_csv_1 = require("../../../../0-tools/csv/from-csv");
+const from_csv_1 = require("../../../../tools/csv/from-csv");
 const load_commits_1 = require("../load/load-commits");
 const load_files_1 = require("../load/load-files");
 const mongo_file_churn_report_1 = require("./mongo-file-churn-report");
@@ -113,7 +113,7 @@ describe(`_mongoFileChurnReport - test the internals of the report generation lo
             dbName,
             filesCollection,
             topChurnFilesSize: 1,
-            outDir: ''
+            outDir: '',
         })), (0, rxjs_1.tap)((report) => {
             (0, chai_1.expect)(report.topChurnedFiles.val.length).equal(1);
         }))
@@ -142,7 +142,7 @@ describe(`_mongoFileChurnReport - test the internals of the report generation lo
             dbName,
             filesCollection,
             percentThreshold,
-            outDir: ''
+            outDir: '',
         })), (0, rxjs_1.tap)((report) => {
             (0, chai_1.expect)(report.topChurnContributors.val.length).equal(1);
             (0, chai_1.expect)(Object.keys(report.topChurnContributorsAge.val).length).equal(1);
@@ -169,7 +169,7 @@ describe(`_mongoFileChurnReport - test the internals of the report generation lo
             connectionString,
             dbName,
             filesCollection,
-            outDir: ''
+            outDir: '',
         })), (0, rxjs_1.tap)((report) => {
             (0, chai_1.expect)(report.topChurnContributors.val.length).equal(3);
             (0, chai_1.expect)(Object.keys(report.topChurnContributorsAge.val).length).equal(1);

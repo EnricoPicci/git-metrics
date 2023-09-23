@@ -7,8 +7,8 @@ const observable_fs_1 = require("observable-fs");
 const report_config_1 = require("./config/report-config");
 const report_1 = require("./report");
 const add_project_info_1 = require("./add-project-info");
-const to_csv_1 = require("../../../0-tools/csv/to-csv");
-const split_path_1 = require("../../../0-tools/split-path/split-path");
+const to_csv_1 = require("../../../tools/csv/to-csv");
+const split_path_1 = require("../../../tools/split-path/split-path");
 exports.MODULE_CHURN_REPORT_NAME = 'ModuleChurnReport';
 class ModuleChurnReport extends report_1.Report {
     constructor(_params) {

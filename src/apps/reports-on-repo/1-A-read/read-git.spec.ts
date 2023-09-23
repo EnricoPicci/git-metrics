@@ -18,7 +18,7 @@ import {
 } from './read-git';
 
 import { DEFAUL_CONFIG } from '../0-config/config';
-import { deleteFile } from '../../../0-tools/test-helpers/delete-file';
+import { deleteFile } from '../../../tools/test-helpers/delete-file';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 

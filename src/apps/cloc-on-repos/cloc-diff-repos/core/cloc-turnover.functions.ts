@@ -2,7 +2,7 @@ import path from 'path';
 import { mergeMap, from, toArray, concatMap, tap, map } from 'rxjs';
 
 import { writeFileObs } from 'observable-fs';
-import { toCsv } from '../../../../0-tools/csv/to-csv';
+import { toCsv } from '../../../../tools/csv/to-csv';
 
 import { CONFIG } from '../../../../config';
 import { reposCompactInFolderObs } from '../../../../git-functions/repo.functions';

@@ -14,7 +14,7 @@ import {
     executeCommandInShellNewProcessObs,
     executeCommandNewProcessToLinesObs,
     executeCommandObs,
-} from '../../../0-tools/execute-command/execute-command';
+} from '../../../tools/execute-command/execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
@@ -27,7 +27,8 @@ export function readCommits(config: ConfigReadCommits) {
     const [cmd, out] = readCommitsCommand(config);
     executeCommand('readCommits', cmd);
     console.log(
-        `====>>>> Commits read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
+        `====>>>> Commits read from repo in folder ${
+            config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
         }`,
     );
     console.log(`====>>>> Output saved on file ${out}`);
@@ -40,7 +41,8 @@ export function readCommitsObs(config: ConfigReadCommits) {
         tap({
             complete: () => {
                 console.log(
-                    `====>>>> Commits read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
+                    `====>>>> Commits read from repo in folder ${
+                        config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
                     }`,
                 );
                 console.log(`====>>>> Output saved on file ${out}`);
@@ -57,9 +59,9 @@ export function readAndStreamCommitsNewProces(config: ConfigReadCommits, outFile
 
     const emitOutFileOrIgnoreElements = writeFileOnly
         ? pipe(
-            last(),
-            map(() => outFile),
-        )
+              last(),
+              map(() => outFile),
+          )
         : ignoreElements();
     const _writeFile = deleteFileObs(outFile).pipe(
         catchError((err) => {
@@ -91,7 +93,8 @@ export function readCommitsNewProcess(config: ConfigReadCommits) {
         tap({
             next: (outFile) => {
                 console.log(
-                    `====>>>> Commits read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
+                    `====>>>> Commits read from repo in folder ${
+                        config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
                     }`,
                 );
                 console.log(`====>>>> Output saved on file ${outFile}`);
@@ -121,7 +124,8 @@ export function readTags(config: ConfigReadTags) {
     const [cmd, out] = readTagsCommand(config);
     executeCommand('readTags', cmd);
     console.log(
-        `====>>>> Tags read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
+        `====>>>> Tags read from repo in folder ${
+            config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
         }`,
     );
     console.log(`====>>>> Output saved on file ${out}`);
@@ -132,7 +136,8 @@ export function readBranchesGraph(config: ConfigReadTags) {
     const [cmd, out] = readBranchesGraphCommand(config);
     executeCommand('readBranchesGraph', cmd);
     console.log(
-        `====>>>> Branches graph read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
+        `====>>>> Branches graph read from repo in folder ${
+            config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
         }`,
     );
     console.log(`====>>>> Output saved on file ${out}`);

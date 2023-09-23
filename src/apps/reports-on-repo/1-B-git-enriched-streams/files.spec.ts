@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { tap, toArray } from 'rxjs';
-import { toYYYYMMDD } from '../../../0-tools/dates/date-functions';
+import { toYYYYMMDD } from '../../../tools/dates/date-functions';
 import { filesStream } from './files';
 
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;

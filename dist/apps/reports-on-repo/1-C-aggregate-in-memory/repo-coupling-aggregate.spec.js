@@ -8,7 +8,7 @@ const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const files_1 = require("../1-B-git-enriched-streams/files");
 const repo_coupling_aggregate_1 = require("./repo-coupling-aggregate");
-const dictionary_utils_1 = require("../../../0-tools/dictionary-utils/dictionary-utils");
+const dictionary_utils_1 = require("../../../tools/dictionary-utils/dictionary-utils");
 describe(`timeWindowKey`, () => {
     it(`two dates which differ for 1 day generate the same timeWindowKey if the timeWindowLengthInDays is 7
     since they are in the same week. COnsidering that Unix Epoch starts with a Thursday, a week in this case starts with a Thursday and

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.newCommitCompactFromGitlog = exports.newEmptyCommit = exports.fetchOneCommit = exports.fetchCommits = void 0;
 const rxjs_1 = require("rxjs");
-const execute_command_1 = require("../0-tools/execute-command/execute-command");
+const execute_command_1 = require("../tools/execute-command/execute-command");
 // fetchCommit is a function that fetched all the commits from a git repo and returns the sha of each commit and its date
 // #copilot comment - the following comment has been added by copilot
 // It uses the git log command to fetch the commits
@@ -55,7 +55,7 @@ function newEmptyCommit() {
     const commit = {
         sha: '',
         date: new Date(0),
-        author: ''
+        author: '',
     };
     return commit;
 }
@@ -67,7 +67,7 @@ function newCommitCompactFromGitlog(commitDataFromGitlog) {
     const commit = {
         sha: shaDateAuthor[0],
         date: new Date(shaDateAuthor[1]),
-        author: shaDateAuthor[2]
+        author: shaDateAuthor[2],
     };
     return commit;
 }

@@ -7,7 +7,7 @@ exports.calculateClocDiffsOnRepos = exports.calculateCodeTurnover = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
-const to_csv_1 = require("../../../../0-tools/csv/to-csv");
+const to_csv_1 = require("../../../../tools/csv/to-csv");
 const config_1 = require("../../../../config");
 const repo_functions_1 = require("../../../../git-functions/repo.functions");
 const cloc_diff_stat_csv_1 = require("./cloc-diff-stat-csv");

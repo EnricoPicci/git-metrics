@@ -6,7 +6,7 @@ const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
 const add_project_info_1 = require("./add-project-info");
 const report_1 = require("./report");
-const to_csv_1 = require("../../../0-tools/csv/to-csv");
+const to_csv_1 = require("../../../tools/csv/to-csv");
 exports.FILES_COUPLING_NAME = 'FilesCouplingReport';
 class FilesCouplingReport extends report_1.Report {
     constructor(_params) {
@@ -42,9 +42,7 @@ function fileCouplingReportCore(fileCoupling, params, csvFilePath = '') {
         console.log(`Processing ${fileCouplings.length} records to generate FileCouplingReport`);
     }), (0, operators_1.share)());
     const generateReport = fileCouplingSource.pipe(_fileCouplingReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
-    const concurrentStreams = [
-        generateReport,
-    ];
+    const concurrentStreams = [generateReport];
     if (csvFilePath) {
         concurrentStreams.push(fileCouplingSource);
         return (0, rxjs_1.forkJoin)(concurrentStreams).pipe((0, operators_1.concatMap)(([report, _allFileCouplings]) => {

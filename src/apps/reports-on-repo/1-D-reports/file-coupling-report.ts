@@ -5,7 +5,7 @@ import { writeFileObs } from 'observable-fs';
 import { addProjectInfo } from './add-project-info';
 import { addConsideration, addConsiderationsHeader, Report, ReportParams } from './report';
 
-import { toCsv } from '../../../0-tools/csv/to-csv';
+import { toCsv } from '../../../tools/csv/to-csv';
 
 import { FileCoupling } from '../1-C-aggregate-types/file-coupling';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
@@ -81,14 +81,12 @@ export function fileCouplingReportCore(
         _fileCouplingReport(params),
         tap((report) => (report.csvFile.val = csvFilePath)),
     );
-    const concurrentStreams: Observable<any>[] = [
-        generateReport as Observable<FilesCouplingReport>,
-    ];
+    const concurrentStreams: Observable<any>[] = [generateReport as Observable<FilesCouplingReport>];
     if (csvFilePath) {
         concurrentStreams.push(fileCouplingSource);
         return forkJoin(concurrentStreams).pipe(
             concatMap(([report, _allFileCouplings]) => {
-                const allFileCouplings = _allFileCouplings!
+                const allFileCouplings = _allFileCouplings!;
                 report.csvFile.val = csvFilePath;
                 if (allFileCouplings.length === 0) {
                     console.log('!!!!!!!! no data on file couplings');

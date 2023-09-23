@@ -11,7 +11,7 @@ import {
     calculateFileTuplesPerTimeWindow,
     groupFileTuples,
 } from './repo-coupling-aggregate';
-import { TUPLE_KEY_SEPARATOR } from '../../../0-tools/dictionary-utils/dictionary-utils';
+import { TUPLE_KEY_SEPARATOR } from '../../../tools/dictionary-utils/dictionary-utils';
 
 describe(`timeWindowKey`, () => {
     it(`two dates which differ for 1 day generate the same timeWindowKey if the timeWindowLengthInDays is 7

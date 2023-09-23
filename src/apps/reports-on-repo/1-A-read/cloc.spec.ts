@@ -15,7 +15,7 @@ import {
     clocSummaryStream,
 } from './cloc';
 import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
-import { deleteFile } from '../../../0-tools/test-helpers/delete-file';
+import { deleteFile } from '../../../tools/test-helpers/delete-file';
 
 describe(`createClocLog`, () => {
     it(`read the number of lines for each file from the folder named as the repo and saves them in a file`, (done) => {

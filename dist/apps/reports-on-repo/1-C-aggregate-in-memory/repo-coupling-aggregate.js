@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.REPO_INDEX_PATH_SEPARATOR = exports.timeWindowKey = exports.timeWindowedFileCommitsDict = exports.splitCommitsInTimeWindows = exports.selectTimeWindowsPresentInAllRepos = exports.calculateFileTuplesPerTimeWindow = exports.groupFileTuples = exports.fileTuplesDict = void 0;
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
-const dictionary_utils_1 = require("../../../0-tools/dictionary-utils/dictionary-utils");
+const dictionary_utils_1 = require("../../../tools/dictionary-utils/dictionary-utils");
 // receives an array of Observables of FileGitCommitEnriched objects coming from the repos we want to analize for possible couplings
 // splits the Observables in time windows and select the time windows where all repos have at least one commit
 // then calculates the tuples of files for each time window, tuple being a combination of files each one coming from different repos under investigation

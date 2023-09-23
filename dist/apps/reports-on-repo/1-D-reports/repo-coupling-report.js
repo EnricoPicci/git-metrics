@@ -6,8 +6,8 @@ const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
 const report_config_1 = require("./config/report-config");
 const report_1 = require("./report");
-const to_csv_1 = require("../../../0-tools/csv/to-csv");
-const dictionary_utils_1 = require("../../../0-tools/dictionary-utils/dictionary-utils");
+const to_csv_1 = require("../../../tools/csv/to-csv");
+const dictionary_utils_1 = require("../../../tools/dictionary-utils/dictionary-utils");
 exports.REPO_COUPLING_REPORT_NAME = 'AuthorChurnReport';
 class RepoCouplingReport extends report_1.Report {
     constructor(_params) {

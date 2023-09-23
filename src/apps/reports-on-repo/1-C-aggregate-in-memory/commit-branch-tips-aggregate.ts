@@ -1,7 +1,7 @@
 import { map, Observable, reduce } from 'rxjs';
 import { CommitDaylySummary } from '../1-C-aggregate-types/commit-dayly-summary';
 
-import { toYYYYMMDD } from '../../../0-tools/dates/date-functions';
+import { toYYYYMMDD } from '../../../tools/dates/date-functions';
 
 import { GitCommitEnrichedWithBranchTips } from '../1-B-git-enriched-types/git-types';
 

@@ -11,7 +11,7 @@ const load_multi_commits_files_1 = require("../load/load-multi-commits-files");
 const files_query_1 = require("../query/files-query");
 const repo_coupling_report_1 = require("../../1-D-reports/repo-coupling-report");
 const repo_coupling_aggregate_1 = require("../../1-C-aggregate-in-memory/repo-coupling-aggregate");
-const dictionary_utils_1 = require("../../../../0-tools/dictionary-utils/dictionary-utils");
+const dictionary_utils_1 = require("../../../../tools/dictionary-utils/dictionary-utils");
 describe(`timeWindowedFileCommitsDict`, () => {
     it(`creates the dictionary of timewindows with the info related to each file which has a commit in that timewindow.
     Since in the test data there are 3 commits with distance of one year, then there are 3 time windows`, (done) => {

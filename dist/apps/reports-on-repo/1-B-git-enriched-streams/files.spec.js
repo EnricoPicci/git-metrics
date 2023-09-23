@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const rxjs_1 = require("rxjs");
-const date_functions_1 = require("../../../0-tools/dates/date-functions");
+const date_functions_1 = require("../../../tools/dates/date-functions");
 const files_1 = require("./files");
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
 const clocLogPath = `${process.cwd()}/test-data/output/a-git-repo-cloc.gitlog`;

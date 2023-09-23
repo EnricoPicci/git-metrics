@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { readLinesObs } from 'observable-fs';
 import path from 'path';
 import { tap, concatMap } from 'rxjs';
-import { fromCsv } from '../../../0-tools/csv/from-csv';
+import { fromCsv } from '../../../tools/csv/from-csv';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { commitsStream } from '../1-B-git-enriched-streams/commits';
 import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';

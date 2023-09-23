@@ -7,7 +7,7 @@ const observable_fs_1 = require("observable-fs");
 const add_project_info_1 = require("./add-project-info");
 const report_1 = require("./report");
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
-const date_functions_1 = require("../../../0-tools/dates/date-functions");
+const date_functions_1 = require("../../../tools/dates/date-functions");
 exports.BRANCHES_REPORT_NAME = 'BranchesReport';
 class BranchesReport extends report_1.Report {
     //
@@ -58,9 +58,7 @@ function branchesReportCore(commitDaylySummary, params, csvFilePath, weeklyCsvFi
         console.log(`Processing ${commitDaylySummaries.length} records to generate BranchesReport`);
     }), (0, operators_1.share)());
     const generateReport = commitDaylySummarySource.pipe(_branchesReport(params));
-    const concurrentStreams = [
-        generateReport,
-    ];
+    const concurrentStreams = [generateReport];
     if (csvFilePath) {
         if (!weeklyCsvFilePath) {
             throw new Error('weeklyCsvFilePath has to be specified');

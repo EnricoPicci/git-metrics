@@ -6,8 +6,8 @@ import { REPORT_CONFIG } from './config/report-config';
 import { addConsideration, addConsiderationsHeader, Report, ReportParams } from './report';
 import { addProjectInfo } from './add-project-info';
 
-import { toCsv } from '../../../0-tools/csv/to-csv';
-import { splitPath } from '../../../0-tools/split-path/split-path';
+import { toCsv } from '../../../tools/csv/to-csv';
+import { splitPath } from '../../../tools/split-path/split-path';
 
 import { ModuleChurn } from '../1-C-aggregate-types/module-churn';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
@@ -88,15 +88,15 @@ export function moduleChurnReportCore(
         }),
         share(),
     );
-    const generateReport = moduleChurnSource.pipe(
-        _moduleChurnReport(params),
-    );
+    const generateReport = moduleChurnSource.pipe(_moduleChurnReport(params));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let concurrentStreams: [Observable<ModuleChurnReport>] =
-        [generateReport as Observable<ModuleChurnReport>];
+    let concurrentStreams: [Observable<ModuleChurnReport>] = [generateReport as Observable<ModuleChurnReport>];
 
     if (csvFilePath) {
-        const _concurrentStreams: [Observable<ModuleChurnReport>, Observable<{ churns: ModuleChurn[]; maxDepth: number }>] = [concurrentStreams[0], moduleChurnSource];
+        const _concurrentStreams: [
+            Observable<ModuleChurnReport>,
+            Observable<{ churns: ModuleChurn[]; maxDepth: number }>,
+        ] = [concurrentStreams[0], moduleChurnSource];
         return forkJoin(_concurrentStreams).pipe(
             concatMap(([report, { churns, maxDepth }]) => {
                 const churnsEnriched = churns.map((c) => enrichForCsv(c, maxDepth));

@@ -1,8 +1,8 @@
-import { map } from "rxjs";
-import { executeCommandObs } from "../0-tools/execute-command/execute-command";
+import { map } from 'rxjs';
+import { executeCommandObs } from '../tools/execute-command/execute-command';
 
-import { ClocLanguageStats } from "./cloc.model";
-import { CONFIG } from "../config";
+import { ClocLanguageStats } from './cloc.model';
+import { CONFIG } from '../config';
 
 // runCloc is a function that runs the cloc command and returns the result in the form of a ClocLanguageStats array
 export function runCloc(repoPath = './', vcs?: string) {
@@ -11,7 +11,7 @@ export function runCloc(repoPath = './', vcs?: string) {
     return executeCommandObs('run cloc', `cloc --json ${_vcs} --timeout=${CONFIG.CLOC_TIMEOUT} ${repoPath}`).pipe(
         map((output) => {
             const clocOutputJson = JSON.parse(output);
-            const clocStatsArray: ClocLanguageStats[] = []
+            const clocStatsArray: ClocLanguageStats[] = [];
             Object.entries(clocOutputJson).forEach(([language, stats]: [string, any]) => {
                 if (language !== 'header') {
                     const langStats: ClocLanguageStats = {
@@ -20,11 +20,11 @@ export function runCloc(repoPath = './', vcs?: string) {
                         blank: stats.blank,
                         comment: stats.comment,
                         code: stats.code,
-                    }
+                    };
                     clocStatsArray.push(langStats);
                 }
             });
             return clocStatsArray;
-        })
+        }),
     );
 }

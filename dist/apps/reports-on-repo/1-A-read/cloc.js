@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.clocSummaryStream = exports.clocSummaryInfo = exports.createMultiClocLogs = exports.buildSummaryClocOutfile = exports.buildClocOutfile = exports.createSummaryClocNewProcess = exports.streamSummaryClocNewProcess = exports.createSummaryClocLog = exports.createClocLogNewProcess = exports.streamClocNewProcess = exports.createClocLog = void 0;
 const path = require("path");
 const observable_fs_1 = require("observable-fs");
-const execute_command_1 = require("../../../0-tools/execute-command/execute-command");
+const execute_command_1 = require("../../../tools/execute-command/execute-command");
 const read_git_1 = require("./read-git");
 const rxjs_1 = require("rxjs");
 const config_1 = require("../0-config/config");

@@ -7,7 +7,7 @@ const observable_fs_1 = require("observable-fs");
 const report_1 = require("./report");
 const report_config_1 = require("./config/report-config");
 const add_project_info_1 = require("./add-project-info");
-const to_csv_1 = require("../../../0-tools/csv/to-csv");
+const to_csv_1 = require("../../../tools/csv/to-csv");
 exports.AUTHOR_CHURN_REPORT_NAME = 'AuthorChurnReport';
 class AuthorChurnReport extends report_1.Report {
     constructor(_params) {
@@ -49,9 +49,7 @@ function authorChurnReportCore(authorChurns, params, csvFilePath = '') {
     const generateReport = authorChurnsSource.pipe((0, operators_1.tap)((authorChurns) => {
         console.log(`Processing ${authorChurns.length} records to generate AuthorChurnReport`);
     }), _authorChurnReport(params), (0, operators_1.tap)((report) => (report.csvFile.val = csvFilePath)));
-    const concurrentStreams = [
-        generateReport,
-    ];
+    const concurrentStreams = [generateReport];
     if (csvFilePath) {
         const writeCsv = authorChurnsSource.pipe(mapToCsvAndWriteAuthorChurn(csvFilePath), (0, operators_1.map)(() => csvFilePath));
         concurrentStreams.push(writeCsv);

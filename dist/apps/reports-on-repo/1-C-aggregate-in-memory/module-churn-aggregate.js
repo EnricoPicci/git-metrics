@@ -7,7 +7,7 @@ exports.moduleChurns = exports.ROOT_DIR_SYMBOL_BACKSLASH = exports.ROOT_DIR_SYMB
 const operators_1 = require("rxjs/operators");
 const module_churn_1 = require("../1-C-aggregate-types/module-churn");
 const path_1 = __importDefault(require("path"));
-const split_path_1 = require("../../../0-tools/split-path/split-path");
+const split_path_1 = require("../../../tools/split-path/split-path");
 exports.ROOT_DIR_SYMBOL = '.';
 // exported for testing purposes only
 exports.ROOT_DIR_SYMBOL_BACKSLASH = exports.ROOT_DIR_SYMBOL + '/';

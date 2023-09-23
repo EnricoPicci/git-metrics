@@ -7,16 +7,16 @@ exports.getRemoteOriginUrl = exports.gitHttpsUrlFromGitUrl = exports.newRepoComp
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
-const execute_command_1 = require("../0-tools/execute-command/execute-command");
+const execute_command_1 = require("../tools/execute-command/execute-command");
 const commit_functions_1 = require("./commit.functions");
 // reposInFolder returns the list of git repos paths in a given folder including subfolders
 function reposInFolder(folderPath) {
     let gitRepos = [];
     const filesAndDirs = fs_1.default.readdirSync(folderPath);
-    if (filesAndDirs.some(fileOrDir => fileOrDir === '.git')) {
+    if (filesAndDirs.some((fileOrDir) => fileOrDir === '.git')) {
         gitRepos.push(folderPath);
     }
-    filesAndDirs.forEach(fileOrDir => {
+    filesAndDirs.forEach((fileOrDir) => {
         const absolutePath = path_1.default.join(folderPath, fileOrDir);
         if (fs_1.default.statSync(absolutePath).isDirectory()) {
             const subRepos = reposInFolder(absolutePath);
@@ -40,7 +40,7 @@ function cloneRepo(url, repoPath, repoName) {
     }));
 }
 exports.cloneRepo = cloneRepo;
-// reposCompactInFolderObs returns an Observable that notifies the list of 
+// reposCompactInFolderObs returns an Observable that notifies the list of
 // RepoCompact objects representing all the repos in a given folder
 // repos whose name is in the excludeRepoPaths array are excluded, in the excludeRepoPaths array
 // wildcards can be used, e.g. ['repo1', 'repo2', 'repo3*'] will exclude repo1, repo2 and all the repos that start with repo3

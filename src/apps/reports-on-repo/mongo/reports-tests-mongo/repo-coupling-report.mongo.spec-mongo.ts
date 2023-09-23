@@ -15,7 +15,7 @@ import {
     selectTimeWindowsPresentInAllRepos,
     FilesInfo,
 } from '../../1-C-aggregate-in-memory/repo-coupling-aggregate';
-import { TUPLE_KEY_SEPARATOR } from '../../../../0-tools/dictionary-utils/dictionary-utils';
+import { TUPLE_KEY_SEPARATOR } from '../../../../tools/dictionary-utils/dictionary-utils';
 
 describe(`timeWindowedFileCommitsDict`, () => {
     it(`creates the dictionary of timewindows with the info related to each file which has a commit in that timewindow.

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commitDaylySummary = exports.commitWithBranchTipsPerDayDictionary = void 0;
 const rxjs_1 = require("rxjs");
-const date_functions_1 = require("../../../0-tools/dates/date-functions");
+const date_functions_1 = require("../../../tools/dates/date-functions");
 function commitWithBranchTipsPerDayDictionary(commits) {
     return commits.pipe((0, rxjs_1.reduce)((dictStruct, commit) => {
         const dict = dictStruct.dictionary;

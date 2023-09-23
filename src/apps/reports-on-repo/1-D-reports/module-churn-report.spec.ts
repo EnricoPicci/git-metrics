@@ -9,7 +9,7 @@ import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
 import { moduleChurns } from '../1-C-aggregate-in-memory/module-churn-aggregate';
 import { readLinesObs } from 'observable-fs';
-import { fromCsv } from '../../../0-tools/csv/from-csv';
+import { fromCsv } from '../../../tools/csv/from-csv';
 import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 

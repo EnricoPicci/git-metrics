@@ -4,7 +4,7 @@ import { map, share } from 'rxjs/operators';
 import { FileChurn } from '../1-C-aggregate-types/file-churn';
 import { ModuleChurn, newModuleChurn } from '../1-C-aggregate-types/module-churn';
 import path from 'path';
-import { splitPath } from '../../../0-tools/split-path/split-path';
+import { splitPath } from '../../../tools/split-path/split-path';
 
 export const ROOT_DIR_SYMBOL = '.';
 // exported for testing purposes only

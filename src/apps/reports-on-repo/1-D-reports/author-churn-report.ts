@@ -6,7 +6,7 @@ import { addConsideration, addConsiderationsHeader, Report, ReportParams, topChu
 import { REPORT_CONFIG } from './config/report-config';
 import { addProjectInfo } from './add-project-info';
 
-import { toCsvObs } from '../../../0-tools/csv/to-csv';
+import { toCsvObs } from '../../../tools/csv/to-csv';
 
 import { AuthorChurn } from '../1-C-aggregate-types/author-churn';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
@@ -80,9 +80,7 @@ export function authorChurnReportCore(
         _authorChurnReport(params),
         tap((report) => (report.csvFile.val = csvFilePath)),
     );
-    const concurrentStreams: Observable<any>[] = [
-        generateReport as Observable<AuthorChurnReport>,
-    ];
+    const concurrentStreams: Observable<any>[] = [generateReport as Observable<AuthorChurnReport>];
     if (csvFilePath) {
         const writeCsv = authorChurnsSource.pipe(
             mapToCsvAndWriteAuthorChurn(csvFilePath),
@@ -160,7 +158,9 @@ export function addConsiderationsForAuthorChurnReport(r: AuthorChurnReport) {
     addConsideration(r, `The authors who have contributed most are ${r.topAuthors.val.map((a) => a.authorName)}.`);
     addConsideration(
         r,
-        `-- ${r.topAuthorChurnContributors.val.length} authors who have contributed for more than ${(r.params.val as any)['percentThreshold']}% of churn.`,
+        `-- ${r.topAuthorChurnContributors.val.length} authors who have contributed for more than ${
+            (r.params.val as any)['percentThreshold']
+        }% of churn.`,
     );
     return r;
 }
