@@ -1,22 +1,24 @@
-import { Command } from "commander";
-import { calculateClocDiffsOnRepos, calculateMonthlyClocDiffsOnRepos } from "./internals/cloc-diff-repos";
-import { CONFIG } from "../../../config";
+import { Command } from 'commander';
+
+import { CONFIG } from '../../../config';
+
+import { calculateMonthlyClocDiffsOnRepos } from './core/cloc-monthly-diff-repos';
+import { calculateClocDiffsOnRepos } from './core/cloc-turnover.functions';
 
 export function launchClocDiffRepos() {
-    console.log('====>>>> Launching Cloc diff on Repos')
+    console.log('====>>>> Launching Cloc diff on Repos');
 
     const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths } = readParams();
 
-    calculateClocDiffsOnRepos(folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths).subscribe()
+    calculateClocDiffsOnRepos(folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths).subscribe();
 }
 
-
 export function launchMonthlyClocDiffRepos() {
-    console.log('====>>>> Launching Monthly Cloc diff on Repos')
+    console.log('====>>>> Launching Monthly Cloc diff on Repos');
 
     const { folderPath, outdir, languages, from, to } = readParams();
 
-    calculateMonthlyClocDiffsOnRepos(folderPath, outdir, languages, from, to).subscribe()
+    calculateMonthlyClocDiffsOnRepos(folderPath, outdir, languages, from, to).subscribe();
 }
 
 function readParams() {
@@ -24,10 +26,7 @@ function readParams() {
 
     program
         .description('A command to calculate cloc (number of lines of code) of a set of repos contained in a folder')
-        .requiredOption(
-            '--folderPath <string>',
-            `folder containing the repos to analyze (e.g. ./repos)`,
-        )
+        .requiredOption('--folderPath <string>', `folder containing the repos to analyze (e.g. ./repos)`)
         .option(
             '--outdir <string>',
             `directory where the output files will be written (e.g. ./data) - default is the current directory`,
@@ -41,14 +40,8 @@ function readParams() {
             '--from <string>',
             `the date from which we start the analysis - default is the beginning of the Unix epoch, i.e. 1970-01-01`,
         )
-        .option(
-            '--to <string>',
-            `the date until which we run the analysis - default is the current date`,
-        )
-        .option(
-            '--concurrency <number>',
-            `concurrency level - default is ${CONFIG.CONCURRENCY}`
-        )
+        .option('--to <string>', `the date until which we run the analysis - default is the current date`)
+        .option('--concurrency <number>', `concurrency level - default is ${CONFIG.CONCURRENCY}`)
         .option(
             '--excludeRepoPaths <string...>',
             `a space separated list of folder names to be excluded from the analysis (e.g. --excludeRepoPaths "dbm" "dbobjects") -

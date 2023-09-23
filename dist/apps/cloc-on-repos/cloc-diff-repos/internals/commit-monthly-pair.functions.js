@@ -103,4 +103,4 @@ function commitsMonthlyPairsForRepos(reposCommits) {
     return reposCommitsPairs;
 }
 exports.commitsMonthlyPairsForRepos = commitsMonthlyPairsForRepos;
-//# sourceMappingURL=repo-cloc-diff.functions.js.map
+//# sourceMappingURL=commit-monthly-pair.functions.js.map

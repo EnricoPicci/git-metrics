@@ -143,4 +143,4 @@ function repoCommitsByMonthRecords(reposByMonths) {
     return records;
 }
 exports.repoCommitsByMonthRecords = repoCommitsByMonthRecords;
-//# sourceMappingURL=repos-by-month.functions.js.map
+//# sourceMappingURL=repos-with-commits-by-month.functions.js.map

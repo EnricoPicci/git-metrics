@@ -2,18 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchMonthlyClocDiffRepos = exports.launchClocDiffRepos = void 0;
 const commander_1 = require("commander");
-const cloc_diff_repos_1 = require("./internals/cloc-diff-repos");
 const config_1 = require("../../../config");
+const cloc_monthly_diff_repos_1 = require("./core/cloc-monthly-diff-repos");
+const cloc_turnover_functions_1 = require("./core/cloc-turnover.functions");
 function launchClocDiffRepos() {
     console.log('====>>>> Launching Cloc diff on Repos');
     const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths } = readParams();
-    (0, cloc_diff_repos_1.calculateClocDiffsOnRepos)(folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths).subscribe();
+    (0, cloc_turnover_functions_1.calculateClocDiffsOnRepos)(folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths).subscribe();
 }
 exports.launchClocDiffRepos = launchClocDiffRepos;
 function launchMonthlyClocDiffRepos() {
     console.log('====>>>> Launching Monthly Cloc diff on Repos');
     const { folderPath, outdir, languages, from, to } = readParams();
-    (0, cloc_diff_repos_1.calculateMonthlyClocDiffsOnRepos)(folderPath, outdir, languages, from, to).subscribe();
+    (0, cloc_monthly_diff_repos_1.calculateMonthlyClocDiffsOnRepos)(folderPath, outdir, languages, from, to).subscribe();
 }
 exports.launchMonthlyClocDiffRepos = launchMonthlyClocDiffRepos;
 function readParams() {
