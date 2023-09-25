@@ -1,12 +1,4 @@
 import path = require('path');
-import { appendFileObs, deleteFileObs, readLinesObs } from 'observable-fs';
-import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
-import {
-    executeCommand,
-    executeCommandInShellNewProcessObs,
-    executeCommandNewProcessToLinesObs,
-} from '../../../tools/execute-command/execute-command';
-import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
 import {
     share,
     catchError,
@@ -22,16 +14,30 @@ import {
     defaultIfEmpty,
     tap,
 } from 'rxjs';
+
+import { appendFileObs, deleteFileObs, readLinesObs } from 'observable-fs';
+
+import {
+    executeCommand,
+    executeCommandInShellNewProcessObs,
+    executeCommandNewProcessToLinesObs,
+} from '../../../tools/execute-command/execute-command';
+
 import { DEFAUL_CONFIG } from '../0-config/config';
+import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
+import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
+import { ClocParams, writeClocLog_ByFile } from '../../../cloc-functions/cloc.functions';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
-    const [cmd, out] = clocCommand(config);
-    executeCommand(action, cmd);
-    console.log(
-        `====>>>> Number of lines in the files contained in the repo folder ${config.repoFolderPath} calculated`,
-    );
-    console.log(`====>>>> cloc info saved on file ${out}`);
-    return out;
+    const clocParams: ClocParams = {
+        folderPath: config.repoFolderPath,
+        outDir: config.outDir,
+        outClocFile: config.outClocFile,
+        outClocFilePrefix: config.outClocFilePrefix,
+        clocDefsPath: config.clocDefsPath,
+        useNpx: true,
+    };
+    return writeClocLog_ByFile(clocParams, action);
 }
 // runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
 export function streamClocNewProcess(config: ConfigReadCloc, outFile: string, action: string, writeFileOnly = false) {
@@ -43,9 +49,9 @@ export function streamClocNewProcess(config: ConfigReadCloc, outFile: string, ac
 
     const emitOutFileOrIgnoreElements = writeFileOnly
         ? pipe(
-              last(),
-              map(() => outFile),
-          )
+            last(),
+            map(() => outFile),
+        )
         : ignoreElements();
     const _writeFile = deleteFileObs(outFile).pipe(
         catchError((err) => {
@@ -109,9 +115,9 @@ export function streamSummaryClocNewProcess(
 
     const emitOutFileOrIgnoreElements = writeFileOnly
         ? pipe(
-              last(),
-              map(() => outFile),
-          )
+            last(),
+            map(() => outFile),
+        )
         : ignoreElements();
     const _writeFile = deleteFileObs(outFile).pipe(
         catchError((err) => {
