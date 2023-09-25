@@ -1,5 +1,4 @@
 import {
-    buildClocOutfile,
     buildSummaryClocOutfile,
     createClocLog,
     streamClocNewProcess,
@@ -37,14 +36,12 @@ export function readAllParallel(commitOptions: ConfigReadCommits, readClocOption
 // builds the Observables that perform the read operations against a git repo in separate processes
 export function readStreamsDistinctProcesses(commitOptions: ConfigReadCommits, readClocOptions: ConfigReadCloc) {
     const outGitFile = buildGitOutfile(commitOptions);
-    const outClocFile = buildClocOutfile(readClocOptions);
     const outClocSummaryFile = buildSummaryClocOutfile(readClocOptions);
 
     return _streamsDistinctProcesses(
         commitOptions,
         readClocOptions,
         outGitFile,
-        outClocFile,
         outClocSummaryFile,
         false,
     );
@@ -54,7 +51,6 @@ function _streamsDistinctProcesses(
     commitOptions: ConfigReadCommits,
     readClocOptions: ConfigReadCloc,
     outGitFile: string,
-    outClocFile: string,
     outClocSummaryFile: string,
     writeFileOnly: boolean,
 ) {
@@ -62,7 +58,7 @@ function _streamsDistinctProcesses(
     const gitLogCommits = readAndStreamCommitsNewProces(commitOptions, outGitFile, writeFileOnly);
 
     // build the streams of cloc info
-    const cloc = streamClocNewProcess(readClocOptions, outClocFile, 'create cloc log', writeFileOnly);
+    const cloc = streamClocNewProcess(readClocOptions, 'create cloc log');
     const clocSummary = streamSummaryClocNewProcess(
         readClocOptions,
         outClocSummaryFile,

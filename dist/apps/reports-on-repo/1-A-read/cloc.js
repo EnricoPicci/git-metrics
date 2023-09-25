@@ -2,41 +2,35 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.clocSummaryStream = exports.clocSummaryInfo = exports.createMultiClocLogs = exports.buildSummaryClocOutfile = exports.buildClocOutfile = exports.createSummaryClocNewProcess = exports.streamSummaryClocNewProcess = exports.createSummaryClocLog = exports.createClocLogNewProcess = exports.streamClocNewProcess = exports.createClocLog = void 0;
 const path = require("path");
+const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const execute_command_1 = require("../../../tools/execute-command/execute-command");
-const read_git_1 = require("./read-git");
-const rxjs_1 = require("rxjs");
 const config_1 = require("../0-config/config");
+const read_git_1 = require("./read-git");
+const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
 function createClocLog(config, action) {
-    const [cmd, out] = clocCommand(config);
-    (0, execute_command_1.executeCommand)(action, cmd);
-    console.log(`====>>>> Number of lines in the files contained in the repo folder ${config.repoFolderPath} calculated`);
-    console.log(`====>>>> cloc info saved on file ${out}`);
-    return out;
+    const clocParams = {
+        folderPath: config.repoFolderPath,
+        outDir: config.outDir,
+        outClocFile: config.outClocFile,
+        outClocFilePrefix: config.outClocFilePrefix,
+        clocDefsPath: config.clocDefsPath,
+        useNpx: true,
+    };
+    return (0, cloc_functions_1.writeClocByfile)(clocParams, action);
 }
 exports.createClocLog = createClocLog;
 // runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
-function streamClocNewProcess(config, outFile, action, writeFileOnly = false) {
-    const { cmd, args, options } = clocCommandwWithArgs(config);
-    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe(_filterClocHeader('language,filename,blank,comment,code'), (0, rxjs_1.share)());
-    const emitOutFileOrIgnoreElements = writeFileOnly
-        ? (0, rxjs_1.pipe)((0, rxjs_1.last)(), (0, rxjs_1.map)(() => outFile))
-        : (0, rxjs_1.ignoreElements)();
-    const _writeFile = (0, observable_fs_1.deleteFileObs)(outFile).pipe((0, rxjs_1.catchError)((err) => {
-        if (err.code === 'ENOENT') {
-            // emit something so that the next operation can continue
-            return (0, rxjs_1.of)(null);
-        }
-        throw new Error(err);
-    }), (0, rxjs_1.concatMap)(() => _cloc), (0, rxjs_1.concatMap)((line) => {
-        const _line = `${line}\n`;
-        return (0, observable_fs_1.appendFileObs)(outFile, _line);
-    }), emitOutFileOrIgnoreElements);
-    const _streams = [_writeFile];
-    if (!writeFileOnly) {
-        _streams.push(_cloc);
-    }
-    return (0, rxjs_1.merge)(..._streams);
+function streamClocNewProcess(config, action) {
+    const clocParams = {
+        folderPath: config.repoFolderPath,
+        outDir: config.outDir,
+        outClocFile: config.outClocFile,
+        outClocFilePrefix: config.outClocFilePrefix,
+        clocDefsPath: config.clocDefsPath,
+        useNpx: true,
+    };
+    return (0, cloc_functions_1.streamClocByfile)(clocParams, action, true);
 }
 exports.streamClocNewProcess = streamClocNewProcess;
 function createClocLogNewProcess(config, action = 'cloc') {

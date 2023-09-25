@@ -16,7 +16,7 @@ function clocOnRepos(folderPath, concurrency = config_1.CONFIG.CONCURRENCY) {
         code: 0,
     };
     return (0, rxjs_1.from)((0, repo_functions_1.reposInFolder)(folderPath)).pipe((0, rxjs_1.mergeMap)((repoPath) => {
-        return (0, cloc_functions_1.runCloc)(repoPath, 'git').pipe((0, rxjs_1.map)((clocStats) => {
+        return (0, cloc_functions_1.runClocSummaryOnGitRepo)(repoPath).pipe((0, rxjs_1.map)((clocStats) => {
             const sumStats = clocStats.find((clocStat) => clocStat.language === 'SUM');
             if (!sumStats) {
                 throw new Error(`No SUM stats found for repo ${repoPath}`);

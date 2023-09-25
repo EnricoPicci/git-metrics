@@ -26,7 +26,7 @@ import {
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
-import { ClocParams, writeClocLog_ByFile } from '../../../cloc-functions/cloc.functions';
+import { ClocParams, streamClocByfile, writeClocByfile } from '../../../cloc-functions/cloc.functions';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
     const clocParams: ClocParams = {
@@ -37,42 +37,19 @@ export function createClocLog(config: ConfigReadCloc, action: string) {
         clocDefsPath: config.clocDefsPath,
         useNpx: true,
     };
-    return writeClocLog_ByFile(clocParams, action);
+    return writeClocByfile(clocParams, action);
 }
 // runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
-export function streamClocNewProcess(config: ConfigReadCloc, outFile: string, action: string, writeFileOnly = false) {
-    const { cmd, args, options } = clocCommandwWithArgs(config);
-    const _cloc = executeCommandNewProcessToLinesObs(action, cmd, args, options).pipe(
-        _filterClocHeader('language,filename,blank,comment,code'),
-        share(),
-    );
-
-    const emitOutFileOrIgnoreElements = writeFileOnly
-        ? pipe(
-            last(),
-            map(() => outFile),
-        )
-        : ignoreElements();
-    const _writeFile = deleteFileObs(outFile).pipe(
-        catchError((err) => {
-            if (err.code === 'ENOENT') {
-                // emit something so that the next operation can continue
-                return of(null);
-            }
-            throw new Error(err);
-        }),
-        concatMap(() => _cloc),
-        concatMap((line) => {
-            const _line = `${line}\n`;
-            return appendFileObs(outFile, _line);
-        }),
-        emitOutFileOrIgnoreElements,
-    );
-    const _streams: Observable<never | string>[] = [_writeFile];
-    if (!writeFileOnly) {
-        _streams.push(_cloc);
-    }
-    return merge(..._streams);
+export function streamClocNewProcess(config: ConfigReadCloc, action: string) {
+    const clocParams: ClocParams = {
+        folderPath: config.repoFolderPath,
+        outDir: config.outDir,
+        outClocFile: config.outClocFile,
+        outClocFilePrefix: config.outClocFilePrefix,
+        clocDefsPath: config.clocDefsPath,
+        useNpx: true,
+    };
+    return streamClocByfile(clocParams, action, true);
 }
 export function createClocLogNewProcess(config: ConfigReadCloc, action = 'cloc') {
     const [cmd, out] = clocCommand(config);

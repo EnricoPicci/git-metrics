@@ -49,7 +49,7 @@ describe(`streamClocNewProcess`, () => {
         // executes the cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
         const returnedOutFilePath = (0, cloc_1.createClocLog)(config, 'test');
         const outFileNewProcess = (0, cloc_1.buildClocOutfile)(Object.assign(Object.assign({}, config), { outClocFilePrefix: 'new-process' }));
-        (0, cloc_1.streamClocNewProcess)(config, outFileNewProcess, 'test')
+        (0, cloc_1.streamClocNewProcess)(config, outFileNewProcess)
             .pipe((0, operators_1.toArray)(), (0, operators_1.concatMap)((linesReadInNewProcess) => (0, observable_fs_1.readLinesObs)(returnedOutFilePath).pipe((0, operators_1.map)((linesReadFromFilecreatedSynchronously) => ({
             linesReadInNewProcess,
             linesReadFromFilecreatedSynchronously,
@@ -83,7 +83,7 @@ describe(`streamClocNewProcess`, () => {
         const returnedOutFilePath = (0, cloc_1.createClocLog)(config, 'test');
         const outFileNewProcess = (0, cloc_1.buildClocOutfile)(Object.assign(Object.assign({}, config), { outClocFilePrefix: 'new-process' }));
         let outFileNewProcessNotified;
-        (0, cloc_1.streamClocNewProcess)(config, outFileNewProcess, 'test', true)
+        (0, cloc_1.streamClocNewProcess)(config, outFileNewProcess)
             .pipe((0, operators_1.tap)((fileWritteInNewProcess) => {
             outFileNewProcessNotified = fileWritteInNewProcess;
         }), (0, operators_1.concatMap)((fileWritteInNewProcess) => (0, observable_fs_1.readLinesObs)(fileWritteInNewProcess)), (0, operators_1.concatMap)((linesReadFromFileWrittenInNewProcess) => (0, observable_fs_1.readLinesObs)(returnedOutFilePath).pipe((0, operators_1.map)((linesReadFromFileCreatedSynchronously) => ({
