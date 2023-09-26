@@ -26,21 +26,24 @@ import {
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
-import { ClocParams, streamClocByfile, writeClocByfile } from '../../../cloc-functions/cloc.functions';
+import { ClocParams, clocByfile$, writeClocByFile$, writeClocByfile } from '../../../cloc-functions/cloc.functions';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
-    const clocParams: ClocParams = {
-        folderPath: config.repoFolderPath,
-        outDir: config.outDir,
-        outClocFile: config.outClocFile,
-        outClocFilePrefix: config.outClocFilePrefix,
-        clocDefsPath: config.clocDefsPath,
-        useNpx: true,
-    };
-    return writeClocByfile(clocParams, action);
+    const params = paramsFromConfig(config);
+    return writeClocByfile(params, action);
 }
 // runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
 export function streamClocNewProcess(config: ConfigReadCloc, action: string) {
+    const params = paramsFromConfig(config);
+    return clocByfile$(params, action, true);
+}
+
+export function createClocLogNewProcess(config: ConfigReadCloc, action = 'cloc') {
+    const params = paramsFromConfig(config);
+    return writeClocByFile$(params, action);
+}
+
+function paramsFromConfig(config: ConfigReadCloc) {
     const clocParams: ClocParams = {
         folderPath: config.repoFolderPath,
         outDir: config.outDir,
@@ -49,23 +52,7 @@ export function streamClocNewProcess(config: ConfigReadCloc, action: string) {
         clocDefsPath: config.clocDefsPath,
         useNpx: true,
     };
-    return streamClocByfile(clocParams, action, true);
-}
-export function createClocLogNewProcess(config: ConfigReadCloc, action = 'cloc') {
-    const [cmd, out] = clocCommand(config);
-
-    return executeCommandInShellNewProcessObs(action, cmd).pipe(
-        ignoreElements(),
-        defaultIfEmpty(out),
-        tap({
-            next: (outFile) => {
-                console.log(
-                    `====>>>> Number of lines in the files contained in the repo folder ${config.repoFolderPath} calculated`,
-                );
-                console.log(`====>>>> cloc info saved on file ${outFile}`);
-            },
-        }),
-    );
+    return clocParams;
 }
 
 export function createSummaryClocLog(config: ConfigReadCloc, action = 'clocSummary') {
@@ -194,18 +181,6 @@ export function createMultiClocLogs(config: ConfigReadMultiCloc, action: string)
         }, [] as string[]);
 }
 
-function clocCommand(config: ConfigReadCloc) {
-    const out = buildClocOutfile(config);
-    // npx cloc . --by-file --csv --out=<outFile>
-    const { cmd, args } = clocCommandwWithArgs(config, out);
-    const cmdWithArgs = `${cmd} ${args.join(' ')}`;
-    return [`cd ${config.repoFolderPath} && ${cmdWithArgs}`, out];
-}
-function clocCommandwWithArgs(config: ConfigReadCloc, outFile?: string) {
-    const { cmd, args, options } = clocSummaryCommandWithArgs(config, outFile);
-    args.push('--by-file');
-    return { cmd, args, options };
-}
 function clocSummaryCommand(config: ConfigReadCloc) {
     const out = buildSummaryClocOutfile(config);
     // npx cloc . --csv --out=<outFile>
