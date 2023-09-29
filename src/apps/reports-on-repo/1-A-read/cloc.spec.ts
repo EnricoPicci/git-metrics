@@ -25,7 +25,7 @@ describe(`createClocLog`, () => {
             repoFolderPath: `./test-data/${repo}`,
             outDir,
         };
-        const expectedOutFilePath = path.join(outDir, `${repo}-cloc.csv`);
+        const expectedOutFilePath = path.join(outDir, `${repo}-cloc-byfile.csv`);
         const returnedOutFilePath = createClocLog(config, 'test');
         expect(returnedOutFilePath).equal(expectedOutFilePath);
         readLinesObs(returnedOutFilePath).subscribe({
@@ -105,7 +105,7 @@ describe(`createClocLogNewProcess`, () => {
             outClocFilePrefix,
         };
 
-        const expectedOutFilePath = buildClocOutfile(config);
+        const expectedOutFilePath = outDir + '/' + outClocFilePrefix + repo + '-cloc-byfile.csv';
 
         let counter = 0;
 
@@ -157,8 +157,8 @@ describe(`createMultiClocLogs`, () => {
             outDir,
             outClocFilePrefix,
         };
-        const expectedOutFilePath_1 = path.join(outDir, `${outClocFilePrefix}${repo_1}-cloc.csv`);
-        const expectedOutFilePath_2 = path.join(outDir, `${outClocFilePrefix}${repo_2}-cloc.csv`);
+        const expectedOutFilePath_1 = path.join(outDir, `${outClocFilePrefix}${repo_1}-cloc-byfile.csv`);
+        const expectedOutFilePath_2 = path.join(outDir, `${outClocFilePrefix}${repo_2}-cloc-byfile.csv`);
         const clocFiles = createMultiClocLogs(config, 'a test');
         expect(clocFiles[0]).equal(expectedOutFilePath_1);
         expect(clocFiles[1]).equal(expectedOutFilePath_2);
@@ -210,7 +210,7 @@ describe(`createSummaryClocLog`, () => {
             repoFolderPath: `./test-data/${repo}`,
             outDir,
         };
-        const expectedOutFilePath = path.join(outDir, `${repo}-summary-cloc.csv`);
+        const expectedOutFilePath = path.join(outDir, `${repo}-cloc-summary.csv`);
         const returnedOutFilePath = createSummaryClocLog(config, 'test');
         expect(returnedOutFilePath).equal(expectedOutFilePath);
         readLinesObs(returnedOutFilePath).subscribe({

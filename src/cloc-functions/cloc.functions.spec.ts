@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ClocParams, buildClocOutfile, buildOutfileName, clocSummary$, writeClocByFile$ } from './cloc.functions';
+import { ClocParams, buildOutfileName, clocSummary$, writeClocByFile$, writeClocSummary } from './cloc.functions';
 import path from 'path';
 import { deleteFile } from '../tools/test-helpers/delete-file';
 import { concatMap, tap } from 'rxjs';
@@ -113,9 +113,8 @@ describe('buildOutfileName', () => {
     });
 });
 
-
 describe(`writeClocByFile$`, () => {
-    it.only(`read the number of lines for each file from the folder named as the repo and saves them in a file - works in a new process`, (done) => {
+    it(`read the number of lines for each file from the folder named as the repo and saves them in a file - works in a new process`, (done) => {
         const repo = 'git-repo-with-code';
         const outDir = path.join(process.cwd(), './temp');
 
@@ -126,7 +125,7 @@ describe(`writeClocByFile$`, () => {
             outClocFilePrefix,
         };
 
-        const expectedOutFilePath = buildClocOutfile(config);
+        const expectedOutFilePath = outDir + '/' + outClocFilePrefix + repo + '-cloc-byfile.csv';
 
         let counter = 0;
 
@@ -164,5 +163,36 @@ describe(`writeClocByFile$`, () => {
                     done();
                 },
             });
+    }).timeout(200000);
+});
+
+describe(`writeClocSummary`, () => {
+    it(`read the summary view provided by cloc from the folder named as the repo and saves it in a file`, (done) => {
+        const repo = 'git-repo-with-code';
+        const outDir = path.join(process.cwd(), './temp');
+        const config: ClocParams = {
+            folderPath: `./test-data/${repo}`,
+            outDir,
+        };
+        const expectedOutFilePath = path.join(outDir, `${repo}-cloc-summary.csv`);
+        const returnedOutFilePath = writeClocSummary(config, 'test');
+        expect(returnedOutFilePath).equal(expectedOutFilePath);
+        readLinesObs(returnedOutFilePath).subscribe({
+            next: (lines) => {
+                expect(lines).not.undefined;
+                // there are 4 lines: 2 for the 2 languages (java nd python) and 1 for the csv header, which is the first,
+                // and one for the sum which is the last
+                expect(lines.length).equal(4);
+                const _language = 'Java';
+                const [files, language, blank, comment, code] = lines.find((l) => l.includes(_language))!.split(',');
+                expect(language).equal('Java');
+                expect(parseInt(files)).equal(2);
+                expect(parseInt(blank)).equal(3);
+                expect(parseInt(comment)).equal(3);
+                expect(parseInt(code)).equal(10);
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
     }).timeout(200000);
 });

@@ -18,7 +18,6 @@ import {
 import { appendFileObs, deleteFileObs, readLinesObs } from 'observable-fs';
 
 import {
-    executeCommand,
     executeCommandInShellNewProcessObs,
     executeCommandNewProcessToLinesObs,
 } from '../../../tools/execute-command/execute-command';
@@ -26,7 +25,7 @@ import {
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
-import { ClocParams, clocByfile$, writeClocByFile$, writeClocByfile } from '../../../cloc-functions/cloc.functions';
+import { ClocParams, clocByfile$, writeClocByFile$, writeClocByfile, writeClocSummary } from '../../../cloc-functions/cloc.functions';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
     const params = paramsFromConfig(config);
@@ -43,6 +42,11 @@ export function createClocLogNewProcess(config: ConfigReadCloc, action = 'cloc')
     return writeClocByFile$(params, action);
 }
 
+export function createSummaryClocLog(config: ConfigReadCloc, action = 'clocSummary') {
+    const params = paramsFromConfig(config);
+    return writeClocSummary(params, action)
+}
+
 function paramsFromConfig(config: ConfigReadCloc) {
     const clocParams: ClocParams = {
         folderPath: config.repoFolderPath,
@@ -55,15 +59,6 @@ function paramsFromConfig(config: ConfigReadCloc) {
     return clocParams;
 }
 
-export function createSummaryClocLog(config: ConfigReadCloc, action = 'clocSummary') {
-    const [cmd, out] = clocSummaryCommand(config);
-    executeCommand(action, cmd);
-    console.log(
-        `====>>>> Number of lines in the files contained in the repo folder ${config.repoFolderPath} calculated`,
-    );
-    console.log(`====>>>> cloc info saved on file ${out}`);
-    return out;
-}
 // runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
 export function streamSummaryClocNewProcess(
     config: ConfigReadCloc,

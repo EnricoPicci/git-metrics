@@ -60,6 +60,16 @@ export function clocSummaryOnGitRepo$(repoPath = './') {
     return clocSummary$(repoPath, 'git');
 }
 
+export function writeClocSummary(params: ClocParams, action = 'writeClocSummary') {
+    const [cmd, out] = clocSummaryCommand(params);
+    executeCommand(action, cmd);
+    console.log(
+        `====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`,
+    );
+    console.log(`====>>>> cloc summary info saved on file ${out}`);
+    return out;
+}
+
 /**
  * Runs the cloc command with the by-file option and writes the result to a file.
  * The result is per file, showing the number of lines in each file.
@@ -67,13 +77,13 @@ export function clocSummaryOnGitRepo$(repoPath = './') {
  * @param action The action to execute the cloc command with.
  * @returns The name of the file where the cloc info is saved.
  */
-export function writeClocByfile(params: ClocParams, action = 'writeClocLogByFile') {
+export function writeClocByfile(params: ClocParams, action = 'writeClocByFile') {
     const [cmd, out] = clocByFileCommand(params);
     executeCommand(action, cmd);
     console.log(
         `====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`,
     );
-    console.log(`====>>>> cloc info saved on file ${out}`);
+    console.log(`====>>>> cloc by file info saved on file ${out}`);
     return out;
 }
 
@@ -121,7 +131,7 @@ export function clocByfile$(params: ClocParams, action: string, writeFile = true
     );
 
     // if writeFile is true, then calculate the name of the output file
-    let outFile = writeFile ? _buildClocOutfile(params, '-cloc.csv') : '';
+    let outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
 
     // create an Observable that deletes the output file if it exists and then takes the cloc strem
     // and appends each line to the output file
@@ -163,19 +173,28 @@ export function clocByfile$(params: ClocParams, action: string, writeFile = true
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
 
-function clocByFileCommand(params: ClocParams) {
-    // npx cloc . --vcs=git --csv  --timeout=1000000 --out=/home/enrico/code/git-metrics/temp/git-metrics-cloc.csv --by-file
+function clocCommand(params: ClocParams) {
+    // npx cloc . --vcs=git --csv  --timeout=1000000
     const cd = `cd ${params.folderPath}`;
     const program = params.useNpx ? 'npx cloc' : 'cloc';
     const clocDefPath = params.clocDefsPath ? `--force-lang-def=${params.clocDefsPath}` : '';
-    const out = _buildClocOutfile(params, '-cloc.csv');
-    const cmd = `${cd} && ${program} . --vcs=git --csv ${clocDefPath} --timeout=${CONFIG.CLOC_TIMEOUT} --out=${out} --by-file`;
+    const cmd = `${cd} && ${program} . --vcs=git --csv ${clocDefPath} --timeout=${CONFIG.CLOC_TIMEOUT}`;
+    return cmd;
+}
+function clocSummaryCommand(params: ClocParams) {
+    // npx cloc . --vcs=git --csv  --timeout=1000000 --out=/home/enrico/code/git-metrics/temp/git-metrics-cloc.csv
+    const out = buildClocOutfile(params, '-cloc-summary.csv');
+    const cmd = clocCommand(params) + ` --out=${out}`;
     return [cmd, out];
 }
-export function buildClocOutfile(config: ClocParams) {
-    return _buildClocOutfile(config, '-cloc.csv');
+function clocByFileCommand(params: ClocParams) {
+    // npx cloc . --vcs=git --csv  --timeout=1000000 --out=/home/enrico/code/git-metrics/temp/git-metrics-cloc.csv --by-file
+    const out = buildClocOutfile(params, '-cloc-byfile.csv');
+    let cmd = clocCommand(params) + ` --out=${out}`;
+    cmd = cmd + ' --by-file'
+    return [cmd, out];
 }
-function _buildClocOutfile(config: ClocParams, endPart: string) {
+function buildClocOutfile(config: ClocParams, endPart: string) {
     const outDir = config.outDir ? config.outDir : './';
     const outFile = buildOutfileName(config.outClocFile!, config.folderPath, config.outClocFilePrefix, endPart);
     const out = path.resolve(path.join(outDir, outFile));
