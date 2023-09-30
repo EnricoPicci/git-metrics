@@ -2,13 +2,13 @@ import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
 import { enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
-import { clocSummaryStream } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { BranchesReportParams, projectAndBranchesReport } from './branches-report';
 import { commitDaylySummary } from '../1-C-aggregate-in-memory/commit-branch-tips-aggregate';
 import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
+import { clocSummaryInfo } from '../1-A-read/cloc';
 
 describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches using this repo as a real repo`, (done) => {
@@ -26,7 +26,7 @@ describe(`projectAndBranchesReport`, () => {
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
         // generation of the source streams
         const _commitStream = enrichedCommitsStream(commitLogPath, clocLogPath);
-        const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+        const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
 
         const params: BranchesReportParams = {
             repoFolderPath,

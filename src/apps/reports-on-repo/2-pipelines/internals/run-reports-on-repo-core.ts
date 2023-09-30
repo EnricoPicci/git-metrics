@@ -4,7 +4,7 @@ import { forkJoin, Observable, concatMap, filter, map, share, toArray } from 'rx
 import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll, readAllParallel, readStreamsDistinctProcesses } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
-import { clocSummaryStream } from '../../1-A-read/cloc';
+import { clocSummaryInfo } from '../../1-A-read/cloc';
 
 import { enrichedCommitsStream, newGitCommit, toCommits } from '../../1-B-git-enriched-streams/commits';
 import { filesStream, filesStreamFromEnrichedCommitsStream } from '../../1-B-git-enriched-streams/files';
@@ -218,7 +218,7 @@ export function _streams(commitLogPath: string, clocLogPath: string, clocSummary
     const _filesStream = parallelRead
         ? filesStream(commitLogPath, clocLogPath)
         : filesStreamFromEnrichedCommitsStream(_commitStream).pipe(share());
-    const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+    const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
     return { _commitStream, _filesStream, _clocSummaryStream };
 }
 

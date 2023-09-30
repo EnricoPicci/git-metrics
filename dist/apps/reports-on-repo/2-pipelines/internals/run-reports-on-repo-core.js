@@ -98,7 +98,7 @@ function _streams(commitLogPath, clocLogPath, clocSummaryPath, parallelRead) {
     const _filesStream = parallelRead
         ? (0, files_1.filesStream)(commitLogPath, clocLogPath)
         : (0, files_1.filesStreamFromEnrichedCommitsStream)(_commitStream).pipe((0, rxjs_1.share)());
-    const _clocSummaryStream = (0, cloc_1.clocSummaryStream)(clocSummaryPath);
+    const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
     return { _commitStream, _filesStream, _clocSummaryStream };
 }
 exports._streams = _streams;

@@ -8,7 +8,7 @@ import { commitsStream } from '../1-B-git-enriched-streams/commits';
 import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { fileChurnReportCore, FileChurnReportParams, projectAndFileChurnReport } from './file-churn-report';
-import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';
+import { clocSummaryInfo } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
 
@@ -223,7 +223,7 @@ describe(`projectAndFileChurnReport`, () => {
             path.join(testDataPath, `${repoFolderPath}-summary-cloc.csv`),
         ];
         // generation of the source streams
-        const _clocSummaryInfo = clocSummaryStream(clocSummaryPath);
+        const _clocSummaryInfo = clocSummaryInfo(clocSummaryPath);
         const _commitStream = commitsStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
 
@@ -271,7 +271,7 @@ describe(`projectAndFileChurnReport`, () => {
             path.join(testDataPath, `${repoFolderPath}-summary-cloc.csv`),
         ];
         // generation of the source streams
-        const _clocSummaryInfo = clocSummaryStream(clocSummaryPath);
+        const _clocSummaryInfo = clocSummaryInfo(clocSummaryPath);
         const _commitStream = commitsStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
 
@@ -313,7 +313,7 @@ describe(`projectAndFileChurnReport`, () => {
         // generation of the source streams
         const _commitStream = commitsStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
-        const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+        const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
 
         const params: FileChurnReportParams = {
             repoFolderPath,

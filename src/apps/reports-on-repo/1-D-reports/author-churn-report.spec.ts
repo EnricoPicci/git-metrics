@@ -6,7 +6,7 @@ import { commitsStream, enrichedCommitsStream } from '../1-B-git-enriched-stream
 import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { authorChurnReportCore, AuthorChurnReportParams, projectAndAuthorChurnReport } from './author-churn-report';
-import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';
+import { clocSummaryInfo } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 
 describe(`authorChurnReport`, () => {
@@ -201,7 +201,7 @@ describe(`authorChurnReportWithProjectInfo`, () => {
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
         // generation of the source streams
         const _commitStream = enrichedCommitsStream(commitLogPath, clocLogPath);
-        const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+        const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
 
         const params: AuthorChurnReportParams = {
             repoFolderPath,

@@ -6,7 +6,7 @@ import { commitsStream } from '../1-B-git-enriched-streams/commits';
 import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { FileAuthorsReportParams, projectAndFileAuthorsReport } from './file-authors-report';
-import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';
+import { clocSummaryInfo } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileAuthors } from '../1-C-aggregate-in-memory/file-authors-aggregate';
 
@@ -106,7 +106,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         // generation of the source streams
         const _commitStream = commitsStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
-        const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+        const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
 
         const params: FileAuthorsReportParams = {
             repoFolderPath,

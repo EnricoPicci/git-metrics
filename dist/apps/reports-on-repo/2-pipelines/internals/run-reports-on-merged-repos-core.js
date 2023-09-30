@@ -42,7 +42,7 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
             allFileStreams.push(_filesStream);
         });
         const clocSummaryPath = (0, cloc_1.createSummaryClocLog)({ repoFolderPath: repoContainerFolderPath, outDir: _outDir });
-        const _clocSummaryStream = (0, cloc_1.clocSummaryStream)(clocSummaryPath);
+        const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
         return {
             allCommitStreamsMerged: (0, rxjs_1.merge)(...allCommitStreams),
             allFileStreamsMerged: (0, rxjs_1.merge)(...allFileStreams),

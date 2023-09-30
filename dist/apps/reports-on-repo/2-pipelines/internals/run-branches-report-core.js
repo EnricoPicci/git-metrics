@@ -32,7 +32,7 @@ function runBranchesReport(repoFolderPath, after, outDir, outFilePrefix, clocDef
     const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
     // generation of the source streams
     const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
-    const _clocSummaryStream = (0, cloc_1.clocSummaryStream)(clocSummaryPath);
+    const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
     // run the reports
     return runBranchesReportFromStreams(repoFolderPath, after, outDir, outFilePrefix, clocDefsPath, _commitStream, _clocSummaryStream);
 }

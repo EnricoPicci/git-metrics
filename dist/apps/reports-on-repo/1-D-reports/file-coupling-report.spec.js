@@ -108,7 +108,7 @@ describe(`projectAndFileCouplingReport`, () => {
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
         // generation of the source streams
         const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
-        const _clocSummaryStream = (0, cloc_1.clocSummaryStream)(clocSummaryPath);
+        const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
         const params = {
             repoFolderPath,
             outDir,

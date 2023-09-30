@@ -4,7 +4,7 @@ import { concatMap, map, merge, Observable } from 'rxjs';
 import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
-import { clocSummaryStream, createSummaryClocLog } from '../../1-A-read/cloc';
+import { clocSummaryInfo, createSummaryClocLog } from '../../1-A-read/cloc';
 
 import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 
@@ -69,7 +69,7 @@ export function runAllReportsOnMergedRepos(
             });
 
             const clocSummaryPath = createSummaryClocLog({ repoFolderPath: repoContainerFolderPath, outDir: _outDir });
-            const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+            const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
             return {
                 allCommitStreamsMerged: merge(...allCommitStreams),
                 allFileStreamsMerged: merge(...allFileStreams),

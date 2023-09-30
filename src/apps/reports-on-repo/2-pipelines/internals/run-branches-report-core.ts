@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
-import { clocSummaryStream } from '../../1-A-read/cloc';
+import { clocSummaryInfo } from '../../1-A-read/cloc';
 
 import { enrichedCommitsStream } from '../../1-B-git-enriched-streams/commits';
 import { GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
@@ -42,7 +42,7 @@ export function runBranchesReport(
 
     // generation of the source streams
     const _commitStream = enrichedCommitsStream(commitLogPath, clocLogPath);
-    const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+    const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
 
     // run the reports
     return runBranchesReportFromStreams(

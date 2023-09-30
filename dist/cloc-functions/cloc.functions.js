@@ -3,29 +3,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildOutfileName = exports.clocByfile$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.writeClocSummary = exports.clocSummaryOnGitRepo$ = exports.clocSummary$ = void 0;
+exports.buildOutfileName = exports.clocByfile$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const path_1 = __importDefault(require("path"));
 const observable_fs_1 = require("observable-fs");
 const config_1 = require("./config");
 /**
- * Runs the cloc command and returns the result in the form of a ClocLanguageStats array.
+ * Runs the cloc command with the summary option and returns the result in the form of a stream emitting one
+ * ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
  * @param path The path to run the cloc command on. Defaults to the current directory.
  * @param vcs An optional version control system to use with the cloc command.
+ * @param outfile An optional file path to write the output of the cloc command to.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
 function clocSummary$(path = './', vcs, outfile = '') {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
-    const executable = config_1.CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
-    return (0, execute_command_1.executeCommandObs)('run cloc summary', `${executable} --csv ${_vcs} --timeout=${config_1.CLOC_CONFIG.TIMEOUT} ${path}`).pipe((0, rxjs_1.concatMap)((output) => {
+    return clocSummaryCsvRaw$(path, _vcs).pipe((0, rxjs_1.concatMap)((output) => {
         return outfile ?
-            (0, observable_fs_1.writeFileObs)(outfile, output.split('\n')).pipe((0, rxjs_1.map)(() => output)) :
+            (0, observable_fs_1.writeFileObs)(outfile, output).pipe((0, rxjs_1.map)(() => output)) :
             (0, rxjs_1.of)(output);
     }), (0, rxjs_1.map)((output) => {
         // remove the first line since it contains the header
-        const lines = output.split('\n').slice(1);
+        const lines = output.slice(1);
         const clocStatsArray = [];
         lines.forEach(line => {
             if (line.trim().length === 0) {
@@ -38,23 +39,36 @@ function clocSummary$(path = './', vcs, outfile = '') {
             const blank = fields[2];
             const comment = fields[3];
             const code = fields[4];
-            if (language !== 'SUM') {
-                const langStats = {
-                    language,
-                    nFiles: parseInt(files),
-                    blank: parseInt(blank),
-                    comment: parseInt(comment),
-                    code: parseInt(code),
-                };
-                clocStatsArray.push(langStats);
-            }
+            const langStats = {
+                language,
+                nFiles: parseInt(files),
+                blank: parseInt(blank),
+                comment: parseInt(comment),
+                code: parseInt(code),
+            };
+            clocStatsArray.push(langStats);
         });
         return clocStatsArray;
     }));
 }
 exports.clocSummary$ = clocSummary$;
 /**
- * Runs the cloc command on a Git repository and returns the result in the form of a ClocLanguageStats array.
+ * Runs the cloc command with the summary option and returns the result in CSV format as an array of lines.
+ * The result is a summary in the sense that it shows results per language but not per file.
+ * @param path The path to run the cloc command on. Defaults to the current directory.
+ * @param vcs An optional version control system to use with the cloc command.
+ * @returns An Observable that emits an array of strings, each containing the CSV-formatted cloc summary info.
+ */
+function clocSummaryCsvRaw$(path = './', vcs) {
+    const _vcs = vcs ? `--vcs=${vcs}` : '';
+    const executable = config_1.CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
+    return (0, execute_command_1.executeCommandObs)('run cloc summary', `${executable} --csv ${_vcs} --timeout=${config_1.CLOC_CONFIG.TIMEOUT} ${path}`).pipe((0, rxjs_1.map)(output => {
+        return output.split('\n');
+    }));
+}
+exports.clocSummaryCsvRaw$ = clocSummaryCsvRaw$;
+/**
+ * Runs the cloc command on a Git repository and returns the result in the form of a stream of one ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
  * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
  * @returns An Observable that emits a ClocLanguageStats array.
@@ -63,7 +77,14 @@ function clocSummaryOnGitRepo$(repoPath = './') {
     return clocSummary$(repoPath, 'git');
 }
 exports.clocSummaryOnGitRepo$ = clocSummaryOnGitRepo$;
-function writeClocSummary(params, action = 'writeClocSummary') {
+/**
+ * Runs the cloc command and writes the result to a file.
+ * The result is a summary in the sense that it shows results per language but not per file.
+ * @param params The parameters to pass to the cloc command.
+ * @param action A comment describing the action we are going to perform.
+ * @returns The name of the file where the cloc info is saved.
+ */
+function writeClocSummary(params, action = 'writeClocS-cloc-summary.csvummary') {
     const [cmd, out] = clocSummaryCommand(params);
     (0, execute_command_1.executeCommand)(action, cmd);
     console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
@@ -72,10 +93,24 @@ function writeClocSummary(params, action = 'writeClocSummary') {
 }
 exports.writeClocSummary = writeClocSummary;
 /**
+ * Runs the cloc command with the summary option and writes the result to a file.
+ * The result is a summary in the sense that it shows results per language but not per file.
+ * Notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
+ * @param params The parameters to pass to the cloc command, including the folder path and VCS to use.
+ * @returns An Observable that emits no elements but completes when the cloc command execution is finished.
+ */
+function writeClocSummary$(params) {
+    const folderPath = params.folderPath;
+    const vcs = params.vcs;
+    const outFile = buildClocOutfile(params, '-cloc-summary.csv');
+    return clocSummary$(folderPath, vcs, outFile).pipe((0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFile));
+}
+exports.writeClocSummary$ = writeClocSummary$;
+/**
  * Runs the cloc command with the by-file option and writes the result to a file.
  * The result is per file, showing the number of lines in each file.
  * @param params The parameters to pass to the cloc command.
- * @param action The action to execute the cloc command with.
+ * @param action A comment describing the action we are going to perform.
  * @returns The name of the file where the cloc info is saved.
  */
 function writeClocByfile(params, action = 'writeClocByFile') {
@@ -91,7 +126,7 @@ exports.writeClocByfile = writeClocByfile;
  * Notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
  * The result is per file, showing the number of lines in each file.
  * @param params The parameters to pass to the cloc command.
- * @param action The action to execute the cloc command with.
+ * @param action A comment describing the action we are going to perform.
  * @returns An Observable that emits the name of the file written once the cloc command execution is finished.
  */
 function writeClocByFile$(params, action = 'cloc') {
@@ -110,8 +145,8 @@ exports.writeClocByFile$ = writeClocByFile$;
  * If `writeFile` is true, then the output of the cloc command will be written to a file with a name based on the
  * provided parameters.
  * @param params The parameters to pass to the cloc command.
- * @param action The action to execute the cloc command with.
- * @param writeFile Whether or not to write the output of the cloc command to a file.
+ * @param action A comment describing the action we are going to perform.
+ * @param writeFile Whether or not to write the output of the cloc command to a file (the file name is derived from the params).
  * @returns An Observable that emits the lines output of the cloc command execution.
  */
 function clocByfile$(params, action, writeFile = true) {

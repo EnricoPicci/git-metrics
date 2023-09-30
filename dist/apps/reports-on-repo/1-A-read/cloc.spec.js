@@ -117,57 +117,6 @@ describe(`createClocLogNewProcess`, () => {
         });
     }).timeout(200000);
 });
-describe(`createMultiClocLogs`, () => {
-    it(`runs the cloc commmand on 2 files and read the files produced as the result of the commands`, (done) => {
-        const repo_1 = 'a-git-repo';
-        const repo_2 = 'a-git-repo-with-one-lazy-author';
-        const outDir = path_1.default.join(process.cwd(), './temp');
-        const outClocFilePrefix = 'multi-cloc-';
-        const config = {
-            repoFolderPaths: [`./test-data/${repo_1}`, `./test-data/${repo_2}`],
-            outDir,
-            outClocFilePrefix,
-        };
-        const expectedOutFilePath_1 = path_1.default.join(outDir, `${outClocFilePrefix}${repo_1}-cloc-byfile.csv`);
-        const expectedOutFilePath_2 = path_1.default.join(outDir, `${outClocFilePrefix}${repo_2}-cloc-byfile.csv`);
-        const clocFiles = (0, cloc_1.createMultiClocLogs)(config, 'a test');
-        (0, chai_1.expect)(clocFiles[0]).equal(expectedOutFilePath_1);
-        (0, chai_1.expect)(clocFiles[1]).equal(expectedOutFilePath_2);
-        (0, observable_fs_1.readLinesObs)(clocFiles[0])
-            .pipe((0, operators_1.tap)({
-            next: (lines) => {
-                (0, chai_1.expect)(lines).not.undefined;
-                // there are 5 lines: 3 for the 3 files and 1 for the csv header, which is the first, and one for the sum which is the last
-                (0, chai_1.expect)(lines.length).equal(5);
-                const _fileName = 'hallo.java';
-                const [language, filename, blank, comment, code] = lines
-                    .find((l) => l.includes(_fileName))
-                    .split(',');
-                (0, chai_1.expect)(language).equal('Java');
-                (0, chai_1.expect)(filename).equal(`${_fileName}`);
-                (0, chai_1.expect)(parseInt(blank)).equal(3);
-                (0, chai_1.expect)(parseInt(comment)).equal(2);
-                (0, chai_1.expect)(parseInt(code)).equal(5);
-            },
-        }), (0, operators_1.concatMap)(() => (0, observable_fs_1.readLinesObs)(clocFiles[1])), (0, operators_1.tap)({
-            next: (lines) => {
-                (0, chai_1.expect)(lines).not.undefined;
-                // there are 3 lines: 1 for the only file and 1 for the csv header, which is the first, and one for the sum which is the last
-                (0, chai_1.expect)(lines.length).equal(3);
-                const _fileName = 'fake.java';
-                const [language, filename, blank, comment, code] = lines
-                    .find((l) => l.includes(_fileName))
-                    .split(',');
-                (0, chai_1.expect)(language).equal('Java');
-                (0, chai_1.expect)(filename).equal(`${_fileName}`);
-                (0, chai_1.expect)(parseInt(blank)).equal(3);
-                (0, chai_1.expect)(parseInt(comment)).equal(2);
-                (0, chai_1.expect)(parseInt(code)).equal(5);
-            },
-        }))
-            .subscribe({ error: (err) => done(err), complete: () => done() });
-    }).timeout(200000);
-});
 describe(`createSummaryClocLog`, () => {
     it(`read the summary view provided by cloc from the folder named as the repo and saves it in a file`, (done) => {
         const repo = 'git-repo-with-code';
@@ -214,8 +163,7 @@ describe(`streamSummaryClocNewProcess`, () => {
         })))), (0, operators_1.tap)({
             next: ({ linesReadFromStream, linesReadFromFilecreatedSync }) => {
                 // skip the first line of the file written synchronously since it contains the heade of cloc output
-                // skip the last line of the file written synchronously since it contains the sum of the stats
-                const _linesReadFromFilecreatedSync = linesReadFromFilecreatedSync.slice(1, linesReadFromFilecreatedSync.length - 1);
+                const _linesReadFromFilecreatedSync = linesReadFromFilecreatedSync.slice(1);
                 (0, chai_1.expect)(_linesReadFromFilecreatedSync.length).equal(linesReadFromStream.length);
                 linesReadFromStream.forEach((line, i) => {
                     //  v 1.92  T=0.01 s (294.9 files/s, 1671.1 lines/s
@@ -265,7 +213,7 @@ describe(`streamSummaryClocNewProcess`, () => {
         });
     }).timeout(200000);
     it(`tries to read a cloc summary file that does not exist and returns an empty array`, (done) => {
-        (0, cloc_1.clocSummaryStream)('not-existing-file').subscribe({
+        (0, cloc_1.clocSummaryInfo)('not-existing-file').subscribe({
             next: (lines) => {
                 (0, chai_1.expect)(lines).empty;
             },

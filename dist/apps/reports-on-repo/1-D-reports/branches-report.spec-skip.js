@@ -7,12 +7,12 @@ const chai_1 = require("chai");
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const commits_1 = require("../1-B-git-enriched-streams/commits");
-const cloc_1 = require("../1-A-read/cloc");
 const project_info_aggregate_1 = require("../1-C-aggregate-in-memory/project-info-aggregate");
 const branches_report_1 = require("./branches-report");
 const commit_branch_tips_aggregate_1 = require("../1-C-aggregate-in-memory/commit-branch-tips-aggregate");
 const read_all_1 = require("../1-A-read/read-all");
 const commits_and_branch_tips_1 = require("../1-B-git-enriched-streams/commits-and-branch-tips");
+const cloc_1 = require("../1-A-read/cloc");
 describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches using this repo as a real repo`, (done) => {
         // input from the user
@@ -28,7 +28,7 @@ describe(`projectAndBranchesReport`, () => {
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
         // generation of the source streams
         const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
-        const _clocSummaryStream = (0, cloc_1.clocSummaryStream)(clocSummaryPath);
+        const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
         const params = {
             repoFolderPath,
             commitLog: commitLogPath,

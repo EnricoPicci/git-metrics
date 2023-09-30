@@ -4,7 +4,7 @@ import { tap, share, concatMap } from 'rxjs';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { commitsStream } from '../1-B-git-enriched-streams/commits';
 import { ModuleChurnReportParams, projectAndModuleChurnReport } from './module-churn-report';
-import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';
+import { clocSummaryInfo } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
 import { moduleChurns } from '../1-C-aggregate-in-memory/module-churn-aggregate';
@@ -232,7 +232,7 @@ describe(`projectAndModuleChurnReport`, () => {
         // generation of the source streams
         const _commitStream = commitsStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
-        const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+        const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
 
         const params: ModuleChurnReportParams = {
             repoFolderPath,

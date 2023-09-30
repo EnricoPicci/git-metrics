@@ -191,7 +191,7 @@ describe(`projectAndFileChurnReport`, () => {
             path_1.default.join(testDataPath, `${repoFolderPath}-summary-cloc.csv`),
         ];
         // generation of the source streams
-        const _clocSummaryInfo = (0, cloc_1.clocSummaryStream)(clocSummaryPath);
+        const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const params = {
@@ -232,7 +232,7 @@ describe(`projectAndFileChurnReport`, () => {
             path_1.default.join(testDataPath, `${repoFolderPath}-summary-cloc.csv`),
         ];
         // generation of the source streams
-        const _clocSummaryInfo = (0, cloc_1.clocSummaryStream)(clocSummaryPath);
+        const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const params = {
@@ -268,7 +268,7 @@ describe(`projectAndFileChurnReport`, () => {
         // generation of the source streams
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const _clocSummaryStream = (0, cloc_1.clocSummaryStream)(clocSummaryPath);
+        const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
         const params = {
             repoFolderPath,
             commitLog: commitLogPath,

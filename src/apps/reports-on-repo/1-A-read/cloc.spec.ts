@@ -6,14 +6,13 @@ import {
     buildSummaryClocOutfile,
     createClocLog,
     streamClocNewProcess,
-    createMultiClocLogs,
     createSummaryClocLog,
     streamSummaryClocNewProcess,
     createClocLogNewProcess,
     createSummaryClocNewProcess,
-    clocSummaryStream,
+    clocSummaryInfo,
 } from './cloc';
-import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
+import { ConfigReadCloc } from './read-params/read-params';
 import { deleteFile } from '../../../tools/test-helpers/delete-file';
 import { forkJoin } from 'rxjs';
 
@@ -146,62 +145,6 @@ describe(`createClocLogNewProcess`, () => {
     }).timeout(200000);
 });
 
-describe(`createMultiClocLogs`, () => {
-    it(`runs the cloc commmand on 2 files and read the files produced as the result of the commands`, (done) => {
-        const repo_1 = 'a-git-repo';
-        const repo_2 = 'a-git-repo-with-one-lazy-author';
-        const outDir = path.join(process.cwd(), './temp');
-        const outClocFilePrefix = 'multi-cloc-';
-        const config: ConfigReadMultiCloc = {
-            repoFolderPaths: [`./test-data/${repo_1}`, `./test-data/${repo_2}`],
-            outDir,
-            outClocFilePrefix,
-        };
-        const expectedOutFilePath_1 = path.join(outDir, `${outClocFilePrefix}${repo_1}-cloc-byfile.csv`);
-        const expectedOutFilePath_2 = path.join(outDir, `${outClocFilePrefix}${repo_2}-cloc-byfile.csv`);
-        const clocFiles = createMultiClocLogs(config, 'a test');
-        expect(clocFiles[0]).equal(expectedOutFilePath_1);
-        expect(clocFiles[1]).equal(expectedOutFilePath_2);
-        readLinesObs(clocFiles[0])
-            .pipe(
-                tap({
-                    next: (lines) => {
-                        expect(lines).not.undefined;
-                        // there are 5 lines: 3 for the 3 files and 1 for the csv header, which is the first, and one for the sum which is the last
-                        expect(lines.length).equal(5);
-                        const _fileName = 'hallo.java';
-                        const [language, filename, blank, comment, code] = lines
-                            .find((l) => l.includes(_fileName))!
-                            .split(',');
-                        expect(language).equal('Java');
-                        expect(filename).equal(`${_fileName}`);
-                        expect(parseInt(blank)).equal(3);
-                        expect(parseInt(comment)).equal(2);
-                        expect(parseInt(code)).equal(5);
-                    },
-                }),
-                concatMap(() => readLinesObs(clocFiles[1])),
-                tap({
-                    next: (lines) => {
-                        expect(lines).not.undefined;
-                        // there are 3 lines: 1 for the only file and 1 for the csv header, which is the first, and one for the sum which is the last
-                        expect(lines.length).equal(3);
-                        const _fileName = 'fake.java';
-                        const [language, filename, blank, comment, code] = lines
-                            .find((l) => l.includes(_fileName))!
-                            .split(',');
-                        expect(language).equal('Java');
-                        expect(filename).equal(`${_fileName}`);
-                        expect(parseInt(blank)).equal(3);
-                        expect(parseInt(comment)).equal(2);
-                        expect(parseInt(code)).equal(5);
-                    },
-                }),
-            )
-            .subscribe({ error: (err) => done(err), complete: () => done() });
-    }).timeout(200000);
-});
-
 describe(`createSummaryClocLog`, () => {
     it(`read the summary view provided by cloc from the folder named as the repo and saves it in a file`, (done) => {
         const repo = 'git-repo-with-code';
@@ -241,7 +184,7 @@ describe(`streamSummaryClocNewProcess`, () => {
             outDir: '',  // outdir should not be mandatory since it is not used in this function    
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const outFileCreatedSync = createSummaryClocLog({ ...config, outClocFilePrefix: 'same-process' }, 'test');
+        const outFileCreatedSync = createSummaryClocLog({ ...config, outDir: './temp/', outClocFilePrefix: 'same-process-' }, 'test');
 
         streamSummaryClocNewProcess(config)
             .pipe(
@@ -283,7 +226,7 @@ describe(`streamSummaryClocNewProcess`, () => {
             outDir: '', // outdir should not be mandatory since it is not used in this function
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const outFileSynch = createSummaryClocLog({ ...config, outClocFilePrefix: 'same-process' }, 'test');
+        const outFileSynch = createSummaryClocLog({ ...config, outDir: './temp/', outClocFilePrefix: 'same-process' }, 'test');
 
         const clocSummaryFile = path.join(process.cwd(), './temp', `${repo}-cloc-summary.csv`);
 
@@ -316,7 +259,7 @@ describe(`streamSummaryClocNewProcess`, () => {
     }).timeout(200000);
 
     it(`tries to read a cloc summary file that does not exist and returns an empty array`, (done) => {
-        clocSummaryStream('not-existing-file').subscribe({
+        clocSummaryInfo('not-existing-file').subscribe({
             next: (lines) => {
                 expect(lines).empty;
             },
@@ -338,7 +281,7 @@ describe(`createSummaryClocNewProcess`, () => {
             outClocFilePrefix,
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const outFileSameProcess = createSummaryClocLog({ ...config, outClocFilePrefix: 'same-process' }, 'test');
+        const outFileSameProcess = createSummaryClocLog({ ...config, outDir: './temp/', outClocFilePrefix: 'same-process' }, 'test');
 
         const expectedOutFilePath = buildSummaryClocOutfile(config);
 

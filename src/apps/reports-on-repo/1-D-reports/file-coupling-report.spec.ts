@@ -4,7 +4,7 @@ import path from 'path';
 import { tap } from 'rxjs/operators';
 import { fileCoupling } from '../1-C-aggregate-in-memory/file-coupling-aggregate';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
-import { clocSummaryInfo, clocSummaryStream } from '../1-A-read/cloc';
+import { clocSummaryInfo } from '../1-A-read/cloc';
 import { enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
 import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
@@ -133,7 +133,7 @@ describe(`projectAndFileCouplingReport`, () => {
 
         // generation of the source streams
         const _commitStream = enrichedCommitsStream(commitLogPath, clocLogPath);
-        const _clocSummaryStream = clocSummaryStream(clocSummaryPath);
+        const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
 
         const params: FilesCouplingReportParams = {
             repoFolderPath,
