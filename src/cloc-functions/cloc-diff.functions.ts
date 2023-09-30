@@ -1,8 +1,8 @@
 import { toArray, map, catchError, of } from 'rxjs';
 
-import { CONFIG } from '../config';
 import { executeCommandObs, getCommandOutput } from '../tools/execute-command/execute-command';
 import { ClocDiffStats, newClocDiffStatsWithError, newClocDiffStatsZeroed } from './cloc-diff.model';
+import { CLOC_CONFIG } from './config';
 
 // runClocDiff is a function that runs the cloc command to calculate the differences (restricted to the selected languages) between
 // 2 commits of the same repo and returns the result in the form of a ClocDiffLanguageStats array
@@ -63,7 +63,7 @@ export function buildClocDiffAllCommand(
     folderPath = './',
 ) {
     const cdCommand = `cd ${folderPath}`;
-    const clocDiffAllCommand = `cloc --git-diff-all --json --timeout=${CONFIG.CLOC_TIMEOUT}`;
+    const clocDiffAllCommand = `cloc --git-diff-all --json --timeout=${CLOC_CONFIG.TIMEOUT}`;
     // const clocDiffAllCommand = `cloc --diff --json --timeout=${CONFIG.CLOC_TIMEOUT}`
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';

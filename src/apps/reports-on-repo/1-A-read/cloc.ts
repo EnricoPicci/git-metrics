@@ -1,31 +1,25 @@
 import path = require('path');
 import {
-    share,
     catchError,
     concatMap,
     ignoreElements,
-    merge,
-    Observable,
-    Subscriber,
     of,
     map,
-    last,
-    pipe,
     defaultIfEmpty,
     tap,
+    from,
 } from 'rxjs';
 
-import { appendFileObs, deleteFileObs, readLinesObs } from 'observable-fs';
+import { readLinesObs } from 'observable-fs';
 
 import {
     executeCommandInShellNewProcessObs,
-    executeCommandNewProcessToLinesObs,
 } from '../../../tools/execute-command/execute-command';
 
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
-import { ClocParams, clocByfile$, writeClocByFile$, writeClocByfile, writeClocSummary } from '../../../cloc-functions/cloc.functions';
+import { ClocParams, clocByfile$, clocSummary$, writeClocByFile$, writeClocByfile, writeClocSummary } from '../../../cloc-functions/cloc.functions';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
     const params = paramsFromConfig(config);
@@ -47,6 +41,18 @@ export function createSummaryClocLog(config: ConfigReadCloc, action = 'clocSumma
     return writeClocSummary(params, action)
 }
 
+// runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
+export function streamSummaryClocNewProcess(
+    config: ConfigReadCloc,
+    outFile?: string,
+    vcs?: string,
+) {
+    return clocSummary$(config.repoFolderPath, vcs, outFile).pipe(
+        concatMap(stats => from(stats)),
+        map(stat => `${stat.nFiles},${stat.language},${stat.blank},${stat.comment},${stat.code}`),
+    )
+}
+
 function paramsFromConfig(config: ConfigReadCloc) {
     const clocParams: ClocParams = {
         folderPath: config.repoFolderPath,
@@ -54,51 +60,10 @@ function paramsFromConfig(config: ConfigReadCloc) {
         outClocFile: config.outClocFile,
         outClocFilePrefix: config.outClocFilePrefix,
         clocDefsPath: config.clocDefsPath,
-        useNpx: true,
     };
     return clocParams;
 }
 
-// runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
-export function streamSummaryClocNewProcess(
-    config: ConfigReadCloc,
-    outFile: string,
-    action: string,
-    writeFileOnly = false,
-) {
-    const { cmd, args, options } = clocSummaryCommandWithArgs(config);
-    const _cloc = executeCommandNewProcessToLinesObs(action, cmd, args, options).pipe(
-        _filterClocHeader('files,language,blank,comment,code'),
-        share(),
-    );
-
-    const emitOutFileOrIgnoreElements = writeFileOnly
-        ? pipe(
-            last(),
-            map(() => outFile),
-        )
-        : ignoreElements();
-    const _writeFile = deleteFileObs(outFile).pipe(
-        catchError((err) => {
-            if (err.code === 'ENOENT') {
-                // emit something so that the next operation can continue
-                return of(null);
-            }
-            throw new Error(err);
-        }),
-        concatMap(() => _cloc),
-        concatMap((line) => {
-            const _line = `${line}\n`;
-            return appendFileObs(outFile, _line);
-        }),
-        emitOutFileOrIgnoreElements,
-    );
-    const _streams: Observable<never | string>[] = [_writeFile];
-    if (!writeFileOnly) {
-        _streams.push(_cloc);
-    }
-    return merge(..._streams);
-}
 export function createSummaryClocNewProcess(config: ConfigReadCloc, action = 'clocSummary') {
     const [cmd, out] = clocSummaryCommand(config);
 
@@ -129,29 +94,6 @@ function _buildClocOutfile(config: ConfigReadCloc, endPart: string) {
     const outFile = getOutfileName(config.outClocFile!, config.outClocFilePrefix, config.repoFolderPath, endPart);
     const out = path.resolve(path.join(outDir, outFile));
     return out;
-}
-
-function _filterClocHeader(startToken: string) {
-    return (source: Observable<string>) => {
-        return new Observable((subscriber: Subscriber<string>) => {
-            let startOutput = false;
-            const subscription = source.subscribe({
-                next: (line) => {
-                    startOutput = startOutput || line.includes(startToken);
-                    if (startOutput) {
-                        subscriber.next(line);
-                    }
-                },
-                error: (err) => subscriber.error(err),
-                complete: () => {
-                    subscriber.complete();
-                },
-            });
-            return () => {
-                subscription.unsubscribe();
-            };
-        });
-    };
 }
 
 // executes cloc command on all the repos and returns the array of the file names containing the cloc results (one file per repo)

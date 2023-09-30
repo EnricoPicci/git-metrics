@@ -62,8 +62,7 @@ function _streamsDistinctProcesses(
     const clocSummary = streamSummaryClocNewProcess(
         readClocOptions,
         outClocSummaryFile,
-        'create cloc summary log',
-        writeFileOnly,
+        'git',
     );
 
     return { gitLogCommits, cloc, clocSummary };

@@ -2,9 +2,9 @@ import { Observable, Subscriber, catchError, concatMap, defaultIfEmpty, ignoreEl
 import { executeCommand, executeCommandInShellNewProcessObs, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { ClocLanguageStats } from './cloc.model';
-import { CONFIG } from '../config';
 import path from 'path';
-import { appendFileObs, deleteFileObs } from 'observable-fs';
+import { appendFileObs, deleteFileObs, writeFileObs, } from 'observable-fs';
+import { CLOC_CONFIG } from './config';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -12,38 +12,58 @@ import { appendFileObs, deleteFileObs } from 'observable-fs';
 
 export type ClocParams = {
     folderPath: string;
-    outDir: string;
+    outDir?: string;
     outClocFile?: string;
     outClocFilePrefix?: string;
     clocDefsPath?: string;
-    useNpx?: boolean
+    vcs?: string
 };
 
 /**
- * Runs the cloc command and returns the result in the form of a ClocLanguageStats array.
+ * Runs the cloc command with the summary option and returns the result in the form of a stream emitting one 
+ * ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
  * @param path The path to run the cloc command on. Defaults to the current directory.
  * @param vcs An optional version control system to use with the cloc command.
+ * @param outfile An optional file path to write the output of the cloc command to.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
-export function clocSummary$(path = './', vcs?: string) {
+export function clocSummary$(path = './', vcs?: string, outfile = '') {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
-    // #todo - check if we need to specify { encoding: 'utf-8' } as an argument
-    return executeCommandObs('run cloc', `cloc --json ${_vcs} --timeout=${CONFIG.CLOC_TIMEOUT} ${path}`).pipe(
+
+    const executable = CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
+    return executeCommandObs(
+        'run cloc summary',
+        `${executable} --csv ${_vcs} --timeout=${CLOC_CONFIG.TIMEOUT} ${path}`
+    ).pipe(
+        concatMap((output) => {
+            return outfile ?
+                writeFileObs(outfile, output.split('\n')).pipe(map(() => output)) :
+                of(output);
+        }),
         map((output) => {
-            const clocOutputJson = JSON.parse(output);
+            // remove the first line since it contains the header
+            const lines = output.split('\n').slice(1);
             const clocStatsArray: ClocLanguageStats[] = [];
-            Object.entries(clocOutputJson).forEach(([language, stats]: [string, any]) => {
-                if (language !== 'header') {
-                    const langStats: ClocLanguageStats = {
-                        language,
-                        nFiles: stats.nFiles,
-                        blank: stats.blank,
-                        comment: stats.comment,
-                        code: stats.code,
-                    };
-                    clocStatsArray.push(langStats);
+            lines.forEach(line => {
+                if (line.trim().length === 0) {
+                    return;
                 }
+                // fields are the split of 'files,language,blank,comment,code'
+                const fields = line.split(',');
+                const files = fields[0];
+                const language = fields[1];
+                const blank = fields[2];
+                const comment = fields[3];
+                const code = fields[4];
+                const langStats: ClocLanguageStats = {
+                    language,
+                    nFiles: parseInt(files),
+                    blank: parseInt(blank),
+                    comment: parseInt(comment),
+                    code: parseInt(code),
+                };
+                clocStatsArray.push(langStats);
             });
             return clocStatsArray;
         }),
@@ -51,7 +71,7 @@ export function clocSummary$(path = './', vcs?: string) {
 }
 
 /**
- * Runs the cloc command on a Git repository and returns the result in the form of a ClocLanguageStats array.
+ * Runs the cloc command on a Git repository and returns the result in the form of a stream of one ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
  * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
  * @returns An Observable that emits a ClocLanguageStats array.
@@ -74,7 +94,7 @@ export function writeClocSummary(params: ClocParams, action = 'writeClocSummary'
  * Runs the cloc command with the by-file option and writes the result to a file.
  * The result is per file, showing the number of lines in each file.
  * @param params The parameters to pass to the cloc command.
- * @param action The action to execute the cloc command with.
+ * @param action A comment describing the action we are going to perform.
  * @returns The name of the file where the cloc info is saved.
  */
 export function writeClocByfile(params: ClocParams, action = 'writeClocByFile') {
@@ -92,7 +112,7 @@ export function writeClocByfile(params: ClocParams, action = 'writeClocByFile') 
  * Notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
  * The result is per file, showing the number of lines in each file.
  * @param params The parameters to pass to the cloc command.
- * @param action The action to execute the cloc command with.
+ * @param action A comment describing the action we are going to perform.
  * @returns An Observable that emits the name of the file written once the cloc command execution is finished.
  */
 export function writeClocByFile$(params: ClocParams, action = 'cloc') {
@@ -118,8 +138,8 @@ export function writeClocByFile$(params: ClocParams, action = 'cloc') {
  * If `writeFile` is true, then the output of the cloc command will be written to a file with a name based on the 
  * provided parameters.
  * @param params The parameters to pass to the cloc command.
- * @param action The action to execute the cloc command with.
- * @param writeFile Whether or not to write the output of the cloc command to a file.
+ * @param action A comment describing the action we are going to perform.
+ * @param writeFile Whether or not to write the output of the cloc command to a file (the file name is derived from the params).
  * @returns An Observable that emits the lines output of the cloc command execution.
  */
 export function clocByfile$(params: ClocParams, action: string, writeFile = true) {
@@ -176,9 +196,9 @@ export function clocByfile$(params: ClocParams, action: string, writeFile = true
 function clocCommand(params: ClocParams) {
     // npx cloc . --vcs=git --csv  --timeout=1000000
     const cd = `cd ${params.folderPath}`;
-    const program = params.useNpx ? 'npx cloc' : 'cloc';
+    const program = CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
     const clocDefPath = params.clocDefsPath ? `--force-lang-def=${params.clocDefsPath}` : '';
-    const cmd = `${cd} && ${program} . --vcs=git --csv ${clocDefPath} --timeout=${CONFIG.CLOC_TIMEOUT}`;
+    const cmd = `${cd} && ${program} . --vcs=git --csv ${clocDefPath} --timeout=${CLOC_CONFIG.TIMEOUT}`;
     return cmd;
 }
 function clocSummaryCommand(params: ClocParams) {
@@ -225,9 +245,9 @@ export function buildOutfileName(outFile = '', repoFolder = '', prefix?: string,
 }
 
 function clocByfileCommandWithArgs(params: ClocParams) {
-    const args = ['cloc', '.', '--vcs=git', '--csv', `--timeout=${CONFIG.CLOC_TIMEOUT}`, '--by-file'];
+    const args = ['cloc', '.', '--vcs=git', '--csv', `--timeout=${CLOC_CONFIG.TIMEOUT}`, '--by-file'];
     const options = { cwd: params.folderPath };
-    const cmd = params.useNpx ? 'npx' : 'cloc';
+    const cmd = CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';
     return { cmd, args, options };
 }
 

@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildClocDiffAllCommand = exports.runClocDiff = void 0;
 const rxjs_1 = require("rxjs");
-const config_1 = require("../config");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const cloc_diff_model_1 = require("./cloc-diff.model");
+const config_1 = require("./config");
 // runClocDiff is a function that runs the cloc command to calculate the differences (restricted to the selected languages) between
 // 2 commits of the same repo and returns the result in the form of a ClocDiffLanguageStats array
 function runClocDiff(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
@@ -46,7 +46,7 @@ Command: ${cmd}`;
 exports.runClocDiff = runClocDiff;
 function buildClocDiffAllCommand(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
     const cdCommand = `cd ${folderPath}`;
-    const clocDiffAllCommand = `cloc --git-diff-all --json --timeout=${config_1.CONFIG.CLOC_TIMEOUT}`;
+    const clocDiffAllCommand = `cloc --git-diff-all --json --timeout=${config_1.CLOC_CONFIG.TIMEOUT}`;
     // const clocDiffAllCommand = `cloc --diff --json --timeout=${CONFIG.CLOC_TIMEOUT}`
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';

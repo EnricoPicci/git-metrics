@@ -21,13 +21,14 @@ export function executeCommandObs(action: string, command: string) {
         exec(command, (error, stdout, stderr) => {
             if (error) {
                 subscriber.error(error);
-            } else if (stderr.length > 0) {
-                subscriber.error(stderr);
-            } else {
-                subscriber.next(stdout);
-                subscriber.complete();
-                console.log(`====>>>> Command executed successfully`);
+                return
             }
+            if (stderr.length > 0) {
+                console.log(`!!!!!!!! Message on stadard error:\n${stderr}`);
+            }
+            subscriber.next(stdout);
+            subscriber.complete();
+            console.log(`====>>>> Command executed successfully`);
         });
     });
 }

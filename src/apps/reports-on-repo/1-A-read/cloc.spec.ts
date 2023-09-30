@@ -3,7 +3,6 @@ import path from 'path';
 import { tap, concatMap, toArray, map } from 'rxjs/operators';
 import { readLinesObs } from 'observable-fs';
 import {
-    buildClocOutfile,
     buildSummaryClocOutfile,
     createClocLog,
     streamClocNewProcess,
@@ -16,6 +15,7 @@ import {
 } from './cloc';
 import { ConfigReadCloc, ConfigReadMultiCloc } from './read-params/read-params';
 import { deleteFile } from '../../../tools/test-helpers/delete-file';
+import { forkJoin } from 'rxjs';
 
 describe(`createClocLog`, () => {
     it(`read the number of lines for each file from the folder named as the repo and saves them in a file`, (done) => {
@@ -234,106 +234,84 @@ describe(`createSummaryClocLog`, () => {
 });
 
 describe(`streamSummaryClocNewProcess`, () => {
-    it(`read the cloc summary and saves it in a file - uses a different process`, (done) => {
+    it(`read the cloc summary and notifies each line containing stats for a language over a stream`, (done) => {
         const repo = 'git-repo-with-code';
-        const outDir = path.join(process.cwd(), './temp');
         const config: ConfigReadCloc = {
             repoFolderPath: `./test-data/${repo}`,
-            outDir,
+            outDir: '',  // outdir should not be mandatory since it is not used in this function    
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const outFileSameProcess = createSummaryClocLog({ ...config, outClocFilePrefix: 'same-process' }, 'test');
+        const outFileCreatedSync = createSummaryClocLog({ ...config, outClocFilePrefix: 'same-process' }, 'test');
 
-        const outFileNewProcess = buildSummaryClocOutfile({ ...config, outClocFilePrefix: 'new-process' });
-
-        streamSummaryClocNewProcess(config, outFileNewProcess, 'test')
+        streamSummaryClocNewProcess(config)
             .pipe(
                 toArray(),
-                concatMap((linesReadInNewProcess) =>
-                    readLinesObs(outFileSameProcess).pipe(
-                        map((linesReadFromFilecreatedSynchronously) => ({
-                            linesReadInNewProcess,
-                            linesReadFromFilecreatedSynchronously,
+                concatMap((linesReadFromStream) =>
+                    readLinesObs(outFileCreatedSync).pipe(
+                        map((linesReadFromFilecreatedSync) => ({
+                            linesReadFromStream,
+                            linesReadFromFilecreatedSync,
                         })),
                     ),
                 ),
                 tap({
-                    next: ({ linesReadInNewProcess, linesReadFromFilecreatedSynchronously }) => {
-                        // skip the first line which contains statistical data which vary between the different executions
-                        // skip the last line which in one case is the empty string and in the other is null
-                        const _linesReadInNewProcess = linesReadInNewProcess.slice(1, linesReadInNewProcess.length - 1);
-                        // skip the first line which contains statistical data which vary between the different executions
-                        const _linesReadFromFilecreatedSynchronously = linesReadFromFilecreatedSynchronously.slice(1);
-                        _linesReadInNewProcess.forEach((line, i) => {
+                    next: ({ linesReadFromStream, linesReadFromFilecreatedSync }) => {
+                        // skip the first line of the file written synchronously since it contains the heade of cloc output
+                        const _linesReadFromFilecreatedSync = linesReadFromFilecreatedSync.slice(1);
+                        expect(_linesReadFromFilecreatedSync.length).equal(linesReadFromStream.length);
+                        linesReadFromStream.forEach((line, i) => {
                             //  v 1.92  T=0.01 s (294.9 files/s, 1671.1 lines/s
                             //  v 1.92  T=0.01 s (283.7 files/s, 1607.7 lines/s)
-                            const theOtherLine = _linesReadFromFilecreatedSynchronously[i];
+                            const theOtherLine = _linesReadFromFilecreatedSync[i];
                             expect(line).equal(theOtherLine);
                         });
-                        expect(linesReadInNewProcess.length).equal(linesReadFromFilecreatedSynchronously.length + 1);
                     },
                 }),
             )
             .subscribe({
-                error: (err) => done(err),
+                error: (err) => {
+                    done(err);
+                },
                 complete: () => done(),
             });
     }).timeout(200000);
-    it(`executes the cloc summary command and saves the result on a file using a different process`, (done) => {
+
+    it(`read the cloc summary and, while notifying over a streams, writes the summary in a file`, (done) => {
         const repo = 'git-repo-with-code';
-        const outDir = path.join(process.cwd(), './temp');
         const config: ConfigReadCloc = {
             repoFolderPath: `./test-data/${repo}`,
-            outDir,
+            outDir: '', // outdir should not be mandatory since it is not used in this function
         };
-        // executes the cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const returnedOutFilePath = createSummaryClocLog(config, 'test');
+        // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
+        const outFileSynch = createSummaryClocLog({ ...config, outClocFilePrefix: 'same-process' }, 'test');
 
-        const outFileNewProcess = buildClocOutfile({ ...config, outClocFilePrefix: 'new-process' });
-        let outFileNewProcessNotified: string;
+        const clocSummaryFile = path.join(process.cwd(), './temp', `${repo}-cloc-summary.csv`);
 
-        streamSummaryClocNewProcess(config, outFileNewProcess, 'test', true)
+        streamSummaryClocNewProcess(config, clocSummaryFile)
             .pipe(
-                tap((fileWritteInNewProcess) => {
-                    outFileNewProcessNotified = fileWritteInNewProcess;
-                }),
-                concatMap((fileWritteInNewProcess) => readLinesObs(fileWritteInNewProcess)),
-                concatMap((linesReadFromFileWrittenInNewProcess) =>
-                    readLinesObs(returnedOutFilePath).pipe(
-                        map((linesReadFromFileCreatedSynchronously) => ({
-                            linesReadFromFileWrittenInNewProcess,
-                            linesReadFromFileCreatedSynchronously,
-                        })),
-                    ),
-                ),
+                toArray(),
+                concatMap(() => forkJoin([readLinesObs(outFileSynch), readLinesObs(clocSummaryFile)])),
                 tap({
-                    next: ({ linesReadFromFileWrittenInNewProcess, linesReadFromFileCreatedSynchronously }) => {
-                        // ignore the first line since contains statistical infor which may vary between the 2 executions
-                        let _linesReadFromFileWrittenInNewProcess = linesReadFromFileWrittenInNewProcess.slice(1);
-                        const _linesReadFromFileCreatedSynchronously = linesReadFromFileCreatedSynchronously.slice(1);
-                        // the execution in a new process adds an empty line at the end of the file
-                        _linesReadFromFileWrittenInNewProcess = _linesReadFromFileWrittenInNewProcess.slice(
-                            0,
-                            _linesReadFromFileWrittenInNewProcess.length - 1,
-                        );
-
-                        _linesReadFromFileWrittenInNewProcess.forEach((line, i) => {
-                            const theOtherLine = _linesReadFromFileCreatedSynchronously[i];
+                    next: ([linesReadSync, linesReadFromFileWrittenInThisTest]) => {
+                        // skip the first line which contains statistical data which vary between the different executions
+                        // skip the last line which in one case is the empty string and in the other is null
+                        const _linesReadFromFileWrittenInThisTest = linesReadFromFileWrittenInThisTest.slice(1);
+                        // skip the first line which contains statistical data which vary between the different executions
+                        const _linesReadSync = linesReadSync.slice(1);
+                        _linesReadFromFileWrittenInThisTest.forEach((line, i) => {
+                            //  v 1.92  T=0.01 s (294.9 files/s, 1671.1 lines/s
+                            //  v 1.92  T=0.01 s (283.7 files/s, 1607.7 lines/s)
+                            const theOtherLine = _linesReadSync[i];
                             expect(line).equal(theOtherLine);
                         });
-                        expect(_linesReadFromFileWrittenInNewProcess.length).equal(
-                            _linesReadFromFileCreatedSynchronously.length,
-                        );
                     },
                 }),
             )
             .subscribe({
-                error: (err) => done(err),
-                complete: () => {
-                    // checks that the outFile has actually been emitted
-                    expect(outFileNewProcessNotified).not.undefined;
-                    done();
+                error: (err) => {
+                    done(err);
                 },
+                complete: () => done(),
             });
     }).timeout(200000);
 

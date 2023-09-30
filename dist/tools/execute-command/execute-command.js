@@ -22,15 +22,14 @@ function executeCommandObs(action, command) {
         (0, child_process_1.exec)(command, (error, stdout, stderr) => {
             if (error) {
                 subscriber.error(error);
+                return;
             }
-            else if (stderr.length > 0) {
-                subscriber.error(stderr);
+            if (stderr.length > 0) {
+                console.log(`!!!!!!!! Message on stadard error:\n${stderr}`);
             }
-            else {
-                subscriber.next(stdout);
-                subscriber.complete();
-                console.log(`====>>>> Command executed successfully`);
-            }
+            subscriber.next(stdout);
+            subscriber.complete();
+            console.log(`====>>>> Command executed successfully`);
         });
     });
 }

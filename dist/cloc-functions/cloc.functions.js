@@ -3,12 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildOutfileName = exports.buildClocOutfile = exports.streamClocByfile = exports.writeClocByfile = exports.runClocSummaryOnGitRepo = exports.runClocSummary = void 0;
+exports.buildOutfileName = exports.clocByfile$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.writeClocSummary = exports.clocSummaryOnGitRepo$ = exports.clocSummary$ = void 0;
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
-const config_1 = require("../config");
 const path_1 = __importDefault(require("path"));
 const observable_fs_1 = require("observable-fs");
+const config_1 = require("./config");
 /**
  * Runs the cloc command and returns the result in the form of a ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
@@ -16,20 +16,35 @@ const observable_fs_1 = require("observable-fs");
  * @param vcs An optional version control system to use with the cloc command.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
-function runClocSummary(path = './', vcs) {
+function clocSummary$(path = './', vcs, outfile = '') {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
-    // #todo - check if we need to specify { encoding: 'utf-8' } as an argument
-    return (0, execute_command_1.executeCommandObs)('run cloc', `cloc --json ${_vcs} --timeout=${config_1.CONFIG.CLOC_TIMEOUT} ${path}`).pipe((0, rxjs_1.map)((output) => {
-        const clocOutputJson = JSON.parse(output);
+    const executable = config_1.CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
+    return (0, execute_command_1.executeCommandObs)('run cloc summary', `${executable} --csv ${_vcs} --timeout=${config_1.CLOC_CONFIG.TIMEOUT} ${path}`).pipe((0, rxjs_1.concatMap)((output) => {
+        return outfile ?
+            (0, observable_fs_1.writeFileObs)(outfile, output.split('\n')).pipe((0, rxjs_1.map)(() => output)) :
+            (0, rxjs_1.of)(output);
+    }), (0, rxjs_1.map)((output) => {
+        // remove the first line since it contains the header
+        const lines = output.split('\n').slice(1);
         const clocStatsArray = [];
-        Object.entries(clocOutputJson).forEach(([language, stats]) => {
-            if (language !== 'header') {
+        lines.forEach(line => {
+            if (line.trim().length === 0) {
+                return;
+            }
+            // fields are the split of 'files,language,blank,comment,code'
+            const fields = line.split(',');
+            const files = fields[0];
+            const language = fields[1];
+            const blank = fields[2];
+            const comment = fields[3];
+            const code = fields[4];
+            if (language !== 'SUM') {
                 const langStats = {
                     language,
-                    nFiles: stats.nFiles,
-                    blank: stats.blank,
-                    comment: stats.comment,
-                    code: stats.code,
+                    nFiles: parseInt(files),
+                    blank: parseInt(blank),
+                    comment: parseInt(comment),
+                    code: parseInt(code),
                 };
                 clocStatsArray.push(langStats);
             }
@@ -37,17 +52,25 @@ function runClocSummary(path = './', vcs) {
         return clocStatsArray;
     }));
 }
-exports.runClocSummary = runClocSummary;
+exports.clocSummary$ = clocSummary$;
 /**
  * Runs the cloc command on a Git repository and returns the result in the form of a ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
  * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
-function runClocSummaryOnGitRepo(repoPath = './') {
-    return runClocSummary(repoPath, 'git');
+function clocSummaryOnGitRepo$(repoPath = './') {
+    return clocSummary$(repoPath, 'git');
 }
-exports.runClocSummaryOnGitRepo = runClocSummaryOnGitRepo;
+exports.clocSummaryOnGitRepo$ = clocSummaryOnGitRepo$;
+function writeClocSummary(params, action = 'writeClocSummary') {
+    const [cmd, out] = clocSummaryCommand(params);
+    (0, execute_command_1.executeCommand)(action, cmd);
+    console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
+    console.log(`====>>>> cloc summary info saved on file ${out}`);
+    return out;
+}
+exports.writeClocSummary = writeClocSummary;
 /**
  * Runs the cloc command with the by-file option and writes the result to a file.
  * The result is per file, showing the number of lines in each file.
@@ -55,14 +78,32 @@ exports.runClocSummaryOnGitRepo = runClocSummaryOnGitRepo;
  * @param action The action to execute the cloc command with.
  * @returns The name of the file where the cloc info is saved.
  */
-function writeClocByfile(params, action = 'writeClocLogByFile') {
+function writeClocByfile(params, action = 'writeClocByFile') {
     const [cmd, out] = clocByFileCommand(params);
     (0, execute_command_1.executeCommand)(action, cmd);
     console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
-    console.log(`====>>>> cloc info saved on file ${out}`);
+    console.log(`====>>>> cloc by file info saved on file ${out}`);
     return out;
 }
 exports.writeClocByfile = writeClocByfile;
+/**
+ * Runs the cloc command with the by-file option and writes the result to a file.
+ * Notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
+ * The result is per file, showing the number of lines in each file.
+ * @param params The parameters to pass to the cloc command.
+ * @param action The action to execute the cloc command with.
+ * @returns An Observable that emits the name of the file written once the cloc command execution is finished.
+ */
+function writeClocByFile$(params, action = 'cloc') {
+    const [cmd, out] = clocByFileCommand(params);
+    return (0, execute_command_1.executeCommandInShellNewProcessObs)(action, cmd).pipe((0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(out), (0, rxjs_1.tap)({
+        next: (outFile) => {
+            console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
+            console.log(`====>>>> cloc info saved on file ${outFile}`);
+        },
+    }));
+}
+exports.writeClocByFile$ = writeClocByFile$;
 /**
  * Executes the cloc command in a new process and returns the stream of lines output of the cloc command execution.
  * The result is per file, showing the number of lines in each file.
@@ -73,17 +114,12 @@ exports.writeClocByfile = writeClocByfile;
  * @param writeFile Whether or not to write the output of the cloc command to a file.
  * @returns An Observable that emits the lines output of the cloc command execution.
  */
-function streamClocByfile(params, action, writeFile = true) {
+function clocByfile$(params, action, writeFile = true) {
     // execute the cloc command in a new process and return the stream of lines output of the cloc command execution
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
     const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe(ignoreUpTo('language,filename,blank,comment,code'), (0, rxjs_1.share)());
     // if writeFile is true, then calculate the name of the output file
-    let outFile = '';
-    if (writeFile) {
-        outFile = _buildClocOutfile(params, '-cloc.csv');
-        const outArg = `--out=${outFile}`;
-        args.push(outArg);
-    }
+    let outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
     // create an Observable that deletes the output file if it exists and then takes the cloc strem
     // and appends each line to the output file
     const _writeFile = (0, observable_fs_1.deleteFileObs)(outFile).pipe((0, rxjs_1.catchError)((err) => {
@@ -113,25 +149,33 @@ function streamClocByfile(params, action, writeFile = true) {
     // silently in the background without the emissione of any value since we have used the ignoreElements operator
     return (0, rxjs_1.merge)(..._streams);
 }
-exports.streamClocByfile = streamClocByfile;
+exports.clocByfile$ = clocByfile$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
-function clocByFileCommand(params) {
-    // npx cloc . --vcs=git --csv  --timeout=1000000 --out=/home/enrico/code/git-metrics/temp/git-metrics-cloc.csv --by-file
+function clocCommand(params) {
+    // npx cloc . --vcs=git --csv  --timeout=1000000
     const cd = `cd ${params.folderPath}`;
-    const program = params.useNpx ? 'npx cloc' : 'cloc';
+    const program = config_1.CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
     const clocDefPath = params.clocDefsPath ? `--force-lang-def=${params.clocDefsPath}` : '';
-    const out = _buildClocOutfile(params, '-cloc.csv');
-    const cmd = `${cd} && ${program} . --vcs=git --csv ${clocDefPath} --timeout=${config_1.CONFIG.CLOC_TIMEOUT} --out=${out} --by-file`;
+    const cmd = `${cd} && ${program} . --vcs=git --csv ${clocDefPath} --timeout=${config_1.CLOC_CONFIG.TIMEOUT}`;
+    return cmd;
+}
+function clocSummaryCommand(params) {
+    // npx cloc . --vcs=git --csv  --timeout=1000000 --out=/home/enrico/code/git-metrics/temp/git-metrics-cloc.csv
+    const out = buildClocOutfile(params, '-cloc-summary.csv');
+    const cmd = clocCommand(params) + ` --out=${out}`;
     return [cmd, out];
 }
-function buildClocOutfile(config) {
-    return _buildClocOutfile(config, '-cloc.csv');
+function clocByFileCommand(params) {
+    // npx cloc . --vcs=git --csv  --timeout=1000000 --out=/home/enrico/code/git-metrics/temp/git-metrics-cloc.csv --by-file
+    const out = buildClocOutfile(params, '-cloc-byfile.csv');
+    let cmd = clocCommand(params) + ` --out=${out}`;
+    cmd = cmd + ' --by-file';
+    return [cmd, out];
 }
-exports.buildClocOutfile = buildClocOutfile;
-function _buildClocOutfile(config, endPart) {
+function buildClocOutfile(config, endPart) {
     const outDir = config.outDir ? config.outDir : './';
     const outFile = buildOutfileName(config.outClocFile, config.folderPath, config.outClocFilePrefix, endPart);
     const out = path_1.default.resolve(path_1.default.join(outDir, outFile));
@@ -161,9 +205,9 @@ function buildOutfileName(outFile = '', repoFolder = '', prefix, postfix) {
 }
 exports.buildOutfileName = buildOutfileName;
 function clocByfileCommandWithArgs(params) {
-    const args = ['cloc', '.', '--vcs=git', '--csv', `--timeout=${config_1.CONFIG.CLOC_TIMEOUT}`, '--by-file'];
+    const args = ['cloc', '.', '--vcs=git', '--csv', `--timeout=${config_1.CLOC_CONFIG.TIMEOUT}`, '--by-file'];
     const options = { cwd: params.folderPath };
-    const cmd = params.useNpx ? 'npx' : 'cloc';
+    const cmd = config_1.CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';
     return { cmd, args, options };
 }
 /**

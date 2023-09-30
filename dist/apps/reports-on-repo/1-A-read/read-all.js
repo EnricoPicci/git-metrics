@@ -35,7 +35,7 @@ function _streamsDistinctProcesses(commitOptions, readClocOptions, outGitFile, o
     const gitLogCommits = (0, read_git_1.readAndStreamCommitsNewProces)(commitOptions, outGitFile, writeFileOnly);
     // build the streams of cloc info
     const cloc = (0, cloc_1.streamClocNewProcess)(readClocOptions, 'create cloc log');
-    const clocSummary = (0, cloc_1.streamSummaryClocNewProcess)(readClocOptions, outClocSummaryFile, 'create cloc summary log', writeFileOnly);
+    const clocSummary = (0, cloc_1.streamSummaryClocNewProcess)(readClocOptions, outClocSummaryFile, 'git');
     return { gitLogCommits, cloc, clocSummary };
 }
 //# sourceMappingURL=read-all.js.map
