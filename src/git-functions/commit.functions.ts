@@ -12,18 +12,25 @@ import { ReadGitCommitParams } from './git-params';
 //********************************************************************************************************************** */
 
 /**
- * Fetches the commits for a Git repository within a specified date range and returns them as an Observable of 
+ * Reads the commits from a Git repository within a specified date range and returns them as an Observable of 
  * CommitCompact objects.
+ * CommitCompact objects are a minimal representation of commit records containing the commit sha, date, and author.
  * @param repoPath The path to the Git repository.
  * @param fromDate The start date of the date range. Defaults to the Unix epoch.
  * @param toDate The end date of the date range. Defaults to the current date and time.
  * @returns An Observable of CommitCompact objects representing the commits within the specified date range.
  * @throws An error if `repoPath` is not provided.
  */
-export function readCommitFromLog$(repoPath: string, fromDate = new Date(0), toDate = new Date(Date.now())) {
+export function readCommitCompactFromLog$(
+    repoPath: string,
+    fromDate = new Date(0),
+    toDate = new Date(Date.now()),
+    noMerges = true
+) {
     if (!repoPath) throw new Error(`Path is mandatory`);
 
-    const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an" --no-merges`;
+    const _noMerges = noMerges ? '--no-merges' : '';
+    const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an" ${_noMerges}`;
 
     return executeCommandNewProcessToLinesObs(
         `Read commits`,
@@ -59,13 +66,13 @@ export function readCommitFromLog$(repoPath: string, fromDate = new Date(0), toD
  * @returns An Observable of a CommitCompact object representing the fetched commit.
  * @throws An error if `commitSha` or `repoPath` is not provided.
  */
-export function readOneCommitFromLog$(commitSha: string, repoPath: string, verbose = true) {
+export function readOneCommitCompactFromLog$(commitSha: string, repoPath: string, verbose = true) {
     if (!commitSha.trim()) throw new Error(`Path is mandatory`);
     if (!repoPath.trim()) throw new Error(`Repo path is mandatory`);
 
     // the -n 1 option limits the number of commits to 1
     const cmd = `cd ${repoPath} && git log --pretty=%H,%ad,%an ${commitSha} -n 1`;
-    return executeCommandObs('run git-log to find parent', cmd).pipe(
+    return executeCommandObs('read one commit from log', cmd).pipe(
         toArray(),
         map((output) => {
             const commitCompact = newCommitCompactFromGitlog(output[0]);
@@ -83,6 +90,7 @@ Command: ${cmd}`;
 
 /**
  * Reads the commits from a Git repository and writes the output to a file.
+ * For each commit all the files changed in the commit are listed with the number of lines added and deleted.
  * @param params An object containing the parameters to control the read.
  * @returns The name of the file where the output is saved.
  */
@@ -102,6 +110,7 @@ export function writeCommitLog(params: ReadGitCommitParams) {
 /**
  * Executes the `writeCommitLogCommand` function to write the commit log to a file and returns 
  * an Observable that emits the name of the file where the output is saved.
+ * For each commit all the files changed in the commit are listed with the number of lines added and deleted.
  * @param params An object containing the parameters to pass to the `writeCommitLogCommand` function.
  * @returns An Observable that emits the name of the file where the output is saved.
  */
