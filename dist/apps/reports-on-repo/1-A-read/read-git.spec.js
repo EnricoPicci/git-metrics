@@ -7,6 +7,7 @@ const observable_fs_1 = require("observable-fs");
 const read_git_1 = require("./read-git");
 const config_1 = require("../0-config/config");
 const delete_file_1 = require("../../../tools/test-helpers/delete-file");
+const commit_functions_1 = require("../../../git-functions/commit.functions");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 describe(`readCommitsCommand`, () => {
     const outDir = './temp';
@@ -73,37 +74,6 @@ describe(`readCommitsCommand`, () => {
         const [cmd, out] = (0, read_git_1.readCommitsCommand)(config);
         (0, chai_1.expect)(cmd).equal(expected);
         (0, chai_1.expect)(out).equal(expectedOutfile);
-    });
-});
-describe(`readCommits`, () => {
-    const outDir = './temp';
-    it(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
-        const outFile = 'this-git-repo-commits.log';
-        const config = {
-            repoFolderPath: './',
-            filter: ['test-data/git-repo-with-code/*.java'],
-            after: '2018-01-01',
-            outDir,
-            outFile,
-        };
-        const expectedOutFilePath = path.resolve(path.join(outDir, outFile));
-        const returnedOutFilePath = (0, read_git_1.readCommits)(config);
-        (0, chai_1.expect)(returnedOutFilePath).equal(expectedOutFilePath);
-        const outFilePath = path.join(process.cwd(), outDir, outFile);
-        (0, observable_fs_1.readLinesObs)(outFilePath).subscribe({
-            next: (lines) => {
-                (0, chai_1.expect)(lines).not.undefined;
-                // the filter applied to the read command selects 2 files which have been committed only once and therefore there are 3 lines in the file
-                // one line for the commit and one line for each file
-                // if we change and commit those files again this test will have to be adjusted
-                // we have to use files commited as part of this project to run the test about reading a git repo since we can not save another git repo
-                // (for instance a repo to be used only for this test) within another repo, so we are forced to use the project repo as the repo
-                // we read from
-                (0, chai_1.expect)(lines.length).equal(3);
-            },
-            error: (err) => done(err),
-            complete: () => done(),
-        });
     });
 });
 describe(`readCommitsNewProces`, () => {
@@ -177,7 +147,7 @@ describe(`readCommitsNewProces`, () => {
         const outGitFileNewProces = (0, read_git_1.buildGitOutfile)(Object.assign(Object.assign({}, config), { outFile: outFileNewProces }));
         (0, read_git_1.readAndStreamCommitsNewProces)(config, outGitFileNewProces)
             .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((linesReadInOtherProces) => {
-            const outFile = (0, read_git_1.readCommits)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
+            const outFile = (0, commit_functions_1.writeCommitLog)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
             return { linesReadInOtherProces, outFile };
         }), (0, rxjs_1.concatMap)(({ linesReadInOtherProces, outFile }) => {
             return (0, observable_fs_1.readLinesObs)(outFile).pipe((0, rxjs_1.map)((linesReadFromFileSaved) => ({ linesReadInOtherProces, linesReadFromFileSaved })));
@@ -216,7 +186,7 @@ describe(`readCommitsNewProces`, () => {
         const outGitFileNewProces = (0, read_git_1.buildGitOutfile)(Object.assign(Object.assign({}, config), { outFile: outFileNewProces }));
         (0, read_git_1.readAndStreamCommitsNewProces)(config, outGitFileNewProces)
             .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(() => {
-            const outFile = (0, read_git_1.readCommits)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
+            const outFile = (0, commit_functions_1.writeCommitLog)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
             return outFile;
         }), (0, rxjs_1.concatMap)((outFile) => {
             return (0, rxjs_1.forkJoin)([(0, observable_fs_1.readLinesObs)(outGitFileNewProces), (0, observable_fs_1.readLinesObs)(outFile)]);
@@ -332,7 +302,7 @@ describe(`readMultiReposCommits`, () => {
             outFilePrefix,
         };
         const thisRepoName = 'git-metrics';
-        const expectedOutFilePath = path.resolve(`${path.join(outDir, outFilePrefix)}${thisRepoName}${read_git_1.COMMITS_FILE_POSTFIX}`);
+        const expectedOutFilePath = path.resolve(`${path.join(outDir, outFilePrefix)}${thisRepoName}${commit_functions_1.COMMITS_FILE_POSTFIX}`);
         (0, read_git_1.readMultiReposCommits)(config)
             .pipe((0, rxjs_1.tap)({
             next: (returnedOutFilePaths) => {
@@ -368,7 +338,7 @@ describe(`readMultiReposCommits`, () => {
             outFilePrefix,
         };
         const thisRepoName = 'git-metrics';
-        const expectedOutFilePath = path.resolve(`${path.join(outDir, outFilePrefix)}${thisRepoName}${read_git_1.COMMITS_FILE_POSTFIX}`);
+        const expectedOutFilePath = path.resolve(`${path.join(outDir, outFilePrefix)}${thisRepoName}${commit_functions_1.COMMITS_FILE_POSTFIX}`);
         (0, read_git_1.readMultiReposCommits)(config)
             .pipe((0, rxjs_1.tap)({
             next: (returnedOutFilePaths) => {

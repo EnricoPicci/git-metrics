@@ -4,10 +4,11 @@ exports.readStreamsDistinctProcesses = exports.readAllParallel = exports.readAll
 const cloc_1 = require("./cloc");
 const read_git_1 = require("./read-git");
 const rxjs_1 = require("rxjs");
+const commit_functions_1 = require("../../../git-functions/commit.functions");
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
 function readAll(commitOptions, readClocOptions) {
     // execute the git log command to extract the commits
-    const commitLogPath = (0, read_git_1.readCommits)(commitOptions);
+    const commitLogPath = (0, commit_functions_1.writeCommitLog)(commitOptions);
     // execute the cloc commands
     const clocLogPath = (0, cloc_1.createClocLog)(readClocOptions, 'readAll-fileLinesOptions');
     const clocSummaryPath = (0, cloc_1.createSummaryClocLog)(readClocOptions);

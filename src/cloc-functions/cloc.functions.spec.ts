@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { ClocParams, buildOutfileName, clocSummary$, writeClocByFile$, writeClocSummary } from './cloc.functions';
+import { buildOutfileName, clocSummary$, writeClocByFile$, writeClocSummary } from './cloc.functions';
+import { ClocParams } from './cloc-params';
 import path from 'path';
 import { deleteFile } from '../tools/test-helpers/delete-file';
 import { concatMap, tap } from 'rxjs';

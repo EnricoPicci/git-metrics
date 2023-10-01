@@ -8,7 +8,8 @@ import {
 
 import { ConfigReadCloc } from './read-params/read-params';
 import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
-import { ClocParams, clocByfile$, clocSummary$, clocSummaryCsvRaw$, writeClocByFile$, writeClocByfile, writeClocSummary, writeClocSummary$ } from '../../../cloc-functions/cloc.functions';
+import { clocByfile$, clocSummary$, clocSummaryCsvRaw$, writeClocByFile$, writeClocByfile, writeClocSummary, writeClocSummary$ } from '../../../cloc-functions/cloc.functions';
+import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
     const params = paramsFromConfig(config);

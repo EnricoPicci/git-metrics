@@ -1,23 +1,18 @@
+import path from 'path';
+
 import { Observable, Subscriber, catchError, concatMap, defaultIfEmpty, ignoreElements, map, merge, of, share, tap } from 'rxjs';
+
+import { appendFileObs, deleteFileObs, writeFileObs, } from 'observable-fs';
+
 import { executeCommand, executeCommandInShellNewProcessObs, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { ClocLanguageStats } from './cloc.model';
-import path from 'path';
-import { appendFileObs, deleteFileObs, writeFileObs, } from 'observable-fs';
 import { CLOC_CONFIG } from './config';
+import { ClocParams } from './cloc-params';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
-
-export type ClocParams = {
-    folderPath: string;
-    outDir?: string;
-    outClocFile?: string;
-    outClocFilePrefix?: string;
-    clocDefsPath?: string;
-    vcs?: string
-};
 
 /**
  * Runs the cloc command with the summary option and returns the result in the form of a stream emitting one 

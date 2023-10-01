@@ -5,11 +5,9 @@ import { readLinesObs } from 'observable-fs';
 import { ConfigReadCommits, ConfigReadMultiReposCommits, ConfigReadTags } from './read-params/read-params';
 import {
     readCommitsCommand,
-    readCommits,
     readTags,
     readTagsCommand,
     readMultiReposCommits,
-    COMMITS_FILE_POSTFIX,
     readBranchesGraphCommand,
     readBranchesGraph,
     readAndStreamCommitsNewProces,
@@ -19,6 +17,7 @@ import {
 
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { deleteFile } from '../../../tools/test-helpers/delete-file';
+import { COMMITS_FILE_POSTFIX, writeCommitLog } from '../../../git-functions/commit.functions';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
@@ -87,40 +86,6 @@ describe(`readCommitsCommand`, () => {
         const [cmd, out] = readCommitsCommand(config);
         expect(cmd).equal(expected);
         expect(out).equal(expectedOutfile);
-    });
-});
-
-describe(`readCommits`, () => {
-    const outDir = './temp';
-    it(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
-        const outFile = 'this-git-repo-commits.log';
-        const config: ConfigReadCommits = {
-            repoFolderPath: './',
-            filter: ['test-data/git-repo-with-code/*.java'],
-            after: '2018-01-01',
-            outDir,
-            outFile,
-        };
-        const expectedOutFilePath = path.resolve(path.join(outDir, outFile));
-        const returnedOutFilePath = readCommits(config);
-        expect(returnedOutFilePath).equal(expectedOutFilePath);
-
-        const outFilePath = path.join(process.cwd(), outDir, outFile);
-
-        readLinesObs(outFilePath).subscribe({
-            next: (lines) => {
-                expect(lines).not.undefined;
-                // the filter applied to the read command selects 2 files which have been committed only once and therefore there are 3 lines in the file
-                // one line for the commit and one line for each file
-                // if we change and commit those files again this test will have to be adjusted
-                // we have to use files commited as part of this project to run the test about reading a git repo since we can not save another git repo
-                // (for instance a repo to be used only for this test) within another repo, so we are forced to use the project repo as the repo
-                // we read from
-                expect(lines.length).equal(3);
-            },
-            error: (err) => done(err),
-            complete: () => done(),
-        });
     });
 });
 
@@ -212,7 +177,7 @@ describe(`readCommitsNewProces`, () => {
             .pipe(
                 toArray(),
                 map((linesReadInOtherProces) => {
-                    const outFile = readCommits({ ...config, outFile: outFileSameProces });
+                    const outFile = writeCommitLog({ ...config, outFile: outFileSameProces });
                     return { linesReadInOtherProces, outFile };
                 }),
                 concatMap(({ linesReadInOtherProces, outFile }) => {
@@ -260,7 +225,7 @@ describe(`readCommitsNewProces`, () => {
             .pipe(
                 toArray(),
                 map(() => {
-                    const outFile = readCommits({ ...config, outFile: outFileSameProces });
+                    const outFile = writeCommitLog({ ...config, outFile: outFileSameProces });
                     return outFile;
                 }),
                 concatMap((outFile) => {

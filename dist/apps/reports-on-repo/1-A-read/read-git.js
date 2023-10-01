@@ -1,24 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOutfileName = exports.readBranchesGraphCommand = exports.readTagsCommand = exports.readCommitsCommandWithArgs = exports.readCommitsCommand = exports.buildGitOutfile = exports.readBranchesGraph = exports.readTags = exports.readMultiReposCommits = exports.readCommitsNewProcess = exports.readAndStreamCommitsNewProces = exports.readCommitsObs = exports.readCommits = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.DEFAULT_OUT_DIR = void 0;
+exports.getOutfileName = exports.readBranchesGraphCommand = exports.readTagsCommand = exports.readCommitsCommandWithArgs = exports.readCommitsCommand = exports.buildGitOutfile = exports.readBranchesGraph = exports.readTags = exports.readMultiReposCommits = exports.readCommitsNewProcess = exports.readAndStreamCommitsNewProces = exports.readCommitsObs = exports.DEFAULT_OUT_DIR = void 0;
 const path = require("path");
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const operators_1 = require("rxjs/operators");
 const execute_command_1 = require("../../../tools/execute-command/execute-command");
 const config_1 = require("../0-config/config");
+const commit_functions_1 = require("../../../git-functions/commit.functions");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 exports.DEFAULT_OUT_DIR = './';
-exports.COMMITS_FILE_POSTFIX = '-commits.log';
-exports.COMMITS_FILE_REVERSE_POSTFIX = '-commits-reverse.log';
-function readCommits(config) {
-    const [cmd, out] = readCommitsCommand(config);
-    (0, execute_command_1.executeCommand)('readCommits', cmd);
-    console.log(`====>>>> Commits read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name}`);
-    console.log(`====>>>> Output saved on file ${out}`);
-    return out;
-}
-exports.readCommits = readCommits;
 function readCommitsObs(config) {
     const [cmd, out] = readCommitsCommand(config);
     return (0, execute_command_1.executeCommandObs)('readCommits', cmd).pipe((0, operators_1.tap)({
@@ -96,7 +87,7 @@ exports.readBranchesGraph = readBranchesGraph;
 function buildGitOutfile(config) {
     let outDir = config.outDir ? config.outDir : exports.DEFAULT_OUT_DIR;
     outDir = path.resolve(outDir);
-    const _postfix = config.reverse ? exports.COMMITS_FILE_REVERSE_POSTFIX : exports.COMMITS_FILE_POSTFIX;
+    const _postfix = config.reverse ? commit_functions_1.COMMITS_FILE_REVERSE_POSTFIX : commit_functions_1.COMMITS_FILE_POSTFIX;
     const outFile = getOutfileName(config.outFile, config.outFilePrefix, config.repoFolderPath, _postfix);
     const out = path.join(outDir, outFile);
     return out;

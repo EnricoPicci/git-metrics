@@ -16,7 +16,7 @@ function calculateClocGitDiffsChildParent(commit, repoPath, languages) {
     console.log(`Starting diff for ${repoPath} -- Date: ${commit.date.toLocaleDateString()}`);
     return (0, cloc_diff_functions_1.runClocDiff)(childCommitSha, parentCommitSha, languages, repoPath).pipe((0, rxjs_1.concatMap)((clocDiff) => {
         // we read the parent of the child commit so that we can get the date of the parent commit
-        return (0, commit_functions_1.fetchOneCommit)(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(() => {
+        return (0, commit_functions_1.readOneCommitFromLog$)(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(() => {
             // in case of error we return an empty commit
             return (0, rxjs_1.of)((0, commit_functions_1.newEmptyCommit)());
         }), (0, rxjs_1.map)((parentCommit) => {

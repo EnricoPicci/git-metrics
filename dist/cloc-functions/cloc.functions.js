@@ -3,12 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildOutfileName = exports.clocByfile$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
-const rxjs_1 = require("rxjs");
-const execute_command_1 = require("../tools/execute-command/execute-command");
+exports.buildOutfileName = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
 const path_1 = __importDefault(require("path"));
+const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
+const execute_command_1 = require("../tools/execute-command/execute-command");
 const config_1 = require("./config");
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
 /**
  * Runs the cloc command with the summary option and returns the result in the form of a stream emitting one
  * ClocLanguageStats array.
@@ -19,8 +22,7 @@ const config_1 = require("./config");
  * @returns An Observable that emits a ClocLanguageStats array.
  */
 function clocSummary$(path = './', vcs, outfile = '') {
-    const _vcs = vcs ? `--vcs=${vcs}` : '';
-    return clocSummaryCsvRaw$(path, _vcs).pipe((0, rxjs_1.concatMap)((output) => {
+    return clocSummaryCsvRaw$(path, vcs).pipe((0, rxjs_1.concatMap)((output) => {
         return outfile ?
             (0, observable_fs_1.writeFileObs)(outfile, output).pipe((0, rxjs_1.map)(() => output)) :
             (0, rxjs_1.of)(output);
@@ -63,7 +65,7 @@ function clocSummaryCsvRaw$(path = './', vcs) {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
     const executable = config_1.CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
     return (0, execute_command_1.executeCommandObs)('run cloc summary', `${executable} --csv ${_vcs} --timeout=${config_1.CLOC_CONFIG.TIMEOUT} ${path}`).pipe((0, rxjs_1.map)(output => {
-        return output.split('\n');
+        return output.split('\n').filter(l => l.trim().length > 0);
     }));
 }
 exports.clocSummaryCsvRaw$ = clocSummaryCsvRaw$;
@@ -106,39 +108,6 @@ function writeClocSummary$(params) {
     return clocSummary$(folderPath, vcs, outFile).pipe((0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFile));
 }
 exports.writeClocSummary$ = writeClocSummary$;
-/**
- * Runs the cloc command with the by-file option and writes the result to a file.
- * The result is per file, showing the number of lines in each file.
- * @param params The parameters to pass to the cloc command.
- * @param action A comment describing the action we are going to perform.
- * @returns The name of the file where the cloc info is saved.
- */
-function writeClocByfile(params, action = 'writeClocByFile') {
-    const [cmd, out] = clocByFileCommand(params);
-    (0, execute_command_1.executeCommand)(action, cmd);
-    console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
-    console.log(`====>>>> cloc by file info saved on file ${out}`);
-    return out;
-}
-exports.writeClocByfile = writeClocByfile;
-/**
- * Runs the cloc command with the by-file option and writes the result to a file.
- * Notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
- * The result is per file, showing the number of lines in each file.
- * @param params The parameters to pass to the cloc command.
- * @param action A comment describing the action we are going to perform.
- * @returns An Observable that emits the name of the file written once the cloc command execution is finished.
- */
-function writeClocByFile$(params, action = 'cloc') {
-    const [cmd, out] = clocByFileCommand(params);
-    return (0, execute_command_1.executeCommandInShellNewProcessObs)(action, cmd).pipe((0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(out), (0, rxjs_1.tap)({
-        next: (outFile) => {
-            console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
-            console.log(`====>>>> cloc info saved on file ${outFile}`);
-        },
-    }));
-}
-exports.writeClocByFile$ = writeClocByFile$;
 /**
  * Executes the cloc command in a new process and returns the stream of lines output of the cloc command execution.
  * The result is per file, showing the number of lines in each file.
@@ -185,6 +154,39 @@ function clocByfile$(params, action, writeFile = true) {
     return (0, rxjs_1.merge)(..._streams);
 }
 exports.clocByfile$ = clocByfile$;
+/**
+ * Runs the cloc command with the by-file option and writes the result to a file.
+ * The result is per file, showing the number of lines in each file.
+ * @param params The parameters to pass to the cloc command.
+ * @param action A comment describing the action we are going to perform.
+ * @returns The name of the file where the cloc info is saved.
+ */
+function writeClocByfile(params, action = 'writeClocByFile') {
+    const [cmd, out] = clocByFileCommand(params);
+    (0, execute_command_1.executeCommand)(action, cmd);
+    console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
+    console.log(`====>>>> cloc by file info saved on file ${out}`);
+    return out;
+}
+exports.writeClocByfile = writeClocByfile;
+/**
+ * Runs the cloc command with the by-file option and writes the result to a file.
+ * Notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
+ * The result is per file, showing the number of lines in each file.
+ * @param params The parameters to pass to the cloc command.
+ * @param action A comment describing the action we are going to perform.
+ * @returns An Observable that emits the name of the file written once the cloc command execution is finished.
+ */
+function writeClocByFile$(params, action = 'cloc') {
+    const [cmd, out] = clocByFileCommand(params);
+    return (0, execute_command_1.executeCommandInShellNewProcessObs)(action, cmd).pipe((0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(out), (0, rxjs_1.tap)({
+        next: (outFile) => {
+            console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
+            console.log(`====>>>> cloc info saved on file ${outFile}`);
+        },
+    }));
+}
+exports.writeClocByFile$ = writeClocByFile$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */

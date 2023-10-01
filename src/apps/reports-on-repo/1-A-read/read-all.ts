@@ -8,13 +8,14 @@ import {
     createSummaryClocNewProcess,
 } from './cloc';
 import { ConfigReadCommits, ConfigReadCloc } from './read-params/read-params';
-import { buildGitOutfile, readCommits, readAndStreamCommitsNewProces, readCommitsNewProcess } from './read-git';
+import { buildGitOutfile, readAndStreamCommitsNewProces, readCommitsNewProcess } from './read-git';
 import { forkJoin } from 'rxjs';
+import { writeCommitLog } from '../../../git-functions/commit.functions';
 
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
 export function readAll(commitOptions: ConfigReadCommits, readClocOptions: ConfigReadCloc) {
     // execute the git log command to extract the commits
-    const commitLogPath = readCommits(commitOptions);
+    const commitLogPath = writeCommitLog(commitOptions);
 
     // execute the cloc commands
     const clocLogPath = createClocLog(readClocOptions, 'readAll-fileLinesOptions');
