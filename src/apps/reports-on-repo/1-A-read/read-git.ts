@@ -13,30 +13,13 @@ import {
     executeCommand,
     executeCommandInShellNewProcessObs,
     executeCommandNewProcessToLinesObs,
-    executeCommandObs,
 } from '../../../tools/execute-command/execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
-import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX } from '../../../git-functions/commit.functions';
+import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, writeCommitLog$ } from '../../../git-functions/commit.functions';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
 export const DEFAULT_OUT_DIR = './';
-
-export function readCommitsObs(config: ConfigReadCommits) {
-    const [cmd, out] = readCommitsCommand(config);
-    return executeCommandObs('readCommits', cmd).pipe(
-        tap({
-            complete: () => {
-                console.log(
-                    `====>>>> Commits read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
-                    }`,
-                );
-                console.log(`====>>>> Output saved on file ${out}`);
-            },
-        }),
-        map(() => out),
-    );
-}
 
 // reads the commits with git log and return them as a stream of lines
 export function readAndStreamCommitsNewProces(config: ConfigReadCommits, outFile: string, writeFileOnly = false) {
@@ -101,7 +84,7 @@ export function readMultiReposCommits(config: ConfigReadMultiReposCommits) {
             };
             return readSingleRepoConfig;
         })
-        .map((config) => readCommitsObs(config));
+        .map((config) => writeCommitLog$(config));
     return forkJoin(readSingleRepoConfigs);
 }
 

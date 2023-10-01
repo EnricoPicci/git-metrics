@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { map, catchError, EMPTY, concatMap, from, filter, toArray } from 'rxjs';
+import { map, catchError, EMPTY, concatMap, from, filter, toArray, tap } from 'rxjs';
 
 import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 import { CommitCompact } from './commit.model';
@@ -49,24 +49,6 @@ export function readCommitFromLog$(repoPath: string, fromDate = new Date(0), toD
 }
 
 /**
- * Reads the commits from a Git repository and writes the output to a file.
- * @param params An object containing the parameters to control the read.
- * @returns The name of the file where the output is saved.
- */
-export function writeCommitLog(params: ReadGitCommitParams) {
-    const [cmd, out] = writeCommitLogCommand(params);
-    executeCommand('readCommits', cmd);
-    console.log(
-        `====>>>> Commits read from repo in folder ${params.repoFolderPath ?
-            params.repoFolderPath :
-            path.parse(process.cwd()).name
-        }`,
-    );
-    console.log(`====>>>> Output saved on file ${out}`);
-    return out;
-}
-
-/**
  * Uses the git log command to fetch one commit given its sha.
  * Returns an Observable of a CommitCompact object representing the fetched commit.
  * Each CommitCompact object contains the commit sha, date, and author.
@@ -96,6 +78,46 @@ Command: ${cmd}`;
             // in case of error we return an error
             throw new Error(err);
         }),
+    );
+}
+
+/**
+ * Reads the commits from a Git repository and writes the output to a file.
+ * @param params An object containing the parameters to control the read.
+ * @returns The name of the file where the output is saved.
+ */
+export function writeCommitLog(params: ReadGitCommitParams) {
+    const [cmd, out] = writeCommitLogCommand(params);
+    executeCommand('write commit log', cmd);
+    console.log(
+        `====>>>> Commits read from repo in folder ${params.repoFolderPath ?
+            params.repoFolderPath :
+            path.parse(process.cwd()).name
+        }`,
+    );
+    console.log(`====>>>> Output saved on file ${out}`);
+    return out;
+}
+
+/**
+ * Executes the `writeCommitLogCommand` function to write the commit log to a file and returns 
+ * an Observable that emits the name of the file where the output is saved.
+ * @param params An object containing the parameters to pass to the `writeCommitLogCommand` function.
+ * @returns An Observable that emits the name of the file where the output is saved.
+ */
+export function writeCommitLog$(params: ReadGitCommitParams) {
+    const [cmd, out] = writeCommitLogCommand(params);
+    return executeCommandObs('write commit log', cmd).pipe(
+        tap({
+            complete: () => {
+                console.log(
+                    `====>>>> Commits read from repo in folder ${params.repoFolderPath ? params.repoFolderPath : path.parse(process.cwd()).name
+                    }`,
+                );
+                console.log(`====>>>> Output saved on file ${out}`);
+            },
+        }),
+        map(() => out),
     );
 }
 
