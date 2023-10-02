@@ -3,7 +3,7 @@ import path from 'path';
 import { tap, map, catchError, EMPTY, concatMap, filter, from, mergeMap, toArray } from 'rxjs';
 import { executeCommandObs } from '../tools/execute-command/execute-command';
 import { RepoCompact } from './repo.model';
-import { readCommitCompactFromLog$ } from './commit.functions';
+import { readCommitCompact$ } from './commit.functions';
 
 // reposInFolder returns the list of git repos paths in a given folder including subfolders
 export function reposInFolder(folderPath: string) {
@@ -89,7 +89,7 @@ export function isToBeExcluded(repoPath: string, excludeRepoPaths: string[]) {
 // newRepoCompact returns an Observable that notifies a new RepoCompact
 // filled with its commits sorted by date ascending
 export function newRepoCompact(repoPath: string, fromDate = new Date(0), toDate = new Date(Date.now())) {
-    return readCommitCompactFromLog$(repoPath, fromDate, toDate).pipe(
+    return readCommitCompact$(repoPath, fromDate, toDate).pipe(
         toArray(),
         map((commits) => {
             const repo: RepoCompact = { path: repoPath, commits };

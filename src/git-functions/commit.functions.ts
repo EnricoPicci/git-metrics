@@ -26,7 +26,7 @@ import { GitLogCommitParams } from './git-params';
  * @returns An Observable of CommitCompact objects representing the commits within the specified date range.
  * @throws An error if `repoPath` is not provided.
  */
-export function readCommitCompactFromLog$(
+export function readCommitCompact$(
     repoPath: string,
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
@@ -71,7 +71,7 @@ export function readCommitCompactFromLog$(
  * @returns An Observable of a CommitCompact object representing the fetched commit.
  * @throws An error if `commitSha` or `repoPath` is not provided.
  */
-export function readOneCommitCompactFromLog$(commitSha: string, repoPath: string, verbose = true) {
+export function readOneCommitCompact$(commitSha: string, repoPath: string, verbose = true) {
     if (!commitSha.trim()) throw new Error(`Path is mandatory`);
     if (!repoPath.trim()) throw new Error(`Repo path is mandatory`);
 
@@ -99,7 +99,7 @@ Command: ${cmd}`;
  * @param params An object containing the parameters to control the read.
  * @returns The name of the file where the output is saved.
  */
-export function writeCommitLog(params: GitLogCommitParams) {
+export function writeCommitWithFileNumstat(params: GitLogCommitParams) {
     const [cmd, out] = writeCommitEnrichedLogCommand(params);
     executeCommand('write commit log', cmd);
     console.log(
@@ -121,8 +121,8 @@ export function writeCommitLog(params: GitLogCommitParams) {
  * @param outFile The path to the file where the output should be saved. If not provided, the output is not saved to a file.
  * @returns An Observable that emits a stream of `CommitWithFileNumstat` objects representing the commits enriched with the number of lines added and removed for each file in each commit.
  */
-export function readCommitWithFileNumstatFromLog$(params: GitLogCommitParams, outFile = '') {
-    const args = readCommitWithFileNumstaFromLogCommandWithArgs(params, false);
+export function readCommitWithFileNumstat$(params: GitLogCommitParams, outFile = '') {
+    const args = readCommitWithFileNumstaCommandWithArgs(params, false);
     // _readCommitsData$ is a stream of lines which represent the result of the git log command (i.e. data about the commits)
     // it is shared since it is the upstream for two streams which are merged at the end of the function
     // if we do not share it, then the git log command is executed twice
@@ -167,7 +167,7 @@ export function readCommitWithFileNumstatFromLog$(params: GitLogCommitParams, ou
  * @param params An object containing the parameters to pass to the `writeCommitLogCommand` function.
  * @returns An Observable that emits the name of the file where the output is saved.
  */
-export function writeCommitEnrichedLog$(params: GitLogCommitParams) {
+export function writeCommitWithFileNumstat$(params: GitLogCommitParams) {
     const [cmd, out] = writeCommitEnrichedLogCommand(params);
     return executeCommandObs('write commit enriched log', cmd).pipe(
         tap({
@@ -222,7 +222,7 @@ function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
 }
 
 function writeCommitEnrichedLogCommand(params: GitLogCommitParams) {
-    const args = readCommitWithFileNumstaFromLogCommandWithArgs(params, true);
+    const args = readCommitWithFileNumstaCommandWithArgs(params, true);
     const cmdWithArgs = `git ${args.join(' ')}`;
     const out = buildGitOutfile(params);
     return [`${cmdWithArgs} > ${out}`, out];
@@ -234,7 +234,7 @@ function writeCommitEnrichedLogCommand(params: GitLogCommitParams) {
  * @param quotesForFilters A boolean indicating whether or not to use quotes for the filters.
  * @returns An array of arguments to execute the git log command with the specified parameters.
  */
-function readCommitWithFileNumstaFromLogCommandWithArgs(params: GitLogCommitParams, quotesForFilters: boolean) {
+function readCommitWithFileNumstaCommandWithArgs(params: GitLogCommitParams, quotesForFilters: boolean) {
     const repoFolder = params.repoFolderPath ? ['-C', `${params.repoFolderPath}`] : [];
     const after = params.after ? `--after=${params.after.trim()}` : '';
     const before = params.before ? `--before=${params.before.trim()} ` : '';

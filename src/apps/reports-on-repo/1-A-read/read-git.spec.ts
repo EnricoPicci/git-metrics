@@ -17,7 +17,7 @@ import {
 
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { deleteFile } from '../../../tools/test-helpers/delete-file';
-import { COMMITS_FILE_POSTFIX, writeCommitLog } from '../../../git-functions/commit.functions';
+import { COMMITS_FILE_POSTFIX, writeCommitWithFileNumstat } from '../../../git-functions/commit.functions';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
@@ -140,7 +140,7 @@ describe(`readCommitsNewProces`, () => {
             .pipe(
                 toArray(),
                 map(() => {
-                    const outFile = writeCommitLog({ ...config, outFile: outFileSameProces });
+                    const outFile = writeCommitWithFileNumstat({ ...config, outFile: outFileSameProces });
                     return outFile;
                 }),
                 concatMap((outFile) => {
@@ -177,7 +177,7 @@ describe(`readCommitsNewProcess`, () => {
         const outFile = 'this-git-repo-commits-export-new-process.log';
         const config: ConfigReadCommits = {
             repoFolderPath: process.cwd(),
-            filter: ['test-data/git-repo-with-code/*.java'],
+            filter: ['*.json'],
             after: '2018-01-01',
             outDir,
             outFile,

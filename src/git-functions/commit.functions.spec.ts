@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { readCommitCompactFromLog$, readCommitWithFileNumstatFromLog$, readOneCommitCompactFromLog$, writeCommitLog } from './commit.functions';
+import { readCommitCompact$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat } from './commit.functions';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
 import path from 'path';
@@ -8,11 +8,11 @@ import { CommitWithFileNumstats } from './commit.model';
 
 describe('readCommitFromLog$', () => {
     it('should throw an error if repoPath is not provided', () => {
-        expect(() => readCommitCompactFromLog$('')).to.throw()
+        expect(() => readCommitCompact$('')).to.throw()
     });
 
     it('should return a stream of commit objects from this repo', (done) => {
-        readCommitCompactFromLog$('./').pipe(
+        readCommitCompact$('./').pipe(
             toArray()
         ).subscribe((commits) => {
             expect(commits instanceof Array).to.be.true;
@@ -34,7 +34,7 @@ describe('readOneCommitFromLog$', () => {
     it('should throw an error if an not existing sha is provided', (done) => {
         const notExistingCommitSha = 'abc'
         const repoPath = './'
-        readOneCommitCompactFromLog$(notExistingCommitSha, repoPath, false).subscribe({
+        readOneCommitCompact$(notExistingCommitSha, repoPath, false).subscribe({
             next: () => {
                 done('should not return a value')
             },
@@ -51,7 +51,7 @@ describe('readOneCommitFromLog$', () => {
     it('should notify the first commit object of this repo', (done) => {
         const firstCommitOfThisRepo = '8767d5864e7d72df0f25915fe8e0652244eee5fa'
         const repoPath = './'
-        readOneCommitCompactFromLog$(firstCommitOfThisRepo, repoPath, false).subscribe({
+        readOneCommitCompact$(firstCommitOfThisRepo, repoPath, false).subscribe({
             next: (commitCompact) => {
                 expect(commitCompact.sha).equal(firstCommitOfThisRepo);
                 done();
@@ -77,7 +77,7 @@ describe(`writeCommitLog`, () => {
             outFile,
         };
         const expectedOutFilePath = path.resolve(path.join(outDir, outFile));
-        const returnedOutFilePath = writeCommitLog(config);
+        const returnedOutFilePath = writeCommitWithFileNumstat(config);
         expect(returnedOutFilePath).equal(expectedOutFilePath);
 
         const outFilePath = path.join(process.cwd(), outDir, outFile);
@@ -115,7 +115,7 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
 
         const outFilePath = path.join(process.cwd(), outDir, outFile);
 
-        readCommitWithFileNumstatFromLog$(params, outFilePath)
+        readCommitWithFileNumstat$(params, outFilePath)
             .pipe(
                 tap({
                     next: (data: CommitWithFileNumstats) => {
@@ -163,7 +163,7 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
         const outFilePath = path.join(process.cwd(), outDir, outFile);
 
         let _lines: string[] = []
-        readCommitWithFileNumstatFromLog$(params, outFilePath)
+        readCommitWithFileNumstat$(params, outFilePath)
             .pipe(
                 concatMap(() => readLinesObs(outFilePath)),
                 tap({
@@ -199,7 +199,7 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
         let _commit: CommitWithFileNumstats;
         let _lines: string[] = []
 
-        const notifyCommits$ = readCommitWithFileNumstatFromLog$(params, outFilePath)
+        const notifyCommits$ = readCommitWithFileNumstat$(params, outFilePath)
             .pipe(
                 tap({
                     next: (commit) => {
@@ -246,12 +246,12 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
         };
 
         // here we write the commit log synchronously on the fileWrittenSync file
-        const fileWrittenSync = writeCommitLog(params);
+        const fileWrittenSync = writeCommitWithFileNumstat(params);
 
         const outFilePath = path.join(process.cwd(), outDir, outFile);
         // here we ask to stream the commits as well as write them on the file outFilePath
         // if life is good, the file outFilePath should have the same content as the file fileWrittenSync
-        readCommitWithFileNumstatFromLog$(params, outFilePath)
+        readCommitWithFileNumstat$(params, outFilePath)
             .pipe(
                 // take the last notification so that we are sure that the stream has completed before reading the file
                 // which has been produced as part of the execution of the readCommitWithFileNumstatFromLog$ function

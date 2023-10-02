@@ -1,14 +1,14 @@
 import { tap, toArray } from "rxjs";
 import { ClocParams } from "../cloc-functions/cloc-params";
 import { clocByfile$, clocFileDictFromClocStream$ } from "../cloc-functions/cloc.functions";
-import { readCommitWithFileNumstatFromLog$ } from "../git-functions/commit.functions";
+import { readCommitWithFileNumstat$ } from "../git-functions/commit.functions";
 import { GitLogCommitParams } from "../git-functions/git-params";
 import { commitWithFileNumstatsEnrichedWithCloc$ } from "./git-cloc.functions";
 import { expect } from "chai";
 
 
 describe(`commitWithFileNumstatsEnrichedWithCloc$`, () => {
-    it.only(`read the commits from a git repo and enrich the data related to the files of that commit
+    it(`read the commits from a git repo and enrich the data related to the files of that commit
     with cloc data like lines of code, comment and blanks`, (done) => {
         const params: GitLogCommitParams = {
             repoFolderPath: process.cwd(),
@@ -17,7 +17,7 @@ describe(`commitWithFileNumstatsEnrichedWithCloc$`, () => {
             outDir: '',
         };
 
-        const commits$ = readCommitWithFileNumstatFromLog$(params);
+        const commits$ = readCommitWithFileNumstat$(params);
 
         const clocParams: ClocParams = {
             folderPath: process.cwd(),

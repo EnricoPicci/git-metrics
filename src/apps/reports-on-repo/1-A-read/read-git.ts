@@ -13,7 +13,7 @@ import {
     executeCommandInShellNewProcessObs,
 } from '../../../tools/execute-command/execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
-import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, readCommitWithFileNumstatFromLog$, writeCommitEnrichedLog$ } from '../../../git-functions/commit.functions';
+import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, readCommitWithFileNumstat$, writeCommitWithFileNumstat$ } from '../../../git-functions/commit.functions';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
@@ -21,7 +21,7 @@ export const DEFAULT_OUT_DIR = './';
 
 // reads the commits with git log and return them as a stream of lines
 export function readAndStreamCommitsNewProces(config: ConfigReadCommits, outFile: string, _writeFileOnly = false) {
-    return readCommitWithFileNumstatFromLog$(config, outFile);
+    return readCommitWithFileNumstat$(config, outFile);
 }
 
 export function readCommitsNewProcess(config: ConfigReadCommits) {
@@ -54,7 +54,7 @@ export function readMultiReposCommits(config: ConfigReadMultiReposCommits) {
             };
             return readSingleRepoConfig;
         })
-        .map((config) => writeCommitEnrichedLog$(config));
+        .map((config) => writeCommitWithFileNumstat$(config));
     return forkJoin(readSingleRepoConfigs);
 }
 
