@@ -88,10 +88,10 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const repoFolderPath = `./`;
         const outDir = `${process.cwd()}/temp`;
         const filter = ['*.ts'];
-        const after = undefined;
+        const after = new Date('2023-09-25');
         // read
         const commitOptions = { repoFolderPath, outDir, filter, reverse: true };
-        const readClocOptions = { repoFolderPath, outDir };
+        const readClocOptions = { repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
         // generation of the source streams
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);

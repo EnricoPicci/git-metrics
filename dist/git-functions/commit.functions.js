@@ -87,6 +87,15 @@ function writeCommitLog(params) {
     return out;
 }
 exports.writeCommitLog = writeCommitLog;
+/**
+ * Reads the commits from a Git repository enriched with the number of lines added and removed for each file in
+ * each commit, and writes the output to a file if an outFile is provided.
+ * The function returns an Observable that emits a stream of `CommitWithFileNumstat` objects
+ * representing the commits enriched with the number of lines added and removed for each file in each commit.
+ * @param params An object containing the parameters to pass to the `readCommitWithFileNumstaFromLogCommandWithArgs` function.
+ * @param outFile The path to the file where the output should be saved. If not provided, the output is not saved to a file.
+ * @returns An Observable that emits a stream of `CommitWithFileNumstat` objects representing the commits enriched with the number of lines added and removed for each file in each commit.
+ */
 function readCommitWithFileNumstatFromLog$(params, outFile = '') {
     const args = readCommitWithFileNumstaFromLogCommandWithArgs(params, false);
     // _readCommitsData$ is a stream of lines which represent the result of the git log command (i.e. data about the commits)

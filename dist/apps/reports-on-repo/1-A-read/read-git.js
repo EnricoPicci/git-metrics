@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOutfileName = exports.readBranchesGraphCommand = exports.readTagsCommand = exports.readCommitsCommandWithArgs = exports.readCommitsCommand = exports.buildGitOutfile = exports.readBranchesGraph = exports.readTags = exports.readMultiReposCommits = exports.readCommitsNewProcess = exports.readAndStreamCommitsNewProces = exports.DEFAULT_OUT_DIR = void 0;
 const path = require("path");
 const rxjs_1 = require("rxjs");
-const observable_fs_1 = require("observable-fs");
 const operators_1 = require("rxjs/operators");
 const execute_command_1 = require("../../../tools/execute-command/execute-command");
 const config_1 = require("../0-config/config");
@@ -11,27 +10,8 @@ const commit_functions_1 = require("../../../git-functions/commit.functions");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 exports.DEFAULT_OUT_DIR = './';
 // reads the commits with git log and return them as a stream of lines
-function readAndStreamCommitsNewProces(config, outFile, writeFileOnly = false) {
-    const { cmd, args } = readCommitsCommandWithArgs(config, false);
-    const _readCommits = (0, execute_command_1.executeCommandNewProcessToLinesObs)('readCommits', cmd, args).pipe((0, operators_1.share)());
-    const emitOutFileOrIgnoreElements = writeFileOnly
-        ? (0, rxjs_1.pipe)((0, operators_1.last)(), (0, operators_1.map)(() => outFile))
-        : (0, operators_1.ignoreElements)();
-    const _writeFile = (0, observable_fs_1.deleteFileObs)(outFile).pipe((0, operators_1.catchError)((err) => {
-        if (err.code === 'ENOENT') {
-            // emit something so that the next operation can continue
-            return (0, rxjs_1.of)(null);
-        }
-        throw new Error(err);
-    }), (0, operators_1.concatMap)(() => _readCommits), (0, operators_1.concatMap)((line) => {
-        const _line = `${line}\n`;
-        return (0, observable_fs_1.appendFileObs)(outFile, _line);
-    }), emitOutFileOrIgnoreElements);
-    const _streams = [_writeFile];
-    if (!writeFileOnly) {
-        _streams.push(_readCommits);
-    }
-    return (0, rxjs_1.merge)(..._streams);
+function readAndStreamCommitsNewProces(config, outFile, _writeFileOnly = false) {
+    return (0, commit_functions_1.readCommitWithFileNumstatFromLog$)(config, outFile);
 }
 exports.readAndStreamCommitsNewProces = readAndStreamCommitsNewProces;
 function readCommitsNewProcess(config) {

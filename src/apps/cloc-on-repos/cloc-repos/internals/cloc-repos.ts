@@ -5,8 +5,8 @@ import { concatMap, map, tap } from "rxjs";
 import { writeFileObs } from "observable-fs";
 import { toCsv } from "@enrico.piccinin/csv-tools";
 import { CONFIG } from "../../../../config";
-import { clocOnRepos } from "../../../../git-functions/repo-cloc.functions";
-import { RepoClocLanguageStats } from "../../../../git-functions/repo-cloc.model";
+import { clocOnRepos } from "../../../../git-cloc-functions/repo-cloc.functions";
+import { RepoClocLanguageStats } from "../../../../git-cloc-functions/repo-cloc.model";
 
 // calculateClocOnRepos is a function that calculates the cloc on the repos contained in a folder
 // and write the results as a json file and as a csv file

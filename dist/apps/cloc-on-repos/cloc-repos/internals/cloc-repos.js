@@ -9,7 +9,7 @@ const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const config_1 = require("../../../../config");
-const repo_cloc_functions_1 = require("../../../../git-functions/repo-cloc.functions");
+const repo_cloc_functions_1 = require("../../../../git-cloc-functions/repo-cloc.functions");
 // calculateClocOnRepos is a function that calculates the cloc on the repos contained in a folder
 // and write the results as a json file and as a csv file
 function calculateClocOnRepos(folderPath, outdir, concurrency = config_1.CONFIG.CONCURRENCY) {

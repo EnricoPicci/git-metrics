@@ -43,6 +43,7 @@ function paramsFromConfig(config) {
         outClocFile: config.outClocFile,
         outClocFilePrefix: config.outClocFilePrefix,
         clocDefsPath: config.clocDefsPath,
+        vcs: config.vcs,
     };
     return clocParams;
 }

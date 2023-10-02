@@ -26,7 +26,7 @@ describe(`createClocLog`, () => {
                 (0, chai_1.expect)(lines).not.undefined;
                 // there are 5 lines: 3 for the 3 files and 1 for the csv header, which is the first, and one for the sum which is the last
                 (0, chai_1.expect)(lines.length).equal(5);
-                const _fileName = 'hallo.java';
+                const _fileName = './hallo.java';
                 const [language, filename, blank, comment, code] = lines.find((l) => l.includes(_fileName)).split(',');
                 (0, chai_1.expect)(language).equal('Java');
                 (0, chai_1.expect)(filename).equal(`${_fileName}`);
@@ -97,7 +97,7 @@ describe(`createClocLogNewProcess`, () => {
                 (0, chai_1.expect)(lines).not.undefined;
                 // there are 5 lines: 3 for the 3 files and 1 for the csv header, which is the first, and one for the sum which is the last
                 (0, chai_1.expect)(lines.length).equal(5);
-                const _fileName = 'hallo.java';
+                const _fileName = './hallo.java';
                 const [language, filename, blank, comment, code] = lines
                     .find((l) => l.includes(_fileName))
                     .split(',');

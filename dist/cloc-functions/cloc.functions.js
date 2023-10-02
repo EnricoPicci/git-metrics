@@ -273,7 +273,10 @@ function buildOutfileName(outFile = '', repoFolder = '', prefix, postfix) {
 }
 exports.buildOutfileName = buildOutfileName;
 function clocByfileCommandWithArgs(params) {
-    const args = ['cloc', '.', '--vcs=git', '--csv', `--timeout=${config_1.CLOC_CONFIG.TIMEOUT}`, '--by-file'];
+    const args = ['cloc', '.', '--csv', `--timeout=${config_1.CLOC_CONFIG.TIMEOUT}`, '--by-file'];
+    if (params.vcs) {
+        args.push(`--vcs=${params.vcs}`);
+    }
     const options = { cwd: params.folderPath };
     const cmd = config_1.CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';
     return { cmd, args, options };
