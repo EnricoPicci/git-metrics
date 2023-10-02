@@ -6,8 +6,14 @@ import { RepoClocLanguageStats } from "./repo-cloc.model";
 import { ClocLanguageStats } from "../cloc-functions/cloc.model";
 import { reposInFolder } from "../git-functions/repo.functions";
 
-// clocOnRepos is a function that takes the path of a folder containing git repositories 
-// and returns the cloc stats for each repository
+/**
+ * Takes a folder path and returns an Observable that emits a stream of `RepoClocLanguageStats` objects 
+ * representing the cloc stats for each repository in the folder.
+ * @param folderPath The path of the folder containing the git repositories.
+ * @param concurrency The number of concurrent processes to run. Default is 10.
+ * @returns An Observable that emits a stream of `RepoClocLanguageStats` objects representing the 
+ * cloc stats for each repository in the folder.
+ */
 export function clocOnRepos(folderPath: string, concurrency = CONFIG.CONCURRENCY) {
     const total: ClocLanguageStats = {
         language: 'TOTAL',
