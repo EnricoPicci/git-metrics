@@ -1,6 +1,6 @@
 // defines the types used for the various types of data read from git
 
-import { GitFileNumstatEnrichedWithCloc } from "../../../git-cloc-functions/git-cloc.mode";
+import { GitFileNumstatEnrichedWithCloc } from "../../../git-cloc-functions/git-cloc.model";
 import { CommitWithFileNumstats } from "../../../git-functions/commit.model";
 
 // https://git-scm.com/docs/pretty-formats

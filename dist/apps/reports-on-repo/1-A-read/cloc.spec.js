@@ -156,7 +156,7 @@ describe(`streamSummaryClocNewProcess`, () => {
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
         const outFileCreatedSync = (0, cloc_1.createSummaryClocLog)(Object.assign(Object.assign({}, config), { outDir: './temp/', outClocFilePrefix: 'same-process-' }), 'test');
-        (0, cloc_1.streamSummaryClocNewProcess)(config)
+        (0, cloc_1.clocSummaryAsStreamOfStrings$)(config)
             .pipe((0, operators_1.toArray)(), (0, operators_1.concatMap)((linesReadFromStream) => (0, observable_fs_1.readLinesObs)(outFileCreatedSync).pipe((0, operators_1.map)((linesReadFromFilecreatedSync) => ({
             linesReadFromStream,
             linesReadFromFilecreatedSync,
@@ -189,7 +189,7 @@ describe(`streamSummaryClocNewProcess`, () => {
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
         const outFileSynch = (0, cloc_1.createSummaryClocLog)(Object.assign(Object.assign({}, config), { outDir: './temp/', outClocFilePrefix: 'same-process' }), 'test');
         const clocSummaryFile = path_1.default.join(process.cwd(), './temp', `${repo}-cloc-summary.csv`);
-        (0, cloc_1.streamSummaryClocNewProcess)(config, clocSummaryFile)
+        (0, cloc_1.clocSummaryAsStreamOfStrings$)(config, clocSummaryFile)
             .pipe((0, operators_1.toArray)(), (0, operators_1.concatMap)(() => (0, rxjs_1.forkJoin)([(0, observable_fs_1.readLinesObs)(outFileSynch), (0, observable_fs_1.readLinesObs)(clocSummaryFile)])), (0, operators_1.tap)({
             next: ([linesReadSync, linesReadFromFileWrittenInThisTest]) => {
                 // skip the first line which contains statistical data which vary between the different executions

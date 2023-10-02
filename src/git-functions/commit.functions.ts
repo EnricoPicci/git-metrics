@@ -2,7 +2,7 @@ import path from 'path';
 
 import {
     map, catchError, EMPTY, concatMap, from, filter, toArray, tap,
-    share, of, ignoreElements, merge, Observable, Subscriber
+    share, of, ignoreElements, merge, Observable, Subscriber, pipe
 } from 'rxjs';
 
 import { appendFileObs, deleteFileObs } from 'observable-fs';
@@ -112,6 +112,15 @@ export function writeCommitLog(params: GitLogCommitParams) {
     return out;
 }
 
+/**
+ * Reads the commits from a Git repository enriched with the number of lines added and removed for each file in 
+ * each commit, and writes the output to a file if an outFile is provided.
+ * The function returns an Observable that emits a stream of `CommitWithFileNumstat` objects 
+ * representing the commits enriched with the number of lines added and removed for each file in each commit.
+ * @param params An object containing the parameters to pass to the `readCommitWithFileNumstaFromLogCommandWithArgs` function.
+ * @param outFile The path to the file where the output should be saved. If not provided, the output is not saved to a file.
+ * @returns An Observable that emits a stream of `CommitWithFileNumstat` objects representing the commits enriched with the number of lines added and removed for each file in each commit.
+ */
 export function readCommitWithFileNumstatFromLog$(params: GitLogCommitParams, outFile = '') {
     const args = readCommitWithFileNumstaFromLogCommandWithArgs(params, false);
     // _readCommitsData$ is a stream of lines which represent the result of the git log command (i.e. data about the commits)
@@ -124,7 +133,6 @@ export function readCommitWithFileNumstatFromLog$(params: GitLogCommitParams, ou
     const _readCommitWithFileNumstat$ = _readCommitsData$.pipe(
         filter((line) => line.length > 0),
         toCommitsWithFileNumstatdata(),
-        map((commit) => newCommitWithFileNumstats(commit)),
     )
 
     // _writeCommitLog$ is a stream which writes the commits to a file if an outFile is provided
@@ -280,10 +288,20 @@ function buildOutfileName(outFile = '', repoFolder = '', prefix = '', postfix = 
     return outFile ? outFile : `${prefix}${(_repoFolderName)}${postfix}`;
 }
 
-// Custom operator which splits the content of a git log into buffers of lines whereeach buffer contains all the info
+function toCommitsWithFileNumstatdata(logFilePath?: string) {
+    return pipe(
+        commitLines(logFilePath),
+        map((lines) => {
+            const commit = newCommitWithFileNumstats(lines);
+            return commit;
+        }),
+    );
+}
+
+// Custom operator which splits the content of a git log into buffers of lines where each buffer contains all the lines
 // relative to a single git commit
 // https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
-export function toCommitsWithFileNumstatdata(logFilePath?: string) {
+function commitLines(logFilePath?: string) {
     return (source: Observable<string>) => {
         return new Observable((subscriber: Subscriber<string[]>) => {
             let buffer: string[];

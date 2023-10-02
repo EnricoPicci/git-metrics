@@ -7,7 +7,7 @@ import {
     createClocLog,
     streamClocNewProcess,
     createSummaryClocLog,
-    streamSummaryClocNewProcess,
+    clocSummaryAsStreamOfStrings$,
     createClocLogNewProcess,
     createSummaryClocNewProcess,
     clocSummaryInfo,
@@ -32,7 +32,7 @@ describe(`createClocLog`, () => {
                 expect(lines).not.undefined;
                 // there are 5 lines: 3 for the 3 files and 1 for the csv header, which is the first, and one for the sum which is the last
                 expect(lines.length).equal(5);
-                const _fileName = 'hallo.java';
+                const _fileName = './hallo.java';
                 const [language, filename, blank, comment, code] = lines.find((l) => l.includes(_fileName))!.split(',');
                 expect(language).equal('Java');
                 expect(filename).equal(`${_fileName}`);
@@ -123,7 +123,7 @@ describe(`createClocLogNewProcess`, () => {
                         expect(lines).not.undefined;
                         // there are 5 lines: 3 for the 3 files and 1 for the csv header, which is the first, and one for the sum which is the last
                         expect(lines.length).equal(5);
-                        const _fileName = 'hallo.java';
+                        const _fileName = './hallo.java';
                         const [language, filename, blank, comment, code] = lines
                             .find((l) => l.includes(_fileName))!
                             .split(',');
@@ -186,7 +186,7 @@ describe(`streamSummaryClocNewProcess`, () => {
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
         const outFileCreatedSync = createSummaryClocLog({ ...config, outDir: './temp/', outClocFilePrefix: 'same-process-' }, 'test');
 
-        streamSummaryClocNewProcess(config)
+        clocSummaryAsStreamOfStrings$(config)
             .pipe(
                 toArray(),
                 concatMap((linesReadFromStream) =>
@@ -230,7 +230,7 @@ describe(`streamSummaryClocNewProcess`, () => {
 
         const clocSummaryFile = path.join(process.cwd(), './temp', `${repo}-cloc-summary.csv`);
 
-        streamSummaryClocNewProcess(config, clocSummaryFile)
+        clocSummaryAsStreamOfStrings$(config, clocSummaryFile)
             .pipe(
                 toArray(),
                 concatMap(() => forkJoin([readLinesObs(outFileSynch), readLinesObs(clocSummaryFile)])),

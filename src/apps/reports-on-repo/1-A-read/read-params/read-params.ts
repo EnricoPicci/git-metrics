@@ -33,6 +33,7 @@ export type ConfigReadCloc = {
     outClocFile?: string;
     outClocFilePrefix?: string;
     clocDefsPath?: string;
+    vcs?: string;
 };
 
 export type ConfigReadMultiCloc = {

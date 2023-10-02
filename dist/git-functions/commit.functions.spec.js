@@ -60,7 +60,7 @@ describe('readOneCommitFromLog$', () => {
 });
 describe(`writeCommitLog`, () => {
     const outDir = './temp';
-    it.only(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
+    it(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
         const outFile = 'this-git-repo-commits.log';
         const config = {
             repoFolderPath: './',
@@ -88,5 +88,159 @@ describe(`writeCommitLog`, () => {
             complete: () => done(),
         });
     });
+});
+describe(`readCommitWithFileNumstatFromLog$`, () => {
+    const outDir = './temp';
+    it(`read the commits from a git repo and notifies them over a stream`, (done) => {
+        const outFile = 'this-git-repo-commits.log';
+        const params = {
+            repoFolderPath: process.cwd(),
+            filter: ['./*.md'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+        const outFilePath = path_1.default.join(process.cwd(), outDir, outFile);
+        (0, commit_functions_1.readCommitWithFileNumstatFromLog$)(params, outFilePath)
+            .pipe((0, rxjs_1.tap)({
+            next: (data) => {
+                (0, chai_1.expect)(data).not.undefined;
+            },
+        }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            next: (commits) => {
+                (0, chai_1.expect)(commits).not.undefined;
+                (0, chai_1.expect)(commits.length).gt(0);
+                // we take the second commit since it has all fields with defined values, even the lines added
+                // and lines deleted fields in the files data
+                const secondCommit = commits[1];
+                // all fields should be defined hence we test them with the negation operator expectedto return false
+                // in this way we test the undefined case and the null case and the empty string case and the 0 case
+                (0, chai_1.expect)(!secondCommit.authorDate).to.be.false;
+                (0, chai_1.expect)(!secondCommit.authorName).to.be.false;
+                (0, chai_1.expect)(!secondCommit.hashShort).to.be.false;
+                (0, chai_1.expect)(!secondCommit.files).to.be.false;
+                (0, chai_1.expect)(secondCommit.files.length).gt(0);
+                const firstFile = secondCommit.files[0];
+                (0, chai_1.expect)(!firstFile.linesAdded).to.be.false;
+                (0, chai_1.expect)(!firstFile.linesDeleted).to.be.false;
+                (0, chai_1.expect)(!firstFile.path).to.be.false;
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+    it(`read the commits from a git repo and write them on a file`, (done) => {
+        const outFile = 'this-git-repo-commits-write-only.log';
+        const params = {
+            repoFolderPath: process.cwd(),
+            filter: ['./*.md'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+        const outFilePath = path_1.default.join(process.cwd(), outDir, outFile);
+        let _lines = [];
+        (0, commit_functions_1.readCommitWithFileNumstatFromLog$)(params, outFilePath)
+            .pipe((0, rxjs_1.concatMap)(() => (0, observable_fs_1.readLinesObs)(outFilePath)), (0, rxjs_1.tap)({
+            next: (lines) => {
+                _lines = lines;
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => {
+                // we do the check in the complete function so that the test fails even when there are no
+                // commit lines written in the output file
+                (0, chai_1.expect)(_lines.length).gt(0);
+                done();
+            },
+        });
+    });
+    it(`read the commits from a git repo but, if there are no commits, then nothing is notified
+    and no file is written`, (done) => {
+        // we use the current timestamp to name the file so that we are sure that the file does not exist
+        const outFile = Date.now() + '-file-not-to-be-written.log';
+        const params = {
+            repoFolderPath: process.cwd(),
+            filter: ['./*.no-files-with-this-extension'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+        const outFilePath = path_1.default.join(process.cwd(), outDir, outFile);
+        let _commit;
+        let _lines = [];
+        const notifyCommits$ = (0, commit_functions_1.readCommitWithFileNumstatFromLog$)(params, outFilePath)
+            .pipe((0, rxjs_1.tap)({
+            next: (commit) => {
+                _commit = commit;
+            },
+        }));
+        const readCommitFileLog$ = (0, observable_fs_1.readLinesObs)(outFilePath).pipe((0, rxjs_1.catchError)((err) => {
+            if (err.code === 'ENOENT') {
+                // emit something so that the next operation can continue
+                return rxjs_1.EMPTY;
+            }
+            throw new Error(err);
+        }), (0, rxjs_1.tap)({
+            next: (lines) => {
+                _lines = lines;
+            },
+        }));
+        (0, rxjs_1.concat)(notifyCommits$, readCommitFileLog$)
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => {
+                // we do the check in the complete function that no commit has been notified and
+                // no line has been written in the file
+                (0, chai_1.expect)(_lines.length).equal(0);
+                (0, chai_1.expect)(_commit).undefined;
+                done();
+            },
+        });
+    });
+    it(`read the commits from a git repo using git log command - the output of the git log command is saved on a file - 
+    this file should have the same content as that of the file saved 
+    when executing the "writeCommitLog" function`, (done) => {
+        const outFile = 'this-git-repo-commits-new-process-check-file-3.log';
+        const params = {
+            repoFolderPath: process.cwd(),
+            after: '2018-01-01',
+            outDir,
+        };
+        // here we write the commit log synchronously on the fileWrittenSync file
+        const fileWrittenSync = (0, commit_functions_1.writeCommitLog)(params);
+        const outFilePath = path_1.default.join(process.cwd(), outDir, outFile);
+        // here we ask to stream the commits as well as write them on the file outFilePath
+        // if life is good, the file outFilePath should have the same content as the file fileWrittenSync
+        (0, commit_functions_1.readCommitWithFileNumstatFromLog$)(params, outFilePath)
+            .pipe(
+        // take the last notification so that we are sure that the stream has completed before reading the file
+        // which has been produced as part of the execution of the readCommitWithFileNumstatFromLog$ function
+        (0, rxjs_1.last)(), (0, rxjs_1.concatMap)(() => {
+            // read in parallel the file written syncronously and the file written as part of the execution
+            // of the readCommitWithFileNumstatFromLog$ function
+            return (0, rxjs_1.forkJoin)([(0, observable_fs_1.readLinesObs)(fileWrittenSync), (0, observable_fs_1.readLinesObs)(outFilePath)]);
+        }), (0, rxjs_1.tap)({
+            next: ([linesFromFileWrittenSync, linesReadFromFileSaved]) => {
+                (0, chai_1.expect)(linesFromFileWrittenSync.length).equal(linesReadFromFileSaved.length);
+                linesReadFromFileSaved.forEach((line, i) => {
+                    if (line !== linesFromFileWrittenSync[i]) {
+                        const otherLine = linesFromFileWrittenSync[i];
+                        console.log(line);
+                        console.log(otherLine);
+                        throw new Error(`Error in line ${i} - ${line} vs ${otherLine}`);
+                    }
+                    (0, chai_1.expect)(line === linesFromFileWrittenSync[i]).true;
+                });
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
 });
 //# sourceMappingURL=commit.functions.spec.js.map

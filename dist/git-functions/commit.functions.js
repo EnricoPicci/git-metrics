@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toCommitsWithFileNumstatdata = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.newEmptyCommitCompact = exports.writeCommitEnrichedLog$ = exports.readCommitWithFileNumstatFromLog$ = exports.writeCommitLog = exports.readOneCommitCompactFromLog$ = exports.readCommitCompactFromLog$ = void 0;
+exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.newEmptyCommitCompact = exports.writeCommitEnrichedLog$ = exports.readCommitWithFileNumstatFromLog$ = exports.writeCommitLog = exports.readOneCommitCompactFromLog$ = exports.readCommitCompactFromLog$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -93,7 +93,9 @@ function readCommitWithFileNumstatFromLog$(params, outFile = '') {
     // it is shared since it is the upstream for two streams which are merged at the end of the function
     // if we do not share it, then the git log command is executed twice
     const _readCommitsData$ = (0, execute_command_1.executeCommandNewProcessToLinesObs)('readCommits', 'git', args).pipe((0, rxjs_1.share)());
-    const _readCommitWithFileNumstat$ = _readCommitsData$.pipe((0, rxjs_1.filter)((line) => line.length > 0), toCommitsWithFileNumstatdata(), (0, rxjs_1.map)((commit) => (0, commit_model_1.newCommitWithFileNumstats)(commit)));
+    // _readCommitWithFileNumstat$ is a stream that derives from the upstream of lines notified by _readCommitsData$
+    // and transform it into a stream of CommitWithFileNumstat objects
+    const _readCommitWithFileNumstat$ = _readCommitsData$.pipe((0, rxjs_1.filter)((line) => line.length > 0), toCommitsWithFileNumstatdata());
     // _writeCommitLog$ is a stream which writes the commits to a file if an outFile is provided
     // if an outFile is provided, _writeCommitLog is a stream that writes the commits to the outFile silently
     // (silently means that it does not emit anything and completes when the writing is completed)
@@ -104,12 +106,14 @@ function readCommitWithFileNumstatFromLog$(params, outFile = '') {
             return (0, rxjs_1.of)(null);
         }
         throw new Error(err);
-    }), (0, rxjs_1.concatMap)(() => _readCommitsData$), (0, rxjs_1.concatMap)((line) => {
+    }), (0, rxjs_1.concatMap)(() => _readCommitsData$), 
+    // filter((line) => line.length > 0),
+    (0, rxjs_1.concatMap)((line) => {
         const _line = `${line}\n`;
         return (0, observable_fs_1.appendFileObs)(outFile, _line);
     }), (0, rxjs_1.ignoreElements)()) :
         rxjs_1.EMPTY;
-    return (0, rxjs_1.merge)([_readCommitWithFileNumstat$, _writeCommitLog$]);
+    return (0, rxjs_1.merge)(_readCommitWithFileNumstat$, _writeCommitLog$);
 }
 exports.readCommitWithFileNumstatFromLog$ = readCommitWithFileNumstatFromLog$;
 /**
@@ -227,10 +231,16 @@ function buildOutfileName(outFile = '', repoFolder = '', prefix = '', postfix = 
     const _repoFolderName = isCurrentFolder ? path_1.default.parse(process.cwd()).name : repoFolderName;
     return outFile ? outFile : `${prefix}${(_repoFolderName)}${postfix}`;
 }
-// Custom operator which splits the content of a git log into buffers of lines whereeach buffer contains all the info
+function toCommitsWithFileNumstatdata(logFilePath) {
+    return (0, rxjs_1.pipe)(commitLines(logFilePath), (0, rxjs_1.map)((lines) => {
+        const commit = (0, commit_model_1.newCommitWithFileNumstats)(lines);
+        return commit;
+    }));
+}
+// Custom operator which splits the content of a git log into buffers of lines where each buffer contains all the lines
 // relative to a single git commit
 // https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
-function toCommitsWithFileNumstatdata(logFilePath) {
+function commitLines(logFilePath) {
     return (source) => {
         return new rxjs_1.Observable((subscriber) => {
             let buffer;
@@ -262,7 +272,6 @@ function toCommitsWithFileNumstatdata(logFilePath) {
         });
     };
 }
-exports.toCommitsWithFileNumstatdata = toCommitsWithFileNumstatdata;
 // ALTERNATIVE VERSION
 // This is an alternative version of the above function which does use only rxJs operators and not custom operators
 //

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clocSummaryInfo = exports.buildSummaryClocOutfile = exports.buildClocOutfile = exports.createSummaryClocNewProcess = exports.streamSummaryClocNewProcess = exports.createSummaryClocLog = exports.createClocLogNewProcess = exports.streamClocNewProcess = exports.createClocLog = void 0;
+exports.clocSummaryInfo = exports.buildSummaryClocOutfile = exports.buildClocOutfile = exports.paramsFromConfig = exports.createSummaryClocNewProcess = exports.clocSummaryAsStreamOfStrings$ = exports.createSummaryClocLog = exports.createClocLogNewProcess = exports.streamClocNewProcess = exports.createClocLog = void 0;
 const path = require("path");
 const rxjs_1 = require("rxjs");
 const read_git_1 = require("./read-git");
@@ -27,10 +27,10 @@ function createSummaryClocLog(config, action = 'clocSummary') {
 }
 exports.createSummaryClocLog = createSummaryClocLog;
 // runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
-function streamSummaryClocNewProcess(config, outFile, vcs) {
+function clocSummaryAsStreamOfStrings$(config, outFile, vcs) {
     return (0, cloc_functions_1.clocSummary$)(config.repoFolderPath, vcs, outFile).pipe((0, rxjs_1.concatMap)(stats => (0, rxjs_1.from)(stats)), (0, rxjs_1.map)(stat => `${stat.nFiles},${stat.language},${stat.blank},${stat.comment},${stat.code}`));
 }
-exports.streamSummaryClocNewProcess = streamSummaryClocNewProcess;
+exports.clocSummaryAsStreamOfStrings$ = clocSummaryAsStreamOfStrings$;
 function createSummaryClocNewProcess(config, _action = 'clocSummary') {
     const params = paramsFromConfig(config);
     return (0, cloc_functions_1.writeClocSummary$)(params);
@@ -46,6 +46,7 @@ function paramsFromConfig(config) {
     };
     return clocParams;
 }
+exports.paramsFromConfig = paramsFromConfig;
 function buildClocOutfile(config) {
     return _buildClocOutfile(config, '-cloc.csv');
 }

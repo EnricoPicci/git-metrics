@@ -1,8 +1,7 @@
 import path = require('path');
-import { forkJoin, merge, Observable, of, pipe } from 'rxjs';
-import { appendFileObs, deleteFileObs } from 'observable-fs';
+import { forkJoin } from 'rxjs';
 
-import { catchError, concatMap, defaultIfEmpty, ignoreElements, last, map, share, tap } from 'rxjs/operators';
+import { defaultIfEmpty, ignoreElements, tap } from 'rxjs/operators';
 import {
     ConfigReadBrachesGraph,
     ConfigReadCommits,
@@ -12,46 +11,17 @@ import {
 import {
     executeCommand,
     executeCommandInShellNewProcessObs,
-    executeCommandNewProcessToLinesObs,
 } from '../../../tools/execute-command/execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
-import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, writeCommitEnrichedLog$ } from '../../../git-functions/commit.functions';
+import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, readCommitWithFileNumstatFromLog$, writeCommitEnrichedLog$ } from '../../../git-functions/commit.functions';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
 export const DEFAULT_OUT_DIR = './';
 
 // reads the commits with git log and return them as a stream of lines
-export function readAndStreamCommitsNewProces(config: ConfigReadCommits, outFile: string, writeFileOnly = false) {
-    const { cmd, args } = readCommitsCommandWithArgs(config, false);
-    const _readCommits = executeCommandNewProcessToLinesObs('readCommits', cmd, args).pipe(share());
-
-    const emitOutFileOrIgnoreElements = writeFileOnly
-        ? pipe(
-            last(),
-            map(() => outFile),
-        )
-        : ignoreElements();
-    const _writeFile = deleteFileObs(outFile).pipe(
-        catchError((err) => {
-            if (err.code === 'ENOENT') {
-                // emit something so that the next operation can continue
-                return of(null);
-            }
-            throw new Error(err);
-        }),
-        concatMap(() => _readCommits),
-        concatMap((line) => {
-            const _line = `${line}\n`;
-            return appendFileObs(outFile, _line);
-        }),
-        emitOutFileOrIgnoreElements,
-    );
-    const _streams: Observable<never | string>[] = [_writeFile];
-    if (!writeFileOnly) {
-        _streams.push(_readCommits);
-    }
-    return merge(..._streams);
+export function readAndStreamCommitsNewProces(config: ConfigReadCommits, outFile: string, _writeFileOnly = false) {
+    return readCommitWithFileNumstatFromLog$(config, outFile);
 }
 
 export function readCommitsNewProcess(config: ConfigReadCommits) {

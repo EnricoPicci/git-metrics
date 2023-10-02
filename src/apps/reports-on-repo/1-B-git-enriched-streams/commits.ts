@@ -4,7 +4,7 @@ import { readLineObs } from 'observable-fs';
 import { ClocDictionary, clocFileDict } from './read-cloc-log';
 
 import { DEFAUL_CONFIG } from '../0-config/config';
-import { CommitWithFileNumstatsEnrichedWithCloc, GitFileNumstatEnrichedWithCloc } from '../../../git-cloc-functions/git-cloc.mode';
+import { CommitWithFileNumstatsEnrichedWithCloc, GitFileNumstatEnrichedWithCloc } from '../../../git-cloc-functions/git-cloc.model';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 

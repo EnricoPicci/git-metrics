@@ -8,7 +8,10 @@ import {
 
 import { ConfigReadCloc } from './read-params/read-params';
 import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
-import { clocByfile$, clocSummary$, clocSummaryCsvRaw$, writeClocByFile$, writeClocByfile, writeClocSummary, writeClocSummary$ } from '../../../cloc-functions/cloc.functions';
+import {
+    clocByfile$, clocSummary$, clocSummaryCsvRaw$, writeClocByFile$,
+    writeClocByfile, writeClocSummary, writeClocSummary$
+} from '../../../cloc-functions/cloc.functions';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
@@ -32,7 +35,7 @@ export function createSummaryClocLog(config: ConfigReadCloc, action = 'clocSumma
 }
 
 // runs the cloc command and returns an Observable which is the stream of lines output of the cloc command execution
-export function streamSummaryClocNewProcess(
+export function clocSummaryAsStreamOfStrings$(
     config: ConfigReadCloc,
     outFile?: string,
     vcs?: string,
@@ -48,13 +51,14 @@ export function createSummaryClocNewProcess(config: ConfigReadCloc, _action = 'c
     return writeClocSummary$(params);
 }
 
-function paramsFromConfig(config: ConfigReadCloc) {
+export function paramsFromConfig(config: ConfigReadCloc) {
     const clocParams: ClocParams = {
         folderPath: config.repoFolderPath,
         outDir: config.outDir,
         outClocFile: config.outClocFile,
         outClocFilePrefix: config.outClocFilePrefix,
         clocDefsPath: config.clocDefsPath,
+        vcs: config.vcs,
     };
     return clocParams;
 }

@@ -6,7 +6,7 @@ import { readAll, readAllParallel, readStreamsDistinctProcesses } from '../../1-
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryInfo } from '../../1-A-read/cloc';
 
-import { enrichedCommitsStream, newGitCommit, toCommits } from '../../1-B-git-enriched-streams/commits';
+import { enrichedCommitsStream } from '../../1-B-git-enriched-streams/commits';
 import { filesStream, filesStreamFromEnrichedCommitsStream } from '../../1-B-git-enriched-streams/files';
 import { FileGitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
@@ -27,9 +27,10 @@ import {
     fileAuthorsReportGenerator,
     fileCouplingReportGenerator,
 } from './report-generators';
-import { toClocFileDict } from '../../1-B-git-enriched-streams/read-cloc-log';
 import { addProjectInfo } from '../../1-D-reports/add-project-info';
 import { addWorksheet, summaryWorkbook, writeWorkbook } from '../../1-E-summary-excel/summary-excel';
+import { commitWithFileNumstatsEnrichedWithCloc$ } from '../../../../git-cloc-functions/git-cloc.functions';
+import { clocFileDictFromClocStream$ } from '../../../../cloc-functions/cloc.functions';
 
 export const allReports = [
     FILE_CHURN_REPORT_NAME,
@@ -168,16 +169,8 @@ export function runReportsOneStream(
     const { gitLogCommits, cloc, clocSummary } = readStreamsDistinctProcesses(commitOptions, readClocOptions);
 
     // enrich git log streams
-    const clocDict = cloc.pipe(toArray(), toClocFileDict());
-    let _commitStream = clocDict.pipe(
-        concatMap((clocDict) =>
-            gitLogCommits.pipe(
-                filter((line) => line.length > 0),
-                toCommits(),
-                map((commit) => newGitCommit(commit, clocDict)),
-            ),
-        ),
-    );
+    const clocDict = clocFileDictFromClocStream$(cloc);
+    let _commitStream = commitWithFileNumstatsEnrichedWithCloc$(gitLogCommits, clocDict)
     _commitStream = after ? _commitStream.pipe(filter((c) => c.committerDate > _after)) : _commitStream;
     _commitStream = _commitStream.pipe(share());
 

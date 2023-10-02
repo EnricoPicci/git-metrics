@@ -78,7 +78,7 @@ describe(`readCommitsCommand`, () => {
 });
 describe(`readCommitsNewProces`, () => {
     const outDir = './temp';
-    it.only(`read the commits from a git repo using git log command running on a different process`, (done) => {
+    it(`read the commits from a git repo using git log command running on a different process`, (done) => {
         const outFile = 'this-git-repo-commits.log';
         const config = {
             repoFolderPath: process.cwd(),
@@ -165,7 +165,7 @@ describe(`readCommitsNewProces`, () => {
                 linesReadFromFileSaved.forEach((line, i) => {
                     (0, chai_1.expect)(line === linesReadInOtherProces[i]).true;
                 });
-                (0, chai_1.expect)(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length + 1);
+                (0, chai_1.expect)(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length);
             },
         }))
             .subscribe({
@@ -204,7 +204,7 @@ describe(`readCommitsNewProces`, () => {
                 linesReadFromFileSaved.forEach((line, i) => {
                     (0, chai_1.expect)(line === linesReadInOtherProces[i]).true;
                 });
-                (0, chai_1.expect)(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length + 1);
+                (0, chai_1.expect)(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length);
             },
         }))
             .subscribe({

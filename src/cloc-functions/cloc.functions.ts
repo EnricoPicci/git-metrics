@@ -1,12 +1,12 @@
 import path from 'path';
 
-import { Observable, Subscriber, catchError, concatMap, defaultIfEmpty, ignoreElements, map, merge, of, share, tap } from 'rxjs';
+import { Observable, Subscriber, catchError, concatMap, defaultIfEmpty, ignoreElements, map, merge, of, pipe, share, tap, toArray } from 'rxjs';
 
-import { appendFileObs, deleteFileObs, writeFileObs, } from 'observable-fs';
+import { appendFileObs, deleteFileObs, readLinesObs, writeFileObs, } from 'observable-fs';
 
 import { executeCommand, executeCommandInShellNewProcessObs, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 
-import { ClocLanguageStats } from './cloc.model';
+import { ClocDictionary, ClocFileInfo, ClocLanguageStats } from './cloc.model';
 import { CLOC_CONFIG } from './config';
 import { ClocParams } from './cloc-params';
 
@@ -221,6 +221,38 @@ export function writeClocByFile$(params: ClocParams, action = 'cloc') {
     );
 }
 
+/**
+ * Reads a cloc log file and returns an Observable that emits a dictionary of ClocFileInfo objects, 
+ * where each object represents the cloc info for a file.
+ * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
+ * If the cloc log file is not found, the function logs a message to the console and returns an Observable that emits 
+ * an empty dictionary.
+ * @param clocLogPath The path to the cloc log file.
+ * @returns An Observable that emits a dictionary of ClocFileInfo objects representing the cloc info for each file in the cloc log.
+ */
+export function clocFileDictFromClocLogFile$(clocLogPath: string) {
+    return readLinesObs(clocLogPath).pipe(
+        toClocFileDict(clocLogPath),
+        catchError((err) => {
+            if (err.code === 'ENOENT') {
+                console.log(`!!!!!!!! file ${clocLogPath} not found`);
+                return of({} as ClocDictionary);
+            }
+            throw err;
+        }),
+    );
+}
+
+/**
+ * Takes an Observable of strings representing the output of the cloc command (with the by-file option) and 
+ * returns an Observable that emits a dictionary of ClocFileInfo objects, where each object represents the cloc info for a file.
+ * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
+ * @param cloc$ An Observable of strings representing the output of the cloc command.
+ * @returns An Observable that emits a dictionary of ClocFileInfo objects representing the cloc info for each file in the cloc log.
+ */
+export function clocFileDictFromClocStream$(cloc$: Observable<string>) {
+    return cloc$.pipe(toArray(), toClocFileDict());
+}
 
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
@@ -231,8 +263,9 @@ function clocCommand(params: ClocParams) {
     // npx cloc . --vcs=git --csv  --timeout=1000000
     const cd = `cd ${params.folderPath}`;
     const program = CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
+    const vcs = params.vcs ? `--vcs=${params.vcs}` : '';
     const clocDefPath = params.clocDefsPath ? `--force-lang-def=${params.clocDefsPath}` : '';
-    const cmd = `${cd} && ${program} . --vcs=git --csv ${clocDefPath} --timeout=${CLOC_CONFIG.TIMEOUT}`;
+    const cmd = `${cd} && ${program} . ${vcs} --csv ${clocDefPath} --timeout=${CLOC_CONFIG.TIMEOUT}`;
     return cmd;
 }
 function clocSummaryCommand(params: ClocParams) {
@@ -279,7 +312,10 @@ export function buildOutfileName(outFile = '', repoFolder = '', prefix?: string,
 }
 
 function clocByfileCommandWithArgs(params: ClocParams) {
-    const args = ['cloc', '.', '--vcs=git', '--csv', `--timeout=${CLOC_CONFIG.TIMEOUT}`, '--by-file'];
+    const args = ['cloc', '.', '--csv', `--timeout=${CLOC_CONFIG.TIMEOUT}`, '--by-file'];
+    if (params.vcs) {
+        args.push(`--vcs=${params.vcs}`);
+    }
     const options = { cwd: params.folderPath };
     const cmd = CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';
     return { cmd, args, options };
@@ -312,4 +348,65 @@ function ignoreUpTo(startToken: string) {
             };
         });
     };
+}
+
+/**
+ * Returns a custom rxjs operator that expects a stream emitting an array of lines representing the output of a cloc command 
+ * (with the by-file option), and returns a stream that notifies a dictionary of ClocFileInfo objects, where each object 
+ * represents the cloc info for a file.
+ * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
+ * @param clocLogPath The path to the cloc log file. If not provided, an empty dictionary is returned.
+ * @returns A custom rxjs operator that turns a stream of lines from a cloc file into a stream which notifies a ClocDictionary.
+ * @throws An error if the format of a line in the cloc log is not as expected, or if a file name is the empty string or present more than once in the cloc log.
+ */
+export function toClocFileDict(clocLogPath?: string) {
+    const clocFileMsg = clocLogPath ? ` - cloc log file ${clocLogPath}` : '';
+
+    return pipe(
+        // remove the first line which contains the csv header
+        map((lines: string[]) => lines.slice(1)),
+        // remove the last line which contains the total
+        map((lines) => {
+            let sumLineIndex: number | undefined = undefined;
+            for (let i = lines.length - 1; i >= 0; i--) {
+                if (lines[i].slice(0, 3) === 'SUM') {
+                    sumLineIndex = i;
+                    break;
+                }
+            }
+            if (sumLineIndex === undefined) {
+                throw new Error(`No line with SUM found`);
+            }
+            return lines.slice(0, sumLineIndex);
+        }),
+        map((lines) => {
+            return lines.reduce((dict, line) => {
+                const clocInfo = line.trim().split(',');
+                if (clocInfo.length !== 5) {
+                    throw new Error(`Format of cloc line not as expected: ${line} ${clocFileMsg}`);
+                }
+                const [language, filename, blank, comment, code] = clocInfo;
+                if (filename.trim().length === 0) {
+                    throw new Error(`The file name in line ${clocInfo} is the empty string ${clocFileMsg}`);
+                }
+                if (dict[filename]) {
+                    throw new Error(`File ${filename} present more than once in cloc log ${clocFileMsg}`);
+                }
+                const stat: ClocFileInfo = {
+                    language,
+                    filename,
+                    blank: parseInt(blank),
+                    comment: parseInt(comment),
+                    code: parseInt(code),
+                }
+                dict[filename] = stat;
+                return dict;
+            }, {} as ClocDictionary);
+        }),
+        tap({
+            next: (dict) => {
+                console.log(`====>>>> cloc info read for ${Object.keys(dict).length} ${clocFileMsg}`);
+            },
+        }),
+    );
 }

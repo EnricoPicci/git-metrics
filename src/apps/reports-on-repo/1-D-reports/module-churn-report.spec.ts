@@ -227,7 +227,7 @@ describe(`projectAndModuleChurnReport`, () => {
 
         // read
         const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, reverse: true };
-        const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
+        const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
         // generation of the source streams
         const _commitStream = commitsStream(commitLogPath);

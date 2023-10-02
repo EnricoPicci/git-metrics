@@ -3,7 +3,7 @@ import path from 'path';
 import { tap } from 'rxjs';
 import { runRepoCouplingReport } from './run-repo-coupling-report-core';
 
-describe(`runRepoCouplingReport`, () => {
+describe(`runRepoCouplingReport - very slow test`, () => {
     it(`read git, runs cloc and run the reports on this project and its repo`, (done) => {
         const repoFolderPath_1 = process.cwd();
         const repoFolderPath_2 = process.cwd();

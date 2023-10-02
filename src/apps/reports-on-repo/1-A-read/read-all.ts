@@ -1,16 +1,17 @@
 import {
     buildSummaryClocOutfile,
     createClocLog,
-    streamClocNewProcess,
     createSummaryClocLog,
-    streamSummaryClocNewProcess,
+    clocSummaryAsStreamOfStrings$,
     createClocLogNewProcess,
     createSummaryClocNewProcess,
+    paramsFromConfig,
 } from './cloc';
 import { ConfigReadCommits, ConfigReadCloc } from './read-params/read-params';
 import { buildGitOutfile, readAndStreamCommitsNewProces, readCommitsNewProcess } from './read-git';
 import { forkJoin } from 'rxjs';
 import { writeCommitLog } from '../../../git-functions/commit.functions';
+import { clocByfile$ } from '../../../cloc-functions/cloc.functions';
 
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
 export function readAll(commitOptions: ConfigReadCommits, readClocOptions: ConfigReadCloc) {
@@ -59,8 +60,9 @@ function _streamsDistinctProcesses(
     const gitLogCommits = readAndStreamCommitsNewProces(commitOptions, outGitFile, writeFileOnly);
 
     // build the streams of cloc info
-    const cloc = streamClocNewProcess(readClocOptions, 'create cloc log');
-    const clocSummary = streamSummaryClocNewProcess(
+    const params = paramsFromConfig(readClocOptions);
+    const cloc = clocByfile$(params, 'create cloc log', true)
+    const clocSummary = clocSummaryAsStreamOfStrings$(
         readClocOptions,
         outClocSummaryFile,
         'git',

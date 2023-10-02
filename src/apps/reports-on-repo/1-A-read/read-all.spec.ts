@@ -1,17 +1,16 @@
 import { expect } from 'chai';
 import { deleteFileObs, readLinesObs } from 'observable-fs';
-import { concatMap, forkJoin, tap } from 'rxjs';
+import { catchError, concatMap, forkJoin, of, tap } from 'rxjs';
 import { readAllParallel } from './read-all';
 import { ConfigReadCloc, ConfigReadCommits } from './read-params/read-params';
 
-describe(`readWriteFilesAllParallel`, () => {
-    it(`performs all the read operations concurrently`, () => {
-        const repoFolderPath = process.cwd();
+describe(`readAllParallel`, () => {
+    it(`performs all the read operations concurrently`, (done) => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = 'read-all-concurrent';
 
         const gitCommitConfig: ConfigReadCommits = {
-            repoFolderPath,
+            repoFolderPath: process.cwd(),
             filter: ['test-data/git-repo-with-code/*.java'],
             after: '2018-01-01',
             outDir,
@@ -19,7 +18,7 @@ describe(`readWriteFilesAllParallel`, () => {
         };
 
         const clocConfig: ConfigReadCloc = {
-            repoFolderPath,
+            repoFolderPath: './src',  // cloc only on src to speed up the test
             outDir,
             outClocFilePrefix: `${outFile}-`,
         };
@@ -28,10 +27,10 @@ describe(`readWriteFilesAllParallel`, () => {
         readAllParallel(gitCommitConfig, clocConfig)
             .pipe(
                 tap({
-                    next: (paths) => {
-                        paths.forEach((path) => {
-                            expect(path.length).gt(1);
-                        });
+                    next: ([gitLogPath, clocByFilePath, clocSummaryPath]) => {
+                        expect(gitLogPath.length).gt(0);
+                        expect(clocByFilePath.length).gt(0);
+                        expect(clocSummaryPath.length).gt(0);
                     },
                 }),
                 concatMap((paths) => {
@@ -40,15 +39,22 @@ describe(`readWriteFilesAllParallel`, () => {
                 }),
                 tap({
                     next: (linesReadArray) => {
+                        // check that some lines have been written to the files
                         linesReadArray.forEach((linesRead) => {
                             expect(linesRead.length).gt(1);
                         });
                     },
                 }),
                 concatMap(() => {
-                    return forkJoin(_paths.map((path) => deleteFileObs(path)));
+                    return forkJoin(_paths.map((path) => deleteFileObs(path))).pipe(
+                        tap(() => done())
+                    );
+                }),
+                catchError((err) => {
+                    done(err);
+                    return of(null);
                 }),
             )
             .subscribe();
-    });
+    }).timeout(10000);
 });

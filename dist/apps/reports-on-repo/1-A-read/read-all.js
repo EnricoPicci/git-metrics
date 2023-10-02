@@ -5,6 +5,7 @@ const cloc_1 = require("./cloc");
 const read_git_1 = require("./read-git");
 const rxjs_1 = require("rxjs");
 const commit_functions_1 = require("../../../git-functions/commit.functions");
+const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
 function readAll(commitOptions, readClocOptions) {
     // execute the git log command to extract the commits
@@ -35,8 +36,9 @@ function _streamsDistinctProcesses(commitOptions, readClocOptions, outGitFile, o
     // build the stream of commits
     const gitLogCommits = (0, read_git_1.readAndStreamCommitsNewProces)(commitOptions, outGitFile, writeFileOnly);
     // build the streams of cloc info
-    const cloc = (0, cloc_1.streamClocNewProcess)(readClocOptions, 'create cloc log');
-    const clocSummary = (0, cloc_1.streamSummaryClocNewProcess)(readClocOptions, outClocSummaryFile, 'git');
+    const params = (0, cloc_1.paramsFromConfig)(readClocOptions);
+    const cloc = (0, cloc_functions_1.clocByfile$)(params, 'create cloc log', true);
+    const clocSummary = (0, cloc_1.clocSummaryAsStreamOfStrings$)(readClocOptions, outClocSummaryFile, 'git');
     return { gitLogCommits, cloc, clocSummary };
 }
 //# sourceMappingURL=read-all.js.map
