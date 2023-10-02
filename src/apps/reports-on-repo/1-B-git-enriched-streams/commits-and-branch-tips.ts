@@ -1,5 +1,6 @@
 import { map, pipe } from 'rxjs';
-import { GitCommitEnriched, GitCommitEnrichedWithBranchTips } from '../1-B-git-enriched-types/git-types';
+import { GitCommitEnrichedWithBranchTips } from '../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../git-functions/commit.model";
 
 export function commitWithBranchTips() {
     return pipe(addBranchTips());
@@ -8,7 +9,7 @@ export function commitWithBranchTips() {
 export function addBranchTips() {
     let currentBranchTips: any[] = [];
     return pipe(
-        map((commit: GitCommitEnriched) => {
+        map((commit: CommitWithFileNumstats) => {
             const _parents = commit.parents;
             const isMerge = _parents.length > 1;
             const { updatedBranchTips, isAdditionalBranchTip } = updateCurrentBranchTips(

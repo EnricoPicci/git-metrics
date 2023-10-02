@@ -2,9 +2,9 @@ import { Observable, Subscriber } from 'rxjs';
 import { map, filter, concatMap, tap } from 'rxjs/operators';
 import { readLineObs } from 'observable-fs';
 import { ClocDictionary, clocFileDict } from './read-cloc-log';
-import { GitCommitEnriched, GitFileNumstatEnriched } from '../1-B-git-enriched-types/git-types';
 
 import { DEFAUL_CONFIG } from '../0-config/config';
+import { CommitWithFileNumstatsEnrichedWithCloc, GitFileNumstatEnrichedWithCloc } from '../../../git-cloc-functions/git-cloc.mode';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
@@ -42,7 +42,7 @@ ${firstLine} (length ${commitData.length})`,
         );
     }
     const files = commitRecInfo.slice(1).map((line) => newGitFileNumstat(line, clocDict));
-    const commitRec: GitCommitEnriched = {
+    const commitRec: CommitWithFileNumstatsEnrichedWithCloc = {
         hashShort: commitData[1],
         authorDate: new Date(commitData[2]),
         authorName: commitData[3],
@@ -64,11 +64,11 @@ function newGitFileNumstat(fileInfo: string, clocDict?: ClocDictionary) {
     let linesDeleted = parseInt(fileNumstatData[1]);
     linesAdded = isNaN(linesAdded) ? 0 : linesAdded;
     linesDeleted = isNaN(linesDeleted) ? 0 : linesDeleted;
-    const fileNumstat: GitFileNumstatEnriched = {
+    const fileNumstat: GitFileNumstatEnrichedWithCloc = {
         linesAdded,
         linesDeleted,
         path: filePathFromCommitPath(fileNumstatData[2]),
-        cloc: 0,
+        code: 0,
         comment: 0,
         blank: 0,
     };
@@ -80,7 +80,7 @@ function newGitFileNumstat(fileInfo: string, clocDict?: ClocDictionary) {
         // such files though may be tracked by git, therefore we need to check that the file path is actually one of the keys of the
         // dictionary built with cloc
         if (clocDict[_path]) {
-            fileNumstat.cloc = clocDict[_path].code;
+            fileNumstat.code = clocDict[_path].code;
             fileNumstat.comment = clocDict[_path].comment;
             fileNumstat.blank = clocDict[_path].blank;
         }

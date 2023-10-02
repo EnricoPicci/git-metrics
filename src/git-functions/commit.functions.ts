@@ -1,11 +1,16 @@
 import path from 'path';
 
-import { map, catchError, EMPTY, concatMap, from, filter, toArray, tap } from 'rxjs';
+import {
+    map, catchError, EMPTY, concatMap, from, filter, toArray, tap,
+    share, of, ignoreElements, merge, Observable, Subscriber
+} from 'rxjs';
+
+import { appendFileObs, deleteFileObs } from 'observable-fs';
 
 import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
-import { CommitCompact } from './commit.model';
+import { CommitCompact, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
-import { ReadGitCommitParams } from './git-params';
+import { GitLogCommitParams } from './git-params';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -94,8 +99,8 @@ Command: ${cmd}`;
  * @param params An object containing the parameters to control the read.
  * @returns The name of the file where the output is saved.
  */
-export function writeCommitLog(params: ReadGitCommitParams) {
-    const [cmd, out] = writeCommitLogCommand(params);
+export function writeCommitLog(params: GitLogCommitParams) {
+    const [cmd, out] = writeCommitEnrichedLogCommand(params);
     executeCommand('write commit log', cmd);
     console.log(
         `====>>>> Commits read from repo in folder ${params.repoFolderPath ?
@@ -107,6 +112,46 @@ export function writeCommitLog(params: ReadGitCommitParams) {
     return out;
 }
 
+export function readCommitWithFileNumstatFromLog$(params: GitLogCommitParams, outFile = '') {
+    const args = readCommitWithFileNumstaFromLogCommandWithArgs(params, false);
+    // _readCommitsData$ is a stream of lines which represent the result of the git log command (i.e. data about the commits)
+    // it is shared since it is the upstream for two streams which are merged at the end of the function
+    // if we do not share it, then the git log command is executed twice
+    const _readCommitsData$ = executeCommandNewProcessToLinesObs('readCommits', 'git', args).pipe(share());
+
+    // _readCommitWithFileNumstat$ is a stream that derives from the upstream of lines notified by _readCommitsData$
+    // and transform it into a stream of CommitWithFileNumstat objects
+    const _readCommitWithFileNumstat$ = _readCommitsData$.pipe(
+        filter((line) => line.length > 0),
+        toCommitsWithFileNumstatdata(),
+        map((commit) => newCommitWithFileNumstats(commit)),
+    )
+
+    // _writeCommitLog$ is a stream which writes the commits to a file if an outFile is provided
+    // if an outFile is provided, _writeCommitLog is a stream that writes the commits to the outFile silently
+    // (silently means that it does not emit anything and completes when the writing is completed)
+    // if no outFile, _writeCommitLog is the EMPTY stream, i.e. a stream that emits nothing and immediately completes
+    const _writeCommitLog$ = outFile ? deleteFileObs(outFile).pipe(
+        catchError((err) => {
+            if (err.code === 'ENOENT') {
+                // emit something so that the next operation can continue
+                return of(null);
+            }
+            throw new Error(err);
+        }),
+        concatMap(() => _readCommitsData$),
+        // filter((line) => line.length > 0),
+        concatMap((line) => {
+            const _line = `${line}\n`;
+            return appendFileObs(outFile, _line);
+        }),
+        ignoreElements(),
+    ) :
+        EMPTY;
+
+    return merge(_readCommitWithFileNumstat$, _writeCommitLog$);
+}
+
 /**
  * Executes the `writeCommitLogCommand` function to write the commit log to a file and returns 
  * an Observable that emits the name of the file where the output is saved.
@@ -114,9 +159,9 @@ export function writeCommitLog(params: ReadGitCommitParams) {
  * @param params An object containing the parameters to pass to the `writeCommitLogCommand` function.
  * @returns An Observable that emits the name of the file where the output is saved.
  */
-export function writeCommitLog$(params: ReadGitCommitParams) {
-    const [cmd, out] = writeCommitLogCommand(params);
-    return executeCommandObs('write commit log', cmd).pipe(
+export function writeCommitEnrichedLog$(params: GitLogCommitParams) {
+    const [cmd, out] = writeCommitEnrichedLogCommand(params);
+    return executeCommandObs('write commit enriched log', cmd).pipe(
         tap({
             complete: () => {
                 console.log(
@@ -135,27 +180,11 @@ export function writeCommitLog$(params: ReadGitCommitParams) {
  * i.e. 1970-01-01.
  * @returns A new `CommitCompact` object with no sha, author, and the date set to the beginning of the Unix epoch.
  */
-export function newEmptyCommit() {
+export function newEmptyCommitCompact() {
     const commit: CommitCompact = {
         sha: '',
         date: new Date(0),
         author: '',
-    };
-    return commit;
-}
-
-/**
- * Returns a new `CommitCompact` object with the given sha, author and date starting from a string in the format 
- * sha,date,author received from the git log command.
- * @param commitDataFromGitlog A string in the format sha,date,author received from the git log command.
- * @returns A new `CommitCompact` object with the specified sha, author and date.
- */
-export function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
-    const shaDateAuthor = commitDataFromGitlog.split(',');
-    const commit: CommitCompact = {
-        sha: shaDateAuthor[0],
-        date: new Date(shaDateAuthor[1]),
-        author: shaDateAuthor[2],
     };
     return commit;
 }
@@ -165,15 +194,39 @@ export function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
+
 const SEP = GIT_CONFIG.COMMIT_REC_SEP;
 
-function writeCommitLogCommand(params: ReadGitCommitParams) {
-    const { cmd, args } = writeCommitLogCommandWithArgs(params, true);
-    const cmdWithArgs = `${cmd} ${args.join(' ')}`;
+/**
+ * Returns a new `CommitCompact` object with the given sha, author and date starting from a string in the format 
+ * sha,date,author received from the git log command.
+ * @param commitDataFromGitlog A string in the format sha,date,author received from the git log command.
+ * @returns A new `CommitCompact` object with the specified sha, author and date.
+ */
+function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
+    const shaDateAuthor = commitDataFromGitlog.split(',');
+    const commit: CommitCompact = {
+        sha: shaDateAuthor[0],
+        date: new Date(shaDateAuthor[1]),
+        author: shaDateAuthor[2],
+    };
+    return commit;
+}
+
+function writeCommitEnrichedLogCommand(params: GitLogCommitParams) {
+    const args = readCommitWithFileNumstaFromLogCommandWithArgs(params, true);
+    const cmdWithArgs = `git ${args.join(' ')}`;
     const out = buildGitOutfile(params);
     return [`${cmdWithArgs} > ${out}`, out];
 }
-function writeCommitLogCommandWithArgs(params: ReadGitCommitParams, quotesForFilters: boolean) {
+/**
+ * Returns an object containing the command and arguments to execute the git log command with the specified parameters.
+ * The command returns the commit history enriched with the number of lines added and removed for each file in each commit.
+ * @param params An object containing the parameters to pass to the git log command.
+ * @param quotesForFilters A boolean indicating whether or not to use quotes for the filters.
+ * @returns An array of arguments to execute the git log command with the specified parameters.
+ */
+function readCommitWithFileNumstaFromLogCommandWithArgs(params: GitLogCommitParams, quotesForFilters: boolean) {
     const repoFolder = params.repoFolderPath ? ['-C', `${params.repoFolderPath}`] : [];
     const after = params.after ? `--after=${params.after.trim()}` : '';
     const before = params.before ? `--before=${params.before.trim()} ` : '';
@@ -206,15 +259,12 @@ function writeCommitLogCommandWithArgs(params: ReadGitCommitParams, quotesForFil
         const resp = !!a && a.length > 0;
         return resp;
     });
-    return {
-        cmd: `git`,
-        args,
-    };
+    return args;
 }
 const DEFAULT_OUT_DIR = './';
 export const COMMITS_FILE_POSTFIX = '-commits.log';
 export const COMMITS_FILE_REVERSE_POSTFIX = '-commits-reverse.log';
-function buildGitOutfile(params: ReadGitCommitParams) {
+function buildGitOutfile(params: GitLogCommitParams) {
     let outDir = params.outDir ? params.outDir : DEFAULT_OUT_DIR;
     outDir = path.resolve(outDir);
     const _postfix = params.reverse ? COMMITS_FILE_REVERSE_POSTFIX : COMMITS_FILE_POSTFIX;
@@ -229,3 +279,67 @@ function buildOutfileName(outFile = '', repoFolder = '', prefix = '', postfix = 
     const _repoFolderName = isCurrentFolder ? path.parse(process.cwd()).name : repoFolderName;
     return outFile ? outFile : `${prefix}${(_repoFolderName)}${postfix}`;
 }
+
+// Custom operator which splits the content of a git log into buffers of lines whereeach buffer contains all the info
+// relative to a single git commit
+// https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
+export function toCommitsWithFileNumstatdata(logFilePath?: string) {
+    return (source: Observable<string>) => {
+        return new Observable((subscriber: Subscriber<string[]>) => {
+            let buffer: string[];
+            const subscription = source.subscribe({
+                next: (line) => {
+                    const isStartOfBuffer = line.length > 0 && line.slice(0, SEP.length) === SEP;
+                    if (isStartOfBuffer) {
+                        if (buffer) {
+                            subscriber.next(buffer);
+                        }
+                        buffer = [];
+                    }
+                    buffer.push(line);
+                },
+                error: (err) => subscriber.error(err),
+                complete: () => {
+                    if (!buffer) {
+                        const logPathMsg = logFilePath ? `in file ${logFilePath}` : '';
+                        console.warn(`!!!!!!!!!!!!!>>>>  No commits found ${logPathMsg}`);
+                        subscriber.complete();
+                    }
+                    subscriber.next(buffer);
+                    subscriber.complete();
+                },
+            });
+            return () => {
+                subscription.unsubscribe();
+            };
+        });
+    };
+}
+// ALTERNATIVE VERSION
+// This is an alternative version of the above function which does use only rxJs operators and not custom operators
+//
+// export function splitCommits(logFilePath: string) {
+//     let buffer: string[] = [];
+//     const lastCommit = new Subject<Array<string>>();
+//     const _commits = readLineObs(logFilePath).pipe(
+//         filter((line) => line.length > 0),
+//         map((line) => {
+//             if (line.slice(0, SEP.length) === SEP) {
+//                 const commit = buffer;
+//                 buffer = [line];
+//                 return commit;
+//             }
+//             buffer.push(line);
+//             return null;
+//         }),
+//         filter((buffer) => !!buffer),
+//         tap({
+//             complete: () => {
+//                 lastCommit.next(buffer);
+//                 lastCommit.complete();
+//             },
+//         }),
+//         skip(1),
+//     );
+//     return merge(_commits, lastCommit);
+// }

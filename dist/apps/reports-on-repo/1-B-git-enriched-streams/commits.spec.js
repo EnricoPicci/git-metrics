@@ -72,7 +72,7 @@ describe(`enrichedCommitsStream`, () => {
                 (0, chai_1.expect)(commit.files).not.undefined;
                 (0, chai_1.expect)(commit.files.length).gt(0);
                 commit.files.forEach((f) => {
-                    (0, chai_1.expect)(f.cloc).equal(0);
+                    (0, chai_1.expect)(f.code).equal(0);
                     (0, chai_1.expect)(f.comment).equal(0);
                     (0, chai_1.expect)(f.blank).equal(0);
                 });
@@ -104,7 +104,7 @@ describe(`enrichedCommitsStream`, () => {
             next: (allCommits) => {
                 (0, chai_1.expect)(allCommits.length).equal(3);
                 allCommits[0].files.forEach((f) => {
-                    (0, chai_1.expect)(f.cloc).equal(0);
+                    (0, chai_1.expect)(f.code).equal(0);
                     (0, chai_1.expect)(f.comment).equal(0);
                     (0, chai_1.expect)(f.blank).equal(0);
                 });

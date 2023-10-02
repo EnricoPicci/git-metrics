@@ -199,7 +199,7 @@ describe(`readCommitsNewProces`, () => {
                         linesReadFromFileSaved.forEach((line, i) => {
                             expect(line === linesReadInOtherProces[i]).true;
                         });
-                        expect(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length + 1);
+                        expect(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length);
                     },
                 }),
             )
@@ -245,7 +245,7 @@ describe(`readCommitsNewProces`, () => {
                         linesReadFromFileSaved.forEach((line, i) => {
                             expect(line === linesReadInOtherProces[i]).true;
                         });
-                        expect(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length + 1);
+                        expect(linesReadInOtherProces.length).equal(linesReadFromFileSaved.length);
                     },
                 }),
             )

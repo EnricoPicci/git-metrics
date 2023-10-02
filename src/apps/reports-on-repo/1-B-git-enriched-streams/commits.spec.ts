@@ -81,7 +81,7 @@ describe(`enrichedCommitsStream`, () => {
                         expect(commit.files).not.undefined;
                         expect(commit.files.length).gt(0);
                         commit.files.forEach((f) => {
-                            expect(f.cloc).equal(0);
+                            expect(f.code).equal(0);
                             expect(f.comment).equal(0);
                             expect(f.blank).equal(0);
                         });
@@ -120,7 +120,7 @@ describe(`enrichedCommitsStream`, () => {
                     next: (allCommits) => {
                         expect(allCommits.length).equal(3);
                         allCommits[0].files.forEach((f) => {
-                            expect(f.cloc).equal(0);
+                            expect(f.code).equal(0);
                             expect(f.comment).equal(0);
                             expect(f.blank).equal(0);
                         });

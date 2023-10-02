@@ -1,9 +1,10 @@
 import { expect } from 'chai';
-import { readCommitCompactFromLog$, readOneCommitCompactFromLog$, writeCommitLog } from './commit.functions';
-import { toArray } from 'rxjs';
-import { ReadGitCommitParams } from './git-params';
+import { readCommitCompactFromLog$, readCommitWithFileNumstatFromLog$, readOneCommitCompactFromLog$, writeCommitLog } from './commit.functions';
+import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
+import { GitLogCommitParams } from './git-params';
 import path from 'path';
 import { readLinesObs } from 'observable-fs';
+import { CommitWithFileNumstats } from './commit.model';
 
 describe('readCommitFromLog$', () => {
     it('should throw an error if repoPath is not provided', () => {
@@ -66,9 +67,9 @@ describe('readOneCommitFromLog$', () => {
 
 describe(`writeCommitLog`, () => {
     const outDir = './temp';
-    it.only(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
+    it(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
         const outFile = 'this-git-repo-commits.log';
-        const config: ReadGitCommitParams = {
+        const config: GitLogCommitParams = {
             repoFolderPath: './',
             filter: ['test-data/git-repo-with-code/*.java'],
             after: '2018-01-01',
@@ -96,4 +97,189 @@ describe(`writeCommitLog`, () => {
             complete: () => done(),
         });
     });
+});
+
+
+
+describe(`readCommitWithFileNumstatFromLog$`, () => {
+    const outDir = './temp';
+    it(`read the commits from a git repo and notifies them over a stream`, (done) => {
+        const outFile = 'this-git-repo-commits.log';
+        const params: GitLogCommitParams = {
+            repoFolderPath: process.cwd(),
+            filter: ['./*.md'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+
+        const outFilePath = path.join(process.cwd(), outDir, outFile);
+
+        readCommitWithFileNumstatFromLog$(params, outFilePath)
+            .pipe(
+                tap({
+                    next: (data: CommitWithFileNumstats) => {
+                        expect(data).not.undefined;
+                    },
+                }),
+                toArray(),
+                tap({
+                    next: (commits: CommitWithFileNumstats[]) => {
+                        expect(commits).not.undefined;
+                        expect(commits.length).gt(0);
+
+                        // we take the second commit since it has all fields with defined values, even the lines added
+                        // and lines deleted fields in the files data
+                        const secondCommit = commits[1];
+                        // all fields should be defined hence we test them with the negation operator expectedto return false
+                        // in this way we test the undefined case and the null case and the empty string case and the 0 case
+                        expect(!secondCommit.authorDate).to.be.false;
+                        expect(!secondCommit.authorName).to.be.false;
+                        expect(!secondCommit.hashShort).to.be.false;
+                        expect(!secondCommit.files).to.be.false;
+                        expect(secondCommit.files.length).gt(0);
+                        const firstFile = secondCommit.files[0];
+                        expect(!firstFile.linesAdded).to.be.false;
+                        expect(!firstFile.linesDeleted).to.be.false;
+                        expect(!firstFile.path).to.be.false;
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    });
+    it(`read the commits from a git repo and write them on a file`, (done) => {
+        const outFile = 'this-git-repo-commits-write-only.log';
+        const params: GitLogCommitParams = {
+            repoFolderPath: process.cwd(),
+            filter: ['./*.md'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+
+        const outFilePath = path.join(process.cwd(), outDir, outFile);
+
+        let _lines: string[] = []
+        readCommitWithFileNumstatFromLog$(params, outFilePath)
+            .pipe(
+                concatMap(() => readLinesObs(outFilePath)),
+                tap({
+                    next: (lines) => {
+                        _lines = lines;
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => {
+                    // we do the check in the complete function so that the test fails even when there are no
+                    // commit lines written in the output file
+                    expect(_lines.length).gt(0);
+                    done();
+                },
+            });
+    });
+    it(`read the commits from a git repo but, if there are no commits, then nothing is notified
+    and no file is written`, (done) => {
+        // we use the current timestamp to name the file so that we are sure that the file does not exist
+        const outFile = Date.now() + '-file-not-to-be-written.log';
+        const params: GitLogCommitParams = {
+            repoFolderPath: process.cwd(),
+            filter: ['./*.no-files-with-this-extension'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+
+        const outFilePath = path.join(process.cwd(), outDir, outFile);
+
+        let _commit: CommitWithFileNumstats;
+        let _lines: string[] = []
+
+        const notifyCommits$ = readCommitWithFileNumstatFromLog$(params, outFilePath)
+            .pipe(
+                tap({
+                    next: (commit) => {
+                        _commit = commit;
+                    },
+                }),
+            )
+        const readCommitFileLog$ = readLinesObs(outFilePath).pipe(
+            catchError((err) => {
+                if (err.code === 'ENOENT') {
+                    // emit something so that the next operation can continue
+                    return EMPTY;
+                }
+                throw new Error(err);
+            }),
+            tap({
+                next: (lines) => {
+                    _lines = lines;
+                },
+            }),
+        )
+
+        concat(notifyCommits$, readCommitFileLog$)
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => {
+                    // we do the check in the complete function that no commit has been notified and
+                    // no line has been written in the file
+                    expect(_lines.length).equal(0);
+                    expect(_commit).undefined;
+                    done();
+                },
+            });
+    });
+
+    it(`read the commits from a git repo using git log command - the output of the git log command is saved on a file - 
+    this file should have the same content as that of the file saved 
+    when executing the "writeCommitLog" function`, (done) => {
+        const outFile = 'this-git-repo-commits-new-process-check-file-3.log';
+        const params: GitLogCommitParams = {
+            repoFolderPath: process.cwd(),
+            after: '2018-01-01',
+            outDir,
+        };
+
+        // here we write the commit log synchronously on the fileWrittenSync file
+        const fileWrittenSync = writeCommitLog(params);
+
+        const outFilePath = path.join(process.cwd(), outDir, outFile);
+        // here we ask to stream the commits as well as write them on the file outFilePath
+        // if life is good, the file outFilePath should have the same content as the file fileWrittenSync
+        readCommitWithFileNumstatFromLog$(params, outFilePath)
+            .pipe(
+                // take the last notification so that we are sure that the stream has completed before reading the file
+                // which has been produced as part of the execution of the readCommitWithFileNumstatFromLog$ function
+                last(),
+                concatMap(() => {
+                    // read in parallel the file written syncronously and the file written as part of the execution
+                    // of the readCommitWithFileNumstatFromLog$ function
+                    return forkJoin([readLinesObs(fileWrittenSync), readLinesObs(outFilePath)]);
+                }),
+                tap({
+                    next: ([linesFromFileWrittenSync, linesReadFromFileSaved]) => {
+                        expect(linesFromFileWrittenSync.length).equal(linesReadFromFileSaved.length);
+
+                        linesReadFromFileSaved.forEach((line, i) => {
+                            if (line !== linesFromFileWrittenSync[i]) {
+                                const otherLine = linesFromFileWrittenSync[i];
+                                console.log(line);
+                                console.log(otherLine);
+                                throw new Error(`Error in line ${i} - ${line} vs ${otherLine}`);
+                            }
+                            expect(line === linesFromFileWrittenSync[i]).true;
+                        });
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    }).timeout(200000);
 });

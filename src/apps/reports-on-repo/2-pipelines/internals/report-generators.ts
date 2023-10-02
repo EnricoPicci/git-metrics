@@ -5,7 +5,8 @@ import { fileAuthors } from '../../1-C-aggregate-in-memory/file-authors-aggregat
 import { fileChurn } from '../../1-C-aggregate-in-memory/file-churn-aggregate';
 import { fileCoupling } from '../../1-C-aggregate-in-memory/file-coupling-aggregate';
 import { moduleChurns } from '../../1-C-aggregate-in-memory/module-churn-aggregate';
-import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { FileGitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 import { authorChurnReportCore } from '../../1-D-reports/author-churn-report';
 import { fileAuthorsReportCore } from '../../1-D-reports/file-authors-report';
 import { fileChurnReportCore } from '../../1-D-reports/file-churn-report';
@@ -52,7 +53,7 @@ export function moduleChurnReportGenerator(
 }
 
 export function authorChurnReportGenerator(
-    _commitStream: Observable<GitCommitEnriched>,
+    _commitStream: Observable<CommitWithFileNumstats>,
     params: ReportParams,
     repoName: string,
 ) {
@@ -82,7 +83,7 @@ export function fileAuthorsReportGenerator(
 }
 
 export function fileCouplingReportGenerator(
-    _commitStream: Observable<GitCommitEnriched>,
+    _commitStream: Observable<CommitWithFileNumstats>,
     params: ReportParams,
     depthInFilesCoupling: number,
     repoName: string,

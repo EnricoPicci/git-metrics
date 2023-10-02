@@ -1,10 +1,10 @@
 import { Observable, pipe } from 'rxjs';
 import { reduce, map } from 'rxjs/operators';
 import { FileCoupling } from '../1-C-aggregate-types/file-coupling';
-import { GitCommitEnriched } from '../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from '../../../git-functions/commit.model';
 
 // receives a stream of FileGitCommitEnriched objects and returns a stream of FileCoupling objects
-export function fileCoupling(commits: Observable<GitCommitEnriched>, depthInFilesCoupling: number, after?: Date) {
+export function fileCoupling(commits: Observable<CommitWithFileNumstats>, depthInFilesCoupling: number, after?: Date) {
     return couplingDict(commits, after).pipe(couplingList(), filterFilesWithMinNumOfCommits(depthInFilesCoupling));
 }
 
@@ -12,7 +12,6 @@ type CouplingDict = {
     [path: string]: {
         path: string;
         totCommitForFile: number;
-        cloc: number;
         linesAdded: number | undefined; // undefined is for blob files
         linesDeleted: number | undefined; // undefined is for blob files
         togetherWith?: {
@@ -28,11 +27,11 @@ type CouplingDict = {
 // for each file it calculates in how many commits the file itself is present in and also how many times that file was present
 // together with any other file with which it was in the same commit at least once
 // exported only for testing purposes
-export function couplingDict(commits: Observable<GitCommitEnriched>, after = new Date(0)) {
+export function couplingDict(commits: Observable<CommitWithFileNumstats>, after = new Date(0)) {
     const couplingDict: CouplingDict = {};
     return commits.pipe(
         reduce(
-            (commitAcc, commit: GitCommitEnriched) => {
+            (commitAcc, commit: CommitWithFileNumstats) => {
                 if (commit.committerDate < after) {
                     return commitAcc;
                 }

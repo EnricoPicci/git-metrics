@@ -22,14 +22,14 @@ export function fileChurnDictionary(
     return fileCommits.pipe(
         reduce((acc, fileCommit) => {
             // ignore files with no cloc
-            if (ignoreClocZero && !fileCommit.cloc) {
+            if (ignoreClocZero && !fileCommit.code) {
                 return acc;
             }
             const fPath = fileCommit.path;
             if (!acc[fPath]) {
                 acc[fPath] = {
                     path: fPath,
-                    cloc: fileCommit.cloc,
+                    cloc: fileCommit.code,
                     commits: 0,
                     linesAddDel: 0,
                     linesAdded: 0,

@@ -1,4 +1,4 @@
-import { GitCommitEnriched } from '../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../git-functions/commit.model";
 
 export const testCommits_3 = [
     {
@@ -43,7 +43,7 @@ export const testCommits_3 = [
             },
         ],
     },
-] as GitCommitEnriched[];
+] as CommitWithFileNumstats[];
 
 export const testCommits_5 = [
     ...testCommits_3,
@@ -70,4 +70,4 @@ export const testCommits_5 = [
             },
         ],
     },
-] as GitCommitEnriched[];
+] as CommitWithFileNumstats[];

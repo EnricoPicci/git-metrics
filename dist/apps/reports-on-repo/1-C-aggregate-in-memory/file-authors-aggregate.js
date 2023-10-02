@@ -27,7 +27,7 @@ function fileAuthorsDictionary(fileCommits, after = new Date(0)) {
             fileAuthorDict[fileCommit.authorName] = {
                 path: fileCommit.path,
                 authorName: fileCommit.authorName,
-                cloc: (_a = fileCommit.cloc) !== null && _a !== void 0 ? _a : 0,
+                cloc: (_a = fileCommit.code) !== null && _a !== void 0 ? _a : 0,
                 linesAdded: 0,
                 linesDeleted: 0,
                 linesAddDel: 0,

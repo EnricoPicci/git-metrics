@@ -1,10 +1,10 @@
-export type ReadGitParams = {
+export type GitLogCommandParams = {
     repoFolderPath: string;
     outDir: string;
     outFile?: string;
 };
 
-export type ReadGitCommitParams = {
+export type GitLogCommitParams = {
     after?: string;
     before?: string;
     filter?: string[];
@@ -13,4 +13,4 @@ export type ReadGitCommitParams = {
     reverse?: boolean;
     includeMergeCommits?: boolean;
     firstParent?: boolean;
-} & ReadGitParams;
+} & GitLogCommandParams;

@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import { Observable } from 'rxjs';
 import { concatMap, finalize, tap } from 'rxjs/operators';
 import { connectObs, findObs } from 'observable-mongo';
-import { GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 // ============================ READ THE COMMITS ================================
 // read the commits collection
 export function commits(connectionString: string, dbName: string, commitsCollection: string, after?: Date) {
@@ -15,9 +15,9 @@ export function commits(connectionString: string, dbName: string, commitsCollect
         // read the commits
         concatMap(() => {
             const db = _client.db(dbName);
-            const coll = db.collection<GitCommitEnriched>(commitsCollection);
+            const coll = db.collection<CommitWithFileNumstats>(commitsCollection);
             const queryCondition = after ? { authorDate: { $gte: after } } : {};
-            return findObs(coll, queryCondition) as Observable<GitCommitEnriched>;
+            return findObs(coll, queryCondition) as Observable<CommitWithFileNumstats>;
         }),
         // close the client at the end
         finalize(() => _client.close()),

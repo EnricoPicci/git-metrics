@@ -2,9 +2,9 @@ import { Observable } from 'rxjs';
 import { map, tap, concatMap, reduce } from 'rxjs/operators';
 import { CommitsInfo } from '../1-C-aggregate-types/all-commits';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
-import { GitCommitEnriched } from '../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../git-functions/commit.model";
 
-export function projectInfo(commits: Observable<GitCommitEnriched>, clocSummaryInfo: Observable<string[]>) {
+export function projectInfo(commits: Observable<CommitWithFileNumstats>, clocSummaryInfo: Observable<string[]>) {
     return _projectCommitsInfo(commits).pipe(
         map((commits) => ({ commits })),
         concatMap((prjInfo) =>
@@ -16,7 +16,7 @@ export function projectInfo(commits: Observable<GitCommitEnriched>, clocSummaryI
     );
 }
 
-export function projectCommitsInfo(commits: GitCommitEnriched[]) {
+export function projectCommitsInfo(commits: CommitWithFileNumstats[]) {
     return commits.reduce(
         (commitsInfo, commit) => {
             commitsInfo.count++;
@@ -43,7 +43,7 @@ export function projectCommitsInfo(commits: GitCommitEnriched[]) {
     );
 }
 
-function _projectCommitsInfo(commits: Observable<GitCommitEnriched>) {
+function _projectCommitsInfo(commits: Observable<CommitWithFileNumstats>) {
     return commits.pipe(
         reduce(
             (commitsInfo, commit) => {

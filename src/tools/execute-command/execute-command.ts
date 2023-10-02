@@ -83,8 +83,10 @@ function bufferToLines() {
     return (source: Observable<Buffer>) => {
         return new Observable((subscriber: Subscriber<string>) => {
             let remainder = '';
+            let started = false
             const subscription = source.subscribe({
                 next: (buffer) => {
+                    started = true
                     const bufferWithRemainder = `${remainder}${buffer}`;
                     const lines = bufferWithRemainder.toString().split('\n');
                     remainder = lines.splice(lines.length - 1)[0];
@@ -92,7 +94,9 @@ function bufferToLines() {
                 },
                 error: (err) => subscriber.error(err),
                 complete: () => {
-                    subscriber.next(remainder);
+                    if (started && remainder.length > 0) {
+                        subscriber.next(remainder);
+                    }
                     subscriber.complete();
                 },
             });

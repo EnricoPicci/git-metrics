@@ -63,7 +63,7 @@ function newGitFileNumstat(fileInfo, clocDict) {
         linesAdded,
         linesDeleted,
         path: filePathFromCommitPath(fileNumstatData[2]),
-        cloc: 0,
+        code: 0,
         comment: 0,
         blank: 0,
     };
@@ -75,7 +75,7 @@ function newGitFileNumstat(fileInfo, clocDict) {
         // such files though may be tracked by git, therefore we need to check that the file path is actually one of the keys of the
         // dictionary built with cloc
         if (clocDict[_path]) {
-            fileNumstat.cloc = clocDict[_path].code;
+            fileNumstat.code = clocDict[_path].code;
             fileNumstat.comment = clocDict[_path].comment;
             fileNumstat.blank = clocDict[_path].blank;
         }

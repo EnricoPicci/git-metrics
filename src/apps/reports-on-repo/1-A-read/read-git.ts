@@ -15,7 +15,7 @@ import {
     executeCommandNewProcessToLinesObs,
 } from '../../../tools/execute-command/execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
-import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, writeCommitLog$ } from '../../../git-functions/commit.functions';
+import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, writeCommitEnrichedLog$ } from '../../../git-functions/commit.functions';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
@@ -84,7 +84,7 @@ export function readMultiReposCommits(config: ConfigReadMultiReposCommits) {
             };
             return readSingleRepoConfig;
         })
-        .map((config) => writeCommitLog$(config));
+        .map((config) => writeCommitEnrichedLog$(config));
     return forkJoin(readSingleRepoConfigs);
 }
 

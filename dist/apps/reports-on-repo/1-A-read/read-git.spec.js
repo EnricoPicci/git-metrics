@@ -78,7 +78,7 @@ describe(`readCommitsCommand`, () => {
 });
 describe(`readCommitsNewProces`, () => {
     const outDir = './temp';
-    it(`read the commits from a git repo using git log command running on a different process`, (done) => {
+    it.only(`read the commits from a git repo using git log command running on a different process`, (done) => {
         const outFile = 'this-git-repo-commits.log';
         const config = {
             repoFolderPath: process.cwd(),

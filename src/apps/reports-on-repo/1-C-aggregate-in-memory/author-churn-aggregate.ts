@@ -1,11 +1,11 @@
 import { Observable } from 'rxjs';
 import { map, filter, reduce } from 'rxjs/operators';
-import { GitCommitEnriched } from '../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../git-functions/commit.model";
 import { AuthorChurn } from '../1-C-aggregate-types/author-churn';
 
 // reads a commitLog and the cloc data from log files and returns a stream of AuthorChurn objects
 
-export function authorChurn(commits: Observable<GitCommitEnriched>, after?: Date) {
+export function authorChurn(commits: Observable<CommitWithFileNumstats>, after?: Date) {
     return authorChurnDictionary(commits, after).pipe(
         map((authChurnDict) => {
             return Object.values(authChurnDict).sort((a, b) => b.linesAddDel - a.linesAddDel);
@@ -14,7 +14,7 @@ export function authorChurn(commits: Observable<GitCommitEnriched>, after?: Date
 }
 
 // returns a dictionary whose key is the author name and the value is an object of type AuthorChurn
-export function authorChurnDictionary(commits: Observable<GitCommitEnriched>, after = new Date(0)) {
+export function authorChurnDictionary(commits: Observable<CommitWithFileNumstats>, after = new Date(0)) {
     return commits.pipe(
         filter((commit) => commit.files.length > 0),
         reduce((acc, commit) => {

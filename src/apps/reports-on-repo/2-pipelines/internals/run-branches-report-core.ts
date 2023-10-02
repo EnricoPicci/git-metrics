@@ -8,7 +8,7 @@ import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryInfo } from '../../1-A-read/cloc';
 
 import { enrichedCommitsStream } from '../../1-B-git-enriched-streams/commits';
-import { GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 import { commitWithBranchTips } from '../../1-B-git-enriched-streams/commits-and-branch-tips';
 
 import { projectInfo } from '../../1-C-aggregate-in-memory/project-info-aggregate';
@@ -62,7 +62,7 @@ export function runBranchesReportFromStreams(
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
-    _commitStream: Observable<GitCommitEnriched>,
+    _commitStream: Observable<CommitWithFileNumstats>,
     _clocSummaryStream: Observable<string[]>,
 ) {
     const params = {

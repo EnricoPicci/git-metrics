@@ -6,7 +6,8 @@ import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryInfo, createSummaryClocLog } from '../../1-A-read/cloc';
 
-import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { FileGitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 
 import { gitRepos } from './run-reports-on-multi-repos-core';
 import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
@@ -33,7 +34,7 @@ export function runAllReportsOnMergedRepos(
 
     return repoFolderPaths.pipe(
         map((_repoFolderPaths) => {
-            const allCommitStreams: Observable<GitCommitEnriched>[] = [];
+            const allCommitStreams: Observable<CommitWithFileNumstats>[] = [];
             const allFileStreams: Observable<FileGitCommitEnriched>[] = [];
             _repoFolderPaths.forEach((repoFolderPath) => {
                 // read the data from git and cloc tool

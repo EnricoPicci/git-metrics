@@ -8,7 +8,8 @@ import { clocSummaryInfo } from '../../1-A-read/cloc';
 
 import { enrichedCommitsStream, newGitCommit, toCommits } from '../../1-B-git-enriched-streams/commits';
 import { filesStream, filesStreamFromEnrichedCommitsStream } from '../../1-B-git-enriched-streams/files';
-import { FileGitCommitEnriched, GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { FileGitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 
 import { projectInfo } from '../../1-C-aggregate-in-memory/project-info-aggregate';
 
@@ -233,7 +234,7 @@ export function _runReportsFromStreams(
     clocDefsPath: string,
     ignoreClocZero: boolean,
     depthInFilesCoupling: number,
-    _commitStream: Observable<GitCommitEnriched>,
+    _commitStream: Observable<CommitWithFileNumstats>,
     _filesStream: Observable<FileGitCommitEnriched>,
     _clocSummaryStream: Observable<string[]>,
 ) {
@@ -248,7 +249,7 @@ export function _runReportsFromStreams(
     };
     const repoName = path.parse(repoFolderPath).name;
     const _commmitStreamFiltered = _commitStream.pipe(
-        filter((commit: GitCommitEnriched) => {
+        filter((commit: CommitWithFileNumstats) => {
             const _after = new Date(after);
             const _before = new Date(before);
             const commitDate = new Date(commit.committerDate);

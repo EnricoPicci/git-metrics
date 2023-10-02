@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import { map, filter, mergeMap } from 'rxjs/operators';
-import { GitCommitEnriched, FileGitCommitEnriched } from '../1-B-git-enriched-types/git-types';
+import { FileGitCommitEnriched } from '../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../git-functions/commit.model";
 import { enrichedCommitsStream } from './commits';
 
 // returns a stream of file committed data in the form of an Observable which notifies FileGitCommitEnriched reading data from files containing
@@ -9,11 +10,11 @@ export function filesStream(commitLogPath: string, clocLogPath: string) {
     return filesStreamFromEnrichedCommitsStream(enrichedCommitsStream(commitLogPath, clocLogPath));
 }
 
-export function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream: Observable<GitCommitEnriched>) {
+export function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream: Observable<CommitWithFileNumstats>) {
     const fileCreationDateDictionary: { [path: string]: Date } = {};
     return enrichedCommitsStream.pipe(
         // create an array of files where each file has also the details of the commit
-        map((commit: GitCommitEnriched) => {
+        map((commit: CommitWithFileNumstats) => {
             const files = [...commit.files];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const basicCommit = { ...commit } as any;

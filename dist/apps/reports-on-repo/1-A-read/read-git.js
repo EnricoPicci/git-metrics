@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOutfileName = exports.readBranchesGraphCommand = exports.readTagsCommand = exports.readCommitsCommandWithArgs = exports.readCommitsCommand = exports.buildGitOutfile = exports.readBranchesGraph = exports.readTags = exports.readMultiReposCommits = exports.readCommitsNewProcess = exports.readAndStreamCommitsNewProces = exports.readCommitsObs = exports.DEFAULT_OUT_DIR = void 0;
+exports.getOutfileName = exports.readBranchesGraphCommand = exports.readTagsCommand = exports.readCommitsCommandWithArgs = exports.readCommitsCommand = exports.buildGitOutfile = exports.readBranchesGraph = exports.readTags = exports.readMultiReposCommits = exports.readCommitsNewProcess = exports.readAndStreamCommitsNewProces = exports.DEFAULT_OUT_DIR = void 0;
 const path = require("path");
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -10,16 +10,6 @@ const config_1 = require("../0-config/config");
 const commit_functions_1 = require("../../../git-functions/commit.functions");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 exports.DEFAULT_OUT_DIR = './';
-function readCommitsObs(config) {
-    const [cmd, out] = readCommitsCommand(config);
-    return (0, execute_command_1.executeCommandObs)('readCommits', cmd).pipe((0, operators_1.tap)({
-        complete: () => {
-            console.log(`====>>>> Commits read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name}`);
-            console.log(`====>>>> Output saved on file ${out}`);
-        },
-    }), (0, operators_1.map)(() => out));
-}
-exports.readCommitsObs = readCommitsObs;
 // reads the commits with git log and return them as a stream of lines
 function readAndStreamCommitsNewProces(config, outFile, writeFileOnly = false) {
     const { cmd, args } = readCommitsCommandWithArgs(config, false);
@@ -64,7 +54,7 @@ function readMultiReposCommits(config) {
         const readSingleRepoConfig = Object.assign({ repoFolderPath }, basicConfig);
         return readSingleRepoConfig;
     })
-        .map((config) => readCommitsObs(config));
+        .map((config) => (0, commit_functions_1.writeCommitEnrichedLog$)(config));
     return (0, rxjs_1.forkJoin)(readSingleRepoConfigs);
 }
 exports.readMultiReposCommits = readMultiReposCommits;

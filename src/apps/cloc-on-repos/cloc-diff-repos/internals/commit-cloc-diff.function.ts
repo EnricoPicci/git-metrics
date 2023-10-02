@@ -1,7 +1,7 @@
 import { concatMap, catchError, of, map, from, mergeMap, reduce } from 'rxjs';
 
 import { runClocDiff } from '../../../../cloc-functions/cloc-diff.functions';
-import { readOneCommitCompactFromLog$, newEmptyCommit } from '../../../../git-functions/commit.functions';
+import { readOneCommitCompactFromLog$, newEmptyCommitCompact } from '../../../../git-functions/commit.functions';
 import { CommitCompact } from '../../../../git-functions/commit.model';
 import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl } from '../../../../git-functions/repo.functions';
 import { noDiffsClocDiffStats, ClocDiffStats } from '../../../../cloc-functions/cloc-diff.model';
@@ -23,7 +23,7 @@ export function calculateClocGitDiffsChildParent(commit: CommitCompact, repoPath
             return readOneCommitCompactFromLog$(parentCommitSha, repoPath).pipe(
                 catchError(() => {
                     // in case of error we return an empty commit
-                    return of(newEmptyCommit());
+                    return of(newEmptyCommitCompact());
                 }),
                 map((parentCommit) => {
                     return { clocDiff, parentCommit };

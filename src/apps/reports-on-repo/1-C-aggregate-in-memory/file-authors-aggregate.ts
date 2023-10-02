@@ -30,7 +30,7 @@ export function fileAuthorsDictionary(fileCommits: Observable<FileGitCommitEnric
                 fileAuthorDict[fileCommit.authorName] = {
                     path: fileCommit.path,
                     authorName: fileCommit.authorName,
-                    cloc: fileCommit.cloc ?? 0,
+                    cloc: fileCommit.code ?? 0,
                     linesAdded: 0,
                     linesDeleted: 0,
                     linesAddDel: 0,

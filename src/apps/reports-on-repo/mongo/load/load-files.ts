@@ -13,7 +13,7 @@ import {
     updateManyObs,
 } from 'observable-mongo';
 import { MONGO_CONFIG } from '../config/mongo-config';
-import { GitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
+import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 
 // ============================ LOAD ALL FILES ================================
 // Loads all the files for each commit as documents into a mongo collection.
@@ -44,7 +44,7 @@ export function loadAllFiles(
                 // read the commits from the commit collection
                 concatMap(() => findObs(_client.db(dbName).collection(commitCollection))),
                 // create an array of files where each file has also the details of the commit
-                map((commit: GitCommitEnriched) => {
+                map((commit: CommitWithFileNumstats) => {
                     const files = [...commit.files];
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const basicCommit = { ...commit } as any;

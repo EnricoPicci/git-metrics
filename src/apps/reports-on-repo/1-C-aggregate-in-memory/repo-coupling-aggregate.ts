@@ -279,7 +279,7 @@ export function timeWindowedFileCommitsDict(timeWindowLengthInDays: number, repo
                 if (!fileData) {
                     fileData = {
                         repoIndex,
-                        cloc: file.cloc,
+                        cloc: file.code,
                         path: file.path,
                         linesAdded: 0,
                         linesDeleted: 0,

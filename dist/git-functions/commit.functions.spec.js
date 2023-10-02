@@ -10,10 +10,10 @@ const path_1 = __importDefault(require("path"));
 const observable_fs_1 = require("observable-fs");
 describe('readCommitFromLog$', () => {
     it('should throw an error if repoPath is not provided', () => {
-        (0, chai_1.expect)(() => (0, commit_functions_1.readCommitFromLog$)('')).to.throw();
+        (0, chai_1.expect)(() => (0, commit_functions_1.readCommitCompactFromLog$)('')).to.throw();
     });
     it('should return a stream of commit objects from this repo', (done) => {
-        (0, commit_functions_1.readCommitFromLog$)('./').pipe((0, rxjs_1.toArray)()).subscribe((commits) => {
+        (0, commit_functions_1.readCommitCompactFromLog$)('./').pipe((0, rxjs_1.toArray)()).subscribe((commits) => {
             (0, chai_1.expect)(commits instanceof Array).to.be.true;
             (0, chai_1.expect)(commits.length).greaterThan(0);
             const firstCommit = commits[commits.length - 1];
@@ -31,7 +31,7 @@ describe('readOneCommitFromLog$', () => {
     it('should throw an error if an not existing sha is provided', (done) => {
         const notExistingCommitSha = 'abc';
         const repoPath = './';
-        (0, commit_functions_1.readOneCommitFromLog$)(notExistingCommitSha, repoPath, false).subscribe({
+        (0, commit_functions_1.readOneCommitCompactFromLog$)(notExistingCommitSha, repoPath, false).subscribe({
             next: () => {
                 done('should not return a value');
             },
@@ -47,7 +47,7 @@ describe('readOneCommitFromLog$', () => {
     it('should notify the first commit object of this repo', (done) => {
         const firstCommitOfThisRepo = '8767d5864e7d72df0f25915fe8e0652244eee5fa';
         const repoPath = './';
-        (0, commit_functions_1.readOneCommitFromLog$)(firstCommitOfThisRepo, repoPath, false).subscribe({
+        (0, commit_functions_1.readOneCommitCompactFromLog$)(firstCommitOfThisRepo, repoPath, false).subscribe({
             next: (commitCompact) => {
                 (0, chai_1.expect)(commitCompact.sha).equal(firstCommitOfThisRepo);
                 done();
@@ -60,7 +60,7 @@ describe('readOneCommitFromLog$', () => {
 });
 describe(`writeCommitLog`, () => {
     const outDir = './temp';
-    it(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
+    it.only(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
         const outFile = 'this-git-repo-commits.log';
         const config = {
             repoFolderPath: './',
