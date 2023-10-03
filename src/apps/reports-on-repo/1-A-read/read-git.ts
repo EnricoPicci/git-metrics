@@ -1,13 +1,8 @@
 import path = require('path');
 
 import {
-    ConfigReadBrachesGraph,
     ConfigReadCommits,
-    ConfigReadTags,
 } from './read-params/read-params';
-import {
-    executeCommand,
-} from '../../../tools/execute-command/execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, readCommitWithFileNumstat$, writeCommitWithFileNumstat$ } from '../../../git-functions/commit.functions';
 
@@ -22,17 +17,6 @@ export function readAndStreamCommitsNewProces(config: ConfigReadCommits, outFile
 
 export function readCommitsNewProcess(config: ConfigReadCommits) {
     return writeCommitWithFileNumstat$(config);
-}
-
-export function readBranchesGraph(config: ConfigReadTags) {
-    const [cmd, out] = readBranchesGraphCommand(config);
-    executeCommand('readBranchesGraph', cmd);
-    console.log(
-        `====>>>> Branches graph read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
-        }`,
-    );
-    console.log(`====>>>> Output saved on file ${out}`);
-    return out;
 }
 
 export function buildGitOutfile(config: ConfigReadCommits) {
@@ -88,24 +72,6 @@ export function readCommitsCommandWithArgs(config: ConfigReadCommits, quotesForF
         cmd: `git`,
         args,
     };
-}
-
-// private function exported only for test purposes
-export function readTagsCommand(config: ConfigReadTags) {
-    const repoFolder = config.repoFolderPath ? `-C ${config.repoFolderPath}` : '';
-    const outDir = config.outDir ? config.outDir : DEFAULT_OUT_DIR;
-    const outFile = getOutfileName(config.outFile!, repoFolder, '-tags.log');
-    const out = path.resolve(path.join(outDir, outFile));
-    return [`git ${repoFolder} log --no-walk --tags --pretty='${SEP}%h${SEP}%d${SEP}%s' --decorate=full > ${out}`, out];
-}
-
-// private function exported only for test purposes
-export function readBranchesGraphCommand(config: ConfigReadBrachesGraph) {
-    const repoFolder = config.repoFolderPath ? `-C ${config.repoFolderPath}` : '';
-    const outDir = config.outDir ? config.outDir : DEFAULT_OUT_DIR;
-    const outFile = getOutfileName(config.outFile!, repoFolder, '-tags.log');
-    const out = path.resolve(path.join(outDir, outFile));
-    return [`git ${repoFolder} log --all --graph --date=short --pretty=medium > ${out}`, out];
 }
 
 export function getOutfileName(outFile: string, outFilePrefix?: string, repoFolder?: string, postfix?: string) {

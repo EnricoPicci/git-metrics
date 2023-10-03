@@ -1,9 +1,8 @@
 import path from "path";
 
-export function buildOutfileName(outFile: string, outFilePrefix?: string, repoFolder?: string, postfix?: string) {
-    const repoFolderName = path.parse(repoFolder!).name;
-    const isCurrentFolder = repoFolderName === '' || repoFolderName === '.';
-    const _repoFolder = isCurrentFolder ? path.parse(process.cwd()).name : repoFolder!;
+export function buildOutfileName(outFile: string, repoFolder?: string, outFilePrefix?: string, postfix?: string) {
+    const _repoFolder = repoFolder ? repoFolder : process.cwd();
+    const repoFolderName = path.parse(_repoFolder).name
     const _prefix = outFilePrefix ?? '';
-    return outFile ? outFile : `${_prefix}${path.parse(_repoFolder).name}${postfix}`;
+    return outFile ? outFile : `${_prefix}${path.parse(repoFolderName).name}${postfix}`;
 }
