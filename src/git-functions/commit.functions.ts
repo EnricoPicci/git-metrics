@@ -299,7 +299,7 @@ function toCommitsWithFileNumstatdata(logFilePath?: string) {
 // Custom operator which splits the content of a git log into buffers of lines where each buffer contains all the lines
 // relative to a single git commit
 // https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
-function commitLines(logFilePath?: string) {
+export function commitLines(logFilePath?: string) {
     return (source: Observable<string>) => {
         return new Observable((subscriber: Subscriber<string[]>) => {
             let buffer: string[];

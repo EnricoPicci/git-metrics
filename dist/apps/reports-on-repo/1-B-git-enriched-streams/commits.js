@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toCommits = exports.splitCommits = exports.COMMIT_RECORD_COUNTER = exports.filePathFromCommitPath = exports.newGitCommit = exports.gitCommitStream = exports.commitsStream = exports.enrichedCommitsStream = void 0;
-const rxjs_1 = require("rxjs");
+exports.splitCommits = exports.COMMIT_RECORD_COUNTER = exports.filePathFromCommitPath = exports.newGitCommit = exports.gitCommitStream = exports.commitsStream = exports.enrichedCommitsStream = void 0;
 const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
 const read_cloc_log_1 = require("./read-cloc-log");
 const config_1 = require("../0-config/config");
+const commit_functions_1 = require("../../../git-functions/commit.functions");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // returns a stream of commits in the form of an Observable which notifies GitCommitEnriched objects reading data from files containing
@@ -134,71 +134,7 @@ function splitCommits(logFilePath) {
             },
         }))
         : _readLineObs;
-    return _readLineObs.pipe((0, operators_1.filter)((line) => line.length > 0), toCommits(logFilePath));
+    return _readLineObs.pipe((0, operators_1.filter)((line) => line.length > 0), (0, commit_functions_1.commitLines)(logFilePath));
 }
 exports.splitCommits = splitCommits;
-// Custom operator which splits the content of a git log into buffers of lines whereeach buffer contains all the info
-// relative to a single git commit
-// https://rxjs.dev/guide/operators#creating-new-operators-from-scratch
-function toCommits(logFilePath) {
-    return (source) => {
-        return new rxjs_1.Observable((subscriber) => {
-            let buffer;
-            const subscription = source.subscribe({
-                next: (line) => {
-                    const isStartOfBuffer = line.length > 0 && line.slice(0, SEP.length) === SEP;
-                    if (isStartOfBuffer) {
-                        if (buffer) {
-                            subscriber.next(buffer);
-                        }
-                        buffer = [];
-                    }
-                    buffer.push(line);
-                },
-                error: (err) => subscriber.error(err),
-                complete: () => {
-                    if (!buffer) {
-                        const logPathMsg = logFilePath ? `in file ${logFilePath}` : '';
-                        console.warn(`!!!!!!!!!!!!!>>>>  No commits found ${logPathMsg}`);
-                        subscriber.complete();
-                    }
-                    subscriber.next(buffer);
-                    subscriber.complete();
-                },
-            });
-            return () => {
-                subscription.unsubscribe();
-            };
-        });
-    };
-}
-exports.toCommits = toCommits;
-// ALTERNATIVE VERSION
-// This is an alternative version of the above function which does use only rxJs operators and not custom operators
-//
-// export function splitCommits(logFilePath: string) {
-//     let buffer: string[] = [];
-//     const lastCommit = new Subject<Array<string>>();
-//     const _commits = readLineObs(logFilePath).pipe(
-//         filter((line) => line.length > 0),
-//         map((line) => {
-//             if (line.slice(0, SEP.length) === SEP) {
-//                 const commit = buffer;
-//                 buffer = [line];
-//                 return commit;
-//             }
-//             buffer.push(line);
-//             return null;
-//         }),
-//         filter((buffer) => !!buffer),
-//         tap({
-//             complete: () => {
-//                 lastCommit.next(buffer);
-//                 lastCommit.complete();
-//             },
-//         }),
-//         skip(1),
-//     );
-//     return merge(_commits, lastCommit);
-// }
 //# sourceMappingURL=commits.js.map
