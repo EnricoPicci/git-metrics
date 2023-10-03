@@ -11,7 +11,7 @@ const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 exports.DEFAULT_OUT_DIR = './';
 // reads the commits with git log and return them as a stream of lines
 function readAndStreamCommitsNewProces(config, outFile, _writeFileOnly = false) {
-    return (0, commit_functions_1.readCommitWithFileNumstatFromLog$)(config, outFile);
+    return (0, commit_functions_1.readCommitWithFileNumstat$)(config, outFile);
 }
 exports.readAndStreamCommitsNewProces = readAndStreamCommitsNewProces;
 function readCommitsNewProcess(config) {
@@ -34,7 +34,7 @@ function readMultiReposCommits(config) {
         const readSingleRepoConfig = Object.assign({ repoFolderPath }, basicConfig);
         return readSingleRepoConfig;
     })
-        .map((config) => (0, commit_functions_1.writeCommitEnrichedLog$)(config));
+        .map((config) => (0, commit_functions_1.writeCommitWithFileNumstat$)(config));
     return (0, rxjs_1.forkJoin)(readSingleRepoConfigs);
 }
 exports.readMultiReposCommits = readMultiReposCommits;

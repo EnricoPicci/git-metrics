@@ -117,7 +117,7 @@ describe(`readCommitsNewProces`, () => {
         const outGitFileNewProces = (0, read_git_1.buildGitOutfile)(Object.assign(Object.assign({}, config), { outFile: outFileNewProces }));
         (0, read_git_1.readAndStreamCommitsNewProces)(config, outGitFileNewProces)
             .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(() => {
-            const outFile = (0, commit_functions_1.writeCommitLog)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
+            const outFile = (0, commit_functions_1.writeCommitWithFileNumstat)(Object.assign(Object.assign({}, config), { outFile: outFileSameProces }));
             return outFile;
         }), (0, rxjs_1.concatMap)((outFile) => {
             return (0, rxjs_1.forkJoin)([(0, observable_fs_1.readLinesObs)(outGitFileNewProces), (0, observable_fs_1.readLinesObs)(outFile)]);
@@ -150,7 +150,7 @@ describe(`readCommitsNewProcess`, () => {
         const outFile = 'this-git-repo-commits-export-new-process.log';
         const config = {
             repoFolderPath: process.cwd(),
-            filter: ['test-data/git-repo-with-code/*.java'],
+            filter: ['*.json'],
             after: '2018-01-01',
             outDir,
             outFile,

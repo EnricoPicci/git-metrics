@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.newEmptyCommitCompact = exports.writeCommitEnrichedLog$ = exports.readCommitWithFileNumstatFromLog$ = exports.writeCommitLog = exports.readOneCommitCompactFromLog$ = exports.readCommitCompactFromLog$ = void 0;
+exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -23,7 +23,7 @@ const config_1 = require("./config");
  * @returns An Observable of CommitCompact objects representing the commits within the specified date range.
  * @throws An error if `repoPath` is not provided.
  */
-function readCommitCompactFromLog$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true) {
+function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const _noMerges = noMerges ? '--no-merges' : '';
@@ -39,7 +39,7 @@ function readCommitCompactFromLog$(repoPath, fromDate = new Date(0), toDate = ne
         return rxjs_1.EMPTY;
     }));
 }
-exports.readCommitCompactFromLog$ = readCommitCompactFromLog$;
+exports.readCommitCompact$ = readCommitCompact$;
 /**
  * Uses the git log command to fetch one commit given its sha.
  * Returns an Observable of a CommitCompact object representing the fetched commit.
@@ -51,7 +51,7 @@ exports.readCommitCompactFromLog$ = readCommitCompactFromLog$;
  * @returns An Observable of a CommitCompact object representing the fetched commit.
  * @throws An error if `commitSha` or `repoPath` is not provided.
  */
-function readOneCommitCompactFromLog$(commitSha, repoPath, verbose = true) {
+function readOneCommitCompact$(commitSha, repoPath, verbose = true) {
     if (!commitSha.trim())
         throw new Error(`Path is mandatory`);
     if (!repoPath.trim())
@@ -70,14 +70,14 @@ Command: ${cmd}`;
         throw new Error(err);
     }));
 }
-exports.readOneCommitCompactFromLog$ = readOneCommitCompactFromLog$;
+exports.readOneCommitCompact$ = readOneCommitCompact$;
 /**
  * Reads the commits from a Git repository and writes the output to a file.
  * For each commit all the files changed in the commit are listed with the number of lines added and deleted.
  * @param params An object containing the parameters to control the read.
  * @returns The name of the file where the output is saved.
  */
-function writeCommitLog(params) {
+function writeCommitWithFileNumstat(params) {
     const [cmd, out] = writeCommitEnrichedLogCommand(params);
     (0, execute_command_1.executeCommand)('write commit log', cmd);
     console.log(`====>>>> Commits read from repo in folder ${params.repoFolderPath ?
@@ -86,7 +86,7 @@ function writeCommitLog(params) {
     console.log(`====>>>> Output saved on file ${out}`);
     return out;
 }
-exports.writeCommitLog = writeCommitLog;
+exports.writeCommitWithFileNumstat = writeCommitWithFileNumstat;
 /**
  * Reads the commits from a Git repository enriched with the number of lines added and removed for each file in
  * each commit, and writes the output to a file if an outFile is provided.
@@ -96,8 +96,8 @@ exports.writeCommitLog = writeCommitLog;
  * @param outFile The path to the file where the output should be saved. If not provided, the output is not saved to a file.
  * @returns An Observable that emits a stream of `CommitWithFileNumstat` objects representing the commits enriched with the number of lines added and removed for each file in each commit.
  */
-function readCommitWithFileNumstatFromLog$(params, outFile = '') {
-    const args = readCommitWithFileNumstaFromLogCommandWithArgs(params, false);
+function readCommitWithFileNumstat$(params, outFile = '') {
+    const args = readCommitWithFileNumstaCommandWithArgs(params, false);
     // _readCommitsData$ is a stream of lines which represent the result of the git log command (i.e. data about the commits)
     // it is shared since it is the upstream for two streams which are merged at the end of the function
     // if we do not share it, then the git log command is executed twice
@@ -124,7 +124,7 @@ function readCommitWithFileNumstatFromLog$(params, outFile = '') {
         rxjs_1.EMPTY;
     return (0, rxjs_1.merge)(_readCommitWithFileNumstat$, _writeCommitLog$);
 }
-exports.readCommitWithFileNumstatFromLog$ = readCommitWithFileNumstatFromLog$;
+exports.readCommitWithFileNumstat$ = readCommitWithFileNumstat$;
 /**
  * Executes the `writeCommitLogCommand` function to write the commit log to a file and returns
  * an Observable that emits the name of the file where the output is saved.
@@ -132,7 +132,7 @@ exports.readCommitWithFileNumstatFromLog$ = readCommitWithFileNumstatFromLog$;
  * @param params An object containing the parameters to pass to the `writeCommitLogCommand` function.
  * @returns An Observable that emits the name of the file where the output is saved.
  */
-function writeCommitEnrichedLog$(params) {
+function writeCommitWithFileNumstat$(params) {
     const [cmd, out] = writeCommitEnrichedLogCommand(params);
     return (0, execute_command_1.executeCommandObs)('write commit enriched log', cmd).pipe((0, rxjs_1.tap)({
         complete: () => {
@@ -141,7 +141,7 @@ function writeCommitEnrichedLog$(params) {
         },
     }), (0, rxjs_1.map)(() => out));
 }
-exports.writeCommitEnrichedLog$ = writeCommitEnrichedLog$;
+exports.writeCommitWithFileNumstat$ = writeCommitWithFileNumstat$;
 /**
  * Returns a new `CommitCompact` object with no sha, author, and the date set to the beginning of the Unix epoch,
  * i.e. 1970-01-01.
@@ -177,7 +177,7 @@ function newCommitCompactFromGitlog(commitDataFromGitlog) {
     return commit;
 }
 function writeCommitEnrichedLogCommand(params) {
-    const args = readCommitWithFileNumstaFromLogCommandWithArgs(params, true);
+    const args = readCommitWithFileNumstaCommandWithArgs(params, true);
     const cmdWithArgs = `git ${args.join(' ')}`;
     const out = buildGitOutfile(params);
     return [`${cmdWithArgs} > ${out}`, out];
@@ -189,7 +189,7 @@ function writeCommitEnrichedLogCommand(params) {
  * @param quotesForFilters A boolean indicating whether or not to use quotes for the filters.
  * @returns An array of arguments to execute the git log command with the specified parameters.
  */
-function readCommitWithFileNumstaFromLogCommandWithArgs(params, quotesForFilters) {
+function readCommitWithFileNumstaCommandWithArgs(params, quotesForFilters) {
     const repoFolder = params.repoFolderPath ? ['-C', `${params.repoFolderPath}`] : [];
     const after = params.after ? `--after=${params.after.trim()}` : '';
     const before = params.before ? `--before=${params.before.trim()} ` : '';

@@ -78,7 +78,7 @@ exports.isToBeExcluded = isToBeExcluded;
 // newRepoCompact returns an Observable that notifies a new RepoCompact
 // filled with its commits sorted by date ascending
 function newRepoCompact(repoPath, fromDate = new Date(0), toDate = new Date(Date.now())) {
-    return (0, commit_functions_1.readCommitCompactFromLog$)(repoPath, fromDate, toDate).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((commits) => {
+    return (0, commit_functions_1.readCommitCompact$)(repoPath, fromDate, toDate).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((commits) => {
         const repo = { path: repoPath, commits };
         return repo;
     }), (0, rxjs_1.catchError)((err) => {

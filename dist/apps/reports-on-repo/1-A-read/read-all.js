@@ -9,7 +9,7 @@ const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
 function readAll(commitOptions, readClocOptions) {
     // execute the git log command to extract the commits
-    const commitLogPath = (0, commit_functions_1.writeCommitLog)(commitOptions);
+    const commitLogPath = (0, commit_functions_1.writeCommitWithFileNumstat)(commitOptions);
     // execute the cloc commands
     const clocLogPath = (0, cloc_1.createClocLog)(readClocOptions, 'readAll-fileLinesOptions');
     const clocSummaryPath = (0, cloc_1.createSummaryClocLog)(readClocOptions);

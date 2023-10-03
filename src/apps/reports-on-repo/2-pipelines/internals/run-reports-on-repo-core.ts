@@ -29,7 +29,7 @@ import {
 } from './report-generators';
 import { addProjectInfo } from '../../1-D-reports/add-project-info';
 import { addWorksheet, summaryWorkbook, writeWorkbook } from '../../1-E-summary-excel/summary-excel';
-import { commitWithFileNumstatsEnrichedWithCloc$ } from '../../../../git-cloc-functions/git-cloc.functions';
+import { commitWithFileNumstatsEnrichedWithCloc$ } from '../../../../git-cloc-functions/commit-cloc.functions';
 import { clocFileDictFromClocStream$ } from '../../../../cloc-functions/cloc.functions';
 
 export const allReports = [
