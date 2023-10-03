@@ -1,9 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOutfileName = exports.readBranchesGraphCommand = exports.readTagsCommand = exports.readCommitsCommandWithArgs = exports.readCommitsCommand = exports.buildGitOutfile = exports.readBranchesGraph = exports.readTags = exports.readMultiReposCommits = exports.readCommitsNewProcess = exports.readAndStreamCommitsNewProces = exports.DEFAULT_OUT_DIR = void 0;
+exports.getOutfileName = exports.readBranchesGraphCommand = exports.readTagsCommand = exports.readCommitsCommandWithArgs = exports.readCommitsCommand = exports.buildGitOutfile = exports.readBranchesGraph = exports.readTags = exports.readCommitsNewProcess = exports.readAndStreamCommitsNewProces = exports.DEFAULT_OUT_DIR = void 0;
 const path = require("path");
-const rxjs_1 = require("rxjs");
-const operators_1 = require("rxjs/operators");
 const execute_command_1 = require("../../../tools/execute-command/execute-command");
 const config_1 = require("../0-config/config");
 const commit_functions_1 = require("../../../git-functions/commit.functions");
@@ -15,29 +13,9 @@ function readAndStreamCommitsNewProces(config, outFile, _writeFileOnly = false) 
 }
 exports.readAndStreamCommitsNewProces = readAndStreamCommitsNewProces;
 function readCommitsNewProcess(config) {
-    const [cmd, out] = readCommitsCommand(config);
-    return (0, execute_command_1.executeCommandInShellNewProcessObs)('writeCommitsToFile', cmd).pipe((0, operators_1.ignoreElements)(), (0, operators_1.defaultIfEmpty)(out), (0, operators_1.tap)({
-        next: (outFile) => {
-            console.log(`====>>>> Commits read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name}`);
-            console.log(`====>>>> Output saved on file ${outFile}`);
-        },
-    }));
+    return (0, commit_functions_1.writeCommitWithFileNumstat$)(config);
 }
 exports.readCommitsNewProcess = readCommitsNewProcess;
-// returns an Observable which notifies when all git log commands on all repos have been executed, errors if one of the commands errors
-function readMultiReposCommits(config) {
-    const repoFolderPaths = config.repoFolderPaths;
-    const basicConfig = Object.assign({}, config);
-    delete basicConfig.repoFolderPaths;
-    const readSingleRepoConfigs = repoFolderPaths
-        .map((repoFolderPath) => {
-        const readSingleRepoConfig = Object.assign({ repoFolderPath }, basicConfig);
-        return readSingleRepoConfig;
-    })
-        .map((config) => (0, commit_functions_1.writeCommitWithFileNumstat$)(config));
-    return (0, rxjs_1.forkJoin)(readSingleRepoConfigs);
-}
-exports.readMultiReposCommits = readMultiReposCommits;
 function readTags(config) {
     const [cmd, out] = readTagsCommand(config);
     (0, execute_command_1.executeCommand)('readTags', cmd);

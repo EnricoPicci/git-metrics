@@ -1,16 +1,12 @@
 import path = require('path');
-import { forkJoin } from 'rxjs';
 
-import { defaultIfEmpty, ignoreElements, tap } from 'rxjs/operators';
 import {
     ConfigReadBrachesGraph,
     ConfigReadCommits,
-    ConfigReadMultiReposCommits,
     ConfigReadTags,
 } from './read-params/read-params';
 import {
     executeCommand,
-    executeCommandInShellNewProcessObs,
 } from '../../../tools/execute-command/execute-command';
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, readCommitWithFileNumstat$, writeCommitWithFileNumstat$ } from '../../../git-functions/commit.functions';
@@ -25,48 +21,7 @@ export function readAndStreamCommitsNewProces(config: ConfigReadCommits, outFile
 }
 
 export function readCommitsNewProcess(config: ConfigReadCommits) {
-    const [cmd, out] = readCommitsCommand(config);
-    return executeCommandInShellNewProcessObs('writeCommitsToFile', cmd).pipe(
-        ignoreElements(),
-        defaultIfEmpty(out),
-        tap({
-            next: (outFile) => {
-                console.log(
-                    `====>>>> Commits read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
-                    }`,
-                );
-                console.log(`====>>>> Output saved on file ${outFile}`);
-            },
-        }),
-    );
-}
-
-// returns an Observable which notifies when all git log commands on all repos have been executed, errors if one of the commands errors
-export function readMultiReposCommits(config: ConfigReadMultiReposCommits) {
-    const repoFolderPaths = config.repoFolderPaths;
-    const basicConfig: any = { ...config };
-    delete basicConfig.repoFolderPaths;
-    const readSingleRepoConfigs = repoFolderPaths
-        .map((repoFolderPath) => {
-            const readSingleRepoConfig: ConfigReadCommits = {
-                repoFolderPath,
-                ...basicConfig,
-            };
-            return readSingleRepoConfig;
-        })
-        .map((config) => writeCommitWithFileNumstat$(config));
-    return forkJoin(readSingleRepoConfigs);
-}
-
-export function readTags(config: ConfigReadTags) {
-    const [cmd, out] = readTagsCommand(config);
-    executeCommand('readTags', cmd);
-    console.log(
-        `====>>>> Tags read from repo in folder ${config.repoFolderPath ? config.repoFolderPath : path.parse(process.cwd()).name
-        }`,
-    );
-    console.log(`====>>>> Output saved on file ${out}`);
-    return out;
+    return writeCommitWithFileNumstat$(config);
 }
 
 export function readBranchesGraph(config: ConfigReadTags) {

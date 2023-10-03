@@ -1,4 +1,4 @@
-export type GitLogCommandParams = {
+export type GitCommandParams = {
     repoFolderPath: string;
     outDir: string;
     outFile?: string;
@@ -13,4 +13,4 @@ export type GitLogCommitParams = {
     reverse?: boolean;
     includeMergeCommits?: boolean;
     firstParent?: boolean;
-} & GitLogCommandParams;
+} & GitCommandParams;

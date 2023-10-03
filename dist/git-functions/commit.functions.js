@@ -78,7 +78,7 @@ exports.readOneCommitCompact$ = readOneCommitCompact$;
  * @returns The name of the file where the output is saved.
  */
 function writeCommitWithFileNumstat(params) {
-    const [cmd, out] = writeCommitEnrichedLogCommand(params);
+    const [cmd, out] = writeCommitWithFileNumstatCommand(params);
     (0, execute_command_1.executeCommand)('write commit log', cmd);
     console.log(`====>>>> Commits read from repo in folder ${params.repoFolderPath ?
         params.repoFolderPath :
@@ -133,7 +133,7 @@ exports.readCommitWithFileNumstat$ = readCommitWithFileNumstat$;
  * @returns An Observable that emits the name of the file where the output is saved.
  */
 function writeCommitWithFileNumstat$(params) {
-    const [cmd, out] = writeCommitEnrichedLogCommand(params);
+    const [cmd, out] = writeCommitWithFileNumstatCommand(params);
     return (0, execute_command_1.executeCommandObs)('write commit enriched log', cmd).pipe((0, rxjs_1.tap)({
         complete: () => {
             console.log(`====>>>> Commits read from repo in folder ${params.repoFolderPath ? params.repoFolderPath : path_1.default.parse(process.cwd()).name}`);
@@ -176,7 +176,7 @@ function newCommitCompactFromGitlog(commitDataFromGitlog) {
     };
     return commit;
 }
-function writeCommitEnrichedLogCommand(params) {
+function writeCommitWithFileNumstatCommand(params) {
     const args = readCommitWithFileNumstaCommandWithArgs(params, true);
     const cmdWithArgs = `git ${args.join(' ')}`;
     const out = buildGitOutfile(params);

@@ -11,6 +11,7 @@ import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs }
 import { CommitCompact, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
 import { GitLogCommitParams } from './git-params';
+import { buildOutfileName } from './utils/file-name-utils';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -100,7 +101,7 @@ Command: ${cmd}`;
  * @returns The name of the file where the output is saved.
  */
 export function writeCommitWithFileNumstat(params: GitLogCommitParams) {
-    const [cmd, out] = writeCommitEnrichedLogCommand(params);
+    const [cmd, out] = writeCommitWithFileNumstatCommand(params);
     executeCommand('write commit log', cmd);
     console.log(
         `====>>>> Commits read from repo in folder ${params.repoFolderPath ?
@@ -168,7 +169,7 @@ export function readCommitWithFileNumstat$(params: GitLogCommitParams, outFile =
  * @returns An Observable that emits the name of the file where the output is saved.
  */
 export function writeCommitWithFileNumstat$(params: GitLogCommitParams) {
-    const [cmd, out] = writeCommitEnrichedLogCommand(params);
+    const [cmd, out] = writeCommitWithFileNumstatCommand(params);
     return executeCommandObs('write commit enriched log', cmd).pipe(
         tap({
             complete: () => {
@@ -221,12 +222,13 @@ function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
     return commit;
 }
 
-function writeCommitEnrichedLogCommand(params: GitLogCommitParams) {
+function writeCommitWithFileNumstatCommand(params: GitLogCommitParams) {
     const args = readCommitWithFileNumstaCommandWithArgs(params, true);
     const cmdWithArgs = `git ${args.join(' ')}`;
     const out = buildGitOutfile(params);
     return [`${cmdWithArgs} > ${out}`, out];
 }
+
 /**
  * Returns an object containing the command and arguments to execute the git log command with the specified parameters.
  * The command returns the commit history enriched with the number of lines added and removed for each file in each commit.
@@ -269,23 +271,17 @@ function readCommitWithFileNumstaCommandWithArgs(params: GitLogCommitParams, quo
     });
     return args;
 }
-const DEFAULT_OUT_DIR = './';
+
 export const COMMITS_FILE_POSTFIX = '-commits.log';
 export const COMMITS_FILE_REVERSE_POSTFIX = '-commits-reverse.log';
 function buildGitOutfile(params: GitLogCommitParams) {
-    let outDir = params.outDir ? params.outDir : DEFAULT_OUT_DIR;
+    let outDir = params.outDir ? params.outDir : './';
     outDir = path.resolve(outDir);
     const _postfix = params.reverse ? COMMITS_FILE_REVERSE_POSTFIX : COMMITS_FILE_POSTFIX;
-    const outFile = buildOutfileName(params.outFile, params.repoFolderPath, params.outFilePrefix, _postfix);
+    const _outfile = params.outFile ? params.outFile : '';
+    const outFile = buildOutfileName(_outfile, params.repoFolderPath, params.outFilePrefix, _postfix);
     const out = path.join(outDir, outFile);
     return out;
-}
-
-function buildOutfileName(outFile = '', repoFolder = '', prefix = '', postfix = '') {
-    const repoFolderName = path.parse(repoFolder).name;
-    const isCurrentFolder = repoFolderName === '' || repoFolderName === '.';
-    const _repoFolderName = isCurrentFolder ? path.parse(process.cwd()).name : repoFolderName;
-    return outFile ? outFile : `${prefix}${(_repoFolderName)}${postfix}`;
 }
 
 function toCommitsWithFileNumstatdata(logFilePath?: string) {
