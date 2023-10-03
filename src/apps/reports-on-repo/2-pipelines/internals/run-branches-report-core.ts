@@ -2,10 +2,8 @@ import path from 'path';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
-import { clocSummaryInfo } from '../../1-A-read/cloc';
 
 import { enrichedCommitsStream } from '../../1-B-git-enriched-streams/commits';
 import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
@@ -17,6 +15,8 @@ import { commitDaylySummary } from '../../1-C-aggregate-in-memory/commit-branch-
 import { addProjectInfo } from '../../1-D-reports/add-project-info';
 import { addConsiderationsForBranchesReport, branchesReportCore } from '../../1-D-reports/branches-report';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';
+import { ClocParams } from '../../../../cloc-functions/cloc-params';
+import { clocSummaryCsvRaw$ } from '../../../../cloc-functions/cloc.functions';
 
 export function runBranchesReport(
     repoFolderPath: string,
@@ -38,12 +38,12 @@ export function runBranchesReport(
         includeMergeCommits: true,
         firstParent: true,
     };
-    const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
-    const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
+    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir };
+    const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, clocParams);
 
     // generation of the source streams
     const _commitStream = enrichedCommitsStream(commitLogPath, clocLogPath);
-    const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
+    const _clocSummaryStream = clocSummaryCsvRaw$(clocSummaryPath);
 
     // run the reports
     return runBranchesReportFromStreams(

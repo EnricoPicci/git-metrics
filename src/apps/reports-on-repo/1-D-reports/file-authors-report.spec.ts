@@ -3,13 +3,13 @@ import path from 'path';
 import { tap } from 'rxjs';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { commitsStream } from '../1-B-git-enriched-streams/commits';
-import { ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { FileAuthorsReportParams, projectAndFileAuthorsReport } from './file-authors-report';
-import { clocSummaryInfo } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileAuthors } from '../1-C-aggregate-in-memory/file-authors-aggregate';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
+import { ClocParams } from '../../../cloc-functions/cloc-params';
+import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc.functions';
 
 describe(`fileAuthorsReportWithProjectInfo`, () => {
     it(`generates the report about the authors of the files as well as the general project info`, (done) => {
@@ -29,7 +29,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const _commitStream = commitsStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
         const _fileAuthors = fileAuthors(_filesStream, params.after);
-        const _clocSummaryInfo = clocSummaryInfo(repoFolderPath, outDir);
+        const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);
 
         projectAndFileAuthorsReport(_fileAuthors, _projectInfo, params)
@@ -71,7 +71,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const _commitStream = commitsStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
         const _fileAuthors = fileAuthors(_filesStream, params.after);
-        const _clocSummaryInfo = clocSummaryInfo(repoFolderPath, outDir);
+        const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);
 
         projectAndFileAuthorsReport(_fileAuthors, _projectInfo, params)
@@ -102,12 +102,12 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
 
         // read
         const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, reverse: true };
-        const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir, vcs: 'git' };
-        const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
+        const clocParams: ClocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
+        const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, clocParams);
         // generation of the source streams
         const _commitStream = commitsStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
-        const _clocSummaryStream = clocSummaryInfo(clocSummaryPath);
+        const _clocSummaryStream = clocSummaryCsvRaw$(clocSummaryPath);
 
         const params: FileAuthorsReportParams = {
             repoFolderPath,

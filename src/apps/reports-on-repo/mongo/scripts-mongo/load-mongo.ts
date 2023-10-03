@@ -1,8 +1,9 @@
 import { Command } from 'commander';
-import { ConfigReadCloc } from '../../1-A-read/read-params/read-params';
+
 import { loadAllCommitsFiles } from '../load/load-commits-files';
 import { readAll } from '../../1-A-read/read-all';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';
+import { ClocParams } from '../../../../cloc-functions/cloc-params';
 
 const DEFAULT_OUT_DIR = './';
 
@@ -41,7 +42,7 @@ program.parse(process.argv);
 
 const options = program.opts();
 
-const [commitLogPath, clocLogPath] = readAll(options as GitLogCommitParams, options as ConfigReadCloc);
+const [commitLogPath, clocLogPath] = readAll(options as GitLogCommitParams, options as ClocParams);
 
 // load all commits and files infot to a mongo collection
 loadAllCommitsFiles(

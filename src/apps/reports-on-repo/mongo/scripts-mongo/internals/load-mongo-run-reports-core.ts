@@ -6,7 +6,6 @@
 import path from 'path';
 import { forkJoin } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
-import { ConfigReadCloc } from '../../../1-A-read/read-params/read-params';
 import { readAll } from '../../../1-A-read/read-all';
 import { loadAllCommitsFiles } from '../../load/load-commits-files';
 import { mongoFileChurnReport } from '../../report/mongo-file-churn-report';
@@ -17,6 +16,7 @@ import { mongoFileAuthorReport } from '../../report/mongo-file-author-report';
 import { mongoFilesCouplingReport } from '../../report/mongo-files-coupling-report';
 import { createDirIfNotExisting } from '../../../1-A-read/create-outdir';
 import { GitLogCommitParams } from '../../../../../git-functions/git-params';
+import { ClocParams } from '../../../../../cloc-functions/cloc-params';
 
 export function loadMongRunReports(
     connectionString: string,
@@ -41,9 +41,9 @@ export function loadMongRunReports(
     // the "after" propety in the "commitOptions" object
     const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile };
 
-    const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath, outClocFile, clocDefsPath };
+    const clocParams: ClocParams = { outDir, folderPath: repoFolderPath, outClocFile, clocDefsPath };
 
-    const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
+    const [commitLogPath, clocLogPath] = readAll(commitOptions, clocParams);
 
     const params = {
         repoFolderPath,

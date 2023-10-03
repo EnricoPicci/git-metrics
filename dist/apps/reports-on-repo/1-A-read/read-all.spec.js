@@ -16,7 +16,7 @@ describe(`readAllParallel`, () => {
             outFile,
         };
         const clocConfig = {
-            repoFolderPath: './src',
+            folderPath: './src',
             outDir,
             outClocFilePrefix: `${outFile}-`,
         };

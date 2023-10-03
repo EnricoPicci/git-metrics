@@ -10,9 +10,9 @@ const files_1 = require("../1-B-git-enriched-streams/files");
 const commits_1 = require("../1-B-git-enriched-streams/commits");
 const read_all_1 = require("../1-A-read/read-all");
 const file_authors_report_1 = require("./file-authors-report");
-const cloc_1 = require("../1-A-read/cloc");
 const project_info_aggregate_1 = require("../1-C-aggregate-in-memory/project-info-aggregate");
 const file_authors_aggregate_1 = require("../1-C-aggregate-in-memory/file-authors-aggregate");
+const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
 describe(`fileAuthorsReportWithProjectInfo`, () => {
     it(`generates the report about the authors of the files as well as the general project info`, (done) => {
         const repoName = 'a-git-repo-few-many-author';
@@ -28,7 +28,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _fileAuthors = (0, file_authors_aggregate_1.fileAuthors)(_filesStream, params.after);
-        const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(repoFolderPath, outDir);
+        const _clocSummaryInfo = (0, cloc_functions_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         (0, file_authors_report_1.projectAndFileAuthorsReport)(_fileAuthors, _projectInfo, params)
             .pipe((0, rxjs_1.tap)((report) => {
@@ -64,7 +64,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _fileAuthors = (0, file_authors_aggregate_1.fileAuthors)(_filesStream, params.after);
-        const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(repoFolderPath, outDir);
+        const _clocSummaryInfo = (0, cloc_functions_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         (0, file_authors_report_1.projectAndFileAuthorsReport)(_fileAuthors, _projectInfo, params)
             .pipe((0, rxjs_1.tap)((report) => {
@@ -91,12 +91,12 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const after = new Date('2023-09-25');
         // read
         const commitOptions = { repoFolderPath, outDir, filter, reverse: true };
-        const readClocOptions = { repoFolderPath, outDir, vcs: 'git' };
-        const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
+        const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
+        const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         // generation of the source streams
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
+        const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
         const params = {
             repoFolderPath,
             commitLog: commitLogPath,

@@ -2,11 +2,11 @@ import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
 import { commitsStream, enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
-import { clocSummaryInfo } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { BranchesReportParams, projectAndBranchesReport } from './branches-report';
 import { commitDaylySummary } from '../1-C-aggregate-in-memory/commit-branch-tips-aggregate';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
+import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc.functions';
 
 describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches as well as the general project info`, (done) => {
@@ -29,7 +29,7 @@ describe(`projectAndBranchesReport`, () => {
         const daylySummaryDictionary = commitDaylySummary(commitsWithBranchTips);
 
         const _commitStream = commitsStream(commitLogPath);
-        const _clocSummaryInfo = clocSummaryInfo(repoFolderPath, outDir);
+        const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);
 
         projectAndBranchesReport(daylySummaryDictionary, _projectInfo, params, csvFile, weeklyCsvFile)

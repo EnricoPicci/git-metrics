@@ -8,9 +8,9 @@ const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const read_all_1 = require("../../1-A-read/read-all");
 const create_outdir_1 = require("../../1-A-read/create-outdir");
-const cloc_1 = require("../../1-A-read/cloc");
 const run_reports_on_multi_repos_core_1 = require("./run-reports-on-multi-repos-core");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
+const cloc_functions_1 = require("../../../../cloc-functions/cloc.functions");
 function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, noRenames) {
     // create the output directory if not existing
     const _outDir = path_1.default.resolve(outDir ? outDir : '');
@@ -28,8 +28,8 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
                 noRenames,
                 reverse: true,
             };
-            const readClocOptions = { repoFolderPath, outDir: _outDir };
-            const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
+            const clocParams = { folderPath: repoFolderPath, outDir: _outDir };
+            const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
             // generation of the source streams
             const { _commitStream, _filesStream } = (0, run_reports_on_repo_core_1._streams)(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits);
             allCommitStreams.push(_commitStream.pipe((0, rxjs_1.map)((commit) => {
@@ -41,8 +41,8 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
             })));
             allFileStreams.push(_filesStream);
         });
-        const clocSummaryPath = (0, cloc_1.createSummaryClocLog)({ repoFolderPath: repoContainerFolderPath, outDir: _outDir });
-        const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
+        const clocSummaryPath = (0, cloc_functions_1.writeClocSummary)({ folderPath: repoContainerFolderPath, outDir: _outDir });
+        const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
         return {
             allCommitStreamsMerged: (0, rxjs_1.merge)(...allCommitStreams),
             allFileStreamsMerged: (0, rxjs_1.merge)(...allFileStreams),

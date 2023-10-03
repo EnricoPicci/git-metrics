@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+
 import { tap, map, catchError, EMPTY, concatMap, filter, from, mergeMap, toArray } from 'rxjs';
+
 import { executeCommandObs } from '../tools/execute-command/execute-command';
+
 import { RepoCompact } from './repo.model';
 import { readCommitCompact$ } from './commit.functions';
 

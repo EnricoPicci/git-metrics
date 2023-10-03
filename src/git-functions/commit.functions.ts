@@ -8,6 +8,7 @@ import {
 import { appendFileObs, deleteFileObs } from 'observable-fs';
 
 import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
+
 import { CommitCompact, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
 import { GitLogCommitParams } from './git-params';

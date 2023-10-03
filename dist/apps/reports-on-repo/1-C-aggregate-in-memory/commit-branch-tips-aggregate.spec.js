@@ -14,8 +14,8 @@ describe(`commitWithBranchTipsPerDayDictionary`, () => {
         const outFile = 'this-git-repo-commits-2.log';
         const reverse = true;
         const commitOptions = { filter, outDir, repoFolderPath, outFile, reverse };
-        const readClocOptions = { outDir, repoFolderPath };
-        const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
+        const clocParams = { outDir, folderPath: repoFolderPath };
+        const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         const commitsWithBranchTips = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath).pipe((0, commits_and_branch_tips_1.commitWithBranchTips)());
         (0, commit_branch_tips_aggregate_1.commitWithBranchTipsPerDayDictionary)(commitsWithBranchTips)
             .pipe((0, rxjs_1.tap)({
@@ -162,8 +162,8 @@ describe(`commitDaylySummary`, () => {
         const outFile = 'this-git-repo-commits-2.log';
         const reverse = true;
         const commitOptions = { filter, outDir, repoFolderPath, outFile, reverse };
-        const readClocOptions = { outDir, repoFolderPath };
-        const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
+        const clocParams = { outDir, folderPath: repoFolderPath };
+        const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         const commitsWithBranchTips = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath).pipe((0, commits_and_branch_tips_1.commitWithBranchTips)());
         (0, commit_branch_tips_aggregate_1.commitDaylySummary)(commitsWithBranchTips)
             .pipe((0, rxjs_1.tap)({

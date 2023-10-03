@@ -241,4 +241,33 @@ describe(`clocSummary$`, () => {
         });
     });
 });
+describe(`writeClocByfile`, () => {
+    it(`read the number of lines for each file from the folder named as the repo and saves them in a file`, (done) => {
+        const repo = 'git-repo-with-code';
+        const outDir = path_1.default.join(process.cwd(), './temp');
+        const params = {
+            folderPath: `./test-data/${repo}`,
+            outDir,
+        };
+        const expectedOutFilePath = path_1.default.join(outDir, `${repo}-cloc-byfile.csv`);
+        const returnedOutFilePath = (0, cloc_functions_1.writeClocByfile)(params, 'test');
+        (0, chai_1.expect)(returnedOutFilePath).equal(expectedOutFilePath);
+        (0, observable_fs_1.readLinesObs)(returnedOutFilePath).subscribe({
+            next: (lines) => {
+                (0, chai_1.expect)(lines).not.undefined;
+                // there are 5 lines: 3 for the 3 files and 1 for the csv header, which is the first, and one for the sum which is the last
+                (0, chai_1.expect)(lines.length).equal(5);
+                const _fileName = './hallo.java';
+                const [language, filename, blank, comment, code] = lines.find((l) => l.includes(_fileName)).split(',');
+                (0, chai_1.expect)(language).equal('Java');
+                (0, chai_1.expect)(filename).equal(`${_fileName}`);
+                (0, chai_1.expect)(parseInt(blank)).equal(3);
+                (0, chai_1.expect)(parseInt(comment)).equal(1);
+                (0, chai_1.expect)(parseInt(code)).equal(5);
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
+});
 //# sourceMappingURL=cloc.functions.spec.js.map

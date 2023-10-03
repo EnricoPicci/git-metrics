@@ -1,6 +1,7 @@
 import { toArray, map, catchError, of } from 'rxjs';
 
 import { executeCommandObs, getCommandOutput } from '../tools/execute-command/execute-command';
+
 import { ClocDiffStats, newClocDiffStatsWithError, newClocDiffStatsZeroed } from './cloc-diff.model';
 import { CLOC_CONFIG } from './config';
 

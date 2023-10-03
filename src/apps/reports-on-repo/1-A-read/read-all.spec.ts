@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { deleteFileObs, readLinesObs } from 'observable-fs';
 import { catchError, concatMap, forkJoin, of, tap } from 'rxjs';
 import { readAllParallel } from './read-all';
-import { ConfigReadCloc } from './read-params/read-params';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
+import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 describe(`readAllParallel`, () => {
     it(`performs all the read operations concurrently`, (done) => {
@@ -18,8 +18,8 @@ describe(`readAllParallel`, () => {
             outFile,
         };
 
-        const clocConfig: ConfigReadCloc = {
-            repoFolderPath: './src',  // cloc only on src to speed up the test
+        const clocConfig: ClocParams = {
+            folderPath: './src',  // cloc only on src to speed up the test
             outDir,
             outClocFilePrefix: `${outFile}-`,
         };

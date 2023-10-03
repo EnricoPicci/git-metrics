@@ -27,8 +27,8 @@ function loadMongRunReports(connectionString, outDir, repoFolderPath, dbName, af
     // since the creation date is determined by the first commit the file was in, therefore we do not specify
     // the "after" propety in the "commitOptions" object
     const commitOptions = { filter, outDir, repoFolderPath, outFile };
-    const readClocOptions = { outDir, repoFolderPath, outClocFile, clocDefsPath };
-    const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
+    const clocParams = { outDir, folderPath: repoFolderPath, outClocFile, clocDefsPath };
+    const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
     const params = {
         repoFolderPath,
         outDir,

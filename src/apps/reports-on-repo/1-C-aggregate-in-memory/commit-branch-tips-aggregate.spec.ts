@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import { tap } from 'rxjs';
 import { enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
-import { ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
-import { commitDaylySummary, commitWithBranchTipsPerDayDictionary } from './commit-branch-tips-aggregate';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
+import { ClocParams } from '../../../cloc-functions/cloc-params';
+import { commitDaylySummary, commitWithBranchTipsPerDayDictionary } from './commit-branch-tips-aggregate';
 
 describe(`commitWithBranchTipsPerDayDictionary`, () => {
     it(`returns a dictionary with day as key and the array of commits for that day as value`, (done) => {
@@ -16,8 +16,8 @@ describe(`commitWithBranchTipsPerDayDictionary`, () => {
         const reverse = true;
 
         const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile, reverse };
-        const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath };
-        const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
+        const clocParams: ClocParams = { outDir, folderPath: repoFolderPath };
+        const [commitLogPath, clocLogPath] = readAll(commitOptions, clocParams);
 
         const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());
 
@@ -173,8 +173,8 @@ describe(`commitDaylySummary`, () => {
         const reverse = true;
 
         const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile, reverse };
-        const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath };
-        const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
+        const clocParams: ClocParams = { outDir, folderPath: repoFolderPath };
+        const [commitLogPath, clocLogPath] = readAll(commitOptions, clocParams);
 
         const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());
         commitDaylySummary(commitsWithBranchTips)

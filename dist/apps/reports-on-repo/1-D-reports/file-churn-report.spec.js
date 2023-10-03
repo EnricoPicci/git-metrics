@@ -12,9 +12,9 @@ const files_1 = require("../1-B-git-enriched-streams/files");
 const commits_1 = require("../1-B-git-enriched-streams/commits");
 const read_all_1 = require("../1-A-read/read-all");
 const file_churn_report_1 = require("./file-churn-report");
-const cloc_1 = require("../1-A-read/cloc");
 const project_info_aggregate_1 = require("../1-C-aggregate-in-memory/project-info-aggregate");
 const file_churn_aggregate_1 = require("../1-C-aggregate-in-memory/file-churn-aggregate");
+const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
 describe(`fileChurnReportCore`, () => {
     it(`generates the report about the churn of files`, (done) => {
         const repoName = 'a-git-repo-with-one-lazy-author';
@@ -158,7 +158,7 @@ describe(`projectAndFileChurnReport`, () => {
         // generation of the source streams
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(repoFolderPath, outDir);
+        const _clocSummaryInfo = (0, cloc_functions_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
         const params = {
             repoFolderPath,
             commitLog: commitLogPath,
@@ -191,7 +191,7 @@ describe(`projectAndFileChurnReport`, () => {
             path_1.default.join(testDataPath, `${repoFolderPath}-summary-cloc.csv`),
         ];
         // generation of the source streams
-        const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
+        const _clocSummaryInfo = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const params = {
@@ -232,7 +232,7 @@ describe(`projectAndFileChurnReport`, () => {
             path_1.default.join(testDataPath, `${repoFolderPath}-summary-cloc.csv`),
         ];
         // generation of the source streams
-        const _clocSummaryInfo = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
+        const _clocSummaryInfo = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const params = {
@@ -263,12 +263,12 @@ describe(`projectAndFileChurnReport`, () => {
         const after = undefined;
         // read
         const commitOptions = { repoFolderPath, outDir, filter, reverse: true };
-        const readClocOptions = { repoFolderPath, outDir, vcs: 'git' };
-        const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
+        const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
+        const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         // generation of the source streams
         const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
-        const _clocSummaryStream = (0, cloc_1.clocSummaryInfo)(clocSummaryPath);
+        const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
         const params = {
             repoFolderPath,
             commitLog: commitLogPath,

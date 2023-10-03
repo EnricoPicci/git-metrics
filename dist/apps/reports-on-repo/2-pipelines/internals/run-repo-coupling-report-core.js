@@ -11,8 +11,8 @@ function runRepoCouplingReport(repoFolderPaths, timeWindowLengthInDays, csvFileP
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
     const fileStreams = repoFolderPaths.map((repoFolderPath) => {
         const commitOptions = { filter, outDir: outDir, repoFolderPath, outFile, after, reverse: true };
-        const readClocOptions = { outDir: outDir, repoFolderPath, outClocFile, clocDefsPath };
-        const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, readClocOptions);
+        const params = { outDir: outDir, folderPath: repoFolderPath, outClocFile, clocDefsPath };
+        const [commitLogPath, clocLogPath] = (0, read_all_1.readAll)(commitOptions, params);
         return (0, files_1.filesStream)(commitLogPath, clocLogPath);
     });
     const fileTupleDict = (0, repo_coupling_aggregate_1.fileTuplesDict)(fileStreams, timeWindowLengthInDays);

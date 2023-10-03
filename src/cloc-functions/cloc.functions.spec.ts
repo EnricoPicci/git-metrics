@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { buildOutfileName, clocSummary$, writeClocByFile$, writeClocSummary } from './cloc.functions';
+import { buildOutfileName, clocSummary$, writeClocByFile$, writeClocByfile, writeClocSummary } from './cloc.functions';
 import { ClocParams } from './cloc-params';
 import path from 'path';
 import { deleteFile } from '../tools/test-helpers/delete-file';
@@ -275,4 +275,34 @@ describe(`clocSummary$`, () => {
             complete: () => done(),
         });
     });
+});
+
+describe(`writeClocByfile`, () => {
+    it(`read the number of lines for each file from the folder named as the repo and saves them in a file`, (done) => {
+        const repo = 'git-repo-with-code';
+        const outDir = path.join(process.cwd(), './temp');
+        const params: ClocParams = {
+            folderPath: `./test-data/${repo}`,
+            outDir,
+        };
+        const expectedOutFilePath = path.join(outDir, `${repo}-cloc-byfile.csv`);
+        const returnedOutFilePath = writeClocByfile(params, 'test');
+        expect(returnedOutFilePath).equal(expectedOutFilePath);
+        readLinesObs(returnedOutFilePath).subscribe({
+            next: (lines) => {
+                expect(lines).not.undefined;
+                // there are 5 lines: 3 for the 3 files and 1 for the csv header, which is the first, and one for the sum which is the last
+                expect(lines.length).equal(5);
+                const _fileName = './hallo.java';
+                const [language, filename, blank, comment, code] = lines.find((l) => l.includes(_fileName))!.split(',');
+                expect(language).equal('Java');
+                expect(filename).equal(`${_fileName}`);
+                expect(parseInt(blank)).equal(3);
+                expect(parseInt(comment)).equal(1);
+                expect(parseInt(code)).equal(5);
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
 });

@@ -2,9 +2,10 @@ import { from, map, mergeMap, toArray } from "rxjs";
 
 import { clocSummaryOnGitRepo$ } from "../cloc-functions/cloc.functions";
 import { CONFIG } from "../config";
-import { RepoClocLanguageStats } from "./repo-cloc.model";
 import { ClocLanguageStats } from "../cloc-functions/cloc.model";
 import { reposInFolder } from "../git-functions/repo.functions";
+
+import { RepoClocLanguageStats } from "./repo-cloc.model";
 
 /**
  * Takes a folder path and returns an Observable that emits a stream of `RepoClocLanguageStats` objects 

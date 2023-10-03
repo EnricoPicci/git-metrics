@@ -1,10 +1,16 @@
 import path from 'path';
 
-import { Observable, Subscriber, catchError, concatMap, defaultIfEmpty, ignoreElements, map, merge, of, pipe, share, tap, toArray } from 'rxjs';
+import {
+    Observable, Subscriber, catchError, concatMap, defaultIfEmpty,
+    ignoreElements, map, merge, of, pipe, share, tap, toArray
+} from 'rxjs';
 
 import { appendFileObs, deleteFileObs, readLinesObs, writeFileObs, } from 'observable-fs';
 
-import { executeCommand, executeCommandInShellNewProcessObs, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
+import {
+    executeCommand, executeCommandInShellNewProcessObs,
+    executeCommandNewProcessToLinesObs, executeCommandObs
+} from '../tools/execute-command/execute-command';
 
 import { ClocDictionary, ClocFileInfo, ClocLanguageStats } from './cloc.model';
 import { CLOC_CONFIG } from './config';

@@ -1,4 +1,3 @@
-import { ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { readAll } from '../../1-A-read/read-all';
 
@@ -7,6 +6,7 @@ import { filesStream } from '../../1-B-git-enriched-streams/files';
 import { repoCouplingReport } from '../../1-D-reports/repo-coupling-report';
 import { fileTuplesDict } from '../../1-C-aggregate-in-memory/repo-coupling-aggregate';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';
+import { ClocParams } from '../../../../cloc-functions/cloc-params';
 
 export function runRepoCouplingReport(
     repoFolderPaths: string[],
@@ -24,8 +24,8 @@ export function runRepoCouplingReport(
 
     const fileStreams = repoFolderPaths.map((repoFolderPath) => {
         const commitOptions: GitLogCommitParams = { filter, outDir: outDir!, repoFolderPath, outFile, after, reverse: true };
-        const readClocOptions: ConfigReadCloc = { outDir: outDir!, repoFolderPath, outClocFile, clocDefsPath };
-        const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
+        const params: ClocParams = { outDir: outDir!, folderPath: repoFolderPath, outClocFile, clocDefsPath };
+        const [commitLogPath, clocLogPath] = readAll(commitOptions, params);
         return filesStream(commitLogPath, clocLogPath);
     });
 
