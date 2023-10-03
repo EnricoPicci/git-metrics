@@ -2,7 +2,7 @@ import path from 'path';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryInfo } from '../../1-A-read/cloc';
@@ -16,6 +16,7 @@ import { commitDaylySummary } from '../../1-C-aggregate-in-memory/commit-branch-
 
 import { addProjectInfo } from '../../1-D-reports/add-project-info';
 import { addConsiderationsForBranchesReport, branchesReportCore } from '../../1-D-reports/branches-report';
+import { GitLogCommitParams } from '../../../../git-functions/git-params';
 
 export function runBranchesReport(
     repoFolderPath: string,
@@ -29,7 +30,7 @@ export function runBranchesReport(
     createDirIfNotExisting(outDir);
 
     // read the data from git and cloc tool
-    const commitOptions: ConfigReadCommits = {
+    const commitOptions: GitLogCommitParams = {
         repoFolderPath,
         outDir,
         noRenames,

@@ -6,7 +6,7 @@ import { fileCoupling } from '../1-C-aggregate-in-memory/file-coupling-aggregate
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { clocSummaryInfo } from '../1-A-read/cloc';
 import { enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 
 import {
@@ -14,6 +14,7 @@ import {
     FilesCouplingReportParams,
     projectAndFileCouplingReport,
 } from './file-coupling-report';
+import { GitLogCommitParams } from '../../../git-functions/git-params';
 
 describe(`fileCouplingReportCore`, () => {
     it(`generates the report about the churn of files and checks that the report has been filled`, (done) => {
@@ -127,7 +128,7 @@ describe(`projectAndFileCouplingReport`, () => {
         const depthInFilesCoupling = 10;
 
         // read
-        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, reverse: true };
+        const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, reverse: true };
         const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
 

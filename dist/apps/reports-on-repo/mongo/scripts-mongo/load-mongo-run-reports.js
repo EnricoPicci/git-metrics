@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchLoadMongoRunReports = void 0;
 const path_1 = __importDefault(require("path"));
 const commander_1 = require("commander");
-const read_git_1 = require("../../1-A-read/read-git");
 const load_mongo_run_reports_core_1 = require("./internals/load-mongo-run-reports-core");
 const report_1 = require("../../1-D-reports/report");
+const DEFAULT_OUT_DIR = './';
 function launchLoadMongoRunReports() {
     const program = new commander_1.Command();
     program
@@ -16,7 +16,7 @@ function launchLoadMongoRunReports() {
         .option('-r, --repo <string>', 'path to the folder containing the repo (the current folder name is the default)', `${process.cwd()}`)
         .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filter is between single quotes)`)
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
-        .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${read_git_1.DEFAULT_OUT_DIR})`, `${read_git_1.DEFAULT_OUT_DIR}`)
+        .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${DEFAULT_OUT_DIR})`, `${DEFAULT_OUT_DIR}`)
         .option('-o, --outFile <string>', `name of the log file written (default is the name of the repo)`)
         .option('--outClocFile <string>', 'log file containing the cloc info (default is the name of the repo with -cloc postfix)')
         .requiredOption('-s, --connStr <string>', 'connection string to use to connect to mongo')

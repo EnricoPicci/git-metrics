@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompact$ = void 0;
+exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.SEP = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const commit_model_1 = require("./commit.model");
 const config_1 = require("./config");
+const file_name_utils_1 = require("./utils/file-name-utils");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -160,7 +161,7 @@ exports.newEmptyCommitCompact = newEmptyCommitCompact;
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
-const SEP = config_1.GIT_CONFIG.COMMIT_REC_SEP;
+exports.SEP = config_1.GIT_CONFIG.COMMIT_REC_SEP;
 /**
  * Returns a new `CommitCompact` object with the given sha, author and date starting from a string in the format
  * sha,date,author received from the git log command.
@@ -176,12 +177,14 @@ function newCommitCompactFromGitlog(commitDataFromGitlog) {
     };
     return commit;
 }
+// exported for testing purposes only
 function writeCommitWithFileNumstatCommand(params) {
     const args = readCommitWithFileNumstaCommandWithArgs(params, true);
     const cmdWithArgs = `git ${args.join(' ')}`;
     const out = buildGitOutfile(params);
     return [`${cmdWithArgs} > ${out}`, out];
 }
+exports.writeCommitWithFileNumstatCommand = writeCommitWithFileNumstatCommand;
 /**
  * Returns an object containing the command and arguments to execute the git log command with the specified parameters.
  * The command returns the commit history enriched with the number of lines added and removed for each file in each commit.
@@ -208,7 +211,7 @@ function readCommitWithFileNumstaCommandWithArgs(params, quotesForFilters) {
         '--all',
         '--numstat',
         '--date=short',
-        `--pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p`,
+        `--pretty=format:${exports.SEP}%h${exports.SEP}%ad${exports.SEP}%aN${exports.SEP}%cN${exports.SEP}%cd${exports.SEP}%f${exports.SEP}%p`,
         _reverse,
         _noRenames,
         _includeMergeCommits,
@@ -223,22 +226,16 @@ function readCommitWithFileNumstaCommandWithArgs(params, quotesForFilters) {
     });
     return args;
 }
-const DEFAULT_OUT_DIR = './';
 exports.COMMITS_FILE_POSTFIX = '-commits.log';
 exports.COMMITS_FILE_REVERSE_POSTFIX = '-commits-reverse.log';
 function buildGitOutfile(params) {
-    let outDir = params.outDir ? params.outDir : DEFAULT_OUT_DIR;
+    let outDir = params.outDir ? params.outDir : './';
     outDir = path_1.default.resolve(outDir);
     const _postfix = params.reverse ? exports.COMMITS_FILE_REVERSE_POSTFIX : exports.COMMITS_FILE_POSTFIX;
-    const outFile = buildOutfileName(params.outFile, params.repoFolderPath, params.outFilePrefix, _postfix);
+    const _outfile = params.outFile ? params.outFile : '';
+    const outFile = (0, file_name_utils_1.buildOutfileName)(_outfile, params.repoFolderPath, params.outFilePrefix, _postfix);
     const out = path_1.default.join(outDir, outFile);
     return out;
-}
-function buildOutfileName(outFile = '', repoFolder = '', prefix = '', postfix = '') {
-    const repoFolderName = path_1.default.parse(repoFolder).name;
-    const isCurrentFolder = repoFolderName === '' || repoFolderName === '.';
-    const _repoFolderName = isCurrentFolder ? path_1.default.parse(process.cwd()).name : repoFolderName;
-    return outFile ? outFile : `${prefix}${(_repoFolderName)}${postfix}`;
 }
 function toCommitsWithFileNumstatdata(logFilePath) {
     return (0, rxjs_1.pipe)(commitLines(logFilePath), (0, rxjs_1.map)((lines) => {
@@ -255,7 +252,7 @@ function commitLines(logFilePath) {
             let buffer;
             const subscription = source.subscribe({
                 next: (line) => {
-                    const isStartOfBuffer = line.length > 0 && line.slice(0, SEP.length) === SEP;
+                    const isStartOfBuffer = line.length > 0 && line.slice(0, exports.SEP.length) === exports.SEP;
                     if (isStartOfBuffer) {
                         if (buffer) {
                             subscriber.next(buffer);

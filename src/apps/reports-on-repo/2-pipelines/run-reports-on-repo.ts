@@ -1,6 +1,7 @@
 import { Command } from 'commander';
-import { DEFAULT_OUT_DIR } from '../1-A-read/read-git';
 import { allReports, runReportsSingleThread, runReportsParallelReads } from './internals/run-reports-on-repo-core';
+
+const DEFAULT_OUT_DIR = './';
 
 export function launchReportsSingleThread() {
     const { _options, _reports, _repoFolderPath, _depthInFilesCoupling } = readParams();

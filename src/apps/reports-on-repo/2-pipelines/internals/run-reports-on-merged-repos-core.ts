@@ -1,7 +1,7 @@
 import path from 'path';
 import { concatMap, map, merge, Observable } from 'rxjs';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryInfo, createSummaryClocLog } from '../../1-A-read/cloc';
@@ -11,6 +11,7 @@ import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 
 import { gitRepos } from './run-reports-on-multi-repos-core';
 import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
+import { GitLogCommitParams } from '../../../../git-functions/git-params';
 
 export function runAllReportsOnMergedRepos(
     reports: string[],
@@ -38,7 +39,7 @@ export function runAllReportsOnMergedRepos(
             const allFileStreams: Observable<FileGitCommitEnriched>[] = [];
             _repoFolderPaths.forEach((repoFolderPath) => {
                 // read the data from git and cloc tool
-                const commitOptions: ConfigReadCommits = {
+                const commitOptions: GitLogCommitParams = {
                     repoFolderPath,
                     outDir: _outDir,
                     filter,

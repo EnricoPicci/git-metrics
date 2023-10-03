@@ -7,12 +7,12 @@ import {
 
 
 import { ConfigReadCloc } from './read-params/read-params';
-import { DEFAULT_OUT_DIR, getOutfileName } from './read-git';
 import {
     clocByfile$, clocSummary$, clocSummaryCsvRaw$, writeClocByFile$,
     writeClocByfile, writeClocSummary, writeClocSummary$
 } from '../../../cloc-functions/cloc.functions';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
+import { buildOutfileName } from '../../../git-functions/utils/file-name-utils';
 
 export function createClocLog(config: ConfigReadCloc, action: string) {
     const params = paramsFromConfig(config);
@@ -72,8 +72,8 @@ export function buildSummaryClocOutfile(config: ConfigReadCloc) {
 }
 
 function _buildClocOutfile(config: ConfigReadCloc, endPart: string) {
-    const outDir = config.outDir ? config.outDir : DEFAULT_OUT_DIR;
-    const outFile = getOutfileName(config.outClocFile!, config.outClocFilePrefix, config.repoFolderPath, endPart);
+    const outDir = config.outDir ? config.outDir : './';
+    const outFile = buildOutfileName(config.outClocFile!, config.repoFolderPath, config.outClocFilePrefix, endPart);
     const out = path.resolve(path.join(outDir, outFile));
     return out;
 }

@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.clocSummaryInfo = exports.buildSummaryClocOutfile = exports.buildClocOutfile = exports.paramsFromConfig = exports.createSummaryClocNewProcess = exports.clocSummaryAsStreamOfStrings$ = exports.createSummaryClocLog = exports.createClocLogNewProcess = exports.streamClocNewProcess = exports.createClocLog = void 0;
 const path = require("path");
 const rxjs_1 = require("rxjs");
-const read_git_1 = require("./read-git");
 const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
+const file_name_utils_1 = require("../../../git-functions/utils/file-name-utils");
 function createClocLog(config, action) {
     const params = paramsFromConfig(config);
     return (0, cloc_functions_1.writeClocByfile)(params, action);
@@ -57,8 +57,8 @@ function buildSummaryClocOutfile(config) {
 }
 exports.buildSummaryClocOutfile = buildSummaryClocOutfile;
 function _buildClocOutfile(config, endPart) {
-    const outDir = config.outDir ? config.outDir : read_git_1.DEFAULT_OUT_DIR;
-    const outFile = (0, read_git_1.getOutfileName)(config.outClocFile, config.outClocFilePrefix, config.repoFolderPath, endPart);
+    const outDir = config.outDir ? config.outDir : './';
+    const outFile = (0, file_name_utils_1.buildOutfileName)(config.outClocFile, config.repoFolderPath, config.outClocFilePrefix, endPart);
     const out = path.resolve(path.join(outDir, outFile));
     return out;
 }

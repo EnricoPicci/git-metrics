@@ -3,11 +3,12 @@ import fs from 'fs';
 import { forkJoin, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 
 import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
+import { GitLogCommitParams } from '../../../../git-functions/git-params';
 
 export function runAllReportsOnMultiRepos(
     reports: string[],
@@ -28,7 +29,7 @@ export function runAllReportsOnMultiRepos(
 
     const allReports = repoFolderPaths.map((repoFolderPath) => {
         // read the data from git and cloc tool
-        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames, reverse: true };
+        const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, noRenames, reverse: true };
         const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
 

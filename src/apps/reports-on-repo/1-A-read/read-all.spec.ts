@@ -2,14 +2,15 @@ import { expect } from 'chai';
 import { deleteFileObs, readLinesObs } from 'observable-fs';
 import { catchError, concatMap, forkJoin, of, tap } from 'rxjs';
 import { readAllParallel } from './read-all';
-import { ConfigReadCloc, ConfigReadCommits } from './read-params/read-params';
+import { ConfigReadCloc } from './read-params/read-params';
+import { GitLogCommitParams } from '../../../git-functions/git-params';
 
 describe(`readAllParallel`, () => {
     it(`performs all the read operations concurrently`, (done) => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = 'read-all-concurrent';
 
-        const gitCommitConfig: ConfigReadCommits = {
+        const gitCommitConfig: GitLogCommitParams = {
             repoFolderPath: process.cwd(),
             filter: ['test-data/git-repo-with-code/*.java'],
             after: '2018-01-01',

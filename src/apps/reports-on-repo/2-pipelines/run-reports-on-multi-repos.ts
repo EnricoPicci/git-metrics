@@ -1,9 +1,10 @@
 import { Command } from 'commander';
 import { of } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { DEFAULT_OUT_DIR } from '../1-A-read/read-git';
 import { gitRepos, runAllReportsOnMultiRepos } from './internals/run-reports-on-multi-repos-core';
 import { allReports } from './internals/run-reports-on-repo-core';
+
+const DEFAULT_OUT_DIR = './';
 
 export function launchAllReportsOnMultiRepos() {
     const program = new Command();

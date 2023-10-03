@@ -5,12 +5,13 @@ import { tap, concatMap } from 'rxjs';
 import { fromCsv } from '../../../tools/csv/from-csv';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { commitsStream } from '../1-B-git-enriched-streams/commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { fileChurnReportCore, FileChurnReportParams, projectAndFileChurnReport } from './file-churn-report';
 import { clocSummaryInfo } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
+import { GitLogCommitParams } from '../../../git-functions/git-params';
 
 describe(`fileChurnReportCore`, () => {
     it(`generates the report about the churn of files`, (done) => {
@@ -307,7 +308,7 @@ describe(`projectAndFileChurnReport`, () => {
         const after = undefined;
 
         // read
-        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, reverse: true };
+        const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, reverse: true };
         const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
         // generation of the source streams

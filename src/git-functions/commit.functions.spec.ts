@@ -1,10 +1,11 @@
 import { expect } from 'chai';
-import { readCommitCompact$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat } from './commit.functions';
+import { SEP, readCommitCompact$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit.functions';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
 import path from 'path';
 import { readLinesObs } from 'observable-fs';
 import { CommitWithFileNumstats } from './commit.model';
+import { deleteFile } from '../tools/test-helpers/delete-file';
 
 describe('readCommitFromLog$', () => {
     it('should throw an error if repoPath is not provided', () => {
@@ -63,8 +64,6 @@ describe('readOneCommitFromLog$', () => {
     });
 });
 
-
-
 describe(`writeCommitLog`, () => {
     const outDir = './temp';
     it(`read the commits from a git repo using git log command and saves them in a file`, (done) => {
@@ -98,8 +97,6 @@ describe(`writeCommitLog`, () => {
         });
     });
 });
-
-
 
 describe(`readCommitWithFileNumstatFromLog$`, () => {
     const outDir = './temp';
@@ -282,4 +279,120 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
                 complete: () => done(),
             });
     }).timeout(200000);
+});
+
+
+
+describe(`readCommitsCommand`, () => {
+    const outDir = './temp';
+    const outFile = 'this-git-repo-commits.log';
+    it(`builds the git log command to read the commits`, () => {
+        const config: GitLogCommitParams = {
+            repoFolderPath: './a-path-to-a-git-repo',
+            filter: ['*.txt'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+            noRenames: true,
+        };
+        // the command build should be equivalent to this
+        // git -C ./test-data/git-repo log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renames --after=2018-01-01 '*.txt' > ./test-data/output/git-repo-commits.log`;
+        const expectedOutfile = path.resolve(path.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --no-renames --after=2018-01-01 '*.txt' > ${expectedOutfile}`;
+        const [cmd, out] = writeCommitWithFileNumstatCommand(config);
+        expect(cmd).equal(expected);
+        expect(out).equal(expectedOutfile);
+    });
+    it(`builds the git log command to read the commits with more than on filter`, () => {
+        // the command build should be equivalent to this
+        // git -C ./test-data/git-repo log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renames --after=2018-01-01 '*.c'  '*.sh' > ./test-data/output/git-repo-commits.log`;
+        const config: GitLogCommitParams = {
+            repoFolderPath: './',
+            filter: ['*.c', '*.sh'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+        const expectedOutfile = path.resolve(path.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --after=2018-01-01 '*.c' '*.sh' > ${expectedOutfile}`;
+        const [cmd, out] = writeCommitWithFileNumstatCommand(config);
+        expect(cmd).equal(expected);
+        expect(out).equal(expectedOutfile);
+    });
+    it(`builds the git log command to read the commits after a start date and before an end date`, () => {
+        const config: GitLogCommitParams = {
+            repoFolderPath: './',
+            filter: ['*.c', '*.sh'],
+            after: '2018-01-01',
+            before: '2019-01-01',
+            outDir,
+            outFile,
+        };
+        const expectedOutfile = path.resolve(path.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p --after=2018-01-01 --before=2019-01-01  '*.c' '*.sh' > ${expectedOutfile}`;
+        const [cmd, out] = writeCommitWithFileNumstatCommand(config);
+        expect(cmd).equal(expected);
+        expect(out).equal(expectedOutfile);
+    });
+    it(`builds the git log command to read the commits with -m and --first-parent options`, () => {
+        const config: GitLogCommitParams = {
+            repoFolderPath: './a-path-to-a-git-repo',
+            filter: ['*.txt'],
+            outDir,
+            outFile,
+            includeMergeCommits: true,
+            firstParent: true,
+        };
+        const expectedOutfile = path.resolve(path.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p -m --first-parent '*.txt' > ${expectedOutfile}`;
+        const [cmd, out] = writeCommitWithFileNumstatCommand(config);
+        expect(cmd).equal(expected);
+        expect(out).equal(expectedOutfile);
+    });
+});
+
+describe(`writeCommitWithFileNumstat$`, () => {
+    const outDir = './temp';
+    it(`read the commits from a git repo and write them on a file running on a different process`, (done) => {
+        const outFile = 'this-git-repo-commits-export-new-process.log';
+        const params: GitLogCommitParams = {
+            repoFolderPath: process.cwd(),
+            filter: ['*.json'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+
+        let outFileNotified: string;
+
+        const [_, outGitFile] = writeCommitWithFileNumstatCommand(params);
+        let counter = 0;
+
+        deleteFile(outGitFile)
+            .pipe(
+                concatMap(() => writeCommitWithFileNumstat$(params)),
+                tap({
+                    next: (filePath) => {
+                        outFileNotified = filePath;
+                        expect(filePath).equal(outGitFile);
+                        counter++;
+                    },
+                }),
+                concatMap((filePath) => readLinesObs(filePath)),
+                tap({
+                    next: (lines) => {
+                        expect(lines.length).gt(2);
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => {
+                    // check that actually the outfile has been notifie
+                    expect(outFileNotified).equal(outGitFile);
+                    expect(counter).equal(1);
+                    done();
+                },
+            });
+    });
 });

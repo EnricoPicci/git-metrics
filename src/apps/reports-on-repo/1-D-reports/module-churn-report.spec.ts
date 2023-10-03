@@ -10,8 +10,9 @@ import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
 import { moduleChurns } from '../1-C-aggregate-in-memory/module-churn-aggregate';
 import { readLinesObs } from 'observable-fs';
 import { fromCsv } from '../../../tools/csv/from-csv';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
+import { GitLogCommitParams } from '../../../git-functions/git-params';
 
 describe(`projectAndModuleChurnReport`, () => {
     it(`generates the report about the churn of modules`, (done) => {
@@ -226,7 +227,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const after = undefined;
 
         // read
-        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, reverse: true };
+        const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, reverse: true };
         const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
         // generation of the source streams

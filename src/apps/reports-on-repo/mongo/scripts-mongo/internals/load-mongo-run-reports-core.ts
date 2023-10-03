@@ -6,7 +6,7 @@
 import path from 'path';
 import { forkJoin } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
-import { ConfigReadCommits, ConfigReadCloc } from '../../../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../../../1-A-read/read-params/read-params';
 import { readAll } from '../../../1-A-read/read-all';
 import { loadAllCommitsFiles } from '../../load/load-commits-files';
 import { mongoFileChurnReport } from '../../report/mongo-file-churn-report';
@@ -16,6 +16,7 @@ import { mongoModuleChurnReport } from '../../report/mongo-module-churn-report';
 import { mongoFileAuthorReport } from '../../report/mongo-file-author-report';
 import { mongoFilesCouplingReport } from '../../report/mongo-files-coupling-report';
 import { createDirIfNotExisting } from '../../../1-A-read/create-outdir';
+import { GitLogCommitParams } from '../../../../../git-functions/git-params';
 
 export function loadMongRunReports(
     connectionString: string,
@@ -38,7 +39,7 @@ export function loadMongRunReports(
     // we must load all commits to be able to determine the creation date of a file
     // since the creation date is determined by the first commit the file was in, therefore we do not specify
     // the "after" propety in the "commitOptions" object
-    const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile };
+    const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile };
 
     const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath, outClocFile, clocDefsPath };
 

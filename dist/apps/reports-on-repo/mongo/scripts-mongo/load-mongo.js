@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const load_commits_files_1 = require("../load/load-commits-files");
-const read_git_1 = require("../../1-A-read/read-git");
 const read_all_1 = require("../../1-A-read/read-all");
+const DEFAULT_OUT_DIR = './';
 const DEFAULT_DB_NAME = 'git-metrics';
 const program = new commander_1.Command();
 program
@@ -11,7 +11,7 @@ program
     .option('-r, --repo <string>', 'path to the folder containing the repo (the current folder name is the default)', `${process.cwd()}`)
     .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' - make sure the filter is between single quotes)`)
     .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
-    .option('-d, --outDir <string>', `folder where the log file will be written (default ${read_git_1.DEFAULT_OUT_DIR})`, `${read_git_1.DEFAULT_OUT_DIR}`)
+    .option('-d, --outDir <string>', `folder where the log file will be written (default ${DEFAULT_OUT_DIR})`, `${DEFAULT_OUT_DIR}`)
     .option('-o, --outFile <string>', `name of the log file written (default is the name of the repo)`)
     .option('--outClocFile <string>', 'log file containing the cloc info (default is the name of the repo with -cloc postfix)')
     .requiredOption('-s, --connStr <string>', 'connection string to use to connect to mongo')

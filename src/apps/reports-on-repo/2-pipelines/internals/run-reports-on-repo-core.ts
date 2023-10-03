@@ -1,7 +1,7 @@
 import path from 'path';
 import { forkJoin, Observable, concatMap, filter, map, share, toArray } from 'rxjs';
 
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { readAll, readAllParallel, readStreamsDistinctProcesses } from '../../1-A-read/read-all';
 import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { clocSummaryInfo } from '../../1-A-read/cloc';
@@ -31,6 +31,7 @@ import { addProjectInfo } from '../../1-D-reports/add-project-info';
 import { addWorksheet, summaryWorkbook, writeWorkbook } from '../../1-E-summary-excel/summary-excel';
 import { commitWithFileNumstatsEnrichedWithCloc$ } from '../../../../git-cloc-functions/commit-cloc.functions';
 import { clocFileDictFromClocStream$ } from '../../../../cloc-functions/cloc.functions';
+import { GitLogCommitParams } from '../../../../git-functions/git-params';
 
 export const allReports = [
     FILE_CHURN_REPORT_NAME,
@@ -63,7 +64,7 @@ export function runReportsSingleThread(
     createDirIfNotExisting(outDir);
 
     // read the data from git and cloc tool
-    const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames, reverse: true };
+    const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, noRenames, reverse: true };
     const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
     const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
 
@@ -113,7 +114,7 @@ export function runReportsParallelReads(
     createDirIfNotExisting(outDir);
 
     // read from git log and cloc
-    const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, noRenames, reverse: true };
+    const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, noRenames, reverse: true };
     const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
     return readAllParallel(commitOptions, readClocOptions).pipe(
         // prepare the streams of git enriched objects
@@ -164,7 +165,7 @@ export function runReportsOneStream(
     const _before = new Date(before);
 
     // streams that read from git log and cloc
-    const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
+    const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
     const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
     const { gitLogCommits, cloc, clocSummary } = readStreamsDistinctProcesses(commitOptions, readClocOptions);
 

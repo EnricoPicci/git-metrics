@@ -204,7 +204,7 @@ export function newEmptyCommitCompact() {
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
 
-const SEP = GIT_CONFIG.COMMIT_REC_SEP;
+export const SEP = GIT_CONFIG.COMMIT_REC_SEP;
 
 /**
  * Returns a new `CommitCompact` object with the given sha, author and date starting from a string in the format 
@@ -222,7 +222,8 @@ function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
     return commit;
 }
 
-function writeCommitWithFileNumstatCommand(params: GitLogCommitParams) {
+// exported for testing purposes only
+export function writeCommitWithFileNumstatCommand(params: GitLogCommitParams) {
     const args = readCommitWithFileNumstaCommandWithArgs(params, true);
     const cmdWithArgs = `git ${args.join(' ')}`;
     const out = buildGitOutfile(params);

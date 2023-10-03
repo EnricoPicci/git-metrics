@@ -1,6 +1,7 @@
 import { Command } from 'commander';
-import { DEFAULT_OUT_DIR } from '../1-A-read/read-git';
 import { runRepoCouplingReport } from './internals/run-repo-coupling-report-core';
+
+const DEFAULT_OUT_DIR = './';
 
 export function launchRunRepoCouplingReport() {
     const program = new Command();

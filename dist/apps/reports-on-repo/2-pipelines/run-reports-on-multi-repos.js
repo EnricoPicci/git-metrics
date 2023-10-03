@@ -4,9 +4,9 @@ exports.launchAllReportsOnMultiRepos = void 0;
 const commander_1 = require("commander");
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
-const read_git_1 = require("../1-A-read/read-git");
 const run_reports_on_multi_repos_core_1 = require("./internals/run-reports-on-multi-repos-core");
 const run_reports_on_repo_core_1 = require("./internals/run-reports-on-repo-core");
+const DEFAULT_OUT_DIR = './';
 function launchAllReportsOnMultiRepos() {
     var _a;
     const program = new commander_1.Command();
@@ -18,7 +18,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filter is between single quotes)`)
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
         .option('-b, --before <string>', `date to end (format YYYY-MM-DD)`)
-        .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${read_git_1.DEFAULT_OUT_DIR})`, `${read_git_1.DEFAULT_OUT_DIR}`)
+        .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${DEFAULT_OUT_DIR})`, `${DEFAULT_OUT_DIR}`)
         .option('-o, --outFilePrefix <string>', `the prefix of the name of the log file written as result of creating a report (default is the name of the repo)`)
         .option('--clocDefsFile <string>', `path of the file that contains the language definitions used by cloc (sse "force-lang-def" in http://cloc.sourceforge.net/#Options)`)
         .option('--depthInFilesCoupling <string>', `if we sort the files for number of commits, we consider for coupling only the ones with more commits, i.e. the ones which remain within depthInFilesCoupling (default value is 10)`, `10`)

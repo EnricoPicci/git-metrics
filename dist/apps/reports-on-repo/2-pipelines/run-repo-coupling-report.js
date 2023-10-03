@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchRunRepoCouplingReport = void 0;
 const commander_1 = require("commander");
-const read_git_1 = require("../1-A-read/read-git");
 const run_repo_coupling_report_core_1 = require("./internals/run-repo-coupling-report-core");
+const DEFAULT_OUT_DIR = './';
 function launchRunRepoCouplingReport() {
     var _a;
     const program = new commander_1.Command();
@@ -14,7 +14,7 @@ function launchRunRepoCouplingReport() {
         .option('--csvFilePath <string>', `path of the csv file built (default is repo-coupling.csv in the outDir folder)`)
         .option('-f, --filter <string...>', `optional filter to be used (e.g. '*.ts*' to select typescript files - make sure the filter is between single quotes)`)
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
-        .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${read_git_1.DEFAULT_OUT_DIR})`, `${read_git_1.DEFAULT_OUT_DIR}`)
+        .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${DEFAULT_OUT_DIR})`, `${DEFAULT_OUT_DIR}`)
         .option('-o, --outFile <string>', `name of the log file written (default is the name of the repo)`)
         .option('--outClocFile <string>', 'log file containing the cloc info (default is the name of the repo with -cloc postfix)')
         .option('--clocDefsFile <string>', `path of the file that contains the language definitions used by cloc (sse "force-lang-def" in http://cloc.sourceforge.net/#Options)`);

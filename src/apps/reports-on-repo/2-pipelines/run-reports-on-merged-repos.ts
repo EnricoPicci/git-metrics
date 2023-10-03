@@ -1,7 +1,8 @@
 import { Command } from 'commander';
-import { DEFAULT_OUT_DIR } from '../1-A-read/read-git';
 import { runAllReportsOnMergedRepos } from './internals/run-reports-on-merged-repos-core';
 import { allReports } from './internals/run-reports-on-repo-core';
+
+const DEFAULT_OUT_DIR = './';
 
 export function launchAllReportsOnMergedRepos() {
     const program = new Command();

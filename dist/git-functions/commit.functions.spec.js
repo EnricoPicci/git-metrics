@@ -8,6 +8,7 @@ const commit_functions_1 = require("./commit.functions");
 const rxjs_1 = require("rxjs");
 const path_1 = __importDefault(require("path"));
 const observable_fs_1 = require("observable-fs");
+const delete_file_1 = require("../tools/test-helpers/delete-file");
 describe('readCommitFromLog$', () => {
     it('should throw an error if repoPath is not provided', () => {
         (0, chai_1.expect)(() => (0, commit_functions_1.readCommitCompact$)('')).to.throw();
@@ -242,5 +243,109 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
             complete: () => done(),
         });
     }).timeout(200000);
+});
+describe(`readCommitsCommand`, () => {
+    const outDir = './temp';
+    const outFile = 'this-git-repo-commits.log';
+    it(`builds the git log command to read the commits`, () => {
+        const config = {
+            repoFolderPath: './a-path-to-a-git-repo',
+            filter: ['*.txt'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+            noRenames: true,
+        };
+        // the command build should be equivalent to this
+        // git -C ./test-data/git-repo log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renames --after=2018-01-01 '*.txt' > ./test-data/output/git-repo-commits.log`;
+        const expectedOutfile = path_1.default.resolve(path_1.default.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${commit_functions_1.SEP}%h${commit_functions_1.SEP}%ad${commit_functions_1.SEP}%aN${commit_functions_1.SEP}%cN${commit_functions_1.SEP}%cd${commit_functions_1.SEP}%f${commit_functions_1.SEP}%p --no-renames --after=2018-01-01 '*.txt' > ${expectedOutfile}`;
+        const [cmd, out] = (0, commit_functions_1.writeCommitWithFileNumstatCommand)(config);
+        (0, chai_1.expect)(cmd).equal(expected);
+        (0, chai_1.expect)(out).equal(expectedOutfile);
+    });
+    it(`builds the git log command to read the commits with more than on filter`, () => {
+        // the command build should be equivalent to this
+        // git -C ./test-data/git-repo log --all --numstat --date=short --pretty=format:'--%h--%ad--%aN' --no-renames --after=2018-01-01 '*.c'  '*.sh' > ./test-data/output/git-repo-commits.log`;
+        const config = {
+            repoFolderPath: './',
+            filter: ['*.c', '*.sh'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+        const expectedOutfile = path_1.default.resolve(path_1.default.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${commit_functions_1.SEP}%h${commit_functions_1.SEP}%ad${commit_functions_1.SEP}%aN${commit_functions_1.SEP}%cN${commit_functions_1.SEP}%cd${commit_functions_1.SEP}%f${commit_functions_1.SEP}%p --after=2018-01-01 '*.c' '*.sh' > ${expectedOutfile}`;
+        const [cmd, out] = (0, commit_functions_1.writeCommitWithFileNumstatCommand)(config);
+        (0, chai_1.expect)(cmd).equal(expected);
+        (0, chai_1.expect)(out).equal(expectedOutfile);
+    });
+    it(`builds the git log command to read the commits after a start date and before an end date`, () => {
+        const config = {
+            repoFolderPath: './',
+            filter: ['*.c', '*.sh'],
+            after: '2018-01-01',
+            before: '2019-01-01',
+            outDir,
+            outFile,
+        };
+        const expectedOutfile = path_1.default.resolve(path_1.default.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${commit_functions_1.SEP}%h${commit_functions_1.SEP}%ad${commit_functions_1.SEP}%aN${commit_functions_1.SEP}%cN${commit_functions_1.SEP}%cd${commit_functions_1.SEP}%f${commit_functions_1.SEP}%p --after=2018-01-01 --before=2019-01-01  '*.c' '*.sh' > ${expectedOutfile}`;
+        const [cmd, out] = (0, commit_functions_1.writeCommitWithFileNumstatCommand)(config);
+        (0, chai_1.expect)(cmd).equal(expected);
+        (0, chai_1.expect)(out).equal(expectedOutfile);
+    });
+    it(`builds the git log command to read the commits with -m and --first-parent options`, () => {
+        const config = {
+            repoFolderPath: './a-path-to-a-git-repo',
+            filter: ['*.txt'],
+            outDir,
+            outFile,
+            includeMergeCommits: true,
+            firstParent: true,
+        };
+        const expectedOutfile = path_1.default.resolve(path_1.default.join(outDir, outFile));
+        const expected = `git -C ${config.repoFolderPath} log --all --numstat --date=short --pretty=format:${commit_functions_1.SEP}%h${commit_functions_1.SEP}%ad${commit_functions_1.SEP}%aN${commit_functions_1.SEP}%cN${commit_functions_1.SEP}%cd${commit_functions_1.SEP}%f${commit_functions_1.SEP}%p -m --first-parent '*.txt' > ${expectedOutfile}`;
+        const [cmd, out] = (0, commit_functions_1.writeCommitWithFileNumstatCommand)(config);
+        (0, chai_1.expect)(cmd).equal(expected);
+        (0, chai_1.expect)(out).equal(expectedOutfile);
+    });
+});
+describe(`writeCommitWithFileNumstat$`, () => {
+    const outDir = './temp';
+    it(`read the commits from a git repo and write them on a file running on a different process`, (done) => {
+        const outFile = 'this-git-repo-commits-export-new-process.log';
+        const params = {
+            repoFolderPath: process.cwd(),
+            filter: ['*.json'],
+            after: '2018-01-01',
+            outDir,
+            outFile,
+        };
+        let outFileNotified;
+        const [_, outGitFile] = (0, commit_functions_1.writeCommitWithFileNumstatCommand)(params);
+        let counter = 0;
+        (0, delete_file_1.deleteFile)(outGitFile)
+            .pipe((0, rxjs_1.concatMap)(() => (0, commit_functions_1.writeCommitWithFileNumstat$)(params)), (0, rxjs_1.tap)({
+            next: (filePath) => {
+                outFileNotified = filePath;
+                (0, chai_1.expect)(filePath).equal(outGitFile);
+                counter++;
+            },
+        }), (0, rxjs_1.concatMap)((filePath) => (0, observable_fs_1.readLinesObs)(filePath)), (0, rxjs_1.tap)({
+            next: (lines) => {
+                (0, chai_1.expect)(lines.length).gt(2);
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => {
+                // check that actually the outfile has been notifie
+                (0, chai_1.expect)(outFileNotified).equal(outGitFile);
+                (0, chai_1.expect)(counter).equal(1);
+                done();
+            },
+        });
+    });
 });
 //# sourceMappingURL=commit.functions.spec.js.map

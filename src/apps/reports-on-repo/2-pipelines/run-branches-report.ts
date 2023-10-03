@@ -1,6 +1,7 @@
 import { Command } from 'commander';
-import { DEFAULT_OUT_DIR } from '../1-A-read/read-git';
 import { runBranchesReport } from './internals/run-branches-report-core';
+
+const DEFAULT_OUT_DIR = './';
 
 export function launchBranchesReport() {
     const program = new Command();

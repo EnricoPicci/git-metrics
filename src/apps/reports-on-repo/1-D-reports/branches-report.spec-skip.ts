@@ -5,10 +5,11 @@ import { enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { BranchesReportParams, projectAndBranchesReport } from './branches-report';
 import { commitDaylySummary } from '../1-C-aggregate-in-memory/commit-branch-tips-aggregate';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
 import { clocSummaryInfo } from '../1-A-read/cloc';
+import { GitLogCommitParams } from '../../../git-functions/git-params';
 
 describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches using this repo as a real repo`, (done) => {
@@ -21,7 +22,7 @@ describe(`projectAndBranchesReport`, () => {
         // const after = undefined;
 
         // read
-        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, reverse: true };
+        const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, reverse: true };
         const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
         // generation of the source streams

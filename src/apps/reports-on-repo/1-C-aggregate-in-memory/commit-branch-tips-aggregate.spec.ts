@@ -2,9 +2,10 @@ import { expect } from 'chai';
 import { tap } from 'rxjs';
 import { enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
-import { ConfigReadCommits, ConfigReadCloc } from '../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { commitDaylySummary, commitWithBranchTipsPerDayDictionary } from './commit-branch-tips-aggregate';
+import { GitLogCommitParams } from '../../../git-functions/git-params';
 
 describe(`commitWithBranchTipsPerDayDictionary`, () => {
     it(`returns a dictionary with day as key and the array of commits for that day as value`, (done) => {
@@ -14,7 +15,7 @@ describe(`commitWithBranchTipsPerDayDictionary`, () => {
         const outFile = 'this-git-repo-commits-2.log';
         const reverse = true;
 
-        const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile, reverse };
+        const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile, reverse };
         const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath };
         const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
 
@@ -171,7 +172,7 @@ describe(`commitDaylySummary`, () => {
         const outFile = 'this-git-repo-commits-2.log';
         const reverse = true;
 
-        const commitOptions: ConfigReadCommits = { filter, outDir, repoFolderPath, outFile, reverse };
+        const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile, reverse };
         const readClocOptions: ConfigReadCloc = { outDir, repoFolderPath };
         const [commitLogPath, clocLogPath] = readAll(commitOptions, readClocOptions);
 

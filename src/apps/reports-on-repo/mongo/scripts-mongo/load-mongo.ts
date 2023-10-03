@@ -1,8 +1,10 @@
 import { Command } from 'commander';
-import { ConfigReadCommits, ConfigReadCloc } from '../../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../../1-A-read/read-params/read-params';
 import { loadAllCommitsFiles } from '../load/load-commits-files';
-import { DEFAULT_OUT_DIR } from '../../1-A-read/read-git';
 import { readAll } from '../../1-A-read/read-all';
+import { GitLogCommitParams } from '../../../../git-functions/git-params';
+
+const DEFAULT_OUT_DIR = './';
 
 const DEFAULT_DB_NAME = 'git-metrics';
 
@@ -39,7 +41,7 @@ program.parse(process.argv);
 
 const options = program.opts();
 
-const [commitLogPath, clocLogPath] = readAll(options as ConfigReadCommits, options as ConfigReadCloc);
+const [commitLogPath, clocLogPath] = readAll(options as GitLogCommitParams, options as ConfigReadCloc);
 
 // load all commits and files infot to a mongo collection
 loadAllCommitsFiles(

@@ -3,12 +3,13 @@ import path from 'path';
 import { tap } from 'rxjs';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { commitsStream } from '../1-B-git-enriched-streams/commits';
-import { ConfigReadCloc, ConfigReadCommits } from '../1-A-read/read-params/read-params';
+import { ConfigReadCloc } from '../1-A-read/read-params/read-params';
 import { readAll } from '../1-A-read/read-all';
 import { FileAuthorsReportParams, projectAndFileAuthorsReport } from './file-authors-report';
 import { clocSummaryInfo } from '../1-A-read/cloc';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileAuthors } from '../1-C-aggregate-in-memory/file-authors-aggregate';
+import { GitLogCommitParams } from '../../../git-functions/git-params';
 
 describe(`fileAuthorsReportWithProjectInfo`, () => {
     it(`generates the report about the authors of the files as well as the general project info`, (done) => {
@@ -100,7 +101,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const after = new Date('2023-09-25');
 
         // read
-        const commitOptions: ConfigReadCommits = { repoFolderPath, outDir, filter, reverse: true };
+        const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, reverse: true };
         const readClocOptions: ConfigReadCloc = { repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, readClocOptions);
         // generation of the source streams

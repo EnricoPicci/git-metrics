@@ -1,3 +1,14 @@
+import path from 'path';
+
+import { forkJoin } from 'rxjs';
+
+import {
+    COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, readCommitWithFileNumstat$,
+    writeCommitWithFileNumstat, writeCommitWithFileNumstat$
+} from '../../../git-functions/commit.functions';
+import { buildOutfileName, clocByfile$, writeClocByfile, writeClocSummary } from '../../../cloc-functions/cloc.functions';
+import { GitLogCommitParams } from '../../../git-functions/git-params';
+
 import {
     buildSummaryClocOutfile,
     createClocLog,
@@ -7,28 +18,25 @@ import {
     createSummaryClocNewProcess,
     paramsFromConfig,
 } from './cloc';
-import { ConfigReadCommits, ConfigReadCloc } from './read-params/read-params';
-import { buildGitOutfile, readAndStreamCommitsNewProces, readCommitsNewProcess } from './read-git';
-import { forkJoin } from 'rxjs';
-import { writeCommitWithFileNumstat } from '../../../git-functions/commit.functions';
-import { clocByfile$ } from '../../../cloc-functions/cloc.functions';
+import { ConfigReadCloc } from './read-params/read-params';
+import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
-export function readAll(commitOptions: ConfigReadCommits, readClocOptions: ConfigReadCloc) {
+export function readAll(commitOptions: GitLogCommitParams, clocParams: ClocParams) {
     // execute the git log command to extract the commits
     const commitLogPath = writeCommitWithFileNumstat(commitOptions);
 
     // execute the cloc commands
-    const clocLogPath = createClocLog(readClocOptions, 'readAll-fileLinesOptions');
-    const clocSummaryPath = createSummaryClocLog(readClocOptions);
+    const clocLogPath = writeClocByfile(clocParams, 'readAll-fileLinesOptions');
+    const clocSummaryPath = writeClocSummary(clocParams);
 
     return [commitLogPath, clocLogPath, clocSummaryPath];
 }
 
 // read the git log and runs the cloc operations against a folder containing a repo. The read operations are performed in parallel distinct processes
 // Return an Observable which emits the file paths of the logs created out of the read operations
-export function readAllParallel(commitOptions: ConfigReadCommits, readClocOptions: ConfigReadCloc) {
-    const gitLogCommits = readCommitsNewProcess(commitOptions);
+export function readAllParallel(commitOptions: GitLogCommitParams, readClocOptions: ConfigReadCloc) {
+    const gitLogCommits = writeCommitWithFileNumstat$(commitOptions);
     const cloc = createClocLogNewProcess(readClocOptions);
     const clocSummary = createSummaryClocNewProcess(readClocOptions);
 
@@ -36,7 +44,7 @@ export function readAllParallel(commitOptions: ConfigReadCommits, readClocOption
 }
 
 // builds the Observables that perform the read operations against a git repo in separate processes
-export function readStreamsDistinctProcesses(commitOptions: ConfigReadCommits, readClocOptions: ConfigReadCloc) {
+export function readStreamsDistinctProcesses(commitOptions: GitLogCommitParams, readClocOptions: ConfigReadCloc) {
     const outGitFile = buildGitOutfile(commitOptions);
     const outClocSummaryFile = buildSummaryClocOutfile(readClocOptions);
 
@@ -45,19 +53,17 @@ export function readStreamsDistinctProcesses(commitOptions: ConfigReadCommits, r
         readClocOptions,
         outGitFile,
         outClocSummaryFile,
-        false,
     );
 }
 
 function _streamsDistinctProcesses(
-    commitOptions: ConfigReadCommits,
+    commitOptions: GitLogCommitParams,
     readClocOptions: ConfigReadCloc,
     outGitFile: string,
     outClocSummaryFile: string,
-    writeFileOnly: boolean,
 ) {
     // build the stream of commits
-    const gitLogCommits = readAndStreamCommitsNewProces(commitOptions, outGitFile, writeFileOnly);
+    const gitLogCommits = readCommitWithFileNumstat$(commitOptions, outGitFile);
 
     // build the streams of cloc info
     const params = paramsFromConfig(readClocOptions);
@@ -69,4 +75,13 @@ function _streamsDistinctProcesses(
     );
 
     return { gitLogCommits, cloc, clocSummary };
+}
+
+function buildGitOutfile(config: GitLogCommitParams) {
+    let outDir = config.outDir ? config.outDir : './';
+    outDir = path.resolve(outDir);
+    const _postfix = config.reverse ? COMMITS_FILE_REVERSE_POSTFIX : COMMITS_FILE_POSTFIX;
+    const outFile = buildOutfileName(config.outFile!, config.repoFolderPath, config.outFilePrefix, _postfix);
+    const out = path.join(outDir, outFile);
+    return out;
 }

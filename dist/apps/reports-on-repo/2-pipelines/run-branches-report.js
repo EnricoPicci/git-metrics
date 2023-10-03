@@ -2,15 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchBranchesReport = void 0;
 const commander_1 = require("commander");
-const read_git_1 = require("../1-A-read/read-git");
 const run_branches_report_core_1 = require("./internals/run-branches-report-core");
+const DEFAULT_OUT_DIR = './';
 function launchBranchesReport() {
     const program = new commander_1.Command();
     program
         .description('A command to read a git repo and then run all the reports')
         .option('-r, --repoFolderPath <string>', 'path to the folder containing the repo (the current folder name is the default)', `${process.cwd()}`)
         .option('-a, --after <string>', `date to start from (format YYYY-MM-DD)`)
-        .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${read_git_1.DEFAULT_OUT_DIR})`, `${read_git_1.DEFAULT_OUT_DIR}`)
+        .option('-d, --outDir <string>', `folder where the log file created by git log command will be written (default ${DEFAULT_OUT_DIR})`, `${DEFAULT_OUT_DIR}`)
         .option('-o, --outFilePrefix <string>', `the prefix of the name of the log file written as result of creating a report (default is the name of the repo)`)
         .option('--clocDefsFile <string>', `path of the file that contains the language definitions used by cloc (sse "force-lang-def" in http://cloc.sourceforge.net/#Options)`)
         .option('--depthInFilesCoupling <string>', `if we sort the files for number of commits, we consider for coupling only the ones with more commits, i.e. the ones which remain within depthInFilesCoupling (default value is 10)`, `10`)
