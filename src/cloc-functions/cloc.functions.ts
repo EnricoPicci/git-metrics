@@ -92,8 +92,19 @@ export function clocSummaryCsvRaw$(path = './', vcs?: string) {
  * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
-export function clocSummaryOnGitRepo$(repoPath = './') {
-    return clocSummary$(repoPath, 'git');
+export function clocSummaryOnGitRepo$(repoPath = './', vcs = 'git') {
+    return clocSummary$(repoPath, vcs);
+}
+
+/**
+ * Runs the cloc command on a Git repository and returns the result in the form of a stream of one ClocLanguageStats array.
+ * The result is a summary in the sense that it shows results per language but not per file.
+ * The cloc command is run without the --vcs option.
+ * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
+ * @returns An Observable that emits a ClocLanguageStats array.
+ */
+export function clocSummaryOnGitRepo_no_vcs$(repoPath = './') {
+    return clocSummary$(repoPath, undefined);
 }
 
 /**

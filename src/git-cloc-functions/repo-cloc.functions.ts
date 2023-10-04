@@ -1,6 +1,6 @@
 import { from, map, mergeMap, toArray } from "rxjs";
 
-import { clocSummaryOnGitRepo$ } from "../cloc-functions/cloc.functions";
+import { clocSummaryOnGitRepo_no_vcs$ } from "../cloc-functions/cloc.functions";
 import { CONFIG } from "../config";
 import { ClocLanguageStats } from "../cloc-functions/cloc.model";
 import { reposInFolder } from "../git-functions/repo.functions";
@@ -25,16 +25,16 @@ export function clocOnRepos(folderPath: string, concurrency = CONFIG.CONCURRENCY
     }
     return from(reposInFolder(folderPath)).pipe(
         mergeMap((repoPath) => {
-            return clocSummaryOnGitRepo$(repoPath).pipe(
+            return clocSummaryOnGitRepo_no_vcs$(repoPath).pipe(
                 map((clocStats) => {
                     const sumStats = clocStats.find((clocStat) => clocStat.language === 'SUM');
                     if (!sumStats) {
-                        throw new Error(`No SUM stats found for repo ${repoPath}`)
+                        console.log(`!!!!!!!!! No SUM stats found for repo ${repoPath}, i.e. no files to count for cloc`)
                     }
-                    total.nFiles += sumStats.nFiles
-                    total.blank += sumStats.blank
-                    total.comment += sumStats.comment
-                    total.code += sumStats.code
+                    total.nFiles += sumStats ? sumStats.nFiles : 0
+                    total.blank += sumStats ? sumStats.blank : 0
+                    total.comment += sumStats ? sumStats.comment : 0
+                    total.code += sumStats ? sumStats.code : 0
                     // remove the item with the key language 'SUM'
                     clocStats = clocStats.filter((clocStat) => clocStat.language !== 'SUM');
 
