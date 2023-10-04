@@ -1,5 +1,5 @@
 import path from 'path';
-import { mergeMap, from, toArray, concatMap, tap, map } from 'rxjs';
+import { mergeMap, from, toArray, concatMap, tap, map, pipe } from 'rxjs';
 
 import { writeFileObs } from 'observable-fs';
 import { toCsv } from '../../../../tools/csv/to-csv';
@@ -10,6 +10,7 @@ import { ClocDiffStats } from '../../../../cloc-functions/cloc-diff.model';
 
 import { clocDiffStatToCsvWithBase } from './cloc-diff-stat-csv';
 import { calculateClocGitDiffsChildParent } from '../internals/commit-cloc-diff.function';
+import { RepoCompact } from '../../../../git-functions/repo.model';
 
 // calculateCodeTurnover is a function that calculates the cloc diffs on the repos contained in a folder
 export function calculateCodeTurnover(
@@ -36,13 +37,41 @@ export function calculateClocDiffsOnRepos(
     const startTime = new Date().getTime();
     const folderName = path.basename(folderPath);
 
+    return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
+        calculateClocDiffs(languages, concurrency),
+        toArray(),
+        concatMap((stats) => {
+            const outFile = path.join(outdir, `${folderName}-cloc-diff.json`);
+            return writeClocDiffJson(stats, outFile).pipe(map(() => stats));
+        }),
+        concatMap((stats) => {
+            const outFile = path.join(outdir, `${folderName}-cloc-diff.csv`);
+            return writeClocCsv(stats, outFile).pipe(map(() => stats));
+        }),
+        tap(() => {
+            const endTime = new Date().getTime();
+            console.log(`====>>>> Total time to calculate cloc diffs: ${(endTime - startTime) / 1000} seconds`);
+        }),
+    );
+}
+
+/**
+ * Calculates the cloc diffs for each commit in each repository in the given array of languages.
+ * The function returns a custom rxJs operator that takes a stream of RepoCompact objects and
+ * returns a stream of CommitDiffStats objects, each representing the cloc diffs for each commit in each repository
+ * vs its parent commit.
+ * @param languages An array of languages for which to calculate the cloc diffs.
+ * @param concurrency The maximum number of concurrent child processes to run. Defaults to the value of `CONFIG.CONCURRENCY`.
+ * @returns An Observable that emits the cloc diffs for each commit in each repository.
+ */
+export function calculateClocDiffs(languages: string[], concurrency = CONFIG.CONCURRENCY) {
     let diffsCompleted = 0;
     let diffsRemaining = 0;
     let diffsErrored = 0;
 
-    return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
-        // for each reoo return a stream of commits
-        mergeMap((repo) => {
+    return pipe(
+        // return a stream of commits for the repo
+        mergeMap((repo: RepoCompact) => {
             const commitWithRepoPath = repo.commits.map((commit) => {
                 return { commit, repoPath: repo.path };
             });
@@ -73,27 +102,7 @@ export function calculateClocDiffsOnRepos(
                 }),
             );
         }, concurrency),
-        toArray(),
-        concatMap((stats) => {
-            const outFile = path.join(outdir, `${folderName}-cloc-diff.json`);
-            return writeClocDiffJson(stats, outFile).pipe(
-                tap(() => {
-                    console.log(
-                        `\n====>>>> commit diffs errors can be seen in: ${outFile} (look for error property)\n`,
-                    );
-                }),
-                map(() => stats),
-            );
-        }),
-        concatMap((stats) => {
-            const outFile = path.join(outdir, `${folderName}-cloc-diff.csv`);
-            return writeClocCsv(stats, outFile).pipe(map(() => stats));
-        }),
-        tap(() => {
-            const endTime = new Date().getTime();
-            console.log(`====>>>> Total time to calculate cloc diffs: ${(endTime - startTime) / 1000} seconds`);
-        }),
-    );
+    )
 }
 
 const writeClocDiffJson = (

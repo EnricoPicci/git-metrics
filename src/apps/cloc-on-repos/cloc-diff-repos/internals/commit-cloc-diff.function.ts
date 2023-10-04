@@ -9,7 +9,7 @@ import { CONFIG } from '../../../../config';
 
 import { yearMonthFromDate } from './commits-by-month.functions';
 import { CommitTuple } from './commit-tuple.model';
-import { RepoMonthlyClocDiffStats } from './commit-cloc-diff.model';
+import { CommitDiffStats, RepoMonthlyClocDiffStats } from './commit-cloc-diff.model';
 
 // calculateClocGitDiffsChildParent is a function that receives a CommitCompact object and calculates the cloc diff
 // and returns an object with the yearMonth, the commit date and the cloc diff
@@ -30,13 +30,15 @@ export function calculateClocGitDiffsChildParent(commit: CommitCompact, repoPath
                 }),
                 map(({ clocDiff, parentCommit }) => {
                     const parentCommitDate = parentCommit.date.toLocaleDateString();
-                    return {
+                    const commitStats: CommitDiffStats = {
                         repoPath,
                         yearMonth: yearMonthFromDate(commit.date),
                         mostRecentCommitDate: commit.date.toLocaleDateString(),
                         leastRecentCommitDate: parentCommitDate,
                         clocDiff,
+                        remoteOriginUrl: '',
                     };
+                    return commitStats;
                 }),
             );
         }),
@@ -45,7 +47,8 @@ export function calculateClocGitDiffsChildParent(commit: CommitCompact, repoPath
             return getRemoteOriginUrl(stat.repoPath).pipe(
                 map((remoteOriginUrl) => {
                     remoteOriginUrl = gitHttpsUrlFromGitUrl(remoteOriginUrl);
-                    return { ...stat, remoteOriginUrl };
+                    stat.remoteOriginUrl = remoteOriginUrl;
+                    return stat;
                 }),
             );
         }),

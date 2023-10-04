@@ -2,7 +2,7 @@
 
 import { launchCountReposCommits } from '../apps/cloc-on-repos/read-repos-commits/launch-count-repos-commits';
 import { launchClocRepos } from '../apps/cloc-on-repos//cloc-repos/launch-cloc-repos';
-import { launchClocDiffRepos, launchMonthlyClocDiffRepos } from '../apps/cloc-on-repos//cloc-diff-repos/launch-cloc-diff-repos';
+import { launchCalculateCodeTurnover, launchMonthlyClocDiffRepos } from '../apps/cloc-on-repos//cloc-diff-repos/launch-cloc-diff-repos';
 import { launchReportsParallelReads } from '../apps/reports-on-repo/2-pipelines/run-reports-on-repo';
 import { launchAllReportsOnMergedRepos } from '../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos';
 import { launchBranchesReport } from '../apps/reports-on-repo/2-pipelines/run-branches-report';
@@ -19,8 +19,11 @@ switch (command) {
     case 'cloc-monthly-diff-repos':
         launchMonthlyClocDiffRepos();
         break;
+    case 'code-turnover':
+        launchCalculateCodeTurnover();
+        break;
     case 'cloc-diff-repos':
-        launchClocDiffRepos();
+        launchCalculateCodeTurnover();
         break;
     case 'run-reports-on-repo':
         launchReportsParallelReads();
@@ -35,7 +38,7 @@ switch (command) {
         console.log(`Command ${command} not found`);
         console.log(`Commands allowed:  
         cloc-repos, 
-        cloc-diff-repos, 
+        code-turnover, 
         cloc-monthly-diff-repos,
         run-reports-on-repo,
         run-reports-on-repos-in-folder,
