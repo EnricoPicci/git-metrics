@@ -1,6 +1,6 @@
-import { toArray, map, catchError, of } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 
-import { executeCommandObs, getCommandOutput } from '../tools/execute-command/execute-command';
+import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { ClocDiffStats, newClocDiffStatsWithError, newClocDiffStatsZeroed } from './cloc-diff.model';
 import { CLOC_CONFIG } from './config';
@@ -16,14 +16,7 @@ export function runClocDiff(
     const cmd = buildClocDiffAllCommand(mostRecentCommit, leastRecentCommit, languages, folderPath);
     // #todo - check if we need to specify { encoding: 'utf-8' } as an argument
     return executeCommandObs('run cloc --git-diff-all', cmd).pipe(
-        toArray(),
-        map((linesFromStdOutAndStdErr) => {
-            const output = getCommandOutput(
-                linesFromStdOutAndStdErr,
-                `Error in runClocDiff for folder "${folderPath}"`,
-                cmd,
-            );
-
+        map((output) => {
             let diffs: any;
             try {
                 diffs = JSON.parse(output);

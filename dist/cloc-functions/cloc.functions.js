@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toClocFileDict = exports.buildOutfileName = exports.clocFileDictFromClocStream$ = exports.clocFileDictFromClocLogFile$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
+exports.toClocFileDict = exports.buildOutfileName = exports.clocFileDictFromClocStream$ = exports.clocFileDictFromClocLogFile$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnGitRepo_no_vcs$ = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -75,10 +75,21 @@ exports.clocSummaryCsvRaw$ = clocSummaryCsvRaw$;
  * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
-function clocSummaryOnGitRepo$(repoPath = './') {
-    return clocSummary$(repoPath, 'git');
+function clocSummaryOnGitRepo$(repoPath = './', vcs = 'git') {
+    return clocSummary$(repoPath, vcs);
 }
 exports.clocSummaryOnGitRepo$ = clocSummaryOnGitRepo$;
+/**
+ * Runs the cloc command on a Git repository and returns the result in the form of a stream of one ClocLanguageStats array.
+ * The result is a summary in the sense that it shows results per language but not per file.
+ * The cloc command is run without the --vcs option.
+ * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
+ * @returns An Observable that emits a ClocLanguageStats array.
+ */
+function clocSummaryOnGitRepo_no_vcs$(repoPath = './') {
+    return clocSummary$(repoPath, undefined);
+}
+exports.clocSummaryOnGitRepo_no_vcs$ = clocSummaryOnGitRepo_no_vcs$;
 /**
  * Runs the cloc command and writes the result to a file.
  * The result is a summary in the sense that it shows results per language but not per file.
