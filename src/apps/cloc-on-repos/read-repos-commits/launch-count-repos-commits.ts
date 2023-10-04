@@ -1,8 +1,8 @@
 import { Command } from "commander";
 import { readReposCommits } from "./internals/read-repos-commits";
 
-export function launchReadReposCommits() {
-    console.log('====>>>> Launching Read Repos Commits')
+export function launchCountReposCommits() {
+    console.log('====>>>> Launching Count Repos Commits')
 
     const { folderPath, outdir } = readParams();
 

@@ -10,8 +10,7 @@ const config_1 = require("./config");
 function runClocDiff(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
     const cmd = buildClocDiffAllCommand(mostRecentCommit, leastRecentCommit, languages, folderPath);
     // #todo - check if we need to specify { encoding: 'utf-8' } as an argument
-    return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-all', cmd).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((linesFromStdOutAndStdErr) => {
-        const output = (0, execute_command_1.getCommandOutput)(linesFromStdOutAndStdErr, `Error in runClocDiff for folder "${folderPath}"`, cmd);
+    return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-all', cmd).pipe((0, rxjs_1.map)((output) => {
         let diffs;
         try {
             diffs = JSON.parse(output);

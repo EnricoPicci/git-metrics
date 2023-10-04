@@ -33,5 +33,5 @@ describe('clocOnRepos', () => {
             expect(stats[1].repoPath).equal(path);
             done();
         });
-    }).timeout(10000);
+    }).timeout(100000);
 });

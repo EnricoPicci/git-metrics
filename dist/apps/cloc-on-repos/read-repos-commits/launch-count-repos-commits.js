@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.launchReadReposCommits = void 0;
+exports.launchCountReposCommits = void 0;
 const commander_1 = require("commander");
 const read_repos_commits_1 = require("./internals/read-repos-commits");
-function launchReadReposCommits() {
-    console.log('====>>>> Launching Read Repos Commits');
+function launchCountReposCommits() {
+    console.log('====>>>> Launching Count Repos Commits');
     const { folderPath, outdir } = readParams();
     (0, read_repos_commits_1.readReposCommits)(folderPath, outdir).subscribe();
 }
-exports.launchReadReposCommits = launchReadReposCommits;
+exports.launchCountReposCommits = launchCountReposCommits;
 function readParams() {
     const program = new commander_1.Command();
     program

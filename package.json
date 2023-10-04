@@ -4,14 +4,7 @@
     "description": "tools to calculate some metrics out of git repos",
     "main": "index.js",
     "bin": {
-        "git-metrics": "./dist/3-lib/run-reports-on-repo-parallel-reads.js",
-        "run-reports": "./dist/3-lib/run-reports-on-repo-parallel-reads.js",
-        "run-reports-single-thread": "./dist/3-lib/run-reports-on-repo-single-thread.js",
-        "run-branches-report": "./dist/3-lib/run-branches-report.js",
-        "run-all-reports-on-merged-repos": "./dist/3-lib/run-reports-on-merged-repos.js",
-        "run-all-reports-on-multi-repos": "./dist/3-lib/run-reports-on-multi-repos.js",
-        "load-mongo-run-reports": "./dist/3-lib/launch-load-mongo-run-reports.js",
-        "run-repo-coupling-report": "./dist/3-lib/run-repo-coupling-report.js"
+        "git-metrics": "dist/lib/command.js"
     },
     "scripts": {
         "test": "mocha -r ts-node/register src/**/*.spec.ts src/**/**/*.spec.ts src/**/**/**/*.spec.ts src/**/**/**/**/*.spec.ts",
@@ -23,15 +16,7 @@
         "prepublishOnly": "npm version patch",
         "preversion": "npm run test",
         "version": "npm run tsc && git add -A dist",
-        "postversion": "git push",
-        "git-metrics": "node ./dist/3-lib/run-reports-on-repo-parallel-reads.js",
-        "run-reports": "node ./dist/3-lib/run-reports-on-repo-parallel-reads.js",
-        "run-reports-single-thread": "node ./dist/3-lib/run-reports-on-repo-single-thread.js",
-        "run-branches-report": "node ./dist/3-lib/run-branches-report.js",
-        "run-all-reports-on-merged-repos": "node ./dist/3-lib/run-reports-on-merged-repos.js",
-        "run-all-reports-on-multi-repos": "node ./dist/3-lib/run-reports-on-multi-repos.js",
-        "load-mongo-run-reports": "node ./dist/3-lib/launch-load-mongo-run-reports.js",
-        "run-repo-coupling-report": "node ./dist/3-lib/run-repo-coupling-report.js"
+        "postversion": "git push"
     },
     "repository": {
         "type": "git",
