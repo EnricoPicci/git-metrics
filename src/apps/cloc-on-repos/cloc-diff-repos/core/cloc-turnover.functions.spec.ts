@@ -27,7 +27,7 @@ describe('calculateClocDiffsOnRepos', () => {
         })
     }).timeout(200000);
 
-    it.only(`should calculate no cloc diffs since there are no commits in the time window provided`, (done) => {
+    it(`should calculate no cloc diffs since there are no commits in the time window provided`, (done) => {
         const folderPath = '.';
         const outDir = './out';
         const languages = ['TypeScript'];

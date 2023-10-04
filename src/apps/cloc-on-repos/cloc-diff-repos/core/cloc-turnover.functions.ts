@@ -11,6 +11,7 @@ import { ClocDiffStats } from '../../../../cloc-functions/cloc-diff.model';
 import { clocDiffStatToCsvWithBase } from './cloc-diff-stat-csv';
 import { calculateClocGitDiffsChildParent } from '../internals/commit-cloc-diff.function';
 import { RepoCompact } from '../../../../git-functions/repo.model';
+import { CommitDiffStats } from '../internals/commit-cloc-diff.model';
 
 // calculateCodeTurnover is a function that calculates the cloc diffs on the repos contained in a folder
 export function calculateCodeTurnover(
@@ -121,14 +122,7 @@ const writeClocDiffJson = (
 };
 
 const writeClocCsv = (
-    stats: {
-        remoteOriginUrl: string;
-        repoPath: string;
-        yearMonth: string;
-        mostRecentCommitDate: string;
-        leastRecentCommitDate: string;
-        clocDiff: ClocDiffStats;
-    }[],
+    stats: CommitDiffStats[],
     outFile: string,
 ) => {
     return writeFileObs(outFile, statsToCsv(stats)).pipe(
@@ -140,14 +134,7 @@ const writeClocCsv = (
 };
 
 function statsToCsv(
-    reposStats: {
-        remoteOriginUrl: string;
-        repoPath: string;
-        yearMonth: string;
-        mostRecentCommitDate: string;
-        leastRecentCommitDate: string;
-        clocDiff: ClocDiffStats;
-    }[],
+    reposStats: CommitDiffStats[],
 ) {
     const csvRecs = reposStats
         .filter((stat) => !stat.clocDiff.error)
@@ -156,14 +143,7 @@ function statsToCsv(
     return toCsv(csvRecs);
 }
 
-function flattenClocDiffStat(stat: {
-    remoteOriginUrl: string;
-    repoPath: string;
-    yearMonth: string;
-    mostRecentCommitDate: string;
-    leastRecentCommitDate: string;
-    clocDiff: ClocDiffStats;
-}) {
+function flattenClocDiffStat(stat: CommitDiffStats) {
     const remoteOriginUrl = stat.remoteOriginUrl;
     const repoPath = stat.repoPath;
     const yearMonth = stat.yearMonth;

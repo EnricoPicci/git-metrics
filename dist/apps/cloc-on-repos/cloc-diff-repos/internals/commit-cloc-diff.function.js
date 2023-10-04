@@ -23,19 +23,22 @@ function calculateClocGitDiffsChildParent(commit, repoPath, languages) {
             return { clocDiff, parentCommit };
         }), (0, rxjs_1.map)(({ clocDiff, parentCommit }) => {
             const parentCommitDate = parentCommit.date.toLocaleDateString();
-            return {
+            const commitStats = {
                 repoPath,
                 yearMonth: (0, commits_by_month_functions_1.yearMonthFromDate)(commit.date),
                 mostRecentCommitDate: commit.date.toLocaleDateString(),
                 leastRecentCommitDate: parentCommitDate,
                 clocDiff,
+                remoteOriginUrl: '',
             };
+            return commitStats;
         }));
     }), (0, rxjs_1.concatMap)((stat) => {
         // we read the remoteOriginUrl of the repo
         return (0, repo_functions_1.getRemoteOriginUrl)(stat.repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
             remoteOriginUrl = (0, repo_functions_1.gitHttpsUrlFromGitUrl)(remoteOriginUrl);
-            return Object.assign(Object.assign({}, stat), { remoteOriginUrl });
+            stat.remoteOriginUrl = remoteOriginUrl;
+            return stat;
         }));
     }));
 }

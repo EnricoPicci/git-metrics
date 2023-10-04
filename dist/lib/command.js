@@ -18,8 +18,11 @@ switch (command) {
     case 'cloc-monthly-diff-repos':
         (0, launch_cloc_diff_repos_1.launchMonthlyClocDiffRepos)();
         break;
+    case 'code-turnover':
+        (0, launch_cloc_diff_repos_1.launchCalculateCodeTurnover)();
+        break;
     case 'cloc-diff-repos':
-        (0, launch_cloc_diff_repos_1.launchClocDiffRepos)();
+        (0, launch_cloc_diff_repos_1.launchCalculateCodeTurnover)();
         break;
     case 'run-reports-on-repo':
         (0, run_reports_on_repo_1.launchReportsParallelReads)();
@@ -34,7 +37,7 @@ switch (command) {
         console.log(`Command ${command} not found`);
         console.log(`Commands allowed:  
         cloc-repos, 
-        cloc-diff-repos, 
+        code-turnover, 
         cloc-monthly-diff-repos,
         run-reports-on-repo,
         run-reports-on-repos-in-folder,
