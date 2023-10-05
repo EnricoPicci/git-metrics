@@ -2,7 +2,7 @@
 
 import { launchCountReposCommits } from '../apps/cloc-on-repos/read-repos-commits/launch-count-repos-commits';
 import { launchClocRepos } from '../apps/cloc-on-repos//cloc-repos/launch-cloc-repos';
-import { launchCalculateCodeTurnover, launchMonthlyClocDiffRepos } from '../apps/cloc-on-repos/code-turnover/launch-code-turnover';
+import { launchCalculateCodeTurnover, launchMonthlyClocDiffRepos } from '../apps/code-turnover/launch-code-turnover';
 import { launchReportsParallelReads } from '../apps/reports-on-repo/2-pipelines/run-reports-on-repo';
 import { launchAllReportsOnMergedRepos } from '../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos';
 import { launchBranchesReport } from '../apps/reports-on-repo/2-pipelines/run-branches-report';
