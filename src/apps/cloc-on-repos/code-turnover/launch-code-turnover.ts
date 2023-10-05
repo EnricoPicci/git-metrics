@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { CONFIG } from '../../../config';
 
 import { calculateMonthlyClocDiffsOnRepos } from './core/cloc-monthly-diff-repos';
-import { calculateCodeTurnover } from './core/cloc-turnover.functions';
+import { calculateCodeTurnover } from './core/code-turnover.functions';
 
 export function launchCalculateCodeTurnover() {
     console.log('====>>>> Launching code-turnover calculation on Repos');

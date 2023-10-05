@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const launch_count_repos_commits_1 = require("../apps/cloc-on-repos/read-repos-commits/launch-count-repos-commits");
 const launch_cloc_repos_1 = require("../apps/cloc-on-repos//cloc-repos/launch-cloc-repos");
-const launch_cloc_diff_repos_1 = require("../apps/cloc-on-repos//cloc-diff-repos/launch-cloc-diff-repos");
+const launch_code_turnover_1 = require("../apps/cloc-on-repos/code-turnover/launch-code-turnover");
 const run_reports_on_repo_1 = require("../apps/reports-on-repo/2-pipelines/run-reports-on-repo");
 const run_reports_on_merged_repos_1 = require("../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos");
 const run_branches_report_1 = require("../apps/reports-on-repo/2-pipelines/run-branches-report");
@@ -16,13 +16,13 @@ switch (command) {
         (0, launch_cloc_repos_1.launchClocRepos)();
         break;
     case 'cloc-monthly-diff-repos':
-        (0, launch_cloc_diff_repos_1.launchMonthlyClocDiffRepos)();
+        (0, launch_code_turnover_1.launchMonthlyClocDiffRepos)();
         break;
     case 'code-turnover':
-        (0, launch_cloc_diff_repos_1.launchCalculateCodeTurnover)();
+        (0, launch_code_turnover_1.launchCalculateCodeTurnover)();
         break;
     case 'cloc-diff-repos':
-        (0, launch_cloc_diff_repos_1.launchCalculateCodeTurnover)();
+        (0, launch_code_turnover_1.launchCalculateCodeTurnover)();
         break;
     case 'run-reports-on-repo':
         (0, run_reports_on_repo_1.launchReportsParallelReads)();

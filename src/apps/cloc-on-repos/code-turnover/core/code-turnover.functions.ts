@@ -2,31 +2,36 @@ import path from 'path';
 import { mergeMap, from, toArray, concatMap, tap, map, pipe } from 'rxjs';
 
 import { writeFileObs } from 'observable-fs';
-import { toCsv } from '../../../../tools/csv/to-csv';
 
+import { toCsv } from '../../../../tools/csv/to-csv';
 import { CONFIG } from '../../../../config';
 import { reposCompactInFolderObs } from '../../../../git-functions/repo.functions';
 import { ClocDiffStats } from '../../../../cloc-functions/cloc-diff.model';
-
-import { clocDiffStatToCsvWithBase } from './cloc-diff-stat-csv';
 import { calculateClocGitDiffsChildParent } from '../internals/commit-cloc-diff.function';
 import { RepoCompact } from '../../../../git-functions/repo.model';
-import { CommitDiffStats } from '../internals/commit-cloc-diff.model';
 
-// calculateCodeTurnover is a function that calculates the cloc diffs on the repos contained in a folder
+import { CommitDiffStats } from './code-turnover.model';
+import { clocDiffStatToCsvWithBase } from './cloc-diff-stat-csv';
+
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
+
+/**
+ * Calculates the code turnover for a folder containing multiple Git repositories.
+ * The function returns an Observable that, after having run the calculation, emits an array containing all the 
+ * cloc diffs for each commit in each repository.
+ * The result is also written in a JSON file and a CSV file in the given output folder.
+ * @param folderPath The path to the folder containing the Git repositories.
+ * @param outdir The path to the folder where the output should be saved.
+ * @param languages An array of languages for which to calculate the cloc diffs.
+ * @param fromDate The start date for the cloc diffs. Defaults to the epoch (i.e. 01/01/1970).
+ * @param toDate The end date for the cloc diffs. Defaults to the current date and time.
+ * @param concurrency The maximum number of concurrent child processes to run. Defaults to the value of `CONFIG.CONCURRENCY`.
+ * @param excludeRepoPaths An array of repository paths to exclude from the calculation.
+ * @returns An Observable that emits the cloc diffs for each commit in each repository.
+ */
 export function calculateCodeTurnover(
-    folderPath: string,
-    outdir: string,
-    languages: string[],
-    fromDate = new Date(0),
-    toDate = new Date(Date.now()),
-    concurrency = CONFIG.CONCURRENCY,
-    excludeRepoPaths: string[] = [],
-) {
-    return calculateClocDiffsOnRepos(folderPath, outdir, languages, fromDate, toDate, concurrency, excludeRepoPaths);
-}
-
-export function calculateClocDiffsOnRepos(
     folderPath: string,
     outdir: string,
     languages: string[],
@@ -40,15 +45,7 @@ export function calculateClocDiffsOnRepos(
 
     return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
         calculateClocDiffs(languages, concurrency),
-        toArray(),
-        concatMap((stats) => {
-            const outFile = path.join(outdir, `${folderName}-cloc-diff.json`);
-            return writeClocDiffJson(stats, outFile).pipe(map(() => stats));
-        }),
-        concatMap((stats) => {
-            const outFile = path.join(outdir, `${folderName}-cloc-diff.csv`);
-            return writeClocCsv(stats, outFile).pipe(map(() => stats));
-        }),
+        writeClocDiffs(outdir, folderName),
         tap(() => {
             const endTime = new Date().getTime();
             console.log(`====>>>> Total time to calculate cloc diffs: ${(endTime - startTime) / 1000} seconds`);
@@ -57,13 +54,12 @@ export function calculateClocDiffsOnRepos(
 }
 
 /**
- * Calculates the cloc diffs for each commit in each repository in the given array of languages.
- * The function returns a custom rxJs operator that takes a stream of RepoCompact objects and
- * returns a stream of CommitDiffStats objects, each representing the cloc diffs for each commit in each repository
- * vs its parent commit.
+ * Returns a custom rxJs operator that takes a stream of RepoCompact objects and returns a stream of CommitDiffStats objects,
+ * which represent the cloc diffs for each commit in the repository received from upstream for the given array of languages.
+ * Diffs are calculated comparing the commit with its parent commit.
  * @param languages An array of languages for which to calculate the cloc diffs.
  * @param concurrency The maximum number of concurrent child processes to run. Defaults to the value of `CONFIG.CONCURRENCY`.
- * @returns An Observable that emits the cloc diffs for each commit in each repository.
+ * @returns An rxJs operator that transforms a stream of RepoCompact in a stream of CommitDiffStats.
  */
 export function calculateClocDiffs(languages: string[], concurrency = CONFIG.CONCURRENCY) {
     let diffsCompleted = 0;
@@ -105,6 +101,26 @@ export function calculateClocDiffs(languages: string[], concurrency = CONFIG.CON
         }, concurrency),
     )
 }
+
+export function writeClocDiffs(outdir: string, folderName: string) {
+    return pipe(
+        toArray<CommitDiffStats>(),
+        concatMap((stats) => {
+            const outFile = path.join(outdir, `${folderName}-cloc-diff.json`);
+            return writeClocDiffJson(stats, outFile).pipe(map(() => stats));
+        }),
+        concatMap((stats) => {
+            const outFile = path.join(outdir, `${folderName}-cloc-diff.csv`);
+            return writeClocCsv(stats, outFile).pipe(map(() => stats));
+        }),
+    )
+}
+
+
+//********************************************************************************************************************** */
+//****************************               Internals              **************************************************** */
+//********************************************************************************************************************** */
+// these functions may be exported for testing purposes
 
 const writeClocDiffJson = (
     stats: {

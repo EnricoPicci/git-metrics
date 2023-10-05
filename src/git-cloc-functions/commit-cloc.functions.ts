@@ -3,6 +3,11 @@ import { Observable, concatMap, map } from "rxjs";
 import { ClocDictionary } from "../cloc-functions/cloc.model";
 import { CommitWithFileNumstats, GitFileNumstat } from "../git-functions/commit.model";
 
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
+
+
 /**
  * Takes an Observable of `CommitWithFileNumstats` objects and an Observable emitting one `ClocDictionary` object, 
  * and returns an Observable that emits a stream of `CommitWithFileNumstatsEnrichedWithCloc` objects representing 

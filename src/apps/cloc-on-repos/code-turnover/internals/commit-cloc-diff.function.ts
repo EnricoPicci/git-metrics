@@ -9,7 +9,8 @@ import { CONFIG } from '../../../../config';
 
 import { yearMonthFromDate } from './commits-by-month.functions';
 import { CommitTuple } from './commit-tuple.model';
-import { CommitDiffStats, RepoMonthlyClocDiffStats } from './commit-cloc-diff.model';
+import { RepoMonthlyClocDiffStats } from './commit-cloc-diff.model';
+import { CommitDiffStats } from '../core/code-turnover.model';
 
 // calculateClocGitDiffsChildParent is a function that receives a CommitCompact object and calculates the cloc diff
 // and returns an object with the yearMonth, the commit date and the cloc diff

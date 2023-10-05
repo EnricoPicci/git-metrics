@@ -7,11 +7,11 @@ import {
     reposCompactWithCommitsByMonthsInFolderObs,
     newReposWithCommitsByMonth,
     repoCommitsByMonthRecords,
-} from '../../cloc-diff-repos/internals/repos-with-commits-by-month.functions';
+} from '../../code-turnover/internals/repos-with-commits-by-month.functions';
 import {
     RepoCompactWithCommitsByMonths,
     ReposWithCommitsByMonths,
-} from '../../cloc-diff-repos/internals/repos-with-commits-by-month.model';
+} from '../../code-turnover/internals/repos-with-commits-by-month.model';
 
 // readReposCommits reeads all the repos contained in a directory and returns an observable of an array of RepoCompact
 export function readReposCommits(

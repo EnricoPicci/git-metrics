@@ -1,9 +1,8 @@
-import { expect } from "chai";
-import { calculateClocDiffsOnRepos } from "./cloc-turnover.functions";
-
-
-
-describe('calculateClocDiffsOnRepos', () => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const chai_1 = require("chai");
+const code_turnover_functions_1 = require("./code-turnover.functions");
+describe('calculateCodeTurnover', () => {
     it(`should calculate the cloc diffs for each commit vs its parent commit for all repos
     in this project reposInFolder. Since this project folder contains only one repoPath, the repo of the projectAndAuthorChurnReport,
     the commits will be calculated just for this folder`, (done) => {
@@ -13,10 +12,9 @@ describe('calculateClocDiffsOnRepos', () => {
         const fromDate = new Date('2023-09-23');
         const toDate = new Date('2023-09-24');
         const concurrency = 1;
-
-        calculateClocDiffsOnRepos(folderPath, outDir, languages, fromDate, toDate, concurrency).subscribe({
+        (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outDir, languages, fromDate, toDate, concurrency).subscribe({
             next: commitDiffStats => {
-                expect(commitDiffStats.length).greaterThan(0);
+                (0, chai_1.expect)(commitDiffStats.length).greaterThan(0);
             },
             error: err => {
                 done(err);
@@ -24,9 +22,8 @@ describe('calculateClocDiffsOnRepos', () => {
             complete: () => {
                 done();
             }
-        })
+        });
     }).timeout(200000);
-
     it(`should calculate no cloc diffs since there are no commits in the time window provided`, (done) => {
         const folderPath = '.';
         const outDir = './out';
@@ -34,10 +31,9 @@ describe('calculateClocDiffsOnRepos', () => {
         const fromDate = new Date('2023-09-23');
         const toDate = new Date('2023-09-23');
         const concurrency = 1;
-
-        calculateClocDiffsOnRepos(folderPath, outDir, languages, fromDate, toDate, concurrency).subscribe({
+        (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outDir, languages, fromDate, toDate, concurrency).subscribe({
             next: commitDiffStats => {
-                expect(commitDiffStats.length).equal(0);
+                (0, chai_1.expect)(commitDiffStats.length).equal(0);
             },
             error: err => {
                 done(err);
@@ -45,6 +41,7 @@ describe('calculateClocDiffsOnRepos', () => {
             complete: () => {
                 done();
             }
-        })
+        });
     }).timeout(200000);
 });
+//# sourceMappingURL=code-turnover.functions.spec.js.map

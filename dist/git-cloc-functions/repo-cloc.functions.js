@@ -5,6 +5,9 @@ const rxjs_1 = require("rxjs");
 const cloc_functions_1 = require("../cloc-functions/cloc.functions");
 const config_1 = require("../config");
 const repo_functions_1 = require("../git-functions/repo.functions");
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
 /**
  * Takes a folder path and returns an Observable that emits a stream of `RepoClocLanguageStats` objects
  * representing the cloc stats for each repository in the folder.

@@ -7,6 +7,11 @@ import { reposInFolder } from "../git-functions/repo.functions";
 
 import { RepoClocLanguageStats } from "./repo-cloc.model";
 
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
+
+
 /**
  * Takes a folder path and returns an Observable that emits a stream of `RepoClocLanguageStats` objects 
  * representing the cloc stats for each repository in the folder.

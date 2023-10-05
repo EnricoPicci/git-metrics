@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commitWithFileNumstatsEnrichedWithCloc$ = void 0;
 const rxjs_1 = require("rxjs");
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
 /**
  * Takes an Observable of `CommitWithFileNumstats` objects and an Observable emitting one `ClocDictionary` object,
  * and returns an Observable that emits a stream of `CommitWithFileNumstatsEnrichedWithCloc` objects representing
