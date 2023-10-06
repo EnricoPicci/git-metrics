@@ -1,10 +1,13 @@
-import { Observable, UnaryFunction, concatMap, map, mergeMap, of, toArray } from "rxjs";
-import { CONFIG } from "../../config";
-import { reposCompactInFolderObs } from "../../git-functions/repo.functions";
-import { runReportsParallelReads } from "../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core";
-import { calculateClocDiffs, writeClocDiffsCsv, writeClocDiffsJson } from "../code-turnover/core/code-turnover.functions";
 import path from "path";
-import { CommitDiffStats } from "../code-turnover/core/code-turnover.model";
+import { Observable, UnaryFunction, concatMap, map, mergeMap, of, toArray } from "rxjs";
+
+import { CONFIG } from "../../../config";
+import { reposCompactInFolderObs } from "../../../git-functions/repo.functions";
+
+import { runReportsParallelReads } from "../../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core";
+import { calculateClocDiffs, writeClocDiffsCsv, writeClocDiffsJson } from "../../code-turnover/core/code-turnover.functions";
+import { CommitDiffStats } from "../../code-turnover/core/code-turnover.model";
+
 import { CommitDiffStatsWithSummaryReport } from "./code-turnover-and-reports.model";
 
 /**
@@ -16,7 +19,7 @@ import { CommitDiffStatsWithSummaryReport } from "./code-turnover-and-reports.mo
  * @param fromDate The start date for the cloc diffs and reports.
  * @param toDate The end date for the cloc diffs and reports.
  * @param outdir The path to the folder where the output should be saved.
- * @param _languages An array of languages for which to calculate the cloc diffs.
+ * @param languages An array of languages for which to calculate the cloc diffs.
  * @param concurrency The maximum number of concurrent child processes to run. Defaults to the value of `CONFIG.CONCURRENCY`.
  * @param excludeRepoPaths An array of repository paths to exclude from the calculation.
  * @param reports An array of report types to generate.
@@ -33,11 +36,10 @@ export function reportsAndCodeTurnover(
     fromDate: Date,
     toDate: Date,
     outdir: string,
-    _languages: string[],
+    languages: string[],
     concurrency = CONFIG.CONCURRENCY,
     excludeRepoPaths: string[] = [],
     reports: string[],
-    filter: string[],
     outFilePrefix: string,
     clocDefsPath: string,
     concurrentReadOfCommits: boolean,
@@ -45,6 +47,11 @@ export function reportsAndCodeTurnover(
     ignoreClocZero: boolean,
 ) {
     const folderName = path.basename(folderPath);
+
+    const filter: string[] = [];
+    if (languages.includes('TypeScript')) filter.push(...['*.ts', '*.tsx']);
+    if (languages.includes('Java')) filter.push('*.java');
+    if (languages.includes('HTML')) filter.push('*.html');
 
     return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
         mergeMap((repo) => {
@@ -72,7 +79,7 @@ export function reportsAndCodeTurnover(
         }, 1),
         concatMap(({ repo, summaryReportPath }) => {
             return of(repo).pipe(
-                calculateClocDiffs(_languages, concurrency),
+                calculateClocDiffs(languages, concurrency),
                 map((clocDiffStat) => {
                     return { ...clocDiffStat, summaryReportPath }
                 })

@@ -6,6 +6,7 @@ import { launchCalculateCodeTurnover, launchMonthlyClocDiffRepos } from '../apps
 import { launchReportsParallelReads } from '../apps/reports-on-repo/2-pipelines/run-reports-on-repo';
 import { launchAllReportsOnMergedRepos } from '../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos';
 import { launchBranchesReport } from '../apps/reports-on-repo/2-pipelines/run-branches-report';
+import { launchRunReportsAndCodeTurnover } from '../apps/code-turnover-and-reports/launch-code-turnover-and-reports';
 
 const command = process.argv[2];
 
@@ -34,6 +35,9 @@ switch (command) {
     case 'run-branches-report-on-repo':
         launchBranchesReport();
         break;
+    case 'code-turnover-and-reports':
+        launchRunReportsAndCodeTurnover();
+        break;
     default:
         console.log(`Command ${command} not found`);
         console.log(`Commands allowed:  
@@ -42,6 +46,7 @@ switch (command) {
         cloc-monthly-diff-repos,
         run-reports-on-repo,
         run-reports-on-repos-in-folder,
-        run-branches-report-on-repo`);
+        run-branches-report-on-repo,
+        code-turnover-and-reports`);
         break;
 }

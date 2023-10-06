@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { reportsAndCodeTurnover } from "./code-turnover-and-reports.functions";
-import { allReports } from "../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core";
+import { allReports } from "../../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core";
 import { concatMap, tap } from "rxjs";
 import { deleteFileObs } from "observable-fs";
 
@@ -16,7 +16,6 @@ describe('reportsAndCodeTurnover', () => {
         const concurrency = 1;
         const excludeRepoPaths: string[] = []
         const reports = allReports
-        const filter = ['*.ts']
         const outFilePrefix = 'test'
         const clocDefsPath = ''
         const concurrentReadOfCommits = false
@@ -32,7 +31,6 @@ describe('reportsAndCodeTurnover', () => {
             concurrency,
             excludeRepoPaths,
             reports,
-            filter,
             outFilePrefix,
             clocDefsPath,
             concurrentReadOfCommits,

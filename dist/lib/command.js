@@ -7,6 +7,7 @@ const launch_code_turnover_1 = require("../apps/code-turnover/launch-code-turnov
 const run_reports_on_repo_1 = require("../apps/reports-on-repo/2-pipelines/run-reports-on-repo");
 const run_reports_on_merged_repos_1 = require("../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos");
 const run_branches_report_1 = require("../apps/reports-on-repo/2-pipelines/run-branches-report");
+const launch_code_turnover_and_reports_1 = require("../apps/code-turnover-and-reports/launch-code-turnover-and-reports");
 const command = process.argv[2];
 switch (command) {
     case 'read-repos-commits':
@@ -33,6 +34,9 @@ switch (command) {
     case 'run-branches-report-on-repo':
         (0, run_branches_report_1.launchBranchesReport)();
         break;
+    case 'code-turnover-and-reports':
+        (0, launch_code_turnover_and_reports_1.launchRunReportsAndCodeTurnover)();
+        break;
     default:
         console.log(`Command ${command} not found`);
         console.log(`Commands allowed:  
@@ -41,7 +45,8 @@ switch (command) {
         cloc-monthly-diff-repos,
         run-reports-on-repo,
         run-reports-on-repos-in-folder,
-        run-branches-report-on-repo`);
+        run-branches-report-on-repo,
+        code-turnover-and-reports`);
         break;
 }
 //# sourceMappingURL=command.js.map

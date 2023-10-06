@@ -47,22 +47,25 @@ describe(`runAllReportsOnMultiRepos`, () => {
             complete: () => done(),
         });
     }).timeout(600000);
-    const checkOnReports = (_data) => {
-        const data = _data;
-        (0, chai_1.expect)(data.length).equal(2);
-        (0, chai_1.expect)(data[0].reports.length).equal(3);
-        (0, chai_1.expect)(data[1].reports.length).equal(3);
+    const checkOnReports = (_reportsInfoTuple) => {
+        const reportsInfoTuple = _reportsInfoTuple;
+        (0, chai_1.expect)(reportsInfoTuple.length).equal(2);
+        const t = reportsInfoTuple[0];
+        console.log(t);
+        console.log(reportsInfoTuple[0].reports.reports);
+        (0, chai_1.expect)(reportsInfoTuple[0].reports.reports.length).equal(3);
+        (0, chai_1.expect)(reportsInfoTuple[1].reports.reports.length).equal(3);
         //
-        const fileChurnRep_0 = data[0].reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
-        const moduleChurnRep_0 = data[0].reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
+        const fileChurnRep_0 = reportsInfoTuple[0].reports.reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
+        const moduleChurnRep_0 = reportsInfoTuple[0].reports.reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
         (0, chai_1.expect)(fileChurnRep_0.totChurn.val).equal(moduleChurnRep_0.totChurn.val);
         //
-        const fileChurnRep_1 = data[1].reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
-        const moduleChurnRep_1 = data[1].reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
+        const fileChurnRep_1 = reportsInfoTuple[1].reports.reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
+        const moduleChurnRep_1 = reportsInfoTuple[1].reports.reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
         (0, chai_1.expect)(fileChurnRep_1.totChurn.val).equal(moduleChurnRep_1.totChurn.val);
         //
-        (0, chai_1.expect)(data[0].repoFolderPath).equal(process.cwd());
-        (0, chai_1.expect)(data[1].repoFolderPath).equal(process.cwd());
+        (0, chai_1.expect)(reportsInfoTuple[0].repoFolderPath).equal(process.cwd());
+        (0, chai_1.expect)(reportsInfoTuple[1].repoFolderPath).equal(process.cwd());
     };
 });
 describe(`gitRepos`, () => {
