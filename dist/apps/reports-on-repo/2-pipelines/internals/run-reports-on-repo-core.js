@@ -68,8 +68,6 @@ exports.runReportsParallelReads = runReportsParallelReads;
 function runReportsOneStream(reports, repoFolderPath, _filter, after, before, outDir, outFilePrefix, clocDefsPath, noRenames, ignoreClocZero, depthInFilesCoupling) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
-    const _after = new Date(after);
-    const _before = new Date(before);
     // streams that read from git log and cloc
     const commitOptions = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
     const clocParams = { folderPath: repoFolderPath, outDir };
@@ -77,12 +75,12 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
     // enrich git log streams
     const clocDict = (0, cloc_functions_1.clocFileDictFromClocStream$)(cloc);
     let _commitStream = (0, commit_cloc_functions_1.commitWithFileNumstatsEnrichedWithCloc$)(gitLogCommits, clocDict);
-    _commitStream = after ? _commitStream.pipe((0, rxjs_1.filter)((c) => c.committerDate > _after)) : _commitStream;
+    _commitStream = after ? _commitStream.pipe((0, rxjs_1.filter)((c) => c.committerDate > after)) : _commitStream;
     _commitStream = _commitStream.pipe((0, rxjs_1.share)());
     const _filesStream = (0, files_1.filesStreamFromEnrichedCommitsStream)(_commitStream).pipe((0, rxjs_1.filter)((file) => {
         const commitDate = new Date(file.committerDate);
-        const isAfter = after ? commitDate > _after : true;
-        const isBefore = before ? commitDate < _before : true;
+        const isAfter = after ? commitDate > after : true;
+        const isBefore = before ? commitDate < before : true;
         return isAfter && isBefore;
     }), (0, rxjs_1.share)());
     const _clocSummaryStream = clocSummary.pipe((0, rxjs_1.toArray)());
@@ -108,17 +106,15 @@ function _runReportsFromStreams(reports, repoFolderPath, _filter, after, before,
         outDir,
         filter: _filter,
         clocDefsPath,
-        after: new Date(after),
-        before: new Date(before),
+        after,
+        before,
         outFilePrefix,
     };
     const repoName = path_1.default.parse(repoFolderPath).name;
     const _commmitStreamFiltered = _commitStream.pipe((0, rxjs_1.filter)((commit) => {
-        const _after = new Date(after);
-        const _before = new Date(before);
         const commitDate = new Date(commit.committerDate);
-        const isAfter = after ? commitDate > _after : true;
-        const isBefore = before ? commitDate < _before : true;
+        const isAfter = after ? commitDate > after : true;
+        const isBefore = before ? commitDate < before : true;
         return isAfter && isBefore;
     }));
     const generators = [];
@@ -154,8 +150,8 @@ function _runReportsFromStreams(reports, repoFolderPath, _filter, after, before,
             return report.addConsiderations();
         });
     }), (0, rxjs_1.concatMap)((reports) => {
-        return writeSummaryWorkbook(reports, outDir, repoName).pipe((0, rxjs_1.map)(() => {
-            return reports;
+        return writeSummaryWorkbook(reports, outDir, repoName).pipe((0, rxjs_1.map)((summaryReportPath) => {
+            return { reports, summaryReportPath };
         }));
     }));
 }
@@ -168,9 +164,10 @@ function writeSummaryWorkbook(reports, outDir, repoName) {
         return (0, summary_excel_1.addWorksheet)(workbook, report.name, csvFile);
     });
     return (0, rxjs_1.forkJoin)(addSheetsForReports).pipe((0, rxjs_1.map)(() => {
-        const wbName = (0, summary_excel_1.writeWorkbook)(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
-        console.log(`====>>>> Summary report excel written to ${wbName}`);
-        return wbName;
+        const wbName = `${repoName}-summary-${new Date().toISOString()}`;
+        const wbPathName = (0, summary_excel_1.writeWorkbook)(workbook, outDir, `${wbName}`);
+        console.log(`====>>>> Summary report excel written to ${wbPathName}`);
+        return wbPathName;
     }));
 }
 //# sourceMappingURL=run-reports-on-repo-core.js.map

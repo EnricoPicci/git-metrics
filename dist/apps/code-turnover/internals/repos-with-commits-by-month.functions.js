@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.repoCommitsByMonthRecords = exports.repoCommitsByMonthRecordsDict = exports.fillMissingMonths = exports.newReposWithCommitsByMonth = exports.newRepoCompactWithCommitsByMonths = exports.reposCompactWithCommitsByMonthsInFolderObs = void 0;
 const rxjs_1 = require("rxjs");
-const commits_by_month_functions_1 = require("./commits-by-month.functions");
 const repo_functions_1 = require("../../../git-functions/repo.functions");
+const commits_by_month_functions_1 = require("./commits-by-month.functions");
 // reposCompactWithCommitsByMonthsInFolderObs returns an Observable that notifies the list of
 // RepoCompactWithCommitsByMonths objects representing all the repos in a given folder
 function reposCompactWithCommitsByMonthsInFolderObs(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = 1) {

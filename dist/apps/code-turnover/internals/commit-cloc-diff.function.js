@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculateMonthlyClocGitDiffs = exports.calculateClocGitDiffsChildParent = void 0;
 const rxjs_1 = require("rxjs");
 const cloc_diff_functions_1 = require("../../../cloc-functions/cloc-diff.functions");
+const cloc_diff_model_1 = require("../../../cloc-functions/cloc-diff.model");
 const commit_functions_1 = require("../../../git-functions/commit.functions");
 const repo_functions_1 = require("../../../git-functions/repo.functions");
-const cloc_diff_model_1 = require("../../../cloc-functions/cloc-diff.model");
 const config_1 = require("../../../config");
 const commits_by_month_functions_1 = require("./commits-by-month.functions");
 // calculateClocGitDiffsChildParent is a function that receives a CommitCompact object and calculates the cloc diff

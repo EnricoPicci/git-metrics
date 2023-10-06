@@ -49,8 +49,8 @@ export function runReportsSingleThread(
     reports: string[],
     repoFolderPath: string,
     filter: string[],
-    after: string,
-    before: string,
+    after: Date,
+    before: Date,
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
@@ -99,8 +99,8 @@ export function runReportsParallelReads(
     reports: string[],
     repoFolderPath: string,
     filter: string[],
-    after: string,
-    before: string,
+    after: Date,
+    before: Date,
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
@@ -148,8 +148,8 @@ export function runReportsOneStream(
     reports: string[],
     repoFolderPath: string,
     _filter: string[],
-    after: string,
-    before: string,
+    after: Date,
+    before: Date,
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
@@ -160,9 +160,6 @@ export function runReportsOneStream(
     // create the output directory if not existing
     createDirIfNotExisting(outDir);
 
-    const _after = new Date(after);
-    const _before = new Date(before);
-
     // streams that read from git log and cloc
     const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
     const clocParams: ClocParams = { folderPath: repoFolderPath, outDir };
@@ -171,14 +168,14 @@ export function runReportsOneStream(
     // enrich git log streams
     const clocDict = clocFileDictFromClocStream$(cloc);
     let _commitStream = commitWithFileNumstatsEnrichedWithCloc$(gitLogCommits, clocDict)
-    _commitStream = after ? _commitStream.pipe(filter((c) => c.committerDate > _after)) : _commitStream;
+    _commitStream = after ? _commitStream.pipe(filter((c) => c.committerDate > after)) : _commitStream;
     _commitStream = _commitStream.pipe(share());
 
     const _filesStream = filesStreamFromEnrichedCommitsStream(_commitStream).pipe(
         filter((file) => {
             const commitDate = new Date(file.committerDate);
-            const isAfter = after ? commitDate > _after : true;
-            const isBefore = before ? commitDate < _before : true;
+            const isAfter = after ? commitDate > after : true;
+            const isBefore = before ? commitDate < before : true;
             return isAfter && isBefore;
         }),
         share(),
@@ -220,8 +217,8 @@ export function _runReportsFromStreams(
     reports: string[],
     repoFolderPath: string,
     _filter: string[],
-    after: string,
-    before: string,
+    after: Date,
+    before: Date,
     outDir: string,
     outFilePrefix: string,
     clocDefsPath: string,
@@ -236,18 +233,16 @@ export function _runReportsFromStreams(
         outDir,
         filter: _filter,
         clocDefsPath,
-        after: new Date(after),
-        before: new Date(before),
+        after,
+        before,
         outFilePrefix,
     };
     const repoName = path.parse(repoFolderPath).name;
     const _commmitStreamFiltered = _commitStream.pipe(
         filter((commit: CommitWithFileNumstats) => {
-            const _after = new Date(after);
-            const _before = new Date(before);
             const commitDate = new Date(commit.committerDate);
-            const isAfter = after ? commitDate > _after : true;
-            const isBefore = before ? commitDate < _before : true;
+            const isAfter = after ? commitDate > after : true;
+            const isBefore = before ? commitDate < before : true;
             return isAfter && isBefore;
         }),
     );
@@ -291,8 +286,8 @@ export function _runReportsFromStreams(
         }),
         concatMap((reports) => {
             return writeSummaryWorkbook(reports, outDir, repoName).pipe(
-                map(() => {
-                    return reports;
+                map((summaryReportPath) => {
+                    return { reports, summaryReportPath };
                 }),
             );
         }),
@@ -307,9 +302,10 @@ function writeSummaryWorkbook(reports: Report[], outDir: string, repoName: strin
     });
     return forkJoin(addSheetsForReports).pipe(
         map(() => {
-            const wbName = writeWorkbook(workbook, outDir, `${repoName}-summary-${new Date().toISOString()}`);
-            console.log(`====>>>> Summary report excel written to ${wbName}`);
-            return wbName;
+            const wbName = `${repoName}-summary-${new Date().toISOString()}`
+            const wbPathName = writeWorkbook(workbook, outDir, `${wbName}`);
+            console.log(`====>>>> Summary report excel written to ${wbPathName}`);
+            return wbPathName;
         }),
     );
 }

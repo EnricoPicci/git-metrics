@@ -95,9 +95,6 @@ export function flattenMonthlyClocDiffStatsDict(stats: RepoMonthlyClocDiffStats)
         return clocDiffStatToCsvWithBase(
             clocDiffStat,
             base,
-            repoPath,
-            clocDiffStat.leastRecentCommitSha!,
-            clocDiffStat.mostRecentCommitSha!,
         );
     });
 

@@ -8,10 +8,8 @@ export function clocDiffStatToCsvWithBase(
         removed: ClocDiffLanguageStats;
     },
     base: any,
-    repoPath: string,
-    leastRecentCommit: string,
-    mostRecentCommit: string,
 ) {
+    const { repoPath, leastRecentCommit, mostRecentCommit } = base;
     let sameFlat: clocDiffRec[] = [];
     if (!clocDiffStat) {
         console.warn('!!!!!!!!! No SAME stats for ${repoPath}');

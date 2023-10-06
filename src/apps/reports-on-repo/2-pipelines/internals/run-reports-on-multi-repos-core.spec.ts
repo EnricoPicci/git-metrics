@@ -20,8 +20,8 @@ describe(`runAllReportsOnMultiRepos`, () => {
         const repoFolderPath = process.cwd();
         const repoFolderPaths = [repoFolderPath, repoFolderPath];
         const filter = ['*.ts'];
-        const after = '2021-10-01';
-        const before = new Date().toISOString().split('T')[0];
+        const after = new Date('2021-10-01');
+        const before = new Date();
         const outDir = `${process.cwd()}/temp`;
         const outFile = '';
         const clocDefsPath = '';
@@ -91,32 +91,37 @@ describe(`runAllReportsOnMultiRepos`, () => {
     }).timeout(600000);
 
     const checkOnReports = (
-        _data: any,
+        _reportsInfoTuple: any,
     ) => {
-        const data = _data as {
-            reports: (
-                | FileChurnReport
-                | ModuleChurnReport
-                | AuthorChurnReport
-                | FileAuthorsReport
-                | FilesCouplingReport
-            )[];
+        const reportsInfoTuple = _reportsInfoTuple as {
+            reports: {
+                reports: (
+                    | FileChurnReport
+                    | ModuleChurnReport
+                    | AuthorChurnReport
+                    | FileAuthorsReport
+                    | FilesCouplingReport
+                )[], summaryReportPath: string
+            };
             repoFolderPath: string;
         }[]
-        expect(data.length).equal(2);
-        expect(data[0].reports.length).equal(3);
-        expect(data[1].reports.length).equal(3);
+        expect(reportsInfoTuple.length).equal(2);
+        const t = reportsInfoTuple[0]
+        console.log(t)
+        console.log(reportsInfoTuple[0].reports.reports)
+        expect(reportsInfoTuple[0].reports.reports.length).equal(3);
+        expect(reportsInfoTuple[1].reports.reports.length).equal(3);
         //
-        const fileChurnRep_0 = data[0].reports.find((r) => r.name === FILE_CHURN_REPORT_NAME) as FileChurnReport;
-        const moduleChurnRep_0 = data[0].reports.find((r) => r.name === MODULE_CHURN_REPORT_NAME) as ModuleChurnReport;
+        const fileChurnRep_0 = reportsInfoTuple[0].reports.reports.find((r) => r.name === FILE_CHURN_REPORT_NAME) as FileChurnReport;
+        const moduleChurnRep_0 = reportsInfoTuple[0].reports.reports.find((r) => r.name === MODULE_CHURN_REPORT_NAME) as ModuleChurnReport;
         expect(fileChurnRep_0.totChurn.val).equal(moduleChurnRep_0.totChurn.val);
         //
-        const fileChurnRep_1 = data[1].reports.find((r) => r.name === FILE_CHURN_REPORT_NAME) as FileChurnReport;
-        const moduleChurnRep_1 = data[1].reports.find((r) => r.name === MODULE_CHURN_REPORT_NAME) as ModuleChurnReport;
+        const fileChurnRep_1 = reportsInfoTuple[1].reports.reports.find((r) => r.name === FILE_CHURN_REPORT_NAME) as FileChurnReport;
+        const moduleChurnRep_1 = reportsInfoTuple[1].reports.reports.find((r) => r.name === MODULE_CHURN_REPORT_NAME) as ModuleChurnReport;
         expect(fileChurnRep_1.totChurn.val).equal(moduleChurnRep_1.totChurn.val);
         //
-        expect(data[0].repoFolderPath).equal(process.cwd());
-        expect(data[1].repoFolderPath).equal(process.cwd());
+        expect(reportsInfoTuple[0].repoFolderPath).equal(process.cwd());
+        expect(reportsInfoTuple[1].repoFolderPath).equal(process.cwd());
     };
 });
 

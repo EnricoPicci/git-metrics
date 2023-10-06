@@ -7,7 +7,7 @@ const DEFAULT_OUT_DIR = './';
 function launchReportsSingleThread() {
     const { _options, _reports, _repoFolderPath, _depthInFilesCoupling } = readParams();
     (0, run_reports_on_repo_core_1.runReportsSingleThread)(_reports, _repoFolderPath, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _options.concurrentReadOfCommits, _options.noRenames, !_options.countClocZero, _depthInFilesCoupling).subscribe({
-        next: (reports) => {
+        next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');
                 report.considerations.forEach((l) => {
@@ -25,7 +25,7 @@ exports.launchReportsSingleThread = launchReportsSingleThread;
 function launchReportsParallelReads() {
     const { _options, _reports, _repoFolderPath, _depthInFilesCoupling } = readParams();
     (0, run_reports_on_repo_core_1.runReportsParallelReads)(_reports, _repoFolderPath, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _options.concurrentReadOfCommits, _options.noRenames, !_options.countClocZero, _depthInFilesCoupling).subscribe({
-        next: (reports) => {
+        next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');
                 report.considerations.forEach((l) => {

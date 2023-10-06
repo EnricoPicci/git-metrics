@@ -30,7 +30,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const _repoFolderPath = _options.repoFolderPath ? _options.repoFolderPath : process.cwd();
     const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
     (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(_reports, _repoFolderPath, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, !_options.countClocZero, _depthInFilesCoupling, _options.concurrentReadOfCommits, _options.noRenames).subscribe({
-        next: (reports) => {
+        next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');
                 report.considerations.forEach((l) => {

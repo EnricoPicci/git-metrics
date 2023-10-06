@@ -78,7 +78,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         _options.concurrentReadOfCommits,
         _options.noRenames,
     ).subscribe({
-        next: (reports) => {
+        next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');
                 report.considerations.forEach((l) => {

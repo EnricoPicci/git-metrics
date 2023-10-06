@@ -66,7 +66,7 @@ function flattenMonthlyClocDiffStatsDict(stats) {
             lastCommitInMonth: clocDiffStat.mostRecentCommitSha,
             previousMonthCommit: clocDiffStat.leastRecentCommitSha,
         };
-        return (0, cloc_diff_stat_csv_1.clocDiffStatToCsvWithBase)(clocDiffStat, base, repoPath, clocDiffStat.leastRecentCommitSha, clocDiffStat.mostRecentCommitSha);
+        return (0, cloc_diff_stat_csv_1.clocDiffStatToCsvWithBase)(clocDiffStat, base);
     });
     return clocDiffTypeStatsListFlat.flat();
 }

@@ -20,7 +20,7 @@ export function launchReportsSingleThread() {
         !_options.countClocZero,
         _depthInFilesCoupling,
     ).subscribe({
-        next: (reports) => {
+        next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');
                 report.considerations.forEach((l) => {
@@ -52,7 +52,7 @@ export function launchReportsParallelReads() {
         !_options.countClocZero,
         _depthInFilesCoupling,
     ).subscribe({
-        next: (reports) => {
+        next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');
                 report.considerations.forEach((l) => {
@@ -74,9 +74,7 @@ function readParams() {
         .description('A command to read a git repo and then run all the reports')
         .option(
             '--reports <string...>',
-            `reports to be run (the default is all reports: ${allReports.join(
-                ' ',
-            )}) - report names have to be specified with single
+            `reports to be run (the default is all reports: ${allReports.join(' ')}) - report names have to be specified with single
 quotes and have to be separated by spaces like this --reports 'FileChurnReport' 'ModuleChurnReport'`,
         )
         .option(

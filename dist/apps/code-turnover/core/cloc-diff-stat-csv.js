@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.clocDiffStatToCsvWithBase = void 0;
-function clocDiffStatToCsvWithBase(clocDiffStat, base, repoPath, leastRecentCommit, mostRecentCommit) {
+function clocDiffStatToCsvWithBase(clocDiffStat, base) {
+    const { repoPath, leastRecentCommit, mostRecentCommit } = base;
     let sameFlat = [];
     if (!clocDiffStat) {
         console.warn('!!!!!!!!! No SAME stats for ${repoPath}');

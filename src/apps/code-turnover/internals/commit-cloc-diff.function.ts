@@ -1,10 +1,10 @@
 import { concatMap, catchError, of, map, from, mergeMap, reduce } from 'rxjs';
 
 import { runClocDiff } from '../../../cloc-functions/cloc-diff.functions';
+import { noDiffsClocDiffStats, ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
 import { readOneCommitCompact$, newEmptyCommitCompact } from '../../../git-functions/commit.functions';
 import { CommitCompact } from '../../../git-functions/commit.model';
 import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl } from '../../../git-functions/repo.functions';
-import { noDiffsClocDiffStats, ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
 import { CONFIG } from '../../../config';
 
 import { yearMonthFromDate } from './commits-by-month.functions';

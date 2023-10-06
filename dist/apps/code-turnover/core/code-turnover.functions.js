@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeClocDiffs = exports.calculateClocDiffs = exports.calculateCodeTurnover = void 0;
+exports.flattenClocDiffStat = exports.writeClocDiffJson = exports.statsToCsvRecs = exports.writeClocDiffsCsv = exports.writeClocDiffsJson = exports.writeClocDiffs = exports.calculateClocDiffs = exports.calculateCodeTurnover = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -85,13 +85,35 @@ exports.calculateClocDiffs = calculateClocDiffs;
 function writeClocDiffs(outdir, folderName) {
     return (0, rxjs_1.pipe)((0, rxjs_1.toArray)(), (0, rxjs_1.concatMap)((stats) => {
         const outFile = path_1.default.join(outdir, `${folderName}-cloc-diff.json`);
-        return writeClocDiffJson(stats, outFile).pipe((0, rxjs_1.map)(() => stats));
+        return (0, exports.writeClocDiffJson)(stats, outFile).pipe((0, rxjs_1.map)(() => stats));
     }), (0, rxjs_1.concatMap)((stats) => {
         const outFile = path_1.default.join(outdir, `${folderName}-cloc-diff.csv`);
         return writeClocCsv(stats, outFile).pipe((0, rxjs_1.map)(() => stats));
     }));
 }
 exports.writeClocDiffs = writeClocDiffs;
+function writeClocDiffsJson(outdir, folderName) {
+    return (0, rxjs_1.pipe)((0, rxjs_1.concatMap)((stats) => {
+        const outFile = path_1.default.join(outdir, `${folderName}-cloc-diff.json`);
+        return (0, exports.writeClocDiffJson)(stats, outFile).pipe((0, rxjs_1.map)(() => stats));
+    }));
+}
+exports.writeClocDiffsJson = writeClocDiffsJson;
+function writeClocDiffsCsv(outdir, folderName) {
+    return (0, rxjs_1.pipe)((0, rxjs_1.concatMap)((stats) => {
+        const outFile = path_1.default.join(outdir, `${folderName}-cloc-diff.csv`);
+        return writeClocCsv(stats, outFile).pipe((0, rxjs_1.map)(() => stats));
+    }));
+}
+exports.writeClocDiffsCsv = writeClocDiffsCsv;
+function statsToCsvRecs(reposStats) {
+    const csvRecs = reposStats
+        .filter((stat) => !stat.clocDiff.error)
+        .map((stat) => flattenClocDiffStat(stat))
+        .flat();
+    return csvRecs;
+}
+exports.statsToCsvRecs = statsToCsvRecs;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
@@ -101,37 +123,26 @@ const writeClocDiffJson = (stats, outFile) => {
         next: () => console.log(`====>>>> Cloc diff stats JSON written in file: ${outFile}`),
     }), (0, rxjs_1.map)(() => stats));
 };
+exports.writeClocDiffJson = writeClocDiffJson;
 const writeClocCsv = (stats, outFile) => {
-    return (0, observable_fs_1.writeFileObs)(outFile, statsToCsv(stats)).pipe((0, rxjs_1.tap)({
+    const csvRecs = statsToCsvRecs(stats);
+    return (0, observable_fs_1.writeFileObs)(outFile, (0, to_csv_1.toCsv)(csvRecs)).pipe((0, rxjs_1.tap)({
         next: () => console.log(`====>>>> Cloc diff stats csv written in file: ${outFile}`),
     }), (0, rxjs_1.map)(() => stats));
 };
-function statsToCsv(reposStats) {
-    const csvRecs = reposStats
-        .filter((stat) => !stat.clocDiff.error)
-        .map((stat) => flattenClocDiffStat(stat))
-        .flat();
-    return (0, to_csv_1.toCsv)(csvRecs);
-}
 function flattenClocDiffStat(stat) {
-    const remoteOriginUrl = stat.remoteOriginUrl;
-    const repoPath = stat.repoPath;
-    const yearMonth = stat.yearMonth;
     const clocDiffStat = stat.clocDiff;
+    let base = stat;
+    delete base.clocDiff;
+    const remoteOriginUrl = stat.remoteOriginUrl;
     const remoteOriginUrlWithuotFinalDotGit = remoteOriginUrl.endsWith('.git')
         ? remoteOriginUrl.slice(0, -4)
         : remoteOriginUrl;
     const mostRecentCommitUrl = `${remoteOriginUrlWithuotFinalDotGit}/-/commit/${clocDiffStat.mostRecentCommitSha}`;
-    const base = {
-        remoteOriginUrl,
-        repoPath,
-        yearMonth,
-        leastRecentCommitDate: stat.leastRecentCommitDate,
-        mostRecentCommitDate: stat.mostRecentCommitDate,
-        leastRecentCommit: clocDiffStat.leastRecentCommitSha,
-        mostRecentCommit: clocDiffStat.mostRecentCommitSha,
-        mostRecentCommitUrl,
-    };
-    return (0, cloc_diff_stat_csv_1.clocDiffStatToCsvWithBase)(clocDiffStat.diffs, base, repoPath, clocDiffStat.leastRecentCommitSha, clocDiffStat.mostRecentCommitSha);
+    const leastRecentCommitSha = clocDiffStat.leastRecentCommitSha;
+    const mostRecentCommitSha = clocDiffStat.mostRecentCommitSha;
+    base = Object.assign(Object.assign({}, base), { remoteOriginUrl, mostRecentCommitUrl, leastRecentCommitSha, mostRecentCommitSha });
+    return (0, cloc_diff_stat_csv_1.clocDiffStatToCsvWithBase)(clocDiffStat.diffs, base);
 }
+exports.flattenClocDiffStat = flattenClocDiffStat;
 //# sourceMappingURL=code-turnover.functions.js.map

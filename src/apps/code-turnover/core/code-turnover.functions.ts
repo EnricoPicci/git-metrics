@@ -116,13 +116,41 @@ export function writeClocDiffs(outdir: string, folderName: string) {
     )
 }
 
+export function writeClocDiffsJson(outdir: string, folderName: string) {
+    return pipe(
+        concatMap((stats: CommitDiffStats[]) => {
+            const outFile = path.join(outdir, `${folderName}-cloc-diff.json`);
+            return writeClocDiffJson(stats, outFile).pipe(map(() => stats));
+        }),
+    )
+}
+
+export function writeClocDiffsCsv(outdir: string, folderName: string) {
+    return pipe(
+        concatMap((stats: CommitDiffStats[]) => {
+            const outFile = path.join(outdir, `${folderName}-cloc-diff.csv`);
+            return writeClocCsv(stats, outFile).pipe(map(() => stats));
+        }),
+    )
+}
+
+export function statsToCsvRecs(
+    reposStats: CommitDiffStats[],
+) {
+    const csvRecs = reposStats
+        .filter((stat) => !stat.clocDiff.error)
+        .map((stat) => flattenClocDiffStat(stat))
+        .flat();
+    return csvRecs;
+}
+
 
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
 
-const writeClocDiffJson = (
+export const writeClocDiffJson = (
     stats: {
         yearMonth: string;
         clocDiff: ClocDiffStats;
@@ -141,7 +169,8 @@ const writeClocCsv = (
     stats: CommitDiffStats[],
     outFile: string,
 ) => {
-    return writeFileObs(outFile, statsToCsv(stats)).pipe(
+    const csvRecs = statsToCsvRecs(stats)
+    return writeFileObs(outFile, toCsv(csvRecs)).pipe(
         tap({
             next: () => console.log(`====>>>> Cloc diff stats csv written in file: ${outFile}`),
         }),
@@ -149,40 +178,23 @@ const writeClocCsv = (
     );
 };
 
-function statsToCsv(
-    reposStats: CommitDiffStats[],
-) {
-    const csvRecs = reposStats
-        .filter((stat) => !stat.clocDiff.error)
-        .map((stat) => flattenClocDiffStat(stat))
-        .flat();
-    return toCsv(csvRecs);
-}
-
-function flattenClocDiffStat(stat: CommitDiffStats) {
-    const remoteOriginUrl = stat.remoteOriginUrl;
-    const repoPath = stat.repoPath;
-    const yearMonth = stat.yearMonth;
+export function flattenClocDiffStat(stat: CommitDiffStats) {
     const clocDiffStat = stat.clocDiff;
+    let base: any = stat
+    delete base.clocDiff
+
+    const remoteOriginUrl = stat.remoteOriginUrl;
     const remoteOriginUrlWithuotFinalDotGit = remoteOriginUrl.endsWith('.git')
         ? remoteOriginUrl.slice(0, -4)
         : remoteOriginUrl;
     const mostRecentCommitUrl = `${remoteOriginUrlWithuotFinalDotGit}/-/commit/${clocDiffStat.mostRecentCommitSha}`;
-    const base = {
-        remoteOriginUrl,
-        repoPath,
-        yearMonth,
-        leastRecentCommitDate: stat.leastRecentCommitDate,
-        mostRecentCommitDate: stat.mostRecentCommitDate,
-        leastRecentCommit: clocDiffStat.leastRecentCommitSha,
-        mostRecentCommit: clocDiffStat.mostRecentCommitSha,
-        mostRecentCommitUrl,
-    };
+    const leastRecentCommitSha = clocDiffStat.leastRecentCommitSha;
+    const mostRecentCommitSha = clocDiffStat.mostRecentCommitSha;
+
+    base = { ...base, remoteOriginUrl, mostRecentCommitUrl, leastRecentCommitSha, mostRecentCommitSha }
+
     return clocDiffStatToCsvWithBase(
         clocDiffStat.diffs,
-        base,
-        repoPath,
-        clocDiffStat.leastRecentCommitSha!,
-        clocDiffStat.mostRecentCommitSha!,
+        base
     );
 }

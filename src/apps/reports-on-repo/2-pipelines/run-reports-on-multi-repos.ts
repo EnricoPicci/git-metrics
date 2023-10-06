@@ -91,7 +91,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
                         '\n',
                     );
                     console.log(`REPORT FOR REPOSITORY  ${repoFolderPath}`, '\n');
-                    reports.forEach((report) => {
+                    reports.reports.forEach((report) => {
                         console.log('\n', '\n');
                         report.considerations.forEach((l) => {
                             console.log(l);

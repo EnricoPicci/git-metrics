@@ -10,16 +10,16 @@ describe(`runReportsSingleThread`, () => {
     it(`runs all the reports on this project`, (done) => {
         const repoFolderPath = process.cwd();
         const filter = ['*.ts'];
-        const after = '2017-01-01';
-        const before = new Date().toISOString();
+        const after = new Date('2017-01-01');
+        const before = new Date();
         const outDir = `${process.cwd()}/temp`;
         const outFile = '';
         const clocDefsPath = '';
         const ignoreClocZero = false;
         const depthInFilesCoupling = 10;
         (0, run_reports_on_repo_core_1.runReportsSingleThread)([], repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, false, false, ignoreClocZero, depthInFilesCoupling)
-            .pipe((0, rxjs_1.tap)((_reports) => {
-            (0, chai_1.expect)(_reports.length).equal(run_reports_on_repo_core_1.allReports.length);
+            .pipe((0, rxjs_1.tap)(({ reports }) => {
+            (0, chai_1.expect)(reports.length).equal(run_reports_on_repo_core_1.allReports.length);
         }))
             .subscribe({
             error: (err) => {
@@ -34,8 +34,8 @@ describe(`runReportsSingleThread`, () => {
         const reports = [file_churn_report_1.FileChurnReport.name, module_churn_report_1.ModuleChurnReport.name];
         const repoFolderPath = process.cwd();
         const filter = ['*.ts'];
-        const after = '2017-01-01';
-        const before = new Date().toISOString();
+        const after = new Date('2017-01-01');
+        const before = new Date();
         const outDir = `${process.cwd()}/temp`;
         const outFile = '';
         const clocDefsPath = '';
@@ -50,16 +50,16 @@ describe(`runReportsSingleThread`, () => {
         let readsInSingleStream = 0;
         let readsInParallelStream = 0;
         runSingleStream
-            .pipe((0, rxjs_1.tap)((_reports) => {
-            (0, chai_1.expect)(_reports.length).equal(reports.length);
+            .pipe((0, rxjs_1.tap)(({ reports }) => {
+            (0, chai_1.expect)(reports.length).equal(reports.length);
             readsInSingleStream = commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines;
             commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
-        }), (0, rxjs_1.concatMap)(() => runParallelStream), (0, rxjs_1.tap)((_reports) => {
-            const fileChurnRep = _reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
-            const moduleChurnRep = _reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
+        }), (0, rxjs_1.concatMap)(() => runParallelStream), (0, rxjs_1.tap)(({ reports }) => {
+            const fileChurnRep = reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
+            const moduleChurnRep = reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
             (0, chai_1.expect)(fileChurnRep.totChurn.val).equal(moduleChurnRep.totChurn.val);
-        }), (0, rxjs_1.tap)((_reports) => {
-            (0, chai_1.expect)(_reports.length).equal(reports.length);
+        }), (0, rxjs_1.tap)(({ reports }) => {
+            (0, chai_1.expect)(reports.length).equal(reports.length);
             readsInParallelStream = commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines;
         }), (0, rxjs_1.tap)(() => {
             // in the single stream mode we read once the file containing the commit log
@@ -78,16 +78,16 @@ describe(`runReportsParallelReads`, () => {
     it(`runs all the reports on this project - the initial read operations are concurrent`, (done) => {
         const repoFolderPath = process.cwd();
         const filter = ['*.ts'];
-        const after = '2017-01-01';
-        const before = new Date().toISOString();
+        const after = new Date('2017-01-01');
+        const before = new Date();
         const outDir = `${process.cwd()}/temp`;
         const outFile = '';
         const clocDefsPath = '';
         const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
         (0, run_reports_on_repo_core_1.runReportsParallelReads)([], repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, false, false, ignoreClocZero, depthInFilesCoupling)
-            .pipe((0, rxjs_1.tap)((_reports) => {
-            (0, chai_1.expect)(_reports.length).equal(run_reports_on_repo_core_1.allReports.length);
+            .pipe((0, rxjs_1.tap)(({ reports }) => {
+            (0, chai_1.expect)(reports.length).equal(run_reports_on_repo_core_1.allReports.length);
         }))
             .subscribe({
             error: (err) => {
@@ -102,8 +102,8 @@ describe(`runReportsParallelReads`, () => {
         const reports = [file_churn_report_1.FileChurnReport.name, module_churn_report_1.ModuleChurnReport.name];
         const repoFolderPath = process.cwd();
         const filter = ['*.ts'];
-        const after = '2017-01-01';
-        const before = new Date().toISOString();
+        const after = new Date('2017-01-01');
+        const before = new Date();
         const outDir = `${process.cwd()}/temp`;
         const outFile = '';
         const clocDefsPath = '';
@@ -116,16 +116,16 @@ describe(`runReportsParallelReads`, () => {
         let readsInSingleStream = 0;
         let readsInParallelStream = 0;
         runSingleStream
-            .pipe((0, rxjs_1.tap)((_reports) => {
-            (0, chai_1.expect)(_reports.length).equal(reports.length);
+            .pipe((0, rxjs_1.tap)(({ reports }) => {
+            (0, chai_1.expect)(reports.length).equal(reports.length);
             readsInSingleStream = commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines;
             commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
-        }), (0, rxjs_1.concatMap)(() => runParallelStream), (0, rxjs_1.tap)((_reports) => {
-            const fileChurnRep = _reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
-            const moduleChurnRep = _reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
+        }), (0, rxjs_1.concatMap)(() => runParallelStream), (0, rxjs_1.tap)(({ reports }) => {
+            const fileChurnRep = reports.find((r) => r.name === file_churn_report_1.FILE_CHURN_REPORT_NAME);
+            const moduleChurnRep = reports.find((r) => r.name === module_churn_report_1.MODULE_CHURN_REPORT_NAME);
             (0, chai_1.expect)(fileChurnRep.totChurn.val).equal(moduleChurnRep.totChurn.val);
-        }), (0, rxjs_1.tap)((_reports) => {
-            (0, chai_1.expect)(_reports.length).equal(reports.length);
+        }), (0, rxjs_1.tap)(({ reports }) => {
+            (0, chai_1.expect)(reports.length).equal(reports.length);
             readsInParallelStream = commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines;
         }), (0, rxjs_1.tap)(() => {
             // in the single stream mode we read once the file containing the commit log
@@ -144,16 +144,16 @@ describe(`runReportsOneStream`, () => {
     it(`runs all the reports on this project`, (done) => {
         const repoFolderPath = process.cwd();
         const filter = ['*.ts'];
-        const after = '2017-01-01';
-        const before = new Date().toISOString();
+        const after = new Date('2017-01-01');
+        const before = new Date();
         const outDir = `${process.cwd()}/temp`;
         const outFile = '';
         const clocDefsPath = '';
         const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
         (0, run_reports_on_repo_core_1.runReportsOneStream)([], repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, false, ignoreClocZero, depthInFilesCoupling)
-            .pipe((0, rxjs_1.tap)((_reports) => {
-            (0, chai_1.expect)(_reports.length).equal(run_reports_on_repo_core_1.allReports.length);
+            .pipe((0, rxjs_1.tap)(({ reports }) => {
+            (0, chai_1.expect)(reports.length).equal(run_reports_on_repo_core_1.allReports.length);
         }))
             .subscribe({
             error: (err) => {

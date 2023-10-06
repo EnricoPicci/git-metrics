@@ -1,9 +1,10 @@
 import { EMPTY, catchError, from, map, mergeMap } from 'rxjs';
 
-import { RepoCompactWithCommitsByMonths, ReposWithCommitsByMonths } from './repos-with-commits-by-month.model';
-import { newCommitsByMonth } from './commits-by-month.functions';
 import { CommitCompact } from '../../../git-functions/commit.model';
 import { reposInFolder, newRepoCompact } from '../../../git-functions/repo.functions';
+
+import { RepoCompactWithCommitsByMonths, ReposWithCommitsByMonths } from './repos-with-commits-by-month.model';
+import { newCommitsByMonth } from './commits-by-month.functions';
 
 // reposCompactWithCommitsByMonthsInFolderObs returns an Observable that notifies the list of
 // RepoCompactWithCommitsByMonths objects representing all the repos in a given folder
