@@ -21,6 +21,9 @@ describe('reportsAndCodeTurnover', () => {
         const concurrentReadOfCommits = false
         const noRenames = false
         const ignoreClocZero = false
+        const removeBlanks = false
+        const removeNFiles = false
+        const removeComment = false
 
         reportsAndCodeTurnover(
             folderPath,
@@ -36,6 +39,9 @@ describe('reportsAndCodeTurnover', () => {
             concurrentReadOfCommits,
             noRenames,
             ignoreClocZero,
+            removeBlanks,
+            removeNFiles,
+            removeComment
         ).pipe(
             tap({
                 next: data => {

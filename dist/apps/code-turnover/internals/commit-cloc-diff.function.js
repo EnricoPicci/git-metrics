@@ -10,11 +10,22 @@ const config_1 = require("../../../config");
 const commits_by_month_functions_1 = require("./commits-by-month.functions");
 // calculateClocGitDiffsChildParent is a function that receives a CommitCompact object and calculates the cloc diff
 // and returns an object with the yearMonth, the commit date and the cloc diff
-function calculateClocGitDiffsChildParent(commit, repoPath, languages) {
+function calculateClocGitDiffsChildParent(commit, repoPath, languages, removeBlanks, removeNFiles, removeComment) {
     const childCommitSha = commit.sha;
     const parentCommitSha = `${childCommitSha}^1`;
     console.log(`Starting diff for ${repoPath} -- Date: ${commit.date.toLocaleDateString()}`);
     return (0, cloc_diff_functions_1.runClocDiff)(childCommitSha, parentCommitSha, languages, repoPath).pipe((0, rxjs_1.concatMap)((clocDiff) => {
+        delete clocDiff.diffs.header;
+        Object.values(clocDiff.diffs).forEach((diff) => {
+            Object.values(diff).forEach((diffForLanguage) => {
+                if (removeBlanks)
+                    delete diffForLanguage.blank;
+                if (removeComment)
+                    delete diffForLanguage.comment;
+                if (removeNFiles)
+                    delete diffForLanguage.nFiles;
+            });
+        });
         // we read the parent of the child commit so that we can get the date of the parent commit
         return (0, commit_functions_1.readOneCommitCompact$)(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(() => {
             // in case of error we return an empty commit
@@ -54,7 +65,7 @@ function calculateMonthlyClocGitDiffs(repoMonthlyCommitPairs, languages) {
         const diffObs = commitPair
             ? // the first commit is the most recent one
                 (0, cloc_diff_functions_1.runClocDiff)(commitPair[0].sha, commitPair[1].sha, languages, repoPath)
-            : (0, rxjs_1.of)((0, cloc_diff_model_1.noDiffsClocDiffStats)(languages));
+            : (0, rxjs_1.of)((0, cloc_diff_model_1.newDiffsClocDiffStats)(languages));
         return diffObs.pipe((0, rxjs_1.map)((clocDiff) => {
             console.log(`Completed diff for ${yearMonth}-${repoPath}`);
             return { yearMonth, clocDiff };

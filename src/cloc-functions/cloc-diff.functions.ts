@@ -36,7 +36,6 @@ Command: ${cmd}`;
                 leastRecentCommitSha: leastRecentCommit,
                 diffs,
             };
-            delete (clocOutput as any).header;
             return clocOutput;
         }),
         catchError((error) => {

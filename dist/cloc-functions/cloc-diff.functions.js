@@ -31,7 +31,6 @@ Command: ${cmd}`;
             leastRecentCommitSha: leastRecentCommit,
             diffs,
         };
-        delete clocOutput.header;
         return clocOutput;
     }), (0, rxjs_1.catchError)((error) => {
         const err = `Error in buildClocDiffAllCommand for folder "${folderPath}"\nError: ${error}

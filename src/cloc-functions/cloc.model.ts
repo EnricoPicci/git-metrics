@@ -6,9 +6,9 @@ export interface ClocLanguageStats extends ClocStats {
 }
 
 export interface ClocStats {
-    nFiles: number;
-    blank: number;
-    comment: number;
+    nFiles?: number;  // optional because we may want to delete it to reduce the size of the final output
+    blank?: number;  // optional because we may want to delete it to reduce the size of the final output
+    comment?: number;  // optional because we may want to delete it to reduce the size of the final output
     code: number;
 }
 

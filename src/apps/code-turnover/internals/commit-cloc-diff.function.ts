@@ -1,7 +1,7 @@
 import { concatMap, catchError, of, map, from, mergeMap, reduce } from 'rxjs';
 
 import { runClocDiff } from '../../../cloc-functions/cloc-diff.functions';
-import { noDiffsClocDiffStats, ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
+import { newDiffsClocDiffStats, ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
 import { readOneCommitCompact$, newEmptyCommitCompact } from '../../../git-functions/commit.functions';
 import { CommitCompact } from '../../../git-functions/commit.model';
 import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl } from '../../../git-functions/repo.functions';
@@ -14,12 +14,27 @@ import { CommitDiffStats } from '../core/code-turnover.model';
 
 // calculateClocGitDiffsChildParent is a function that receives a CommitCompact object and calculates the cloc diff
 // and returns an object with the yearMonth, the commit date and the cloc diff
-export function calculateClocGitDiffsChildParent(commit: CommitCompact, repoPath: string, languages: string[]) {
+export function calculateClocGitDiffsChildParent(
+    commit: CommitCompact,
+    repoPath: string,
+    languages: string[],
+    removeBlanks: boolean,
+    removeNFiles: boolean,
+    removeComment: boolean,
+) {
     const childCommitSha = commit.sha;
     const parentCommitSha = `${childCommitSha}^1`;
     console.log(`Starting diff for ${repoPath} -- Date: ${commit.date.toLocaleDateString()}`);
     return runClocDiff(childCommitSha, parentCommitSha, languages, repoPath).pipe(
         concatMap((clocDiff) => {
+            delete (clocDiff.diffs as any).header;
+            Object.values(clocDiff.diffs).forEach((diff) => {
+                Object.values(diff).forEach((diffForLanguage) => {
+                    if (removeBlanks) delete diffForLanguage.blank;
+                    if (removeComment) delete diffForLanguage.comment;
+                    if (removeNFiles) delete diffForLanguage.nFiles;
+                })
+            })
             // we read the parent of the child commit so that we can get the date of the parent commit
             return readOneCommitCompact$(parentCommitSha, repoPath).pipe(
                 catchError(() => {
@@ -76,7 +91,7 @@ export function calculateMonthlyClocGitDiffs(
             const diffObs = commitPair
                 ? // the first commit is the most recent one
                 runClocDiff(commitPair[0].sha, commitPair[1].sha, languages, repoPath)
-                : of(noDiffsClocDiffStats(languages));
+                : of(newDiffsClocDiffStats(languages));
             return diffObs.pipe(
                 map((clocDiff) => {
                     console.log(`Completed diff for ${yearMonth}-${repoPath}`);

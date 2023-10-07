@@ -45,6 +45,9 @@ export function reportsAndCodeTurnover(
     concurrentReadOfCommits: boolean,
     noRenames: boolean,
     ignoreClocZero: boolean,
+    removeBlanks: boolean,
+    removeNFiles: boolean,
+    removeComment: boolean,
 ) {
     const folderName = path.basename(folderPath);
 
@@ -79,7 +82,7 @@ export function reportsAndCodeTurnover(
         }, 1),
         concatMap(({ repo, summaryReportPath }) => {
             return of(repo).pipe(
-                calculateClocDiffs(languages, concurrency),
+                calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment),
                 map((clocDiffStat) => {
                     return { ...clocDiffStat, summaryReportPath }
                 })

@@ -30,6 +30,9 @@ function clocOnRepos(folderPath, concurrency = config_1.CONFIG.CONCURRENCY) {
             if (!sumStats) {
                 console.log(`!!!!!!!!! No SUM stats found for repo ${repoPath}, i.e. no files to count for cloc`);
             }
+            // the total const has been initialized at the beginning of the function hence its properties are not undefined
+            // nFiles blank and comment may be undefined since they are optional in ClocLangageStats
+            // they are optional because we may want to delete them to reduce the size of the final output
             total.nFiles += sumStats ? sumStats.nFiles : 0;
             total.blank += sumStats ? sumStats.blank : 0;
             total.comment += sumStats ? sumStats.comment : 0;

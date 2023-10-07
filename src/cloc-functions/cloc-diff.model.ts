@@ -11,6 +11,17 @@ export type ClocDiffStats = {
     error?: any
 }
 
+export function newClocDiffStats(): ClocDiffStats {
+    return {
+        diffs: {
+            same: {},
+            modified: {},
+            added: {},
+            removed: {},
+        },
+    }
+}
+
 export function newClocDiffStatsZeroed(mostRecentCommitSha: string, leastRecentCommitSha: string, error?: any): ClocDiffStats {
     return {
         mostRecentCommitSha,
@@ -35,7 +46,8 @@ export interface ClocDiffLanguageStats {
     [language: string]: ClocStats;
 }
 
-export function noDiffsClocDiffStats(languages: string[]): ClocDiffStats {
+export function newDiffsClocDiffStats(languages: string[]): ClocDiffStats {
+    const clocDiffStats = newClocDiffStats()
     return languages.reduce((acc, lang) => {
         const clocDiffLanguageStats: ClocDiffLanguageStats = {}
         clocDiffLanguageStats[lang] = {
@@ -49,12 +61,5 @@ export function noDiffsClocDiffStats(languages: string[]): ClocDiffStats {
         acc.diffs.modified = { ...clocDiffLanguageStats }
         acc.diffs.same = { ...clocDiffLanguageStats }
         return acc
-    }, {
-        diffs: {
-            same: {},
-            modified: {},
-            added: {},
-            removed: {},
-        }
-    } as ClocDiffStats)
+    }, clocDiffStats)
 }

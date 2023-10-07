@@ -8,7 +8,6 @@ const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const to_csv_1 = require("../../../tools/csv/to-csv");
-const config_1 = require("../../../config");
 const repo_functions_1 = require("../../../git-functions/repo.functions");
 const commit_cloc_diff_function_1 = require("../internals/commit-cloc-diff.function");
 const cloc_diff_stat_csv_1 = require("./cloc-diff-stat-csv");
@@ -29,10 +28,10 @@ const cloc_diff_stat_csv_1 = require("./cloc-diff-stat-csv");
  * @param excludeRepoPaths An array of repository paths to exclude from the calculation.
  * @returns An Observable that emits the cloc diffs for each commit in each repository.
  */
-function calculateCodeTurnover(folderPath, outdir, languages, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = config_1.CONFIG.CONCURRENCY, excludeRepoPaths = []) {
+function calculateCodeTurnover(folderPath, outdir, languages, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComment) {
     const startTime = new Date().getTime();
     const folderName = path_1.default.basename(folderPath);
-    return (0, repo_functions_1.reposCompactInFolderObs)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(calculateClocDiffs(languages, concurrency), writeClocDiffs(outdir, folderName), (0, rxjs_1.tap)(() => {
+    return (0, repo_functions_1.reposCompactInFolderObs)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment), writeClocDiffs(outdir, folderName), (0, rxjs_1.tap)(() => {
         const endTime = new Date().getTime();
         console.log(`====>>>> Total time to calculate cloc diffs: ${(endTime - startTime) / 1000} seconds`);
     }));
@@ -46,7 +45,7 @@ exports.calculateCodeTurnover = calculateCodeTurnover;
  * @param concurrency The maximum number of concurrent child processes to run. Defaults to the value of `CONFIG.CONCURRENCY`.
  * @returns An rxJs operator that transforms a stream of RepoCompact in a stream of CommitDiffStats.
  */
-function calculateClocDiffs(languages, concurrency = config_1.CONFIG.CONCURRENCY) {
+function calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment) {
     let diffsCompleted = 0;
     let diffsRemaining = 0;
     let diffsErrored = 0;
@@ -67,7 +66,7 @@ function calculateClocDiffs(languages, concurrency = config_1.CONFIG.CONCURRENCY
         });
         return (0, rxjs_1.from)(commitsWithRepo);
     }), (0, rxjs_1.mergeMap)(({ commit, repoPath }) => {
-        return (0, commit_cloc_diff_function_1.calculateClocGitDiffsChildParent)(commit, repoPath, languages).pipe((0, rxjs_1.tap)((stat) => {
+        return (0, commit_cloc_diff_function_1.calculateClocGitDiffsChildParent)(commit, repoPath, languages, removeBlanks, removeNFiles, removeComment).pipe((0, rxjs_1.tap)((stat) => {
             if (stat.clocDiff.error) {
                 diffsErrored++;
             }

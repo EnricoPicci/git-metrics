@@ -4,7 +4,6 @@ import { mergeMap, from, toArray, concatMap, tap, map, pipe } from 'rxjs';
 import { writeFileObs } from 'observable-fs';
 
 import { toCsv } from '../../../tools/csv/to-csv';
-import { CONFIG } from '../../../config';
 import { reposCompactInFolderObs } from '../../../git-functions/repo.functions';
 import { RepoCompact } from '../../../git-functions/repo.model';
 import { ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
@@ -37,14 +36,17 @@ export function calculateCodeTurnover(
     languages: string[],
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
-    concurrency = CONFIG.CONCURRENCY,
-    excludeRepoPaths: string[] = [],
+    concurrency: number,
+    excludeRepoPaths: string[],
+    removeBlanks: boolean,
+    removeNFiles: boolean,
+    removeComment: boolean,
 ) {
     const startTime = new Date().getTime();
     const folderName = path.basename(folderPath);
 
     return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
-        calculateClocDiffs(languages, concurrency),
+        calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment),
         writeClocDiffs(outdir, folderName),
         tap(() => {
             const endTime = new Date().getTime();
@@ -61,7 +63,13 @@ export function calculateCodeTurnover(
  * @param concurrency The maximum number of concurrent child processes to run. Defaults to the value of `CONFIG.CONCURRENCY`.
  * @returns An rxJs operator that transforms a stream of RepoCompact in a stream of CommitDiffStats.
  */
-export function calculateClocDiffs(languages: string[], concurrency = CONFIG.CONCURRENCY) {
+export function calculateClocDiffs(
+    languages: string[],
+    concurrency: number,
+    removeBlanks: boolean,
+    removeNFiles: boolean,
+    removeComment: boolean,
+) {
     let diffsCompleted = 0;
     let diffsRemaining = 0;
     let diffsErrored = 0;
@@ -85,7 +93,7 @@ export function calculateClocDiffs(languages: string[], concurrency = CONFIG.CON
             return from(commitsWithRepo);
         }),
         mergeMap(({ commit, repoPath }) => {
-            return calculateClocGitDiffsChildParent(commit, repoPath, languages).pipe(
+            return calculateClocGitDiffsChildParent(commit, repoPath, languages, removeBlanks, removeNFiles, removeComment).pipe(
                 tap((stat) => {
                     if (stat.clocDiff.error) {
                         diffsErrored++;

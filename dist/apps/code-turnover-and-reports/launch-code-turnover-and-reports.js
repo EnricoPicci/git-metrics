@@ -7,9 +7,9 @@ const config_1 = require("../../config");
 const run_reports_on_repo_core_1 = require("../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core");
 function launchRunReportsAndCodeTurnover() {
     console.log('====>>>> Launching run-reports and code-turnover calculation on Repos');
-    const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero } = readParams();
+    const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments } = readParams();
     (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, '', // we ignore the possibility to use a custom cloc definition file
-    concurrentReadOfCommits, noRenames, !countClocZero).subscribe();
+    concurrentReadOfCommits, noRenames, !countClocZero, removeBlanks, removeNFiles, removeComments).subscribe();
 }
 exports.launchRunReportsAndCodeTurnover = launchRunReportsAndCodeTurnover;
 function readParams() {
@@ -33,7 +33,10 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         .option('-c, --concurrentReadOfCommits', `if this opion is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption`)
         .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`)
         .option('--countClocZero', `if this opion is specified, then also the files that have 0 lines of code are counted (this can 
-            be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`);
+            be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`)
+        .option('--removeBlanks', `if this opion is specified, then the statistics about blank lines are removed from the cloc diff output`)
+        .option('--removeNFiles', `if this opion is specified, then the statistics about number of files changed are removed from the cloc diff output`)
+        .option('--removeComments', `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`);
     const _options = program.parse(process.argv).opts();
     const fromDate = _options.from ? new Date(_options.from) : new Date(0);
     const toDate = _options.to ? new Date(_options.to) : new Date(Date.now());
@@ -46,9 +49,12 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const concurrentReadOfCommits = _options.concurrentReadOfCommits;
     const noRenames = _options.noRenames;
     const countClocZero = _options.countClocZero;
+    const removeBlanks = _options.removeBlanks;
+    const removeNFiles = _options.removeNFiles;
+    const removeComments = _options.removeComments;
     return {
         folderPath: _options.folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
-        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero
+        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments
     };
 }
 //# sourceMappingURL=launch-code-turnover-and-reports.js.map

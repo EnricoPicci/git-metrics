@@ -1,6 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.noDiffsClocDiffStats = exports.newClocDiffStatsWithError = exports.newClocDiffStatsZeroed = void 0;
+exports.newDiffsClocDiffStats = exports.newClocDiffStatsWithError = exports.newClocDiffStatsZeroed = exports.newClocDiffStats = void 0;
+function newClocDiffStats() {
+    return {
+        diffs: {
+            same: {},
+            modified: {},
+            added: {},
+            removed: {},
+        },
+    };
+}
+exports.newClocDiffStats = newClocDiffStats;
 function newClocDiffStatsZeroed(mostRecentCommitSha, leastRecentCommitSha, error) {
     return {
         mostRecentCommitSha,
@@ -19,7 +30,8 @@ function newClocDiffStatsWithError(mostRecentCommitSha, leastRecentCommitSha, er
     return newClocDiffStatsZeroed(mostRecentCommitSha, leastRecentCommitSha, error);
 }
 exports.newClocDiffStatsWithError = newClocDiffStatsWithError;
-function noDiffsClocDiffStats(languages) {
+function newDiffsClocDiffStats(languages) {
+    const clocDiffStats = newClocDiffStats();
     return languages.reduce((acc, lang) => {
         const clocDiffLanguageStats = {};
         clocDiffLanguageStats[lang] = {
@@ -33,14 +45,7 @@ function noDiffsClocDiffStats(languages) {
         acc.diffs.modified = Object.assign({}, clocDiffLanguageStats);
         acc.diffs.same = Object.assign({}, clocDiffLanguageStats);
         return acc;
-    }, {
-        diffs: {
-            same: {},
-            modified: {},
-            added: {},
-            removed: {},
-        }
-    });
+    }, clocDiffStats);
 }
-exports.noDiffsClocDiffStats = noDiffsClocDiffStats;
+exports.newDiffsClocDiffStats = newDiffsClocDiffStats;
 //# sourceMappingURL=cloc-diff.model.js.map

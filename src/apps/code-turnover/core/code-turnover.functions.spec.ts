@@ -11,8 +11,9 @@ describe('calculateCodeTurnover', () => {
         const fromDate = new Date('2023-09-23');
         const toDate = new Date('2023-09-24');
         const concurrency = 1;
+        const excludeRepoPaths = ['node_modules'];
 
-        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency).subscribe({
+        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths, false, false, false).subscribe({
             next: commitDiffStats => {
                 expect(commitDiffStats.length).greaterThan(0);
             },
@@ -32,8 +33,9 @@ describe('calculateCodeTurnover', () => {
         const fromDate = new Date('2023-09-23');
         const toDate = new Date('2023-09-23');
         const concurrency = 1;
+        const excludeRepoPaths = ['node_modules'];
 
-        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency).subscribe({
+        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths, false, false, false).subscribe({
             next: commitDiffStats => {
                 expect(commitDiffStats.length).equal(0);
             },

@@ -8,9 +8,21 @@ import { calculateCodeTurnover } from './core/code-turnover.functions';
 export function launchCalculateCodeTurnover() {
     console.log('====>>>> Launching code-turnover calculation on Repos');
 
-    const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths } = readParams();
+    const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths,
+        removeBlanks, removeNFiles, removeComments } = readParams();
 
-    calculateCodeTurnover(folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths).subscribe();
+    calculateCodeTurnover(
+        folderPath,
+        outdir,
+        languages,
+        from,
+        to,
+        concurrency,
+        excludeRepoPaths,
+        removeBlanks,
+        removeNFiles,
+        removeComments
+    ).subscribe();
 }
 
 export function launchMonthlyClocDiffRepos() {
@@ -47,6 +59,18 @@ function readParams() {
             `a space separated list of folder names to be excluded from the analysis (e.g. --excludeRepoPaths "dbm" "dbobjects") -
              default is the empty list which means no repos are excluded
              wildcard * can be used to exclude all repos that contain a certain string (e.g. --excludeRepoPaths "*dbm" will exclude all repos that contain the string "dbm")`,
+        )
+        .option(
+            '--removeBlanks',
+            `if this opion is specified, then the statistics about blank lines are removed from the cloc diff output`,
+        )
+        .option(
+            '--removeNFiles',
+            `if this opion is specified, then the statistics about number of files changed are removed from the cloc diff output`,
+        )
+        .option(
+            '--removeComments',
+            `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`,
         );
 
     const _options = program.parse(process.argv).opts();
@@ -56,6 +80,12 @@ function readParams() {
     const to = _options.to ? new Date(_options.to) : new Date(Date.now());
     const concurrency = _options.concurrency ? parseInt(_options.concurrency) : CONFIG.CONCURRENCY;
     const excludeRepoPaths = _options.excludeRepoPaths || [];
+    const removeBlanks = _options.removeBlanks
+    const removeNFiles = _options.removeNFiles
+    const removeComments = _options.removeComments
 
-    return { folderPath: _options.folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths };
+    return {
+        folderPath: _options.folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths,
+        removeBlanks, removeNFiles, removeComments
+    };
 }

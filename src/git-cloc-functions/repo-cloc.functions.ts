@@ -36,9 +36,12 @@ export function clocOnRepos(folderPath: string, concurrency = CONFIG.CONCURRENCY
                     if (!sumStats) {
                         console.log(`!!!!!!!!! No SUM stats found for repo ${repoPath}, i.e. no files to count for cloc`)
                     }
-                    total.nFiles += sumStats ? sumStats.nFiles : 0
-                    total.blank += sumStats ? sumStats.blank : 0
-                    total.comment += sumStats ? sumStats.comment : 0
+                    // the total const has been initialized at the beginning of the function hence its properties are not undefined
+                    // nFiles blank and comment may be undefined since they are optional in ClocLangageStats
+                    // they are optional because we may want to delete them to reduce the size of the final output
+                    total.nFiles! += sumStats ? sumStats.nFiles! : 0
+                    total.blank! += sumStats ? sumStats.blank! : 0
+                    total.comment! += sumStats ? sumStats.comment! : 0
                     total.code += sumStats ? sumStats.code : 0
                     // remove the item with the key language 'SUM'
                     clocStats = clocStats.filter((clocStat) => clocStat.language !== 'SUM');

@@ -7,7 +7,8 @@ export function launchRunReportsAndCodeTurnover() {
     console.log('====>>>> Launching run-reports and code-turnover calculation on Repos');
 
     const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
-        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero } = readParams();
+        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero,
+        removeBlanks, removeNFiles, removeComments } = readParams();
 
     reportsAndCodeTurnover(
         folderPath,
@@ -22,7 +23,10 @@ export function launchRunReportsAndCodeTurnover() {
         '', // we ignore the possibility to use a custom cloc definition file
         concurrentReadOfCommits,
         noRenames,
-        !countClocZero
+        !countClocZero,
+        removeBlanks,
+        removeNFiles,
+        removeComments
     ).subscribe();
 }
 
@@ -72,6 +76,18 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
             '--countClocZero',
             `if this opion is specified, then also the files that have 0 lines of code are counted (this can 
             be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`,
+        )
+        .option(
+            '--removeBlanks',
+            `if this opion is specified, then the statistics about blank lines are removed from the cloc diff output`,
+        )
+        .option(
+            '--removeNFiles',
+            `if this opion is specified, then the statistics about number of files changed are removed from the cloc diff output`,
+        )
+        .option(
+            '--removeComments',
+            `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`,
         );
 
     const _options = program.parse(process.argv).opts();
@@ -86,9 +102,12 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const concurrentReadOfCommits = _options.concurrentReadOfCommits
     const noRenames = _options.noRenames
     const countClocZero = _options.countClocZero
+    const removeBlanks = _options.removeBlanks
+    const removeNFiles = _options.removeNFiles
+    const removeComments = _options.removeComments
 
     return {
         folderPath: _options.folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
-        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero
+        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments
     };
 }

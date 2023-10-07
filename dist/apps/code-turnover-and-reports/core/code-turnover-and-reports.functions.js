@@ -31,7 +31,7 @@ const code_turnover_functions_1 = require("../../code-turnover/core/code-turnove
  * @param ignoreClocZero Whether to ignore files with zero lines of code.
  * @returns An Observable that emits an array of `CommitDiffStatsWithSummaryReport` objects representing the cloc diffs and summary reports for each commit in each repository.
  */
-function reportsAndCodeTurnover(folderPath, fromDate, toDate, outdir, languages, concurrency = config_1.CONFIG.CONCURRENCY, excludeRepoPaths = [], reports, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero) {
+function reportsAndCodeTurnover(folderPath, fromDate, toDate, outdir, languages, concurrency = config_1.CONFIG.CONCURRENCY, excludeRepoPaths = [], reports, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, removeBlanks, removeNFiles, removeComment) {
     const folderName = path_1.default.basename(folderPath);
     const filter = [];
     if (languages.includes('TypeScript'))
@@ -48,7 +48,7 @@ function reportsAndCodeTurnover(folderPath, fromDate, toDate, outdir, languages,
             };
         }));
     }, 1), (0, rxjs_1.concatMap)(({ repo, summaryReportPath }) => {
-        return (0, rxjs_1.of)(repo).pipe((0, code_turnover_functions_1.calculateClocDiffs)(languages, concurrency), (0, rxjs_1.map)((clocDiffStat) => {
+        return (0, rxjs_1.of)(repo).pipe((0, code_turnover_functions_1.calculateClocDiffs)(languages, concurrency, removeBlanks, removeNFiles, removeComment), (0, rxjs_1.map)((clocDiffStat) => {
             return Object.assign(Object.assign({}, clocDiffStat), { summaryReportPath });
         }));
     }), (0, rxjs_1.toArray)(), (0, rxjs_1.map)(stats => {
