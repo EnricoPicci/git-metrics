@@ -9,7 +9,7 @@ export function launchCalculateCodeTurnover() {
     console.log('====>>>> Launching code-turnover calculation on Repos');
 
     const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths,
-        removeBlanks, removeNFiles, removeComments } = readParams();
+        removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
 
     calculateCodeTurnover(
         folderPath,
@@ -21,7 +21,8 @@ export function launchCalculateCodeTurnover() {
         excludeRepoPaths,
         removeBlanks,
         removeNFiles,
-        removeComments
+        removeComments,
+        removeSame
     ).subscribe();
 }
 
@@ -71,6 +72,10 @@ function readParams() {
         .option(
             '--removeComments',
             `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`,
+        )
+        .option(
+            '--removeSame',
+            `if this opion is specified, the statistics about lines that are the same (i.e. unchanged) are removed from the cloc diff output`,
         );
 
     const _options = program.parse(process.argv).opts();
@@ -83,9 +88,10 @@ function readParams() {
     const removeBlanks = _options.removeBlanks
     const removeNFiles = _options.removeNFiles
     const removeComments = _options.removeComments
+    const removeSame = _options.removeSame
 
     return {
         folderPath: _options.folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths,
-        removeBlanks, removeNFiles, removeComments
+        removeBlanks, removeNFiles, removeComments, removeSame
     };
 }

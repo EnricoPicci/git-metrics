@@ -11,9 +11,7 @@ export function clocDiffStatToCsvWithBase(
 ) {
     const { repoPath, leastRecentCommit, mostRecentCommit } = base;
     let sameFlat: clocDiffRec[] = [];
-    if (!clocDiffStat) {
-        console.warn('!!!!!!!!! No SAME stats for ${repoPath}');
-    }
+    // no warning is needed if there are no same stats since stats may be undefined to reduce the size of the output
     if (clocDiffStat.same) {
         sameFlat = Object.entries(clocDiffStat.same)
             .map(([language, clocStats]) => {
@@ -24,9 +22,6 @@ export function clocDiffStatToCsvWithBase(
                     .flat();
             })
             .flat();
-    } else {
-        console.warn(`!!!!!!!!! No SAME stats for ${repoPath}
-            with commits ${leastRecentCommit} and ${mostRecentCommit}`);
     }
     let addedFlat: clocDiffRec[] = [];
     if (clocDiffStat.added) {

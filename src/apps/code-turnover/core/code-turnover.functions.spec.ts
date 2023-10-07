@@ -13,17 +13,18 @@ describe('calculateCodeTurnover', () => {
         const concurrency = 1;
         const excludeRepoPaths = ['node_modules'];
 
-        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths, false, false, false).subscribe({
-            next: commitDiffStats => {
-                expect(commitDiffStats.length).greaterThan(0);
-            },
-            error: err => {
-                done(err);
-            },
-            complete: () => {
-                done();
-            }
-        })
+        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths,
+            false, false, false, false).subscribe({
+                next: commitDiffStats => {
+                    expect(commitDiffStats.length).greaterThan(0);
+                },
+                error: err => {
+                    done(err);
+                },
+                complete: () => {
+                    done();
+                }
+            })
     }).timeout(200000);
 
     it(`should calculate no cloc diffs since there are no commits in the time window provided`, (done) => {
@@ -35,16 +36,17 @@ describe('calculateCodeTurnover', () => {
         const concurrency = 1;
         const excludeRepoPaths = ['node_modules'];
 
-        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths, false, false, false).subscribe({
-            next: commitDiffStats => {
-                expect(commitDiffStats.length).equal(0);
-            },
-            error: err => {
-                done(err);
-            },
-            complete: () => {
-                done();
-            }
-        })
+        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths,
+            false, false, false, false).subscribe({
+                next: commitDiffStats => {
+                    expect(commitDiffStats.length).equal(0);
+                },
+                error: err => {
+                    done(err);
+                },
+                complete: () => {
+                    done();
+                }
+            })
     }).timeout(200000);
 });

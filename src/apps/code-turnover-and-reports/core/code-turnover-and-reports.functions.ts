@@ -9,6 +9,7 @@ import { calculateClocDiffs, writeClocDiffsCsv, writeClocDiffsJson } from "../..
 import { CommitDiffStats } from "../../code-turnover/core/code-turnover.model";
 
 import { CommitDiffStatsWithSummaryReport } from "./code-turnover-and-reports.model";
+import { languageExtensions } from "./language-extensions-dict";
 
 /**
  * Generates the reports for a folder containing multiple Git repositories and calculates the code turnover for all repos
@@ -48,13 +49,11 @@ export function reportsAndCodeTurnover(
     removeBlanks: boolean,
     removeNFiles: boolean,
     removeComment: boolean,
+    removeSame: boolean,
 ) {
     const folderName = path.basename(folderPath);
 
-    const filter: string[] = [];
-    if (languages.includes('TypeScript')) filter.push(...['*.ts', '*.tsx']);
-    if (languages.includes('Java')) filter.push('*.java');
-    if (languages.includes('HTML')) filter.push('*.html');
+    const filter = languageExtensions(languages)
 
     return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
         mergeMap((repo) => {
@@ -80,11 +79,14 @@ export function reportsAndCodeTurnover(
                 })
             )
         }, 1),
-        concatMap(({ repo, summaryReportPath }) => {
+        // comment the following code to avoid returning the summary report path to reduce the size of the output
+        // concatMap(({ repo, summaryReportPath }) => {
+        concatMap(({ repo }) => {
             return of(repo).pipe(
-                calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment),
+                calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame),
                 map((clocDiffStat) => {
-                    return { ...clocDiffStat, summaryReportPath }
+                    // return { ...clocDiffStat, summaryReportPath }
+                    return clocDiffStat
                 })
             )
         }),

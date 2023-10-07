@@ -1,0 +1,9 @@
+{
+    "TypeScript": [
+        "*.ts",
+        "*.tsx"
+    ],
+    "Java": [
+        "*.java"
+    ]
+}

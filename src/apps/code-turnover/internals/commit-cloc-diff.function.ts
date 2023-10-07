@@ -21,6 +21,7 @@ export function calculateClocGitDiffsChildParent(
     removeBlanks: boolean,
     removeNFiles: boolean,
     removeComment: boolean,
+    removeSame: boolean,
 ) {
     const childCommitSha = commit.sha;
     const parentCommitSha = `${childCommitSha}^1`;
@@ -35,6 +36,7 @@ export function calculateClocGitDiffsChildParent(
                     if (removeNFiles) delete diffForLanguage.nFiles;
                 })
             })
+            if (removeSame) clocDiff.diffs.same = {};
             // we read the parent of the child commit so that we can get the date of the parent commit
             return readOneCommitCompact$(parentCommitSha, repoPath).pipe(
                 catchError(() => {

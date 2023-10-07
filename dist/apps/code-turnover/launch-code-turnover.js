@@ -7,8 +7,8 @@ const cloc_monthly_diff_repos_1 = require("./core/cloc-monthly-diff-repos");
 const code_turnover_functions_1 = require("./core/code-turnover.functions");
 function launchCalculateCodeTurnover() {
     console.log('====>>>> Launching code-turnover calculation on Repos');
-    const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComments } = readParams();
-    (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComments).subscribe();
+    const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
+    (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComments, removeSame).subscribe();
 }
 exports.launchCalculateCodeTurnover = launchCalculateCodeTurnover;
 function launchMonthlyClocDiffRepos() {
@@ -33,7 +33,8 @@ function readParams() {
              wildcard * can be used to exclude all repos that contain a certain string (e.g. --excludeRepoPaths "*dbm" will exclude all repos that contain the string "dbm")`)
         .option('--removeBlanks', `if this opion is specified, then the statistics about blank lines are removed from the cloc diff output`)
         .option('--removeNFiles', `if this opion is specified, then the statistics about number of files changed are removed from the cloc diff output`)
-        .option('--removeComments', `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`);
+        .option('--removeComments', `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`)
+        .option('--removeSame', `if this opion is specified, the statistics about lines that are the same (i.e. unchanged) are removed from the cloc diff output`);
     const _options = program.parse(process.argv).opts();
     const outdir = _options.outdir || process.cwd();
     const languages = _options.languages || [];
@@ -44,9 +45,10 @@ function readParams() {
     const removeBlanks = _options.removeBlanks;
     const removeNFiles = _options.removeNFiles;
     const removeComments = _options.removeComments;
+    const removeSame = _options.removeSame;
     return {
         folderPath: _options.folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths,
-        removeBlanks, removeNFiles, removeComments
+        removeBlanks, removeNFiles, removeComments, removeSame
     };
 }
 //# sourceMappingURL=launch-code-turnover.js.map

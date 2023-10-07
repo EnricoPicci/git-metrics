@@ -41,12 +41,13 @@ export function calculateCodeTurnover(
     removeBlanks: boolean,
     removeNFiles: boolean,
     removeComment: boolean,
+    removeSame: boolean,
 ) {
     const startTime = new Date().getTime();
     const folderName = path.basename(folderPath);
 
     return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
-        calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment),
+        calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame),
         writeClocDiffs(outdir, folderName),
         tap(() => {
             const endTime = new Date().getTime();
@@ -69,6 +70,7 @@ export function calculateClocDiffs(
     removeBlanks: boolean,
     removeNFiles: boolean,
     removeComment: boolean,
+    removeSame: boolean,
 ) {
     let diffsCompleted = 0;
     let diffsRemaining = 0;
@@ -93,7 +95,7 @@ export function calculateClocDiffs(
             return from(commitsWithRepo);
         }),
         mergeMap(({ commit, repoPath }) => {
-            return calculateClocGitDiffsChildParent(commit, repoPath, languages, removeBlanks, removeNFiles, removeComment).pipe(
+            return calculateClocGitDiffsChildParent(commit, repoPath, languages, removeBlanks, removeNFiles, removeComment, removeSame).pipe(
                 tap((stat) => {
                     if (stat.clocDiff.error) {
                         diffsErrored++;
@@ -196,10 +198,9 @@ export function flattenClocDiffStat(stat: CommitDiffStats) {
         ? remoteOriginUrl.slice(0, -4)
         : remoteOriginUrl;
     const mostRecentCommitUrl = `${remoteOriginUrlWithuotFinalDotGit}/-/commit/${clocDiffStat.mostRecentCommitSha}`;
-    const leastRecentCommitSha = clocDiffStat.leastRecentCommitSha;
     const mostRecentCommitSha = clocDiffStat.mostRecentCommitSha;
 
-    base = { ...base, remoteOriginUrl, mostRecentCommitUrl, leastRecentCommitSha, mostRecentCommitSha }
+    base = { ...base, remoteOriginUrl, mostRecentCommitUrl, mostRecentCommitSha }
 
     return clocDiffStatToCsvWithBase(
         clocDiffStat.diffs,

@@ -13,7 +13,7 @@ describe('calculateCodeTurnover', () => {
         const toDate = new Date('2023-09-24');
         const concurrency = 1;
         const excludeRepoPaths = ['node_modules'];
-        (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths, false, false, false).subscribe({
+        (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths, false, false, false, false).subscribe({
             next: commitDiffStats => {
                 (0, chai_1.expect)(commitDiffStats.length).greaterThan(0);
             },
@@ -33,7 +33,7 @@ describe('calculateCodeTurnover', () => {
         const toDate = new Date('2023-09-23');
         const concurrency = 1;
         const excludeRepoPaths = ['node_modules'];
-        (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths, false, false, false).subscribe({
+        (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths, false, false, false, false).subscribe({
             next: commitDiffStats => {
                 (0, chai_1.expect)(commitDiffStats.length).equal(0);
             },

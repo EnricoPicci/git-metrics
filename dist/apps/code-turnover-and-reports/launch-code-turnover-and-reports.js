@@ -2,14 +2,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchRunReportsAndCodeTurnover = void 0;
 const commander_1 = require("commander");
-const code_turnover_and_reports_functions_1 = require("./core/code-turnover-and-reports.functions");
+const rxjs_1 = require("rxjs");
 const config_1 = require("../../config");
 const run_reports_on_repo_core_1 = require("../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core");
+const cloc_repos_1 = require("../cloc-on-repos/cloc-repos/internals/cloc-repos");
+const code_turnover_and_reports_functions_1 = require("./core/code-turnover-and-reports.functions");
 function launchRunReportsAndCodeTurnover() {
+    const start = Date.now();
     console.log('====>>>> Launching run-reports and code-turnover calculation on Repos');
-    const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments } = readParams();
-    (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, '', // we ignore the possibility to use a custom cloc definition file
-    concurrentReadOfCommits, noRenames, !countClocZero, removeBlanks, removeNFiles, removeComments).subscribe();
+    const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
+    const cloc$ = (0, cloc_repos_1.calculateClocOnRepos)(folderPath, outdir, concurrency);
+    // const reportOnAllRepos$ = runAllReportsOnMergedRepos(allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false)
+    const reportsndCodeTurnover$ = (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, '', // we ignore the possibility to use a custom cloc definition file
+    concurrentReadOfCommits, noRenames, !countClocZero, removeBlanks, removeNFiles, removeComments, removeSame);
+    (0, rxjs_1.concat)(cloc$, reportsndCodeTurnover$).subscribe({
+        complete: () => {
+            console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
+        },
+    });
 }
 exports.launchRunReportsAndCodeTurnover = launchRunReportsAndCodeTurnover;
 function readParams() {
@@ -36,7 +46,8 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
             be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`)
         .option('--removeBlanks', `if this opion is specified, then the statistics about blank lines are removed from the cloc diff output`)
         .option('--removeNFiles', `if this opion is specified, then the statistics about number of files changed are removed from the cloc diff output`)
-        .option('--removeComments', `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`);
+        .option('--removeComments', `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`)
+        .option('--removeSame', `if this opion is specified, the statistics about lines that are the same (i.e. unchanged) are removed from the cloc diff output`);
     const _options = program.parse(process.argv).opts();
     const fromDate = _options.from ? new Date(_options.from) : new Date(0);
     const toDate = _options.to ? new Date(_options.to) : new Date(Date.now());
@@ -52,9 +63,10 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const removeBlanks = _options.removeBlanks;
     const removeNFiles = _options.removeNFiles;
     const removeComments = _options.removeComments;
+    const removeSame = _options.removeSame;
     return {
         folderPath: _options.folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
-        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments
+        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame
     };
 }
 //# sourceMappingURL=launch-code-turnover-and-reports.js.map

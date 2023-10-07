@@ -25,7 +25,8 @@ describe('reportsAndCodeTurnover', () => {
         const removeBlanks = false;
         const removeNFiles = false;
         const removeComment = false;
-        (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outDir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, removeBlanks, removeNFiles, removeComment).pipe((0, rxjs_1.tap)({
+        const removeSame = false;
+        (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outDir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, removeBlanks, removeNFiles, removeComment, removeSame).pipe((0, rxjs_1.tap)({
             next: data => {
                 (0, chai_1.expect)(data.length).equal(2);
                 const summaryReportPath = data[0].summaryReportPath;

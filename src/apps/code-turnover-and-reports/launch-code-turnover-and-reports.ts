@@ -1,16 +1,26 @@
 import { Command } from "commander";
-import { reportsAndCodeTurnover } from "./core/code-turnover-and-reports.functions";
+import { concat } from "rxjs";
+
 import { CONFIG } from "../../config";
 import { allReports } from "../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core";
+import { calculateClocOnRepos } from "../cloc-on-repos/cloc-repos/internals/cloc-repos";
+
+import { reportsAndCodeTurnover } from "./core/code-turnover-and-reports.functions";
 
 export function launchRunReportsAndCodeTurnover() {
+    const start = Date.now();
+
     console.log('====>>>> Launching run-reports and code-turnover calculation on Repos');
 
     const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
         reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero,
-        removeBlanks, removeNFiles, removeComments } = readParams();
+        removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
 
-    reportsAndCodeTurnover(
+    const cloc$ = calculateClocOnRepos(folderPath, outdir, concurrency)
+
+    // const reportOnAllRepos$ = runAllReportsOnMergedRepos(allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false)
+
+    const reportsndCodeTurnover$ = reportsAndCodeTurnover(
         folderPath,
         fromDate,
         toDate,
@@ -26,8 +36,15 @@ export function launchRunReportsAndCodeTurnover() {
         !countClocZero,
         removeBlanks,
         removeNFiles,
-        removeComments
-    ).subscribe();
+        removeComments,
+        removeSame
+    )
+
+    concat(cloc$, reportsndCodeTurnover$).subscribe({
+        complete: () => {
+            console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
+        },
+    })
 }
 
 
@@ -88,6 +105,10 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         .option(
             '--removeComments',
             `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`,
+        )
+        .option(
+            '--removeSame',
+            `if this opion is specified, the statistics about lines that are the same (i.e. unchanged) are removed from the cloc diff output`,
         );
 
     const _options = program.parse(process.argv).opts();
@@ -105,9 +126,10 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const removeBlanks = _options.removeBlanks
     const removeNFiles = _options.removeNFiles
     const removeComments = _options.removeComments
+    const removeSame = _options.removeSame
 
     return {
         folderPath: _options.folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
-        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments
+        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame
     };
 }

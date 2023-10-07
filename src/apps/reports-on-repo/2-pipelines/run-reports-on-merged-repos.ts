@@ -13,9 +13,7 @@ export function launchAllReportsOnMergedRepos() {
         )
         .option(
             '--reports <string...>',
-            `reports to be run (the default is all reports: ${allReports.join(
-                ' ',
-            )}) - report names have to be specified with single
+            `reports to be run (the default is all reports: ${allReports.join(' ')}) - report names have to be specified with single
 quotes and have to be separated by spaces like this --reports 'FileChurnReport' 'ModuleChurnReport'`,
         )
         .option(

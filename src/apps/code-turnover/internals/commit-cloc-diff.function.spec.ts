@@ -1,33 +1,49 @@
 import { expect } from "chai";
-import { concatMap, last, take } from "rxjs";
+import { concatMap, map, toArray } from "rxjs";
 import { readCommitCompact$ } from "../../../git-functions/commit.functions";
 import { calculateClocGitDiffsChildParent } from "./commit-cloc-diff.function";
 
 
 describe('calculateClocGitDiffsChildParent', () => {
-    it(`should calculate the cloc diffs between the second commit of this repo and its parent, which is the first commit
-    blanks, comments and nFiles statistics should be greater than 0 since we are passing parameters
-    which say we do not want to remove them`, (done) => {
+    it(`should calculate the cloc diffs between the third commit of this repo and its parent, which is the second commit.
+    In this case, for TypeScript files, the values for added or removed stats are all 0, but there are statistics for
+    modified files since one file has been modified in one row.`, (done) => {
         const repoPath = '.';
         const languages = ['TypeScript'];
         const removeBlanks = false;
         const removeNFiles = false;
         const removeComment = false;
+        const removeSame = false;
 
         readCommitCompact$(repoPath).pipe(
-            take(2), // consider only the first two commits
-            last(), // take the last commit which is the second commit
+            toArray(),
+            map(commits => {
+                return commits.reverse()[2]
+            }),
             concatMap(secondCommitCompact => {
-                return calculateClocGitDiffsChildParent(secondCommitCompact, repoPath, languages, removeBlanks, removeNFiles, removeComment)
+                return calculateClocGitDiffsChildParent(
+                    secondCommitCompact,
+                    repoPath,
+                    languages,
+                    removeBlanks,
+                    removeNFiles,
+                    removeComment,
+                    removeSame
+                )
             })
         )
             .subscribe({
                 next: commitDiffStat => {
-                    const TSStats = commitDiffStat.clocDiff.diffs.added.TypeScript;
-                    expect(TSStats.blank).gt(0);
-                    expect(TSStats.comment).gt(0);
-                    expect(TSStats.code).gt(0);
-                    expect(TSStats.nFiles).gt(0);
+                    const TSStatsAdded = commitDiffStat.clocDiff.diffs.added.TypeScript;
+                    expect(TSStatsAdded.blank).equal(0);
+                    expect(TSStatsAdded.comment).equal(0);
+                    expect(TSStatsAdded.code).equal(0);
+                    expect(TSStatsAdded.nFiles).equal(0);
+                    const TSStatsModified = commitDiffStat.clocDiff.diffs.modified.TypeScript;
+                    expect(TSStatsModified.blank).equal(0);
+                    expect(TSStatsModified.comment).equal(0);
+                    expect(TSStatsModified.code).equal(1);
+                    expect(TSStatsModified.nFiles).equal(1);
                 },
                 error: err => {
                     done(err);
@@ -44,20 +60,31 @@ describe('calculateClocGitDiffsChildParent', () => {
         const removeBlanks = true;
         const removeNFiles = true;
         const removeComment = true;
+        const removeSame = false;
 
         readCommitCompact$(repoPath).pipe(
-            take(2), // consider only the first two commits
-            last(), // take the last commit which is the second commit
+            toArray(),
+            map(commits => {
+                return commits.reverse()[2]
+            }),
             concatMap(secondCommitCompact => {
-                return calculateClocGitDiffsChildParent(secondCommitCompact, repoPath, languages, removeBlanks, removeNFiles, removeComment)
+                return calculateClocGitDiffsChildParent(
+                    secondCommitCompact,
+                    repoPath,
+                    languages,
+                    removeBlanks,
+                    removeNFiles,
+                    removeComment,
+                    removeSame
+                )
             })
         )
             .subscribe({
                 next: commitDiffStat => {
-                    const TSStats = commitDiffStat.clocDiff.diffs.added.TypeScript;
+                    const TSStats = commitDiffStat.clocDiff.diffs.modified.TypeScript;
                     expect(TSStats.blank).undefined;
                     expect(TSStats.comment).undefined;
-                    expect(TSStats.code).gt(0);
+                    expect(TSStats.code).equal(1);
                     expect(TSStats.nFiles).undefined;
                 },
                 error: err => {

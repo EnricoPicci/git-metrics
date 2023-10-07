@@ -10,7 +10,7 @@ const config_1 = require("../../../config");
 const commits_by_month_functions_1 = require("./commits-by-month.functions");
 // calculateClocGitDiffsChildParent is a function that receives a CommitCompact object and calculates the cloc diff
 // and returns an object with the yearMonth, the commit date and the cloc diff
-function calculateClocGitDiffsChildParent(commit, repoPath, languages, removeBlanks, removeNFiles, removeComment) {
+function calculateClocGitDiffsChildParent(commit, repoPath, languages, removeBlanks, removeNFiles, removeComment, removeSame) {
     const childCommitSha = commit.sha;
     const parentCommitSha = `${childCommitSha}^1`;
     console.log(`Starting diff for ${repoPath} -- Date: ${commit.date.toLocaleDateString()}`);
@@ -26,6 +26,8 @@ function calculateClocGitDiffsChildParent(commit, repoPath, languages, removeBla
                     delete diffForLanguage.nFiles;
             });
         });
+        if (removeSame)
+            clocDiff.diffs.same = {};
         // we read the parent of the child commit so that we can get the date of the parent commit
         return (0, commit_functions_1.readOneCommitCompact$)(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(() => {
             // in case of error we return an empty commit
