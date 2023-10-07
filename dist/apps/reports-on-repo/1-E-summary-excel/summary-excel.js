@@ -9,10 +9,10 @@ const config_1 = require("../0-config/config");
 const observable_fs_1 = require("observable-fs");
 const rxjs_1 = require("rxjs");
 const path_1 = __importDefault(require("path"));
-// returns a workbook read from the summary template file which contains the sheets with the graphs already created
+// returns a new workbook to be used as a summary workbook containing all the worksheets
 function summaryWorkbook() {
-    const xlsFilePath = path_1.default.join(__dirname, config_1.DEFAUL_CONFIG.SUMMARY_WORKBOOK_TEMPLATE);
-    return xlsx_1.default.readFile(xlsFilePath);
+    return xlsx_1.default.utils.book_new();
+    ;
 }
 exports.summaryWorkbook = summaryWorkbook;
 // adds a new worksheet to the workbook filled with the data contained in the csv file

@@ -11,7 +11,7 @@ import { addWorksheet, summaryWorkbook, writeWorkbook } from './summary-excel';
 // test the addWorksheet function creating a workbook in a temp folder and adding a worksheet to it
 describe(`addWorksheet and writeWorkbook`, () => {
     it(`creates a workbook, add a spreadsheet to it reading the data from a csv file, write the workbook to a temp directory,
-    read the file wirtte and checks that the data has been correctly written`, (done) => {
+    read the file written and checks that the data has been correctly written`, (done) => {
         const cvsFileName = 'a-git-repo-summary-cloc.csv';
         // there are 3 records in the csv file used for the test
         const numRecInCvs = 3;

@@ -4,10 +4,9 @@ import { readLineObs } from 'observable-fs';
 import { catchError, map, of, tap, toArray } from 'rxjs';
 import path from 'path';
 
-// returns a workbook read from the summary template file which contains the sheets with the graphs already created
+// returns a new workbook to be used as a summary workbook containing all the worksheets
 export function summaryWorkbook() {
-    const xlsFilePath = path.join(__dirname, DEFAUL_CONFIG.SUMMARY_WORKBOOK_TEMPLATE);
-    return XLSX.readFile(xlsFilePath);
+    return XLSX.utils.book_new();;
 }
 
 // adds a new worksheet to the workbook filled with the data contained in the csv file
