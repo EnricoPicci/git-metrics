@@ -6,30 +6,30 @@ const commits_by_month_functions_1 = require("./commits-by-month.functions");
 describe('commitsByMonth', () => {
     it('should group commits by month and year', () => {
         const commits = [
-            { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
-            { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-            { sha: '789', date: new Date('2021-02-01'), author: 'author1' },
-            { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
-            { sha: 'def', date: new Date('2021-03-01'), author: 'author1' },
+            { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
+            { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+            { sha: '789', date: new Date('2021-02-01'), author: 'author1', comment: 'comment' },
+            { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+            { sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
         ];
         const expected = {
             '2021-01': {
                 commits: [
-                    { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
-                    { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
+                    { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
+                    { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
                 ],
                 authors: new Set(['author1', 'author2'])
             },
             '2021-02': {
                 commits: [
-                    { sha: '789', date: new Date('2021-02-01'), author: 'author1' },
-                    { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
+                    { sha: '789', date: new Date('2021-02-01'), author: 'author1', comment: 'comment' },
+                    { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
                 ],
                 authors: new Set(['author1', 'author3'])
             },
             '2021-03': {
                 commits: [
-                    { sha: 'def', date: new Date('2021-03-01'), author: 'author1' },
+                    { sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
                 ],
                 authors: new Set(['author1'])
             },

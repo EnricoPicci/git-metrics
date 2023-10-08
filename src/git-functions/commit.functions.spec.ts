@@ -22,6 +22,7 @@ describe('readCommitFromLog$', () => {
             expect(firstCommit.sha).equal('8767d5864e7d72df0f25915fe8e0652244eee5fa');
             expect(!!firstCommit.date).to.be.true;
             expect(!!firstCommit.author).to.be.true;
+            expect(!!firstCommit.comment).to.be.true;
 
             // this tests that the sha is a real sha and not something else
             const lastCommit = commits[0];

@@ -13,15 +13,15 @@ describe('groupRepoCommitsByMonth', () => {
                 commitsByMonth: {
                     '2021-01': {
                         commits: [
-                            { sha: '123', author: 'author1', date: new Date('2021-01-01') },
-                            { sha: '456', author: 'author2', date: new Date('2021-01-15') },
+                            { sha: '123', author: 'author1', date: new Date('2021-01-01'), comment: 'comment' },
+                            { sha: '456', author: 'author2', date: new Date('2021-01-15'), comment: 'comment' },
                         ],
                         authors: new Set(['author1', 'author2']),
                     },
                     '2021-02': {
                         commits: [
-                            { sha: '789', author: 'author3', date: new Date('2021-02-01') },
-                            { sha: 'abc', author: 'author1', date: new Date('2021-02-15') },
+                            { sha: '789', author: 'author3', date: new Date('2021-02-01'), comment: 'comment' },
+                            { sha: 'abc', author: 'author1', date: new Date('2021-02-15'), comment: 'comment' },
                         ],
                         authors: new Set(['author1', 'author3']),
                     },
@@ -33,15 +33,15 @@ describe('groupRepoCommitsByMonth', () => {
                 commitsByMonth: {
                     '2021-01': {
                         commits: [
-                            { sha: 'def', author: 'author5', date: new Date('2021-01-01') },
-                            { sha: 'ghi', author: 'author4', date: new Date('2021-01-15') },
+                            { sha: 'def', author: 'author5', date: new Date('2021-01-01'), comment: 'comment' },
+                            { sha: 'ghi', author: 'author4', date: new Date('2021-01-15'), comment: 'comment' },
                         ],
                         authors: new Set(['author4', 'author5']),
                     },
                     '2021-02': {
                         commits: [
-                            { sha: 'jkl', author: 'author4', date: new Date('2021-02-01') },
-                            { sha: 'mno', author: 'author6', date: new Date('2021-02-15') },
+                            { sha: 'jkl', author: 'author4', date: new Date('2021-02-01'), comment: 'comment' },
+                            { sha: 'mno', author: 'author6', date: new Date('2021-02-15'), comment: 'comment' },
                         ],
                         authors: new Set(['author4', 'author6']),
                     },
@@ -53,16 +53,16 @@ describe('groupRepoCommitsByMonth', () => {
                 {
                     repoPath: 'user/repo1',
                     commits: [
-                        { sha: '123', author: 'author1', date: new Date('2021-01-01') },
-                        { sha: '456', author: 'author2', date: new Date('2021-01-15') },
+                        { sha: '123', author: 'author1', date: new Date('2021-01-01'), comment: 'comment' },
+                        { sha: '456', author: 'author2', date: new Date('2021-01-15'), comment: 'comment' },
                     ],
                     authors: ['author1', 'author2'],
                 },
                 {
                     repoPath: 'user/repo2',
                     commits: [
-                        { sha: 'def', author: 'author5', date: new Date('2021-01-01') },
-                        { sha: 'ghi', author: 'author4', date: new Date('2021-01-15') },
+                        { sha: 'def', author: 'author5', date: new Date('2021-01-01'), comment: 'comment' },
+                        { sha: 'ghi', author: 'author4', date: new Date('2021-01-15'), comment: 'comment' },
                     ],
                     authors: ['author4', 'author5'],
                 },
@@ -71,16 +71,16 @@ describe('groupRepoCommitsByMonth', () => {
                 {
                     repoPath: 'user/repo1',
                     commits: [
-                        { sha: '789', author: 'author3', date: new Date('2021-02-01') },
-                        { sha: 'abc', author: 'author1', date: new Date('2021-02-15') },
+                        { sha: '789', author: 'author3', date: new Date('2021-02-01'), comment: 'comment' },
+                        { sha: 'abc', author: 'author1', date: new Date('2021-02-15'), comment: 'comment' },
                     ],
                     authors: ['author1', 'author3'],
                 },
                 {
                     repoPath: 'user/repo2',
                     commits: [
-                        { sha: 'jkl', author: 'author4', date: new Date('2021-02-01') },
-                        { sha: 'mno', author: 'author6', date: new Date('2021-02-15') },
+                        { sha: 'jkl', author: 'author4', date: new Date('2021-02-01'), comment: 'comment' },
+                        { sha: 'mno', author: 'author6', date: new Date('2021-02-15'), comment: 'comment' },
                     ],
                     authors: ['author4', 'author6'],
                 },
@@ -158,16 +158,16 @@ describe('repoCommitsByMonthRecords', () => {
                 {
                     repoPath: 'user/repo1',
                     commits: [
-                        { sha: '123', author: 'author1', date: new Date('2021-01-01') },
-                        { sha: '456', author: 'author2', date: new Date('2021-01-15') },
+                        { sha: '123', author: 'author1', date: new Date('2021-01-01'), comment: 'comment' },
+                        { sha: '456', author: 'author2', date: new Date('2021-01-15'), comment: 'comment' },
                     ],
                     authors: ['author1', 'author2'],
                 },
                 {
                     repoPath: 'user/repo2',
                     commits: [
-                        { sha: 'def', author: 'author5', date: new Date('2021-01-01') },
-                        { sha: 'ghi', author: 'author4', date: new Date('2021-01-15') },
+                        { sha: 'def', author: 'author5', date: new Date('2021-01-01'), comment: 'comment' },
+                        { sha: 'ghi', author: 'author4', date: new Date('2021-01-15'), comment: 'comment' },
                     ],
                     authors: ['author4', 'author5'],
                 },
@@ -176,8 +176,8 @@ describe('repoCommitsByMonthRecords', () => {
                 {
                     repoPath: 'user/repo1',
                     commits: [
-                        { sha: '789', author: 'author3', date: new Date('2021-02-01') },
-                        { sha: 'abc', author: 'author1', date: new Date('2021-02-15') },
+                        { sha: '789', author: 'author3', date: new Date('2021-02-01'), comment: 'comment' },
+                        { sha: 'abc', author: 'author1', date: new Date('2021-02-15'), comment: 'comment' },
                     ],
                     authors: ['author1', 'author3'],
                 },
@@ -185,14 +185,14 @@ describe('repoCommitsByMonthRecords', () => {
             '03-2021': [
                 {
                     repoPath: 'user/repo1',
-                    commits: [{ sha: 'xxx', author: 'author3', date: new Date('2021-03-01') }],
+                    commits: [{ sha: 'xxx', author: 'author3', date: new Date('2021-03-01'), comment: 'comment' }],
                     authors: ['author1', 'author3'],
                 },
                 {
                     repoPath: 'user/repo2',
                     commits: [
-                        { sha: 'yyy', author: 'author4', date: new Date('2021-03-01') },
-                        { sha: 'zzz', author: 'author6', date: new Date('2021-03-15') },
+                        { sha: 'yyy', author: 'author4', date: new Date('2021-03-01'), comment: 'comment' },
+                        { sha: 'zzz', author: 'author6', date: new Date('2021-03-15'), comment: 'comment' },
                     ],
                     authors: ['author4', 'author6'],
                 },

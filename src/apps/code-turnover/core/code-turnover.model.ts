@@ -7,5 +7,6 @@ export type CommitDiffStats = {
     yearMonth: string;
     mostRecentCommitDate: string;
     leastRecentCommitDate: string;
+    comment: string;
     clocDiff: ClocDiffStats;
 };

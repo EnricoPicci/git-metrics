@@ -37,17 +37,20 @@ export function readCommitCompact$(
     if (!repoPath) throw new Error(`Path is mandatory`);
 
     const _noMerges = noMerges ? '--no-merges' : '';
-    const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an" ${_noMerges}`;
+    const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%B" ${_noMerges}`;
 
     return executeCommandNewProcessToLinesObs(
         `Read commits`,
         'git',
-        ['log', '--pretty=format:%H,%ad,%an', '--no-merges'],
+        ['log', '--pretty=format:%H,%ad,%an,%B', '--no-merges'],
         { cwd: repoPath },
     ).pipe(
         map((commits: string) => commits.split('\n')),
         concatMap((commits: string[]) => {
             return from(commits);
+        }),
+        filter((commit: string) => {
+            return commit.trim().length > 0;
         }),
         map((commit: string) => {
             return newCommitCompactFromGitlog(commit);
@@ -195,6 +198,7 @@ export function newEmptyCommitCompact() {
         sha: '',
         date: new Date(0),
         author: '',
+        comment: '',
     };
     return commit;
 }
@@ -208,17 +212,26 @@ export function newEmptyCommitCompact() {
 export const SEP = GIT_CONFIG.COMMIT_REC_SEP;
 
 /**
- * Returns a new `CommitCompact` object with the given sha, author and date starting from a string in the format 
- * sha,date,author received from the git log command.
+ * Returns a new `CommitCompact` object with the given sha, author, date and comment starting from a string in the format 
+ * sha,date,author,comment received from the git log command.
  * @param commitDataFromGitlog A string in the format sha,date,author received from the git log command.
  * @returns A new `CommitCompact` object with the specified sha, author and date.
  */
 function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
-    const shaDateAuthor = commitDataFromGitlog.split(',');
+    const shaDateAuthorComment = commitDataFromGitlog.split(',');
+    const sha = shaDateAuthorComment[0]
+    const date = shaDateAuthorComment[1]
+    const author = shaDateAuthorComment[2]
+    // the comment may contain ',' characters, hence we can not simply take the 4th element of shaDateAuthorComment to fill the comment
+    // we then have to calculat the position where the comment starts and take all the rest of the string starting from it
+    // 3 needs to be added to the calculation of the length to cater for the 3 ',' characters that separate sha, date and author
+    const lengthOfShaDateAuthor = sha.length + date.length + author.length + 3
+    const comment = commitDataFromGitlog.slice(lengthOfShaDateAuthor)
     const commit: CommitCompact = {
-        sha: shaDateAuthor[0],
-        date: new Date(shaDateAuthor[1]),
-        author: shaDateAuthor[2],
+        sha,
+        date: new Date(date),
+        author: author,
+        comment,
     };
     return commit;
 }

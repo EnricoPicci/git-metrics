@@ -8,28 +8,28 @@ import { CommitCompact } from '../../../git-functions/commit.model';
 describe('commitDiffPairs', () => {
     it('should return an object with pairs of most recent and least recent commits for each month', () => {
         const commitsByMonth: { [yearMonth: string]: CommitCompact[] } = {
-            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1' }],
+            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' }],
             '2021-02': [
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
-                { sha: '789', date: new Date('2021-02-01'), author: 'author1' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+                { sha: '789', date: new Date('2021-02-01'), author: 'author1', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const expectedPairs: { [yearMonth: string]: CommitTuple } = {
             '2021-03': [
-                { sha: 'def', date: new Date('2021-03-01'), author: 'author1' },
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
+                { sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
             ],
             '2021-02': [
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const pairs = commitMonthlyPairs(commitsByMonth);
@@ -38,22 +38,22 @@ describe('commitDiffPairs', () => {
 
     it('should return an object with null pairs for months with no commits', () => {
         const commitsByMonth: { [yearMonth: string]: CommitCompact[] } = {
-            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1' }],
+            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' }],
             '2021-02': [],
             '2021-01': [
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const expectedPairs: { [yearMonth: string]: CommitTuple } = {
             '2021-03': [
-                { sha: 'def', date: new Date('2021-03-01'), author: 'author1' },
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
+                { sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
             ],
             '2021-02': null,
             '2021-01': [
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const pairs = commitMonthlyPairs(commitsByMonth);
@@ -62,18 +62,18 @@ describe('commitDiffPairs', () => {
 
     it('should return an object with null pairs for the first month with only one commit', () => {
         const commitsByMonth: { [yearMonth: string]: CommitCompact[] } = {
-            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1' }],
-            '2021-02': [{ sha: '456', date: new Date('2021-02-01'), author: 'author2' }],
-            '2021-01': [{ sha: '123', date: new Date('2021-01-01'), author: 'author1' }],
+            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' }],
+            '2021-02': [{ sha: '456', date: new Date('2021-02-01'), author: 'author2', comment: 'comment' }],
+            '2021-01': [{ sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' }],
         };
         const expectedPairs: { [yearMonth: string]: CommitTuple } = {
             '2021-03': [
-                { sha: 'def', date: new Date('2021-03-01'), author: 'author1' },
-                { sha: '456', date: new Date('2021-02-01'), author: 'author2' },
+                { sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
+                { sha: '456', date: new Date('2021-02-01'), author: 'author2', comment: 'comment' },
             ],
             '2021-02': [
-                { sha: '456', date: new Date('2021-02-01'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-02-01'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
             '2021-01': null,
         };
@@ -83,29 +83,29 @@ describe('commitDiffPairs', () => {
 
     it('works even if the order of the commits is not from the most recent to the least recent', () => {
         const commitsByMonth: { [yearMonth: string]: CommitCompact[] } = {
-            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1' }],
+            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' }],
             '2021-02': [
                 // in this case, the order of the commits is not from the least recent to the most recent
-                { sha: '789', date: new Date('2021-02-01'), author: 'author1' },
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
+                { sha: '789', date: new Date('2021-02-01'), author: 'author1', comment: 'comment' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const expectedPairs: { [yearMonth: string]: CommitTuple } = {
             '2021-03': [
-                { sha: 'def', date: new Date('2021-03-01'), author: 'author1' },
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
+                { sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
             ],
             '2021-02': [
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const pairs = commitMonthlyPairs(commitsByMonth);
@@ -116,28 +116,28 @@ describe('commitDiffPairs', () => {
         const commitsByMonth: { [yearMonth: string]: CommitCompact[] } = {
             // in this case, the olderst month is inserted first
             '2021-01': [
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
-            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1' }],
+            '2021-03': [{ sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' }],
             '2021-02': [
                 // in this case, the order of the commits is not from the least recent to the most recent
-                { sha: '789', date: new Date('2021-02-01'), author: 'author1' },
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
+                { sha: '789', date: new Date('2021-02-01'), author: 'author1', comment: 'comment' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
             ],
         };
         const expectedPairs: { [yearMonth: string]: CommitTuple } = {
             '2021-03': [
-                { sha: 'def', date: new Date('2021-03-01'), author: 'author1' },
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
+                { sha: 'def', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
             ],
             '2021-02': [
-                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3' },
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
+                { sha: 'abc', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const pairs = commitMonthlyPairs(commitsByMonth);
@@ -149,25 +149,25 @@ describe('reposCommitsPairsDiff', () => {
     it(`should return an array of objects with name of the repo and an array of pairs of most recent and least recent commits 
     for each month`, () => {
         const commitsByMonthRepo_1: { [yearMonth: string]: CommitCompact[] } = {
-            '2021-03': [{ sha: 'def_1', date: new Date('2021-03-01'), author: 'author1' }],
+            '2021-03': [{ sha: 'def_1', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' }],
             '2021-02': [
-                { sha: 'abc_1', date: new Date('2021-02-15'), author: 'author3' },
-                { sha: '789_1', date: new Date('2021-02-01'), author: 'author1' },
+                { sha: 'abc_1', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+                { sha: '789_1', date: new Date('2021-02-01'), author: 'author1', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456_1', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123_1', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456_1', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123_1', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const commitsByMonthRepo_2: { [yearMonth: string]: CommitCompact[] } = {
-            '2021-03': [{ sha: 'def_2', date: new Date('2021-03-01'), author: 'author1' }],
+            '2021-03': [{ sha: 'def_2', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' }],
             '2021-02': [
-                { sha: 'abc_2', date: new Date('2021-02-15'), author: 'author3' },
-                { sha: '789_2', date: new Date('2021-02-01'), author: 'author1' },
+                { sha: 'abc_2', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+                { sha: '789_2', date: new Date('2021-02-01'), author: 'author1', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456_2', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123_2', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456_2', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123_2', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const repoDictWithCommits: { [repoName: string]: { [yearMonth: string]: CommitCompact[] } } = {
@@ -177,30 +177,30 @@ describe('reposCommitsPairsDiff', () => {
 
         const expectedPairs_repo_1: { [yearMonth: string]: CommitTuple } = {
             '2021-03': [
-                { sha: 'def_1', date: new Date('2021-03-01'), author: 'author1' },
-                { sha: 'abc_1', date: new Date('2021-02-15'), author: 'author3' },
+                { sha: 'def_1', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
+                { sha: 'abc_1', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
             ],
             '2021-02': [
-                { sha: 'abc_1', date: new Date('2021-02-15'), author: 'author3' },
-                { sha: '456_1', date: new Date('2021-01-15'), author: 'author2' },
+                { sha: 'abc_1', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+                { sha: '456_1', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456_1', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123_1', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456_1', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123_1', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const expectedPairs_repo_2: { [yearMonth: string]: CommitTuple } = {
             '2021-03': [
-                { sha: 'def_2', date: new Date('2021-03-01'), author: 'author1' },
-                { sha: 'abc_2', date: new Date('2021-02-15'), author: 'author3' },
+                { sha: 'def_2', date: new Date('2021-03-01'), author: 'author1', comment: 'comment' },
+                { sha: 'abc_2', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
             ],
             '2021-02': [
-                { sha: 'abc_2', date: new Date('2021-02-15'), author: 'author3' },
-                { sha: '456_2', date: new Date('2021-01-15'), author: 'author2' },
+                { sha: 'abc_2', date: new Date('2021-02-15'), author: 'author3', comment: 'comment' },
+                { sha: '456_2', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
             ],
             '2021-01': [
-                { sha: '456_2', date: new Date('2021-01-15'), author: 'author2' },
-                { sha: '123_2', date: new Date('2021-01-01'), author: 'author1' },
+                { sha: '456_2', date: new Date('2021-01-15'), author: 'author2', comment: 'comment' },
+                { sha: '123_2', date: new Date('2021-01-01'), author: 'author1', comment: 'comment' },
             ],
         };
         const expectedRepoDictPairs = [

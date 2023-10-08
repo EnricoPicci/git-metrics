@@ -3,7 +3,8 @@ import { GIT_CONFIG } from "./config";
 export interface CommitCompact {
     sha: string;
     date: Date;
-    author: string
+    author: string,
+    comment: string,
 }
 
 export interface CommitPair {
