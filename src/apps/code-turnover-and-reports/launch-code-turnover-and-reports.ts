@@ -20,7 +20,7 @@ export function launchRunReportsAndCodeTurnover() {
 
     // const reportOnAllRepos$ = runAllReportsOnMergedRepos(allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false)
 
-    const reportsndCodeTurnover$ = reportsAndCodeTurnover(
+    const reportsAndCodeTurnover$ = reportsAndCodeTurnover(
         folderPath,
         fromDate,
         toDate,
@@ -40,7 +40,7 @@ export function launchRunReportsAndCodeTurnover() {
         removeSame
     )
 
-    concat(cloc$, reportsndCodeTurnover$).subscribe({
+    concat(cloc$, reportsAndCodeTurnover$).subscribe({
         complete: () => {
             console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
         },

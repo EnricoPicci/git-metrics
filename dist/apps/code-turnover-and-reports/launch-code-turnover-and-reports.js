@@ -13,9 +13,9 @@ function launchRunReportsAndCodeTurnover() {
     const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
     const cloc$ = (0, cloc_repos_1.calculateClocOnRepos)(folderPath, outdir, concurrency);
     // const reportOnAllRepos$ = runAllReportsOnMergedRepos(allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false)
-    const reportsndCodeTurnover$ = (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, '', // we ignore the possibility to use a custom cloc definition file
+    const reportsAndCodeTurnover$ = (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, '', // we ignore the possibility to use a custom cloc definition file
     concurrentReadOfCommits, noRenames, !countClocZero, removeBlanks, removeNFiles, removeComments, removeSame);
-    (0, rxjs_1.concat)(cloc$, reportsndCodeTurnover$).subscribe({
+    (0, rxjs_1.concat)(cloc$, reportsAndCodeTurnover$).subscribe({
         complete: () => {
             console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
         },

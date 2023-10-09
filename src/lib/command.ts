@@ -26,6 +26,9 @@ switch (command) {
     case 'cloc-diff-repos':
         launchCalculateCodeTurnover();
         break;
+    case 'code-turnover-and-reports':
+        launchRunReportsAndCodeTurnover();
+        break;
     case 'run-reports-on-repo':
         launchReportsParallelReads();
         break;
@@ -34,9 +37,6 @@ switch (command) {
         break;
     case 'run-branches-report-on-repo':
         launchBranchesReport();
-        break;
-    case 'code-turnover-and-reports':
-        launchRunReportsAndCodeTurnover();
         break;
     default:
         console.log(`Command ${command} not found`);

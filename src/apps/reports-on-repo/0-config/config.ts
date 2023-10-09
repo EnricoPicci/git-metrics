@@ -4,7 +4,4 @@ export const DEFAUL_CONFIG = {
 
     // Default timeout for the cloc command - used to avoid timout errors
     CLOC_TIMEOUT: 1000000,
-
-    // csv separator
-    CSV_SEP: ',',
 };

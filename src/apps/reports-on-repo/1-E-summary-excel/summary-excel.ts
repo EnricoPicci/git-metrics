@@ -1,8 +1,13 @@
-import XLSX from 'xlsx';
-import { DEFAUL_CONFIG } from '../0-config/config';
-import { readLineObs } from 'observable-fs';
-import { catchError, map, of, tap, toArray } from 'rxjs';
+
 import path from 'path';
+
+import { catchError, map, of, tap, toArray } from 'rxjs';
+
+import XLSX from 'xlsx';
+
+import { readLineObs } from 'observable-fs';
+
+import { CONFIG } from '../../../config';
 
 // returns a new workbook to be used as a summary workbook containing all the worksheets
 export function summaryWorkbook() {
@@ -12,7 +17,7 @@ export function summaryWorkbook() {
 // adds a new worksheet to the workbook filled with the data contained in the csv file
 export function addWorksheet(workbook: XLSX.WorkBook, sheetName: string, csvFile: string) {
     return readLineObs(csvFile).pipe(
-        map((line) => line.split(DEFAUL_CONFIG.CSV_SEP)),
+        map((line) => line.split(CONFIG.CSV_SEP)),
         map((csvRec) => csvRec.map((field) => (isNaN(Number(field)) ? field : Number(field)))),
         toArray(),
         tap((data) => {

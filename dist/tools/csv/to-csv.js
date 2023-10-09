@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toCsvObs = exports.toCsv = void 0;
 const rxjs_1 = require("rxjs");
-const config_1 = require("../../apps/reports-on-repo/0-config/config");
+const config_1 = require("../../config");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toCsv(objects) {
     const csvLines = [];
@@ -11,8 +11,8 @@ function toCsv(objects) {
         return [];
     }
     const header = objects[0];
-    csvLines.push(Object.keys(header).join(config_1.DEFAUL_CONFIG.CSV_SEP));
-    objects.forEach((obj) => csvLines.push(valuesWithNoCsvSeparator(obj).join(config_1.DEFAUL_CONFIG.CSV_SEP)));
+    csvLines.push(Object.keys(header).join(config_1.CONFIG.CSV_SEP));
+    objects.forEach((obj) => csvLines.push(valuesWithNoCsvSeparator(obj).join(config_1.CONFIG.CSV_SEP)));
     return csvLines;
 }
 exports.toCsv = toCsv;
@@ -28,9 +28,9 @@ function toCsvObs() {
                 next: (obj) => {
                     if (isFirst) {
                         isFirst = false;
-                        subscriber.next(Object.keys(obj).join(config_1.DEFAUL_CONFIG.CSV_SEP));
+                        subscriber.next(Object.keys(obj).join(config_1.CONFIG.CSV_SEP));
                     }
-                    subscriber.next(valuesWithNoCsvSeparator(obj).join(config_1.DEFAUL_CONFIG.CSV_SEP));
+                    subscriber.next(valuesWithNoCsvSeparator(obj).join(config_1.CONFIG.CSV_SEP));
                 },
                 error: (err) => subscriber.error(err),
                 complete: () => {
@@ -48,7 +48,7 @@ exports.toCsvObs = toCsvObs;
 // this is to avoid the csv parser to split the value in two columns
 function valuesWithNoCsvSeparator(obj) {
     return Object.values(obj).map((value) => {
-        return typeof value === 'string' ? value.replace(config_1.DEFAUL_CONFIG.CSV_SEP, ' ') : value;
+        return typeof value === 'string' ? value.replaceAll(config_1.CONFIG.CSV_SEP, config_1.CONFIG.CVS_SEP_SUBSTITUE) : value;
     });
 }
 //# sourceMappingURL=to-csv.js.map

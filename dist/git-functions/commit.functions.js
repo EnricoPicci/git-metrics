@@ -11,6 +11,7 @@ const execute_command_1 = require("../tools/execute-command/execute-command");
 const commit_model_1 = require("./commit.model");
 const config_1 = require("./config");
 const file_name_utils_1 = require("./utils/file-name-utils");
+const config_2 = require("../config");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -179,8 +180,9 @@ function newCommitCompactFromGitlog(commitDataFromGitlog) {
     // the comment may contain ',' characters, hence we can not simply take the 4th element of shaDateAuthorComment to fill the comment
     // we then have to calculat the position where the comment starts and take all the rest of the string starting from it
     // 3 needs to be added to the calculation of the length to cater for the 3 ',' characters that separate sha, date and author
+    // replace the csv separator if present in the comment
     const lengthOfShaDateAuthor = sha.length + date.length + author.length + 3;
-    const comment = commitDataFromGitlog.slice(lengthOfShaDateAuthor);
+    const comment = commitDataFromGitlog.slice(lengthOfShaDateAuthor).replaceAll(config_2.CONFIG.CSV_SEP, config_2.CONFIG.CVS_SEP_SUBSTITUE);
     const commit = {
         sha,
         date: new Date(date),

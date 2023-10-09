@@ -1,11 +1,12 @@
 import { expect } from 'chai';
-import { SEP, readCommitCompact$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit.functions';
+import { SEP, newCommitCompactFromGitlog, readCommitCompact$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit.functions';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
 import path from 'path';
 import { readLinesObs } from 'observable-fs';
 import { CommitWithFileNumstats } from './commit.model';
 import { deleteFile } from '../tools/test-helpers/delete-file';
+import { CONFIG } from '../config';
 
 describe('readCommitFromLog$', () => {
     it('should throw an error if repoPath is not provided', () => {
@@ -395,5 +396,15 @@ describe(`writeCommitWithFileNumstat$`, () => {
                     done();
                 },
             });
+    });
+});
+
+describe(`newCommitCompactFromGitlog$`, () => {
+    it(`create a new CommitCompact from a line of the Git log and check that the comment does not contain csv separators`, () => {
+        const gitLogLine = '../../repo-folder,2023-02,2/9/2023,2/8/2023,MY-APP-12, prepare folders, and app-demo,https://git/my-git/-/commit/123xyz,123xyz,added,java,code,0'
+        const commit = newCommitCompactFromGitlog(gitLogLine)
+        const comment = commit.comment
+        expect(comment.includes(CONFIG.CSV_SEP)).false;
+        expect(comment.includes(CONFIG.CVS_SEP_SUBSTITUE)).true;
     });
 });

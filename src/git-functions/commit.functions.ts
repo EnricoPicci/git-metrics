@@ -13,6 +13,7 @@ import { CommitCompact, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
 import { GitLogCommitParams } from './git-params';
 import { buildOutfileName } from './utils/file-name-utils';
+import { CONFIG } from '../config';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -217,7 +218,7 @@ export const SEP = GIT_CONFIG.COMMIT_REC_SEP;
  * @param commitDataFromGitlog A string in the format sha,date,author received from the git log command.
  * @returns A new `CommitCompact` object with the specified sha, author and date.
  */
-function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
+export function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
     const shaDateAuthorComment = commitDataFromGitlog.split(',');
     const sha = shaDateAuthorComment[0]
     const date = shaDateAuthorComment[1]
@@ -225,8 +226,9 @@ function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
     // the comment may contain ',' characters, hence we can not simply take the 4th element of shaDateAuthorComment to fill the comment
     // we then have to calculat the position where the comment starts and take all the rest of the string starting from it
     // 3 needs to be added to the calculation of the length to cater for the 3 ',' characters that separate sha, date and author
+    // replace the csv separator if present in the comment
     const lengthOfShaDateAuthor = sha.length + date.length + author.length + 3
-    const comment = commitDataFromGitlog.slice(lengthOfShaDateAuthor)
+    const comment = commitDataFromGitlog.slice(lengthOfShaDateAuthor).replaceAll(CONFIG.CSV_SEP, CONFIG.CVS_SEP_SUBSTITUE)
     const commit: CommitCompact = {
         sha,
         date: new Date(date),

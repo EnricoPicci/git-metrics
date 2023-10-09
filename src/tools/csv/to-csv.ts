@@ -1,7 +1,7 @@
 // Functions to transform an array of objects to an array of csv lines
 
 import { Observable, Subscriber } from 'rxjs';
-import { DEFAUL_CONFIG } from '../../apps/reports-on-repo/0-config/config';
+import { CONFIG } from '../../config';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toCsv(objects: any[]) {
     const csvLines: string[] = [];
@@ -9,8 +9,8 @@ export function toCsv(objects: any[]) {
         return [] as string[];
     }
     const header = objects[0];
-    csvLines.push(Object.keys(header).join(DEFAUL_CONFIG.CSV_SEP));
-    objects.forEach((obj) => csvLines.push(valuesWithNoCsvSeparator(obj).join(DEFAUL_CONFIG.CSV_SEP)));
+    csvLines.push(Object.keys(header).join(CONFIG.CSV_SEP));
+    objects.forEach((obj) => csvLines.push(valuesWithNoCsvSeparator(obj).join(CONFIG.CSV_SEP)));
     return csvLines;
 }
 
@@ -26,9 +26,9 @@ export function toCsvObs() {
                 next: (obj) => {
                     if (isFirst) {
                         isFirst = false;
-                        subscriber.next(Object.keys(obj).join(DEFAUL_CONFIG.CSV_SEP));
+                        subscriber.next(Object.keys(obj).join(CONFIG.CSV_SEP));
                     }
-                    subscriber.next(valuesWithNoCsvSeparator(obj).join(DEFAUL_CONFIG.CSV_SEP));
+                    subscriber.next(valuesWithNoCsvSeparator(obj).join(CONFIG.CSV_SEP));
                 },
                 error: (err) => subscriber.error(err),
                 complete: () => {
@@ -46,6 +46,6 @@ export function toCsvObs() {
 // this is to avoid the csv parser to split the value in two columns
 function valuesWithNoCsvSeparator(obj: Record<string, string>) {
     return Object.values(obj).map((value) => {
-        return typeof value === 'string' ? value.replace(DEFAUL_CONFIG.CSV_SEP, ' ') : value;
+        return typeof value === 'string' ? value.replaceAll(CONFIG.CSV_SEP, CONFIG.CVS_SEP_SUBSTITUE) : value;
     });
 }

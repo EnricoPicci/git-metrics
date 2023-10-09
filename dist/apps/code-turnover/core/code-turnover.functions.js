@@ -125,6 +125,9 @@ const writeClocDiffJson = (stats, outFile) => {
 exports.writeClocDiffJson = writeClocDiffJson;
 const writeClocCsv = (stats, outFile) => {
     const csvRecs = statsToCsvRecs(stats);
+    stats.map(stat => {
+        stat.comment = stat.comment;
+    });
     return (0, observable_fs_1.writeFileObs)(outFile, (0, to_csv_1.toCsv)(csvRecs)).pipe((0, rxjs_1.tap)({
         next: () => console.log(`====>>>> Cloc diff stats csv written in file: ${outFile}`),
     }), (0, rxjs_1.map)(() => stats));
