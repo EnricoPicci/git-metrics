@@ -9,6 +9,7 @@ const rxjs_1 = require("rxjs");
 const path_1 = __importDefault(require("path"));
 const observable_fs_1 = require("observable-fs");
 const delete_file_1 = require("../tools/test-helpers/delete-file");
+const config_1 = require("../config");
 describe('readCommitFromLog$', () => {
     it('should throw an error if repoPath is not provided', () => {
         (0, chai_1.expect)(() => (0, commit_functions_1.readCommitCompact$)('')).to.throw();
@@ -347,6 +348,15 @@ describe(`writeCommitWithFileNumstat$`, () => {
                 done();
             },
         });
+    });
+});
+describe(`newCommitCompactFromGitlog$`, () => {
+    it(`create a new CommitCompact from a line of the Git log and check that the comment does not contain csv separators`, () => {
+        const gitLogLine = '../../repo-folder,2023-02,2/9/2023,2/8/2023,MY-APP-12, prepare folders, and app-demo,https://git/my-git/-/commit/123xyz,123xyz,added,java,code,0';
+        const commit = (0, commit_functions_1.newCommitCompactFromGitlog)(gitLogLine);
+        const comment = commit.comment;
+        (0, chai_1.expect)(comment.includes(config_1.CONFIG.CSV_SEP)).false;
+        (0, chai_1.expect)(comment.includes(config_1.CONFIG.CVS_SEP_SUBSTITUE)).true;
     });
 });
 //# sourceMappingURL=commit.functions.spec.js.map

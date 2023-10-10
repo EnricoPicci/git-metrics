@@ -38,15 +38,17 @@ export function readCommitCompact$(
     if (!repoPath) throw new Error(`Path is mandatory`);
 
     const _noMerges = noMerges ? '--no-merges' : '';
-    const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%B" ${_noMerges}`;
+    const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%s" ${_noMerges}`;
 
     return executeCommandNewProcessToLinesObs(
         `Read commits`,
         'git',
-        ['log', '--pretty=format:%H,%ad,%an,%B', '--no-merges'],
+        ['log', '--pretty=format:%H,%ad,%an,%s', '--no-merges'],
         { cwd: repoPath },
     ).pipe(
-        map((commits: string) => commits.split('\n')),
+        map((commits: string) => {
+            return commits.split('\n')
+        }),
         concatMap((commits: string[]) => {
             return from(commits);
         }),

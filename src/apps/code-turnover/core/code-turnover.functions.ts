@@ -104,7 +104,10 @@ export function calculateClocDiffs(
                     }
                     diffsRemaining--;
                     console.log(`====>>>> commit diffs completed: ${diffsCompleted} `);
-                    console.log(`====>>>> commit diffs remaining: ${diffsRemaining} `);
+                    const percentRemaining = diffsRemaining / (diffsCompleted + diffsRemaining) * 100;
+                    // convert to number with 2 decimal digits
+                    const percentRemaining2 = Math.round(percentRemaining * 100) / 100;
+                    console.log(`====>>>> commit diffs remaining: ${diffsRemaining} - ${percentRemaining2}%`);
                     console.log(`====>>>> commit diffs errored: ${diffsErrored} `);
                 }),
             );

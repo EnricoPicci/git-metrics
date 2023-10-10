@@ -31,7 +31,13 @@ const cloc_diff_stat_csv_1 = require("./cloc-diff-stat-csv");
 function calculateCodeTurnover(folderPath, outdir, languages, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComment, removeSame) {
     const startTime = new Date().getTime();
     const folderName = path_1.default.basename(folderPath);
-    return (0, repo_functions_1.reposCompactInFolderObs)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame), writeClocDiffs(outdir, folderName), (0, rxjs_1.tap)(() => {
+    return (0, repo_functions_1.reposCompactInFolderObs)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
+    // toArray(),
+    // tap((repos) => {
+    //     console.log(repos)
+    // }),
+    // mergeMap(repos => repos),
+    calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame), writeClocDiffs(outdir, folderName), (0, rxjs_1.tap)(() => {
         const endTime = new Date().getTime();
         console.log(`====>>>> Total time to calculate cloc diffs: ${(endTime - startTime) / 1000} seconds`);
     }));
@@ -125,9 +131,6 @@ const writeClocDiffJson = (stats, outFile) => {
 exports.writeClocDiffJson = writeClocDiffJson;
 const writeClocCsv = (stats, outFile) => {
     const csvRecs = statsToCsvRecs(stats);
-    stats.map(stat => {
-        stat.comment = stat.comment;
-    });
     return (0, observable_fs_1.writeFileObs)(outFile, (0, to_csv_1.toCsv)(csvRecs)).pipe((0, rxjs_1.tap)({
         next: () => console.log(`====>>>> Cloc diff stats csv written in file: ${outFile}`),
     }), (0, rxjs_1.map)(() => stats));

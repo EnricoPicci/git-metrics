@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.SEP = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompact$ = void 0;
+exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -29,8 +29,10 @@ function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const _noMerges = noMerges ? '--no-merges' : '';
-    const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%B" ${_noMerges}`;
-    return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', ['log', '--pretty=format:%H,%ad,%an,%B', '--no-merges'], { cwd: repoPath }).pipe((0, rxjs_1.map)((commits) => commits.split('\n')), (0, rxjs_1.concatMap)((commits) => {
+    const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%s" ${_noMerges}`;
+    return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', ['log', '--pretty=format:%H,%ad,%an,%s', '--no-merges'], { cwd: repoPath }).pipe((0, rxjs_1.map)((commits) => {
+        return commits.split('\n');
+    }), (0, rxjs_1.concatMap)((commits) => {
         return (0, rxjs_1.from)(commits);
     }), (0, rxjs_1.filter)((commit) => {
         return commit.trim().length > 0;
@@ -191,6 +193,7 @@ function newCommitCompactFromGitlog(commitDataFromGitlog) {
     };
     return commit;
 }
+exports.newCommitCompactFromGitlog = newCommitCompactFromGitlog;
 // exported for testing purposes only
 function writeCommitWithFileNumstatCommand(params) {
     const args = readCommitWithFileNumstaCommandWithArgs(params, true);
