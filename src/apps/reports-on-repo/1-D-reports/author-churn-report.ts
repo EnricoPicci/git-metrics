@@ -126,7 +126,9 @@ export function mapToCsvAndWriteAuthorChurn(csvFilePath: string) {
     return pipe(
         mapAuthorsChurnToCsv(),
         toArray(),
-        concatMap((lines) => writeFileObs(csvFilePath, lines)),
+        concatMap((lines) => {
+            return writeFileObs(csvFilePath, lines)
+        }),
         tap({
             next: (csvFile) => console.log(`====>>>> csv file for files-churn ${csvFile} created`),
         }),
@@ -158,8 +160,7 @@ export function addConsiderationsForAuthorChurnReport(r: AuthorChurnReport) {
     addConsideration(r, `The authors who have contributed most are ${r.topAuthors.val.map((a) => a.authorName)}.`);
     addConsideration(
         r,
-        `-- ${r.topAuthorChurnContributors.val.length} authors who have contributed for more than ${
-            (r.params.val as any)['percentThreshold']
+        `-- ${r.topAuthorChurnContributors.val.length} authors who have contributed for more than ${(r.params.val as any)['percentThreshold']
         }% of churn.`,
     );
     return r;

@@ -70,14 +70,16 @@ function newGitFileNumstat(fileInfo, clocDict) {
     if (clocDict) {
         let _path = fileNumstat.path;
         _path = filePathFromCommitPath(_path);
+        const pathWithStartingDotSlash = './' + _path;
+        const clocFileInfo = clocDict[_path] || clocDict[pathWithStartingDotSlash];
         // it may be that cloc does not read info for files which are considered not relevant, e.g. *.txt or files without extensions
         // or old files which are not part of the current project. These files will not be in the cloc dictionary. Some of
         // such files though may be tracked by git, therefore we need to check that the file path is actually one of the keys of the
         // dictionary built with cloc
-        if (clocDict[_path]) {
-            fileNumstat.code = clocDict[_path].code;
-            fileNumstat.comment = clocDict[_path].comment;
-            fileNumstat.blank = clocDict[_path].blank;
+        if (clocFileInfo) {
+            fileNumstat.code = clocFileInfo.code;
+            fileNumstat.comment = clocFileInfo.comment;
+            fileNumstat.blank = clocFileInfo.blank;
         }
     }
     return fileNumstat;

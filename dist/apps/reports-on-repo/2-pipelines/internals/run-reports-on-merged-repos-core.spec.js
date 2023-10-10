@@ -38,5 +38,33 @@ describe(`runAllReportsOnMergedRepos`, () => {
             complete: () => done(),
         });
     }).timeout(600000);
+    it.only(`runs all the reports after merging all the repo gitlogs for the repos present in this project folder.
+    Considering that this folder contains only one repo repo, the merge will have just this repo.`, (done) => {
+        const reports = [author_churn_report_1.AuthorChurnReport.name];
+        const repoFolderPath = '../../temp/passprodotti/passpronext/microservice';
+        const filter = [];
+        const after = new Date('2023-01-01');
+        const before = new Date();
+        const outDir = `${process.cwd()}/temp`;
+        const outFilePrefix = 'microserv';
+        const clocDefsPath = '';
+        const ignoreClocZero = false;
+        const depthInFilesCoupling = 10;
+        const concurrentReadOfCommits = false;
+        const noRenames = true;
+        commits_1.COMMIT_RECORD_COUNTER.count = true;
+        commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
+        const runSingleStream = (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, // single stream mode
+        noRenames);
+        runSingleStream
+            .pipe((0, rxjs_1.tap)((report) => {
+            // expect report to be defined
+            (0, chai_1.expect)(report).to.not.be.undefined;
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(600000);
 });
 //# sourceMappingURL=run-reports-on-merged-repos-core.spec.js.map

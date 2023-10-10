@@ -31,13 +31,7 @@ const cloc_diff_stat_csv_1 = require("./cloc-diff-stat-csv");
 function calculateCodeTurnover(folderPath, outdir, languages, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComment, removeSame) {
     const startTime = new Date().getTime();
     const folderName = path_1.default.basename(folderPath);
-    return (0, repo_functions_1.reposCompactInFolderObs)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
-    // toArray(),
-    // tap((repos) => {
-    //     console.log(repos)
-    // }),
-    // mergeMap(repos => repos),
-    calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame), writeClocDiffs(outdir, folderName), (0, rxjs_1.tap)(() => {
+    return (0, repo_functions_1.reposCompactInFolderObs)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame), writeClocDiffs(outdir, folderName), (0, rxjs_1.tap)(() => {
         const endTime = new Date().getTime();
         console.log(`====>>>> Total time to calculate cloc diffs: ${(endTime - startTime) / 1000} seconds`);
     }));
@@ -81,7 +75,10 @@ function calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, 
             }
             diffsRemaining--;
             console.log(`====>>>> commit diffs completed: ${diffsCompleted} `);
-            console.log(`====>>>> commit diffs remaining: ${diffsRemaining} `);
+            const percentRemaining = diffsRemaining / (diffsCompleted + diffsRemaining) * 100;
+            // convert to number with 2 decimal digits
+            const percentRemaining2 = Math.round(percentRemaining * 100) / 100;
+            console.log(`====>>>> commit diffs remaining: ${diffsRemaining} - ${percentRemaining2}%`);
             console.log(`====>>>> commit diffs errored: ${diffsErrored} `);
         }));
     }, concurrency));

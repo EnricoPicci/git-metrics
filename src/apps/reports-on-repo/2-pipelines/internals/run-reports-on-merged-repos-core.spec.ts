@@ -51,4 +51,50 @@ describe(`runAllReportsOnMergedRepos`, () => {
                 complete: () => done(),
             });
     }).timeout(600000);
+
+    it.only(`runs all the reports after merging all the repo gitlogs for the repos present in this project folder.
+    Considering that this folder contains only one repo repo, the merge will have just this repo.`, (done) => {
+        const reports = [AuthorChurnReport.name];
+        const repoFolderPath = './';
+        const filter: string[] = [];
+        const after = new Date('2023-10-01');
+        const before = new Date();
+        const outDir = `${process.cwd()}/temp`;
+        const outFilePrefix = 'microserv';
+        const clocDefsPath = '';
+        const ignoreClocZero = false;
+        const depthInFilesCoupling = 10;
+        const concurrentReadOfCommits = false;
+        const noRenames = true;
+
+        COMMIT_RECORD_COUNTER.count = true;
+        COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
+
+        const runSingleStream = runAllReportsOnMergedRepos(
+            reports,
+            repoFolderPath,
+            filter,
+            after,
+            before,
+            outDir,
+            outFilePrefix,
+            clocDefsPath,
+            ignoreClocZero,
+            depthInFilesCoupling,
+            concurrentReadOfCommits, // single stream mode
+            noRenames,
+        );
+
+        runSingleStream
+            .pipe(
+                tap((report) => {
+                    // expect report to be defined
+                    expect(report).to.not.be.undefined;
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    }).timeout(600000);
 });

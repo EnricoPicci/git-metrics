@@ -60,21 +60,30 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const _options = program.opts();
     const _reports = _options.reports ?? allReports;
     const _repoFolderPath = _options.repoFolderPath ? _options.repoFolderPath : process.cwd();
-    const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
+    const _filter = _options.filter ?? [];
+    const _after = _options.after ? new Date(_options.after) : new Date('1970-01-01');
+    const _before = _options.before ? new Date(_options.before) : new Date('2100-01-01');
+    const _outDir = _options.outDir ?? DEFAULT_OUT_DIR;
+    const _outFilePrefix = _options.outFilePrefix ?? '';
+    const _clocDefsFile = _options.clocDefsFile ?? '';
+    const _ignoreClocZero = !_options.countClocZero;
+    const _depthInFilesCoupling = _options.depthInFilesCoupling ? parseInt(_options.depthInFilesCoupling) : 10;
+    const _concurrentReadOfCommits = _options.concurrentReadOfCommits ?? false;
+    const _noRenames = _options.noRenames ?? false;
 
     runAllReportsOnMergedRepos(
         _reports,
         _repoFolderPath,
-        _options.filter,
-        _options.after,
-        _options.before,
-        _options.outDir,
-        _options.outFilePrefix,
-        _options.clocDefsFile,
-        !_options.countClocZero,
+        _filter,
+        _after,
+        _before,
+        _outDir,
+        _outFilePrefix,
+        _clocDefsFile,
+        _ignoreClocZero,
         _depthInFilesCoupling,
-        _options.concurrentReadOfCommits,
-        _options.noRenames,
+        _concurrentReadOfCommits,
+        _noRenames,
     ).subscribe({
         next: ({ reports }) => {
             reports.forEach((report) => {

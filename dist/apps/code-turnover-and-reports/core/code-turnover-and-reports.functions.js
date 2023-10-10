@@ -42,9 +42,7 @@ function reportsAndCodeTurnover(folderPath, fromDate, toDate, outdir, languages,
                 summaryReportPath: reports.summaryReportPath,
             };
         }));
-    }, 1), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)((repos) => {
-        console.log(repos);
-    }), (0, rxjs_1.mergeMap)(repos => repos), 
+    }, 1), 
     // comment the following code to avoid returning the summary report path to reduce the size of the output
     // concatMap(({ repo, summaryReportPath }) => {
     (0, rxjs_1.concatMap)(({ repo }) => {

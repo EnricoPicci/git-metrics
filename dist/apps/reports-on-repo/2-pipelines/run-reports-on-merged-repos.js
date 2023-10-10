@@ -6,7 +6,7 @@ const run_reports_on_merged_repos_core_1 = require("./internals/run-reports-on-m
 const run_reports_on_repo_core_1 = require("./internals/run-reports-on-repo-core");
 const DEFAULT_OUT_DIR = './';
 function launchAllReportsOnMergedRepos() {
-    var _a;
+    var _a, _b, _c, _d, _e, _f, _g;
     const program = new commander_1.Command();
     program
         .description('A command to read an array of git repos, merge all the commit information and then run all the reports')
@@ -28,8 +28,17 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const _options = program.opts();
     const _reports = (_a = _options.reports) !== null && _a !== void 0 ? _a : run_reports_on_repo_core_1.allReports;
     const _repoFolderPath = _options.repoFolderPath ? _options.repoFolderPath : process.cwd();
-    const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
-    (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(_reports, _repoFolderPath, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, !_options.countClocZero, _depthInFilesCoupling, _options.concurrentReadOfCommits, _options.noRenames).subscribe({
+    const _filter = (_b = _options.filter) !== null && _b !== void 0 ? _b : [];
+    const _after = _options.after ? new Date(_options.after) : new Date('1970-01-01');
+    const _before = _options.before ? new Date(_options.before) : new Date('2100-01-01');
+    const _outDir = (_c = _options.outDir) !== null && _c !== void 0 ? _c : DEFAULT_OUT_DIR;
+    const _outFilePrefix = (_d = _options.outFilePrefix) !== null && _d !== void 0 ? _d : '';
+    const _clocDefsFile = (_e = _options.clocDefsFile) !== null && _e !== void 0 ? _e : '';
+    const _ignoreClocZero = !_options.countClocZero;
+    const _depthInFilesCoupling = _options.depthInFilesCoupling ? parseInt(_options.depthInFilesCoupling) : 10;
+    const _concurrentReadOfCommits = (_f = _options.concurrentReadOfCommits) !== null && _f !== void 0 ? _f : false;
+    const _noRenames = (_g = _options.noRenames) !== null && _g !== void 0 ? _g : false;
+    (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(_reports, _repoFolderPath, _filter, _after, _before, _outDir, _outFilePrefix, _clocDefsFile, _ignoreClocZero, _depthInFilesCoupling, _concurrentReadOfCommits, _noRenames).subscribe({
         next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');

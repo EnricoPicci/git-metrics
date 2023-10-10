@@ -79,7 +79,9 @@ function _authorChurnReport(params) {
     }));
 }
 function mapToCsvAndWriteAuthorChurn(csvFilePath) {
-    return (0, rxjs_1.pipe)(mapAuthorsChurnToCsv(), (0, operators_1.toArray)(), (0, operators_1.concatMap)((lines) => (0, observable_fs_1.writeFileObs)(csvFilePath, lines)), (0, operators_1.tap)({
+    return (0, rxjs_1.pipe)(mapAuthorsChurnToCsv(), (0, operators_1.toArray)(), (0, operators_1.concatMap)((lines) => {
+        return (0, observable_fs_1.writeFileObs)(csvFilePath, lines);
+    }), (0, operators_1.tap)({
         next: (csvFile) => console.log(`====>>>> csv file for files-churn ${csvFile} created`),
     }));
 }
