@@ -16,7 +16,7 @@ describe(`commitWithBranchTipsPerDayDictionary`, () => {
         const reverse = true;
 
         const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile, reverse };
-        const clocParams: ClocParams = { outDir, folderPath: repoFolderPath };
+        const clocParams: ClocParams = { outDir, folderPath: repoFolderPath, vcs: 'git' };
         const [commitLogPath, clocLogPath] = readAll(commitOptions, clocParams);
 
         const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());
@@ -173,7 +173,7 @@ describe(`commitDaylySummary`, () => {
         const reverse = true;
 
         const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile, reverse };
-        const clocParams: ClocParams = { outDir, folderPath: repoFolderPath };
+        const clocParams: ClocParams = { outDir, folderPath: repoFolderPath, vcs: 'git' };
         const [commitLogPath, clocLogPath] = readAll(commitOptions, clocParams);
 
         const commitsWithBranchTips = enrichedCommitsStream(commitLogPath, clocLogPath).pipe(commitWithBranchTips());

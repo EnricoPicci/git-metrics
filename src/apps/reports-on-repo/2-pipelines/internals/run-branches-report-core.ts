@@ -38,7 +38,7 @@ export function runBranchesReport(
         includeMergeCommits: true,
         firstParent: true,
     };
-    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir };
+    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, clocParams);
 
     // generation of the source streams

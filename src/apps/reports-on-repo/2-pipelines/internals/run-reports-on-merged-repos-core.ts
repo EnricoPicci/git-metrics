@@ -46,7 +46,7 @@ export function runAllReportsOnMergedRepos(
                     noRenames,
                     reverse: true,
                 };
-                const clocParams: ClocParams = { folderPath: repoFolderPath, outDir: _outDir };
+                const clocParams: ClocParams = { folderPath: repoFolderPath, outDir: _outDir, vcs: 'git' };
                 const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, clocParams);
 
                 // generation of the source streams
@@ -70,7 +70,7 @@ export function runAllReportsOnMergedRepos(
                 allFileStreams.push(_filesStream);
             });
 
-            const clocSummaryPath = writeClocSummary({ folderPath: repoContainerFolderPath, outDir: _outDir });
+            const clocSummaryPath = writeClocSummary({ folderPath: repoContainerFolderPath, outDir: _outDir, vcs: 'git' });
             const _clocSummaryStream = clocSummaryCsvRaw$(clocSummaryPath);
             return {
                 allCommitStreamsMerged: merge(...allCommitStreams),

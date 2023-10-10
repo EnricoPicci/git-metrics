@@ -6,7 +6,7 @@ import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 describe(`readAllParallel`, () => {
-    it(`performs all the read operations concurrently`, (done) => {
+    it.only(`performs all the read operations concurrently`, (done) => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = 'read-all-concurrent';
 
@@ -22,6 +22,7 @@ describe(`readAllParallel`, () => {
             folderPath: './src',  // cloc only on src to speed up the test
             outDir,
             outClocFilePrefix: `${outFile}-`,
+            vcs: '',  // since we are looking into ./src folder which is not a git repo, we do not need to specify any vcs
         };
 
         let _paths: string[];

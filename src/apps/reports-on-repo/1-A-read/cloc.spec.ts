@@ -12,7 +12,8 @@ describe(`clocSummaryAsStreamOfStrings$`, () => {
         const repo = 'git-repo-with-code';
         const clocParams: ClocParams = {
             folderPath: `./test-data/${repo}`,
-            outDir: '',  // outdir should not be mandatory since it is not used in this function    
+            outDir: '',  // outdir should not be mandatory since it is not used in this function   
+            vcs: 'git',
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
         const outFileCreatedSync = writeClocSummary({ ...clocParams, outDir: './temp/', outClocFilePrefix: 'same-process-' }, 'test');
@@ -55,6 +56,7 @@ describe(`clocSummaryAsStreamOfStrings$`, () => {
         const params: ClocParams = {
             folderPath: `./test-data/${repo}`,
             outDir: '', // outdir should not be mandatory since it is not used in this function
+            vcs: 'git',
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
         const outFileSynch = writeClocSummary({ ...params, outDir: './temp/', outClocFilePrefix: 'same-process' }, 'test');

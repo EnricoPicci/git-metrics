@@ -41,7 +41,7 @@ export function loadMongRunReports(
     // the "after" propety in the "commitOptions" object
     const commitOptions: GitLogCommitParams = { filter, outDir, repoFolderPath, outFile };
 
-    const clocParams: ClocParams = { outDir, folderPath: repoFolderPath, outClocFile, clocDefsPath };
+    const clocParams: ClocParams = { outDir, folderPath: repoFolderPath, outClocFile, clocDefsPath, vcs: 'git' };
 
     const [commitLogPath, clocLogPath] = readAll(commitOptions, clocParams);
 

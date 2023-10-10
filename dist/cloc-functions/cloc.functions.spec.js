@@ -113,6 +113,7 @@ describe(`writeClocByFile$`, () => {
             folderPath: `./test-data/${repo}`,
             outDir,
             outClocFilePrefix,
+            vcs: ''
         };
         const expectedOutFilePath = outDir + '/' + outClocFilePrefix + repo + '-cloc-byfile.csv';
         let counter = 0;
@@ -154,6 +155,7 @@ describe(`writeClocSummary`, () => {
         const config = {
             folderPath: `./test-data/${repo}`,
             outDir,
+            vcs: ''
         };
         const expectedOutFilePath = path_1.default.join(outDir, `${repo}-cloc-summary.csv`);
         const returnedOutFilePath = (0, cloc_functions_1.writeClocSummary)(config, 'test');
@@ -248,6 +250,7 @@ describe(`writeClocByfile`, () => {
         const params = {
             folderPath: `./test-data/${repo}`,
             outDir,
+            vcs: ''
         };
         const expectedOutFilePath = path_1.default.join(outDir, `${repo}-cloc-byfile.csv`);
         const returnedOutFilePath = (0, cloc_functions_1.writeClocByfile)(params, 'test');

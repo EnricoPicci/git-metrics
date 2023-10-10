@@ -35,6 +35,41 @@ describe(`enrichedCommitsStream`, () => {
         }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
             next: (allCommits) => {
                 (0, chai_1.expect)(allCommits.length).equal(3);
+                allCommits.forEach((commit) => {
+                    (0, chai_1.expect)(commit.files.length).gt(0);
+                    commit.files.forEach((f) => {
+                        (0, chai_1.expect)(f.linesAdded).gte(0);
+                        (0, chai_1.expect)(f.linesDeleted).gte(0);
+                        (0, chai_1.expect)(f.code).gt(0);
+                    });
+                });
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+    it(`returns a stream of arrays of strings, each array containing all the data related to a specific commit
+    the csv log contains the file names starting with './' (this is the format of the file paths when the cloc
+        command is used without the --vcs=git option)`, (done) => {
+        const clocLogPath = path.join(process.cwd(), '/test-data/output/a-git-repo-cloc-with-dot-slash.gitlog');
+        (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath)
+            .pipe((0, rxjs_1.tap)({
+            next: (commit) => {
+                (0, chai_1.expect)(commit).not.undefined;
+            },
+        }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            next: (allCommits) => {
+                (0, chai_1.expect)(allCommits.length).equal(3);
+                allCommits.forEach((commit) => {
+                    (0, chai_1.expect)(commit.files.length).gt(0);
+                    commit.files.forEach((f) => {
+                        (0, chai_1.expect)(f.linesAdded).gte(0);
+                        (0, chai_1.expect)(f.linesDeleted).gte(0);
+                        (0, chai_1.expect)(f.code).gt(0);
+                    });
+                });
             },
         }))
             .subscribe({

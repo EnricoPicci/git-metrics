@@ -17,7 +17,7 @@ function runAllReportsOnMultiRepos(reports, repoFolderPaths, filter, after, befo
     const allReports = repoFolderPaths.map((repoFolderPath) => {
         // read the data from git and cloc tool
         const commitOptions = { repoFolderPath, outDir, filter, noRenames, reverse: true };
-        const clocParams = { folderPath: repoFolderPath, outDir };
+        const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         // generation of the source streams
         const { _commitStream, _filesStream, _clocSummaryStream } = (0, run_reports_on_repo_core_1._streams)(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits);

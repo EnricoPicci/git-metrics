@@ -52,7 +52,7 @@ describe(`runAllReportsOnMergedRepos`, () => {
             });
     }).timeout(600000);
 
-    it.only(`runs all the reports after merging all the repo gitlogs for the repos present in this project folder.
+    it(`runs all the reports after merging all the repo gitlogs for the repos present in this project folder.
     Considering that this folder contains only one repo repo, the merge will have just this repo.`, (done) => {
         const reports = [AuthorChurnReport.name];
         const repoFolderPath = './';

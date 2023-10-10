@@ -64,7 +64,7 @@ export function runReportsSingleThread(
 
     // read the data from git and cloc tool
     const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, noRenames, reverse: true };
-    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir };
+    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, clocParams);
 
     // generation of the source streams
@@ -114,7 +114,7 @@ export function runReportsParallelReads(
 
     // read from git log and cloc
     const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter, noRenames, reverse: true };
-    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir };
+    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     return readAllParallel(commitOptions, clocParams).pipe(
         // prepare the streams of git enriched objects
         map(([commitLogPath, clocLogPath, clocSummaryPath]) => {
@@ -162,7 +162,7 @@ export function runReportsOneStream(
 
     // streams that read from git log and cloc
     const commitOptions: GitLogCommitParams = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
-    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir };
+    const clocParams: ClocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     const { gitLogCommits, cloc, clocSummary } = readStreamsDistinctProcesses(commitOptions, clocParams);
 
     // enrich git log streams

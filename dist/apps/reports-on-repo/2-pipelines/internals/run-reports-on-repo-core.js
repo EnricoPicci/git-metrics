@@ -37,7 +37,7 @@ function runReportsSingleThread(reports, repoFolderPath, filter, after, before, 
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
     // read the data from git and cloc tool
     const commitOptions = { repoFolderPath, outDir, filter, noRenames, reverse: true };
-    const clocParams = { folderPath: repoFolderPath, outDir };
+    const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
     // generation of the source streams
     const { _commitStream, _filesStream, _clocSummaryStream } = _streams(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits);
@@ -52,7 +52,7 @@ function runReportsParallelReads(reports, repoFolderPath, filter, after, before,
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
     // read from git log and cloc
     const commitOptions = { repoFolderPath, outDir, filter, noRenames, reverse: true };
-    const clocParams = { folderPath: repoFolderPath, outDir };
+    const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     return (0, read_all_1.readAllParallel)(commitOptions, clocParams).pipe(
     // prepare the streams of git enriched objects
     (0, rxjs_1.map)(([commitLogPath, clocLogPath, clocSummaryPath]) => {
@@ -70,7 +70,7 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
     // streams that read from git log and cloc
     const commitOptions = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
-    const clocParams = { folderPath: repoFolderPath, outDir };
+    const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     const { gitLogCommits, cloc, clocSummary } = (0, read_all_1.readStreamsDistinctProcesses)(commitOptions, clocParams);
     // enrich git log streams
     const clocDict = (0, cloc_functions_1.clocFileDictFromClocStream$)(cloc);

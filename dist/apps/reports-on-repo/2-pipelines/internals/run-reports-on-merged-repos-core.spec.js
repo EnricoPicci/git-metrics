@@ -38,12 +38,12 @@ describe(`runAllReportsOnMergedRepos`, () => {
             complete: () => done(),
         });
     }).timeout(600000);
-    it.only(`runs all the reports after merging all the repo gitlogs for the repos present in this project folder.
+    it(`runs all the reports after merging all the repo gitlogs for the repos present in this project folder.
     Considering that this folder contains only one repo repo, the merge will have just this repo.`, (done) => {
         const reports = [author_churn_report_1.AuthorChurnReport.name];
-        const repoFolderPath = '../../temp/passprodotti/passpronext/microservice';
+        const repoFolderPath = './';
         const filter = [];
-        const after = new Date('2023-01-01');
+        const after = new Date('2023-10-01');
         const before = new Date();
         const outDir = `${process.cwd()}/temp`;
         const outFilePrefix = 'microserv';

@@ -24,7 +24,7 @@ describe(`projectAndBranchesReport`, () => {
         // const after = undefined;
         // read
         const commitOptions = { repoFolderPath, outDir, filter, reverse: true };
-        const clocParams = { folderPath: repoFolderPath, outDir };
+        const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         // generation of the source streams
         const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);

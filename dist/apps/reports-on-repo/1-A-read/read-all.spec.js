@@ -19,6 +19,7 @@ describe(`readAllParallel`, () => {
             folderPath: './src',
             outDir,
             outClocFilePrefix: `${outFile}-`,
+            vcs: 'git',
         };
         let _paths;
         (0, read_all_1.readAllParallel)(gitCommitConfig, clocConfig)

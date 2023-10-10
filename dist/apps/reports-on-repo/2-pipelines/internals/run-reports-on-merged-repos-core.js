@@ -28,7 +28,7 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
                 noRenames,
                 reverse: true,
             };
-            const clocParams = { folderPath: repoFolderPath, outDir: _outDir };
+            const clocParams = { folderPath: repoFolderPath, outDir: _outDir, vcs: 'git' };
             const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
             // generation of the source streams
             const { _commitStream, _filesStream } = (0, run_reports_on_repo_core_1._streams)(commitLogPath, clocLogPath, clocSummaryPath, concurrentReadOfCommits);
@@ -41,7 +41,7 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
             })));
             allFileStreams.push(_filesStream);
         });
-        const clocSummaryPath = (0, cloc_functions_1.writeClocSummary)({ folderPath: repoContainerFolderPath, outDir: _outDir });
+        const clocSummaryPath = (0, cloc_functions_1.writeClocSummary)({ folderPath: repoContainerFolderPath, outDir: _outDir, vcs: 'git' });
         const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
         return {
             allCommitStreamsMerged: (0, rxjs_1.merge)(...allCommitStreams),

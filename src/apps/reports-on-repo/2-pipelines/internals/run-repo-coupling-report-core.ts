@@ -24,7 +24,7 @@ export function runRepoCouplingReport(
 
     const fileStreams = repoFolderPaths.map((repoFolderPath) => {
         const commitOptions: GitLogCommitParams = { filter, outDir: outDir!, repoFolderPath, outFile, after, reverse: true };
-        const params: ClocParams = { outDir: outDir!, folderPath: repoFolderPath, outClocFile, clocDefsPath };
+        const params: ClocParams = { outDir: outDir!, folderPath: repoFolderPath, outClocFile, clocDefsPath, vcs: 'git' };
         const [commitLogPath, clocLogPath] = readAll(commitOptions, params);
         return filesStream(commitLogPath, clocLogPath);
     });
