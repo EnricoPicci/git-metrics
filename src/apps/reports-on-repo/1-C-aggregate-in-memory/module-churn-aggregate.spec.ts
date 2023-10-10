@@ -59,6 +59,7 @@ describe(`moduleChurns`, () => {
                     expect(srcModuleChurn.linesAdded).equal(468);
                     expect(srcModuleChurn.linesDeleted).equal(17);
                     expect(srcModuleChurn.linesAddDel).equal(485);
+                    expect(srcModuleChurn.created.toDateString()).equal(new Date('2021-07-13').toDateString());
                 }),
             )
             .subscribe({
