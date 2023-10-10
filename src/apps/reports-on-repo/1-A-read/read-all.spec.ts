@@ -6,7 +6,7 @@ import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 describe(`readAllParallel`, () => {
-    it.only(`performs all the read operations concurrently`, (done) => {
+    it(`performs all the read operations concurrently`, (done) => {
         const outDir = `${process.cwd()}/temp`;
         const outFile = 'read-all-concurrent';
 
