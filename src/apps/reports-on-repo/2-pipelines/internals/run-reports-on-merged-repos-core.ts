@@ -7,11 +7,11 @@ import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
 import { FileGitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 
-import { gitRepos } from './run-reports-on-multi-repos-core';
 import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';
 import { ClocParams } from '../../../../cloc-functions/cloc-params';
 import { clocSummaryCsvRaw$, writeClocSummary } from '../../../../cloc-functions/cloc.functions';
+import { gitRepoPaths } from '../../../../git-functions/repo-path.functions';
 
 export function runAllReportsOnMergedRepos(
     reports: string[],
@@ -26,12 +26,13 @@ export function runAllReportsOnMergedRepos(
     depthInFilesCoupling: number,
     concurrentReadOfCommits: boolean,
     noRenames: boolean,
+    excludeRepoPaths: string[],
 ) {
     // create the output directory if not existing
     const _outDir = path.resolve(outDir ? outDir : '');
     createDirIfNotExisting(_outDir);
 
-    const repoFolderPaths = gitRepos(repoContainerFolderPath);
+    const repoFolderPaths = gitRepoPaths(repoContainerFolderPath, excludeRepoPaths);
 
     return repoFolderPaths.pipe(
         map((_repoFolderPaths) => {

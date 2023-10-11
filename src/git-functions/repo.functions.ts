@@ -7,6 +7,7 @@ import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
 import { readCommitCompact$ } from './commit.functions';
+import { isToBeExcluded } from '../tools/strings-utils/is-to-be-excluded';
 
 // reposInFolder returns the list of git repos paths in a given folder including subfolders
 export function reposInFolder(folderPath: string) {
@@ -73,20 +74,6 @@ export function reposCompactInFolderObs(
             return newRepoCompact(repoPath, fromDate, toDate);
         }, concurrency),
     );
-}
-
-// isToBeExcluded returns true if the name of the repo is in the excludeRepoPaths array
-export function isToBeExcluded(repoPath: string, excludeRepoPaths: string[]) {
-    const excludeRepoPathsLowerCase = excludeRepoPaths.map((excludeRepo) => excludeRepo.toLowerCase());
-    const repoPathLowerCase = repoPath.toLowerCase();
-    return excludeRepoPathsLowerCase.some((excludeRepo) => {
-        if (excludeRepo.includes('*')) {
-            const excludeRepoRegex = new RegExp(excludeRepo.replace('*', '.*'));
-            return excludeRepoRegex.test(repoPathLowerCase);
-        } else {
-            return repoPathLowerCase === excludeRepo;
-        }
-    });
 }
 
 // newRepoCompact returns an Observable that notifies a new RepoCompact

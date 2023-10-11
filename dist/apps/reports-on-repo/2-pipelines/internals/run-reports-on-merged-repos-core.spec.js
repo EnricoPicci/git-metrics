@@ -24,10 +24,13 @@ describe(`runAllReportsOnMergedRepos`, () => {
         const clocDefsPath = '';
         const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
+        const concurrentReadOfCommits = false;
+        const noRenames = true;
+        const excludeRepoPaths = [];
         commits_1.COMMIT_RECORD_COUNTER.count = true;
         commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
-        const runSingleStream = (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(reports, repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, ignoreClocZero, depthInFilesCoupling, false, // single stream mode
-        false);
+        const runSingleStream = (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(reports, repoFolderPath, filter, after, before, outDir, outFile, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, // single stream mode
+        noRenames, excludeRepoPaths);
         runSingleStream
             .pipe((0, rxjs_1.tap)((report) => {
             // expect report to be defined
@@ -52,10 +55,11 @@ describe(`runAllReportsOnMergedRepos`, () => {
         const depthInFilesCoupling = 10;
         const concurrentReadOfCommits = false;
         const noRenames = true;
+        const excludeRepoPaths = [];
         commits_1.COMMIT_RECORD_COUNTER.count = true;
         commits_1.COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
         const runSingleStream = (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, // single stream mode
-        noRenames);
+        noRenames, excludeRepoPaths);
         runSingleStream
             .pipe((0, rxjs_1.tap)((report) => {
             // expect report to be defined

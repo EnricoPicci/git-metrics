@@ -1,16 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reportsAndCodeTurnover = void 0;
-const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const config_1 = require("../../../config");
-const repo_functions_1 = require("../../../git-functions/repo.functions");
-const run_reports_on_repo_core_1 = require("../../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core");
 const code_turnover_functions_1 = require("../../code-turnover/core/code-turnover.functions");
 const language_extensions_dict_1 = require("./language-extensions-dict");
+const run_reports_on_merged_repos_core_1 = require("../../reports-on-repo/2-pipelines/internals/run-reports-on-merged-repos-core");
 /**
  * Generates the reports for a folder containing multiple Git repositories and calculates the code turnover for all repos
  * contained in the folder.
@@ -32,27 +27,11 @@ const language_extensions_dict_1 = require("./language-extensions-dict");
  * @param ignoreClocZero Whether to ignore files with zero lines of code.
  * @returns An Observable that emits an array of `CommitDiffStatsWithSummaryReport` objects representing the cloc diffs and summary reports for each commit in each repository.
  */
-function reportsAndCodeTurnover(folderPath, fromDate, toDate, outdir, languages, concurrency = config_1.CONFIG.CONCURRENCY, excludeRepoPaths = [], reports, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, removeBlanks, removeNFiles, removeComment, removeSame) {
-    const folderName = path_1.default.basename(folderPath);
+function reportsAndCodeTurnover(folderPath, fromDate, toDate, outdir, languages, concurrency = config_1.CONFIG.CONCURRENCY, excludeRepoPaths = [], reports, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, removeBlanks, removeNFiles, removeComments, removeSame) {
     const filter = (0, language_extensions_dict_1.languageExtensions)(languages);
-    return (0, repo_functions_1.reposCompactInFolderObs)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe((0, rxjs_1.mergeMap)((repo) => {
-        return (0, run_reports_on_repo_core_1.runReportsParallelReads)(reports, repo.path, filter, fromDate, toDate, outdir, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, 0).pipe((0, rxjs_1.map)((reports) => {
-            return {
-                repo,
-                summaryReportPath: reports.summaryReportPath,
-            };
-        }));
-    }, 1), 
-    // comment the following code to avoid returning the summary report path to reduce the size of the output
-    // concatMap(({ repo, summaryReportPath }) => {
-    (0, rxjs_1.concatMap)(({ repo }) => {
-        return (0, rxjs_1.of)(repo).pipe((0, code_turnover_functions_1.calculateClocDiffs)(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame), (0, rxjs_1.map)((clocDiffStat) => {
-            // return { ...clocDiffStat, summaryReportPath }
-            return clocDiffStat;
-        }));
-    }), (0, rxjs_1.toArray)(), (0, rxjs_1.map)(stats => {
-        return stats.flat();
-    }), (0, code_turnover_functions_1.writeClocDiffsJson)(outdir, folderName), (0, code_turnover_functions_1.writeClocDiffsCsv)(outdir, folderName));
+    const reportOnAllRepos$ = (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(reports, folderPath, filter, fromDate, toDate, outdir, outFilePrefix, clocDefsPath, ignoreClocZero, 0, concurrentReadOfCommits, noRenames, excludeRepoPaths);
+    const calculateCodeTurnover$ = (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outdir, languages, fromDate, toDate, concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComments, removeSame);
+    return (0, rxjs_1.concat)(reportOnAllRepos$, calculateCodeTurnover$);
 }
 exports.reportsAndCodeTurnover = reportsAndCodeTurnover;
 //# sourceMappingURL=code-turnover-and-reports.functions.js.map

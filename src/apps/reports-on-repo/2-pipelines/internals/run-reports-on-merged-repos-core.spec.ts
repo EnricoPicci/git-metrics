@@ -20,6 +20,9 @@ describe(`runAllReportsOnMergedRepos`, () => {
         const clocDefsPath = '';
         const ignoreClocZero = true;
         const depthInFilesCoupling = 10;
+        const concurrentReadOfCommits = false;
+        const noRenames = true;
+        const excludeRepoPaths: string[] = [];
 
         COMMIT_RECORD_COUNTER.count = true;
         COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
@@ -35,8 +38,9 @@ describe(`runAllReportsOnMergedRepos`, () => {
             clocDefsPath,
             ignoreClocZero,
             depthInFilesCoupling,
-            false, // single stream mode
-            false,
+            concurrentReadOfCommits, // single stream mode
+            noRenames,
+            excludeRepoPaths
         );
 
         runSingleStream
@@ -66,6 +70,7 @@ describe(`runAllReportsOnMergedRepos`, () => {
         const depthInFilesCoupling = 10;
         const concurrentReadOfCommits = false;
         const noRenames = true;
+        const excludeRepoPaths: string[] = [];
 
         COMMIT_RECORD_COUNTER.count = true;
         COMMIT_RECORD_COUNTER.numberOfCommitLines = 0;
@@ -83,6 +88,7 @@ describe(`runAllReportsOnMergedRepos`, () => {
             depthInFilesCoupling,
             concurrentReadOfCommits, // single stream mode
             noRenames,
+            excludeRepoPaths
         );
 
         runSingleStream

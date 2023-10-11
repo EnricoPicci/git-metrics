@@ -1,12 +1,9 @@
 import { Command } from "commander";
-import { concat } from "rxjs";
 
 import { CONFIG } from "../../config";
 import { allReports } from "../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core";
-import { clocOnFolders } from "../cloc-on-folders/internals/cloc-on-folders";
 
 import { reportsAndCodeTurnover } from "./core/code-turnover-and-reports.functions";
-import { runAllReportsOnMergedRepos } from "../reports-on-repo/2-pipelines/internals/run-reports-on-merged-repos-core";
 
 export function launchRunReportsAndCodeTurnover() {
     const start = Date.now();
@@ -14,38 +11,16 @@ export function launchRunReportsAndCodeTurnover() {
     console.log('====>>>> Launching run-reports and code-turnover calculation on Repos');
 
     const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
-        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero,
+        outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero,
         removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
 
-    clocOnFolders(folderPath, outdir)
-
-    const reportOnAllRepos$ = runAllReportsOnMergedRepos(allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false)
-
-    const reportsAndCodeTurnover$ = reportsAndCodeTurnover(
-        folderPath,
-        fromDate,
-        toDate,
-        outdir,
-        languages,
-        concurrency,
-        excludeRepoPaths,
-        reports,
-        outFilePrefix,
-        '', // we ignore the possibility to use a custom cloc definition file
-        concurrentReadOfCommits,
-        noRenames,
-        !countClocZero,
-        removeBlanks,
-        removeNFiles,
-        removeComments,
-        removeSame
-    )
-
-    concat(reportOnAllRepos$, reportsAndCodeTurnover$).subscribe({
-        complete: () => {
-            console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
-        },
-    })
+    reportsAndCodeTurnover(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, allReports, outFilePrefix,
+        '', concurrentReadOfCommits, noRenames, !countClocZero, removeBlanks, removeNFiles, removeComments, removeSame)
+        .subscribe({
+            complete: () => {
+                console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
+            },
+        })
 }
 
 
@@ -117,7 +92,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const fromDate = _options.from ? new Date(_options.from) : new Date(0);
     const toDate = _options.to ? new Date(_options.to) : new Date(Date.now());
     const outdir = _options.outdir || process.cwd();
-    const languages = _options.languages || [];
+    const languages: string[] = _options.languages || [];
     const concurrency = _options.concurrency ? parseInt(_options.concurrency) : CONFIG.CONCURRENCY;
     const excludeRepoPaths = _options.excludeRepoPaths || [];
     const reports = _options.reports ?? allReports;
@@ -132,6 +107,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
 
     return {
         folderPath: _options.folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
-        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame
+        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero,
+        removeBlanks, removeNFiles, removeComments, removeSame
     };
 }

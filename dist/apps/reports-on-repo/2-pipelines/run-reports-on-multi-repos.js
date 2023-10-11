@@ -6,6 +6,7 @@ const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const run_reports_on_multi_repos_core_1 = require("./internals/run-reports-on-multi-repos-core");
 const run_reports_on_repo_core_1 = require("./internals/run-reports-on-repo-core");
+const repo_path_functions_1 = require("../../../git-functions/repo-path.functions");
 const DEFAULT_OUT_DIR = './';
 function launchAllReportsOnMultiRepos() {
     var _a;
@@ -29,7 +30,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     program.parse(process.argv);
     const _options = program.opts();
     const _reports = (_a = _options.reports) !== null && _a !== void 0 ? _a : run_reports_on_repo_core_1.allReports;
-    const _repoFolderPaths = _options.repoFolderPaths ? (0, rxjs_1.of)(_options.repoFolderPaths) : (0, run_reports_on_multi_repos_core_1.gitRepos)();
+    const _repoFolderPaths = _options.repoFolderPaths ? (0, rxjs_1.of)(_options.repoFolderPaths) : (0, repo_path_functions_1.gitRepoPaths)();
     const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
     _repoFolderPaths
         .pipe((0, operators_1.concatMap)((folders) => (0, run_reports_on_multi_repos_core_1.runAllReportsOnMultiRepos)(_reports, folders, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, !_options.countClocZero, _depthInFilesCoupling, _options.concurrentReadOfCommits, _options.noRenames)))

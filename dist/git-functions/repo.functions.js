@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRemoteOriginUrl = exports.gitHttpsUrlFromGitUrl = exports.newRepoCompact = exports.isToBeExcluded = exports.reposCompactInFolderObs = exports.cloneRepo = exports.reposInFolder = void 0;
+exports.getRemoteOriginUrl = exports.gitHttpsUrlFromGitUrl = exports.newRepoCompact = exports.reposCompactInFolderObs = exports.cloneRepo = exports.reposInFolder = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const commit_functions_1 = require("./commit.functions");
+const is_to_be_excluded_1 = require("../tools/strings-utils/is-to-be-excluded");
 // reposInFolder returns the list of git repos paths in a given folder including subfolders
 function reposInFolder(folderPath) {
     let gitRepos = [];
@@ -47,7 +48,7 @@ exports.cloneRepo = cloneRepo;
 function reposCompactInFolderObs(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = 1, excludeRepoPaths = []) {
     const repoPaths = reposInFolder(folderPath);
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.filter)((repoPath) => {
-        return !isToBeExcluded(repoPath, excludeRepoPaths);
+        return !(0, is_to_be_excluded_1.isToBeExcluded)(repoPath, excludeRepoPaths);
     }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)((repoPaths) => {
         console.log(`Repos to be analyzed: ${repoPaths.length}`);
         repoPaths.forEach((repoPath) => {
@@ -60,21 +61,6 @@ function reposCompactInFolderObs(folderPath, fromDate = new Date(0), toDate = ne
     }, concurrency));
 }
 exports.reposCompactInFolderObs = reposCompactInFolderObs;
-// isToBeExcluded returns true if the name of the repo is in the excludeRepoPaths array
-function isToBeExcluded(repoPath, excludeRepoPaths) {
-    const excludeRepoPathsLowerCase = excludeRepoPaths.map((excludeRepo) => excludeRepo.toLowerCase());
-    const repoPathLowerCase = repoPath.toLowerCase();
-    return excludeRepoPathsLowerCase.some((excludeRepo) => {
-        if (excludeRepo.includes('*')) {
-            const excludeRepoRegex = new RegExp(excludeRepo.replace('*', '.*'));
-            return excludeRepoRegex.test(repoPathLowerCase);
-        }
-        else {
-            return repoPathLowerCase === excludeRepo;
-        }
-    });
-}
-exports.isToBeExcluded = isToBeExcluded;
 // newRepoCompact returns an Observable that notifies a new RepoCompact
 // filled with its commits sorted by date ascending
 function newRepoCompact(repoPath, fromDate = new Date(0), toDate = new Date(Date.now())) {

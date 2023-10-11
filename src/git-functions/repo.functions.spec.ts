@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl, isToBeExcluded, reposCompactInFolderObs } from './repo.functions'
+import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl, reposCompactInFolderObs } from './repo.functions'
 
 describe('reposCompactInFolderObs', () => {
     it('should return notify a stream of values since the difference between the commits is performed on this repo', (done) => {
@@ -17,74 +17,6 @@ describe('reposCompactInFolderObs', () => {
         })
     });
 });
-
-describe('isToBeExcluded', () => {
-    describe('isToBeExcluded', () => {
-        it('should return true if the repo name is in the excludeRepoPaths array', () => {
-            const repoPath = 'my-repo'
-            const excludeRepoPaths = ['my-repo', 'other-repo']
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.true
-        })
-
-        it('should return true if the repo name matches a wildcard pattern in the excludeRepoPaths array', () => {
-            const repoPath = 'my-repo-123'
-            const excludeRepoPaths = ['my-repo-*', 'other-repo']
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.true
-        })
-
-        it('should return true if the repo name matches a wildcard pattern in the excludeRepoPaths array', () => {
-            const repoPath = 'one-repo-123'
-            const excludeRepoPaths = ['my-repo-*', 'other-repo']
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.false
-        })
-
-        it('should return false if the repo name is not in the excludeRepoPaths array', () => {
-            const repoPath = 'my-repo'
-            const excludeRepoPaths = ['other-repo']
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.false
-        })
-
-        it('should return false if the repo name does not match any wildcard pattern in the excludeRepoPaths array', () => {
-            const repoPath = 'my-repo-123'
-            const excludeRepoPaths = ['other-repo-*']
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.false
-        })
-
-        it('should return false if the excludeRepoPaths array is empty', () => {
-            const repoPath = 'my-repo'
-            const excludeRepoPaths: string[] = []
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.false
-        })
-
-        it('should return true if the repoPath is a real path and the excludeRepoPaths array contains a part of it', () => {
-            const repoPath = '../../temp/iiab/SharedACN'
-            const excludeRepoPaths = ['*dbm', 'dbobjects*', '*passptfdanni', '*sharedacn']
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.true
-        })
-
-        it('should return false if the repoPath is a real path and the excludeRepoPaths array does not contain a part of it', () => {
-            const repoPath = '../../temp/iiab/SharedACN'
-            const excludeRepoPaths = ['*dbm', '*dbobjects*', '*passptfdanni']
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.false
-        })
-
-        it('should return true if the repoPath is a real path and the excludeRepoPaths array contains a part of it', () => {
-            const repoPath = '../../temp/vita/dbobjects-passvita'
-            const excludeRepoPaths = ['*dbm', '*dbobjects*', '*passptfdanni']
-            const result = isToBeExcluded(repoPath, excludeRepoPaths)
-            expect(result).to.be.true
-        })
-
-    })
-})
 
 describe('gitHttpsUrlFromGitSshUrl', () => {
     it('should convert a git ssh url to a git https url', () => {

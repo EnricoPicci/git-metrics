@@ -6,7 +6,7 @@ const run_reports_on_merged_repos_core_1 = require("./internals/run-reports-on-m
 const run_reports_on_repo_core_1 = require("./internals/run-reports-on-repo-core");
 const DEFAULT_OUT_DIR = './';
 function launchAllReportsOnMergedRepos() {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     const program = new commander_1.Command();
     program
         .description('A command to read an array of git repos, merge all the commit information and then run all the reports')
@@ -23,7 +23,10 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         .option('-c, --concurrentReadOfCommits', `if this opion is specified, then the file containing the commit records is read concurrently in the processing of all reports, this can reduce the memory consumption`)
         .option('--noRenames', `if this opion is specified, then the no-renames option is used in the git log command`)
         .option('--countClocZero', `if this opion is specified, then also the files that have 0 lines of code are counted (this can 
-            be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`);
+            be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`)
+        .option('--excludeRepoPaths <string...>', `a space separated list of folder names to be excluded from the analysis (e.g. --excludeRepoPaths "dbm" "dbobjects") -
+             default is the empty list which means no repos are excluded
+             wildcard * can be used to exclude all repos that contain a certain string (e.g. --excludeRepoPaths "*dbm" will exclude all repos that contain the string "dbm")`);
     program.parse(process.argv);
     const _options = program.opts();
     const _reports = (_a = _options.reports) !== null && _a !== void 0 ? _a : run_reports_on_repo_core_1.allReports;
@@ -38,7 +41,8 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const _depthInFilesCoupling = _options.depthInFilesCoupling ? parseInt(_options.depthInFilesCoupling) : 10;
     const _concurrentReadOfCommits = (_f = _options.concurrentReadOfCommits) !== null && _f !== void 0 ? _f : false;
     const _noRenames = (_g = _options.noRenames) !== null && _g !== void 0 ? _g : false;
-    (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(_reports, _repoFolderPath, _filter, _after, _before, _outDir, _outFilePrefix, _clocDefsFile, _ignoreClocZero, _depthInFilesCoupling, _concurrentReadOfCommits, _noRenames).subscribe({
+    const _excludeRepoPaths = (_h = _options.excludeRepoPaths) !== null && _h !== void 0 ? _h : [];
+    (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(_reports, _repoFolderPath, _filter, _after, _before, _outDir, _outFilePrefix, _clocDefsFile, _ignoreClocZero, _depthInFilesCoupling, _concurrentReadOfCommits, _noRenames, _excludeRepoPaths).subscribe({
         next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');

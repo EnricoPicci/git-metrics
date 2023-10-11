@@ -1,15 +1,11 @@
-import path from "path";
-import { Observable, UnaryFunction, concatMap, map, mergeMap, of, toArray } from "rxjs";
+import { concat } from "rxjs";
 
 import { CONFIG } from "../../../config";
-import { reposCompactInFolderObs } from "../../../git-functions/repo.functions";
 
-import { runReportsParallelReads } from "../../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core";
-import { calculateClocDiffs, writeClocDiffsCsv, writeClocDiffsJson } from "../../code-turnover/core/code-turnover.functions";
-import { CommitDiffStats } from "../../code-turnover/core/code-turnover.model";
+import { calculateCodeTurnover } from "../../code-turnover/core/code-turnover.functions";
 
-import { CommitDiffStatsWithSummaryReport } from "./code-turnover-and-reports.model";
 import { languageExtensions } from "./language-extensions-dict";
+import { runAllReportsOnMergedRepos } from "../../reports-on-repo/2-pipelines/internals/run-reports-on-merged-repos-core";
 
 /**
  * Generates the reports for a folder containing multiple Git repositories and calculates the code turnover for all repos
@@ -48,53 +44,27 @@ export function reportsAndCodeTurnover(
     ignoreClocZero: boolean,
     removeBlanks: boolean,
     removeNFiles: boolean,
-    removeComment: boolean,
+    removeComments: boolean,
     removeSame: boolean,
 ) {
-    const folderName = path.basename(folderPath);
-
     const filter = languageExtensions(languages)
 
-    return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
-        mergeMap((repo) => {
-            return runReportsParallelReads(
-                reports,
-                repo.path,
-                filter,
-                fromDate,
-                toDate,
-                outdir,
-                outFilePrefix,
-                clocDefsPath,
-                concurrentReadOfCommits,
-                noRenames,
-                ignoreClocZero,
-                0,
-            ).pipe(
-                map((reports) => {
-                    return {
-                        repo,
-                        summaryReportPath: reports.summaryReportPath,
-                    }
-                })
-            )
-        }, 1),
-        // comment the following code to avoid returning the summary report path to reduce the size of the output
-        // concatMap(({ repo, summaryReportPath }) => {
-        concatMap(({ repo }) => {
-            return of(repo).pipe(
-                calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame),
-                map((clocDiffStat) => {
-                    // return { ...clocDiffStat, summaryReportPath }
-                    return clocDiffStat
-                })
-            )
-        }),
-        toArray(),
-        map(stats => {
-            return stats.flat()
-        }),
-        writeClocDiffsJson(outdir, folderName),
-        writeClocDiffsCsv(outdir, folderName) as UnaryFunction<Observable<CommitDiffStats[]>, Observable<CommitDiffStatsWithSummaryReport[]>>,
+    const reportOnAllRepos$ = runAllReportsOnMergedRepos(reports, folderPath, filter, fromDate, toDate, outdir, outFilePrefix,
+        clocDefsPath, ignoreClocZero, 0, concurrentReadOfCommits, noRenames, excludeRepoPaths)
+
+    const calculateCodeTurnover$ = calculateCodeTurnover(
+        folderPath,
+        outdir,
+        languages,
+        fromDate,
+        toDate,
+        concurrency,
+        excludeRepoPaths,
+        removeBlanks,
+        removeNFiles,
+        removeComments,
+        removeSame,
     )
+
+    return concat(reportOnAllRepos$, calculateCodeTurnover$)
 }

@@ -53,6 +53,12 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
             '--countClocZero',
             `if this opion is specified, then also the files that have 0 lines of code are counted (this can 
             be the case for files have been deleted or renamed in the past but are still present in the repo referenced by old commits)`,
+        )
+        .option(
+            '--excludeRepoPaths <string...>',
+            `a space separated list of folder names to be excluded from the analysis (e.g. --excludeRepoPaths "dbm" "dbobjects") -
+             default is the empty list which means no repos are excluded
+             wildcard * can be used to exclude all repos that contain a certain string (e.g. --excludeRepoPaths "*dbm" will exclude all repos that contain the string "dbm")`,
         );
 
     program.parse(process.argv);
@@ -70,6 +76,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const _depthInFilesCoupling = _options.depthInFilesCoupling ? parseInt(_options.depthInFilesCoupling) : 10;
     const _concurrentReadOfCommits = _options.concurrentReadOfCommits ?? false;
     const _noRenames = _options.noRenames ?? false;
+    const _excludeRepoPaths = _options.excludeRepoPaths ?? [];
 
     runAllReportsOnMergedRepos(
         _reports,
@@ -84,6 +91,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
         _depthInFilesCoupling,
         _concurrentReadOfCommits,
         _noRenames,
+        _excludeRepoPaths
     ).subscribe({
         next: ({ reports }) => {
             reports.forEach((report) => {

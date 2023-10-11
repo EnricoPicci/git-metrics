@@ -1,15 +1,12 @@
 import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
-import {
-    fetchAllGitReposFromGivenFolder,
-    gitRepos,
-} from './run-reports-on-multi-repos-core';
+import { gitRepoPaths, fetchAllGitReposFromGivenFolder } from '../../../../git-functions/repo-path.functions';
 
 describe(`gitRepos`, () => {
     it(`returns the folders that contain git repos starting from the folder containing this project`, (done) => {
         const start = path.parse(process.cwd()).dir;
-        gitRepos(start)
+        gitRepoPaths(start)
             .pipe(
                 tap({
                     next: (repos) => {

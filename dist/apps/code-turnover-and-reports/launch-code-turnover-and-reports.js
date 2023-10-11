@@ -2,21 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchRunReportsAndCodeTurnover = void 0;
 const commander_1 = require("commander");
-const rxjs_1 = require("rxjs");
 const config_1 = require("../../config");
 const run_reports_on_repo_core_1 = require("../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core");
-const cloc_on_folders_1 = require("../cloc-on-folders/internals/cloc-on-folders");
 const code_turnover_and_reports_functions_1 = require("./core/code-turnover-and-reports.functions");
-const run_reports_on_merged_repos_core_1 = require("../reports-on-repo/2-pipelines/internals/run-reports-on-merged-repos-core");
 function launchRunReportsAndCodeTurnover() {
     const start = Date.now();
     console.log('====>>>> Launching run-reports and code-turnover calculation on Repos');
-    const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
-    (0, cloc_on_folders_1.clocOnFolders)(folderPath, outdir);
-    const reportOnAllRepos$ = (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(run_reports_on_repo_core_1.allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false);
-    const reportsAndCodeTurnover$ = (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, '', // we ignore the possibility to use a custom cloc definition file
-    concurrentReadOfCommits, noRenames, !countClocZero, removeBlanks, removeNFiles, removeComments, removeSame);
-    (0, rxjs_1.concat)(reportOnAllRepos$, reportsAndCodeTurnover$).subscribe({
+    const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
+    (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, run_reports_on_repo_core_1.allReports, outFilePrefix, '', concurrentReadOfCommits, noRenames, !countClocZero, removeBlanks, removeNFiles, removeComments, removeSame)
+        .subscribe({
         complete: () => {
             console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
         },
@@ -68,7 +62,8 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
     const removeSame = _options.removeSame;
     return {
         folderPath: _options.folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths,
-        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame
+        reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero,
+        removeBlanks, removeNFiles, removeComments, removeSame
     };
 }
 //# sourceMappingURL=launch-code-turnover-and-reports.js.map

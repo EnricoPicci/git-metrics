@@ -1,8 +1,9 @@
 import { Command } from 'commander';
 import { of } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { gitRepos, runAllReportsOnMultiRepos } from './internals/run-reports-on-multi-repos-core';
+import { runAllReportsOnMultiRepos } from './internals/run-reports-on-multi-repos-core';
 import { allReports } from './internals/run-reports-on-repo-core';
+import { gitRepoPaths } from '../../../git-functions/repo-path.functions';
 
 const DEFAULT_OUT_DIR = './';
 
@@ -60,7 +61,7 @@ quotes and have to be separated by spaces like this --reports 'FileChurnReport' 
 
     const _options = program.opts();
     const _reports = _options.reports ?? allReports;
-    const _repoFolderPaths = _options.repoFolderPaths ? of(_options.repoFolderPaths as string[]) : gitRepos();
+    const _repoFolderPaths = _options.repoFolderPaths ? of(_options.repoFolderPaths as string[]) : gitRepoPaths();
     const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
 
     _repoFolderPaths
