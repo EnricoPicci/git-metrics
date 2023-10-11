@@ -14,7 +14,7 @@ function newModuleChurn(path) {
         linesAdded_own: 0,
         linesDeleted_own: 0,
         linesAddDel_own: 0,
-        created: new Date(0),
+        created: new Date(),
     };
     mChurn.depth = path.split('/').length - 1;
     return mChurn;

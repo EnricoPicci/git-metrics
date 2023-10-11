@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { launchCountReposCommits } from '../apps/cloc-on-repos/read-repos-commits/launch-count-repos-commits';
+import { launchCountReposCommits } from '../apps/read-repos-commits/launch-count-repos-commits';
 import { launchClocRepos } from '../apps/cloc-on-repos//cloc-repos/launch-cloc-repos';
 import { launchCalculateCodeTurnover, launchMonthlyClocDiffRepos } from '../apps/code-turnover/launch-code-turnover';
 import { launchReportsParallelReads } from '../apps/reports-on-repo/2-pipelines/run-reports-on-repo';

@@ -59,6 +59,7 @@ describe(`moduleChurns`, () => {
             (0, chai_1.expect)(srcModuleChurn.linesAdded).equal(468);
             (0, chai_1.expect)(srcModuleChurn.linesDeleted).equal(17);
             (0, chai_1.expect)(srcModuleChurn.linesAddDel).equal(485);
+            (0, chai_1.expect)(srcModuleChurn.created.toDateString()).equal(new Date('2021-07-13').toDateString());
         }))
             .subscribe({
             error: (err) => done(err),
