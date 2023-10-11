@@ -10,43 +10,26 @@ import { launchRunReportsAndCodeTurnover } from '../apps/code-turnover-and-repor
 
 const command = process.argv[2];
 
-switch (command) {
-    case 'read-repos-commits':
-        launchCountReposCommits();
-        break;
-    case 'cloc-folders':
-        launchClocOnFolder();
-        break;
-    case 'cloc-monthly-diff-repos':
-        launchMonthlyClocDiffRepos();
-        break;
-    case 'code-turnover':
-        launchCalculateCodeTurnover();
-        break;
-    case 'cloc-diff-repos':
-        launchCalculateCodeTurnover();
-        break;
-    case 'code-turnover-and-reports':
-        launchRunReportsAndCodeTurnover();
-        break;
-    case 'run-reports-on-repo':
-        launchReportsParallelReads();
-        break;
-    case 'run-reports-on-repos-in-folder':
-        launchAllReportsOnMergedRepos();
-        break;
-    case 'run-branches-report-on-repo':
-        launchBranchesReport();
-        break;
-    default:
-        console.log(`Command ${command} not found`);
-        console.log(`Commands allowed:  
-        cloc-repos, 
-        code-turnover, 
-        cloc-monthly-diff-repos,
-        run-reports-on-repo,
-        run-reports-on-repos-in-folder,
-        run-branches-report-on-repo,
-        code-turnover-and-reports`);
-        break;
+const commandsAvailable: { [command: string]: () => void } = {
+    'read-repos-commits': launchCountReposCommits,
+    'cloc-folders': launchClocOnFolder,
+    'cloc-monthly-diff-repos': launchMonthlyClocDiffRepos,
+    'code-turnover': launchCalculateCodeTurnover,
+    'code-turnover-and-reports': launchRunReportsAndCodeTurnover,
+    'run-reports-on-repo': launchReportsParallelReads,
+    'run-reports-on-repos-in-folder': launchAllReportsOnMergedRepos,
+    'run-branches-report-on-repo': launchBranchesReport,
 }
+
+const functionForCommand = commandsAvailable[command];
+
+if (functionForCommand) {
+    functionForCommand();
+}
+
+console.log(`Command ${command} not found`);
+console.log(`Commands allowed:`)
+
+Object.keys(commandsAvailable).forEach(command => {
+    console.log(command);
+})
