@@ -5,17 +5,18 @@ const commander_1 = require("commander");
 const rxjs_1 = require("rxjs");
 const config_1 = require("../../config");
 const run_reports_on_repo_core_1 = require("../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core");
-const cloc_repos_1 = require("../cloc-on-repos/cloc-repos/internals/cloc-repos");
+const cloc_on_folders_1 = require("../cloc-on-folders/internals/cloc-on-folders");
 const code_turnover_and_reports_functions_1 = require("./core/code-turnover-and-reports.functions");
+const run_reports_on_merged_repos_core_1 = require("../reports-on-repo/2-pipelines/internals/run-reports-on-merged-repos-core");
 function launchRunReportsAndCodeTurnover() {
     const start = Date.now();
     console.log('====>>>> Launching run-reports and code-turnover calculation on Repos');
     const { folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero, removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
-    const cloc$ = (0, cloc_repos_1.calculateClocOnRepos)(folderPath, outdir, concurrency);
-    // const reportOnAllRepos$ = runAllReportsOnMergedRepos(allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false)
+    (0, cloc_on_folders_1.clocOnFolders)(folderPath, outdir);
+    const reportOnAllRepos$ = (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(run_reports_on_repo_core_1.allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false);
     const reportsAndCodeTurnover$ = (0, code_turnover_and_reports_functions_1.reportsAndCodeTurnover)(folderPath, fromDate, toDate, outdir, languages, concurrency, excludeRepoPaths, reports, outFilePrefix, '', // we ignore the possibility to use a custom cloc definition file
     concurrentReadOfCommits, noRenames, !countClocZero, removeBlanks, removeNFiles, removeComments, removeSame);
-    (0, rxjs_1.concat)(cloc$, reportsAndCodeTurnover$).subscribe({
+    (0, rxjs_1.concat)(reportOnAllRepos$, reportsAndCodeTurnover$).subscribe({
         complete: () => {
             console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
         },
@@ -26,7 +27,8 @@ function readParams() {
     var _a;
     const program = new commander_1.Command();
     program
-        .description('A command to calculate cloc (number of lines of code) of a set of repos contained in a folder')
+        .description(`A command to calculate cloc (number of lines of code) of a set of repos contained in a folder, the code turn-over
+        on that folder and all the reports on the repos in that folder.`)
         .requiredOption('--folderPath <string>', `folder containing the repos to analyze (e.g. ./repos)`)
         .option('--outdir <string>', `directory where the output files will be written (e.g. ./data) - default is the current directory`)
         .option('--languages <string...>', `a space separated list of languages to be considered in the diff (e.g. --languages "Java" "Python")

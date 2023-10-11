@@ -3,9 +3,10 @@ import { concat } from "rxjs";
 
 import { CONFIG } from "../../config";
 import { allReports } from "../reports-on-repo/2-pipelines/internals/run-reports-on-repo-core";
-import { calculateClocOnRepos } from "../cloc-on-repos/cloc-repos/internals/cloc-repos";
+import { clocOnFolders } from "../cloc-on-folders/internals/cloc-on-folders";
 
 import { reportsAndCodeTurnover } from "./core/code-turnover-and-reports.functions";
+import { runAllReportsOnMergedRepos } from "../reports-on-repo/2-pipelines/internals/run-reports-on-merged-repos-core";
 
 export function launchRunReportsAndCodeTurnover() {
     const start = Date.now();
@@ -16,9 +17,9 @@ export function launchRunReportsAndCodeTurnover() {
         reports, outFilePrefix, concurrentReadOfCommits, noRenames, countClocZero,
         removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
 
-    const cloc$ = calculateClocOnRepos(folderPath, outdir, concurrency)
+    clocOnFolders(folderPath, outdir)
 
-    // const reportOnAllRepos$ = runAllReportsOnMergedRepos(allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false)
+    const reportOnAllRepos$ = runAllReportsOnMergedRepos(allReports, folderPath, [], fromDate, toDate, outdir, outFilePrefix, '', false, 0, false, false)
 
     const reportsAndCodeTurnover$ = reportsAndCodeTurnover(
         folderPath,
@@ -40,7 +41,7 @@ export function launchRunReportsAndCodeTurnover() {
         removeSame
     )
 
-    concat(cloc$, reportsAndCodeTurnover$).subscribe({
+    concat(reportOnAllRepos$, reportsAndCodeTurnover$).subscribe({
         complete: () => {
             console.log(`====>>>> run-reports and code-turnover calculation on Repos completed in ${(Date.now() - start) / 1000} seconds`);
         },
@@ -52,7 +53,8 @@ function readParams() {
     const program = new Command();
 
     program
-        .description('A command to calculate cloc (number of lines of code) of a set of repos contained in a folder')
+        .description(`A command to calculate cloc (number of lines of code) of a set of repos contained in a folder, the code turn-over
+        on that folder and all the reports on the repos in that folder.`)
         .requiredOption('--folderPath <string>', `folder containing the repos to analyze (e.g. ./repos)`)
         .option(
             '--outdir <string>',

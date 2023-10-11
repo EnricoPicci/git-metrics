@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { launchCountReposCommits } from '../apps/read-repos-commits/launch-count-repos-commits';
-import { launchClocRepos } from '../apps/cloc-on-repos//cloc-repos/launch-cloc-repos';
+import { launchClocOnFolder } from '../apps/cloc-on-folders/launch-cloc-on-folders';
 import { launchCalculateCodeTurnover, launchMonthlyClocDiffRepos } from '../apps/code-turnover/launch-code-turnover';
 import { launchReportsParallelReads } from '../apps/reports-on-repo/2-pipelines/run-reports-on-repo';
 import { launchAllReportsOnMergedRepos } from '../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos';
@@ -14,8 +14,8 @@ switch (command) {
     case 'read-repos-commits':
         launchCountReposCommits();
         break;
-    case 'cloc-repos':
-        launchClocRepos();
+    case 'cloc-folders':
+        launchClocOnFolder();
         break;
     case 'cloc-monthly-diff-repos':
         launchMonthlyClocDiffRepos();
