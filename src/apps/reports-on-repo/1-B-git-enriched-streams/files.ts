@@ -7,7 +7,8 @@ import { enrichedCommitsStream } from './commits';
 // returns a stream of file committed data in the form of an Observable which notifies FileGitCommitEnriched reading data from files containing
 // the git log and cloc data
 export function filesStream(commitLogPath: string, clocLogPath: string) {
-    return filesStreamFromEnrichedCommitsStream(enrichedCommitsStream(commitLogPath, clocLogPath));
+    const _enrichedCommitStream = enrichedCommitsStream(commitLogPath, clocLogPath);
+    return filesStreamFromEnrichedCommitsStream(_enrichedCommitStream);
 }
 
 export function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream: Observable<CommitWithFileNumstats>) {

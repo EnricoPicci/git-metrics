@@ -15,6 +15,7 @@ describe(`commitWithFileNumstatsEnrichedWithCloc$`, () => {
             repoFolderPath: process.cwd(),
             filter: ['*.md'],
             after: '2018-01-01',
+            before: '2021-12-31',
             outDir: '',
         };
 
@@ -40,7 +41,8 @@ describe(`commitWithFileNumstatsEnrichedWithCloc$`, () => {
                         expect(commitRecords).not.undefined;
                         expect(commitRecords.length).gt(0);
 
-                        const firstCommit = commitRecords[0];
+                        // to get the oldest commit, reverse the array and get the first element
+                        const firstCommit = commitRecords.reverse()[0];
                         const readmeFile = firstCommit.files.find((file) => file.path.includes('README.md'));
                         if (!readmeFile) {
                             throw new Error(`No readme file found in the first commit`);

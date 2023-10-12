@@ -168,7 +168,12 @@ export function runReportsOneStream(
 
     // enrich git log streams
     const clocDict = clocFileDictFromClocStream$(cloc);
-    let _commitStream = commitWithFileNumstatsEnrichedWithCloc$(gitLogCommits, clocDict)
+    let _commitStream = commitWithFileNumstatsEnrichedWithCloc$(gitLogCommits, clocDict).pipe(
+        map(c => {
+            console.log(c)
+            return c
+        })
+    )
     _commitStream = after ? _commitStream.pipe(filter((c) => c.committerDate > after)) : _commitStream;
     _commitStream = _commitStream.pipe(share());
 

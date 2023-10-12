@@ -62,7 +62,7 @@ export function runAllReportsOnMergedRepos(
                         map((commit) => {
                             const _commit = { ...commit };
                             _commit.files.forEach((f) => {
-                                f.path = `${repoFolderPath}--${f.path}`;
+                                f.path = path.join(repoFolderPath, f.path);
                             });
                             return _commit;
                         }),

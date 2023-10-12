@@ -127,17 +127,18 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
                         expect(commits).not.undefined;
                         expect(commits.length).gt(0);
 
-                        // we take the second commit since it has all fields with defined values, even the lines added
+                        // we take the third oldest commit since it has all fields with defined values, even the lines added
                         // and lines deleted fields in the files data
-                        const secondCommit = commits[1];
+                        // we need to reverse since commits are sorted from the newest to the oldest
+                        const thirdCommit = commits.reverse()[2];
                         // all fields should be defined hence we test them with the negation operator expectedto return false
                         // in this way we test the undefined case and the null case and the empty string case and the 0 case
-                        expect(!secondCommit.authorDate).to.be.false;
-                        expect(!secondCommit.authorName).to.be.false;
-                        expect(!secondCommit.hashShort).to.be.false;
-                        expect(!secondCommit.files).to.be.false;
-                        expect(secondCommit.files.length).gt(0);
-                        const firstFile = secondCommit.files[0];
+                        expect(!thirdCommit.authorDate).to.be.false;
+                        expect(!thirdCommit.authorName).to.be.false;
+                        expect(!thirdCommit.hashShort).to.be.false;
+                        expect(!thirdCommit.files).to.be.false;
+                        expect(thirdCommit.files.length).gt(0);
+                        const firstFile = thirdCommit.files[0];
                         expect(!firstFile.linesAdded).to.be.false;
                         expect(!firstFile.linesDeleted).to.be.false;
                         expect(!firstFile.path).to.be.false;
