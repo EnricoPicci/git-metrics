@@ -11,7 +11,7 @@ const project_info_aggregate_1 = require("../1-C-aggregate-in-memory/project-inf
 const commits_1 = require("../1-B-git-enriched-streams/commits");
 const read_all_1 = require("../1-A-read/read-all");
 const file_coupling_report_1 = require("./file-coupling-report");
-const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
+const cloc_1 = require("../../../cloc-functions/cloc");
 describe(`fileCouplingReportCore`, () => {
     it(`generates the report about the churn of files and checks that the report has been filled`, (done) => {
         const repoName = 'io-backend';
@@ -46,7 +46,7 @@ describe(`projectAndFileCouplingReport`, () => {
         const depthInFilesCoupling = 10;
         // generation of the source streams
         const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
-        const _clocSummaryInfo = (0, cloc_functions_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
+        const _clocSummaryInfo = (0, cloc_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
         const params = {
             repoFolderPath,
             outDir,
@@ -76,7 +76,7 @@ describe(`projectAndFileCouplingReport`, () => {
         const depthInFilesCoupling = 10;
         // generation of the source streams
         const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
-        const _clocSummaryInfo = (0, cloc_functions_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
+        const _clocSummaryInfo = (0, cloc_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
         const params = {
             repoFolderPath,
             outDir,
@@ -108,7 +108,7 @@ describe(`projectAndFileCouplingReport`, () => {
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         // generation of the source streams
         const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
-        const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
+        const _clocSummaryStream = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
         const params = {
             repoFolderPath,
             outDir,

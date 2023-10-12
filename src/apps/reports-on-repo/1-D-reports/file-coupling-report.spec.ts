@@ -14,7 +14,7 @@ import {
 } from './file-coupling-report';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
-import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc';
 
 describe(`fileCouplingReportCore`, () => {
     it(`generates the report about the churn of files and checks that the report has been filled`, (done) => {

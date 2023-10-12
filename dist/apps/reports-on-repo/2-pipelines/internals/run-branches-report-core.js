@@ -15,7 +15,7 @@ const project_info_aggregate_1 = require("../../1-C-aggregate-in-memory/project-
 const commit_branch_tips_aggregate_1 = require("../../1-C-aggregate-in-memory/commit-branch-tips-aggregate");
 const add_project_info_1 = require("../../1-D-reports/add-project-info");
 const branches_report_1 = require("../../1-D-reports/branches-report");
-const cloc_functions_1 = require("../../../../cloc-functions/cloc.functions");
+const cloc_1 = require("../../../../cloc-functions/cloc");
 function runBranchesReport(repoFolderPath, after, outDir, outFilePrefix, clocDefsPath, noRenames) {
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
@@ -32,7 +32,7 @@ function runBranchesReport(repoFolderPath, after, outDir, outFilePrefix, clocDef
     const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
     // generation of the source streams
     const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
-    const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
+    const _clocSummaryStream = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
     // run the reports
     return runBranchesReportFromStreams(repoFolderPath, after, outDir, outFilePrefix, clocDefsPath, _commitStream, _clocSummaryStream);
 }

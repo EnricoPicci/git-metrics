@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.splitCommits = exports.COMMIT_RECORD_COUNTER = exports.filePathFromCommitPath = exports.newGitCommit = exports.gitCommitStream = exports.commitsStream = exports.enrichedCommitsStream = void 0;
 const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
-const read_cloc_log_1 = require("./read-cloc-log");
+const cloc_dictionary_1 = require("../../../cloc-functions/cloc-dictionary");
 const config_1 = require("../0-config/config");
 const commit_functions_1 = require("../../../git-functions/commit.functions");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
@@ -11,7 +11,7 @@ const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 // returns a stream of commits in the form of an Observable which notifies GitCommitEnriched objects reading data from files containing
 // the git log and cloc data (commit data read from the git repo are enriched with data coming from the cloc tool)
 function enrichedCommitsStream(commitLogPath, clocLogPath, after) {
-    const commitStream = (0, read_cloc_log_1.clocFileDict)(clocLogPath).pipe((0, operators_1.concatMap)((clocDict) => gitCommitStream(commitLogPath, clocDict)));
+    const commitStream = (0, cloc_dictionary_1.clocFileDictFromClocLogFile$)(clocLogPath).pipe((0, operators_1.concatMap)((clocDict) => gitCommitStream(commitLogPath, clocDict)));
     return after ? commitStream.pipe((0, operators_1.filter)((c) => c.committerDate > after)) : commitStream;
 }
 exports.enrichedCommitsStream = enrichedCommitsStream;

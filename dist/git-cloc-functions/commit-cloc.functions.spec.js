@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const rxjs_1 = require("rxjs");
-const cloc_functions_1 = require("../cloc-functions/cloc.functions");
+const cloc_1 = require("../cloc-functions/cloc");
 const commit_functions_1 = require("../git-functions/commit.functions");
 const commit_cloc_functions_1 = require("./commit-cloc.functions");
 const chai_1 = require("chai");
+const cloc_dictionary_1 = require("../cloc-functions/cloc-dictionary");
 describe(`commitWithFileNumstatsEnrichedWithCloc$`, () => {
     it(`read the commits from a git repo and enrich the data related to the files of that commit
     with cloc data like lines of code, comment and blanks`, (done) => {
@@ -19,8 +20,8 @@ describe(`commitWithFileNumstatsEnrichedWithCloc$`, () => {
             folderPath: process.cwd(),
             vcs: 'git',
         };
-        const cloc$ = (0, cloc_functions_1.clocByfile$)(clocParams, 'create cloc log', false);
-        const clocDict$ = (0, cloc_functions_1.clocFileDictFromClocStream$)(cloc$);
+        const cloc$ = (0, cloc_1.clocByfile$)(clocParams, 'create cloc log', false);
+        const clocDict$ = (0, cloc_dictionary_1.clocFileDictFromClocStream$)(cloc$);
         (0, commit_cloc_functions_1.commitWithFileNumstatsEnrichedWithCloc$)(commits$, clocDict$)
             .pipe((0, rxjs_1.tap)({
             next: (commitRec) => {

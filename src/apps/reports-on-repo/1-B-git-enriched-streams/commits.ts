@@ -1,6 +1,7 @@
 import { map, filter, concatMap, tap } from 'rxjs/operators';
 import { readLineObs } from 'observable-fs';
-import { ClocDictionary, clocFileDict } from './read-cloc-log';
+import { clocFileDictFromClocLogFile$ } from '../../../cloc-functions/cloc-dictionary';
+import { ClocDictionary } from '../../../cloc-functions/cloc-dictionary.model';
 
 import { DEFAUL_CONFIG } from '../0-config/config';
 import { CommitWithFileNumstatsEnrichedWithCloc, GitFileNumstatEnrichedWithCloc } from '../../../git-cloc-functions/commit-cloc.model';
@@ -13,7 +14,7 @@ const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 // returns a stream of commits in the form of an Observable which notifies GitCommitEnriched objects reading data from files containing
 // the git log and cloc data (commit data read from the git repo are enriched with data coming from the cloc tool)
 export function enrichedCommitsStream(commitLogPath: string, clocLogPath: string, after?: Date) {
-    const commitStream = clocFileDict(clocLogPath).pipe(
+    const commitStream = clocFileDictFromClocLogFile$(clocLogPath).pipe(
         concatMap((clocDict) => gitCommitStream(commitLogPath, clocDict)),
     );
     return after ? commitStream.pipe(filter((c) => c.committerDate > after)) : commitStream;

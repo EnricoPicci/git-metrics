@@ -4,7 +4,7 @@ import path = require('path');
 import { MongoClient } from 'mongodb';
 import { map, concatMap, bufferCount, switchMap, finalize, tap, last, mergeMap } from 'rxjs/operators';
 import { connectObs, dropCollectionObs, insertManyObs } from 'observable-mongo';
-import { clocFileDict } from '../../1-B-git-enriched-streams/read-cloc-log';
+import { clocFileDictFromClocLogFile$ } from '../../../../cloc-functions/cloc-dictionary';
 import { gitCommitStream } from '../../1-B-git-enriched-streams/commits';
 
 // ============================ LOAD COMMITS ================================
@@ -40,7 +40,7 @@ export function loadCommits(
         },
     };
     const bufferedCommits = clocLogPath
-        ? clocFileDict(clocLogPath).pipe(
+        ? clocFileDictFromClocLogFile$(clocLogPath).pipe(
             concatMap((clocDict) => gitCommitStream(commitLogPath, clocDict)),
             bufferCount(bufferSize),
             tap(logProgressTap),

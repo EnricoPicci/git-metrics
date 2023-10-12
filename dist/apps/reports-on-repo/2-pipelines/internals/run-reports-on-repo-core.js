@@ -20,7 +20,8 @@ const report_generators_1 = require("./report-generators");
 const add_project_info_1 = require("../../1-D-reports/add-project-info");
 const summary_excel_1 = require("../../1-E-summary-excel/summary-excel");
 const commit_cloc_functions_1 = require("../../../../git-cloc-functions/commit-cloc.functions");
-const cloc_functions_1 = require("../../../../cloc-functions/cloc.functions");
+const cloc_1 = require("../../../../cloc-functions/cloc");
+const cloc_dictionary_1 = require("../../../../cloc-functions/cloc-dictionary");
 exports.allReports = [
     file_churn_report_1.FILE_CHURN_REPORT_NAME,
     module_churn_report_1.MODULE_CHURN_REPORT_NAME,
@@ -73,7 +74,7 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
     const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     const { gitLogCommits, cloc, clocSummary } = (0, read_all_1.readStreamsDistinctProcesses)(commitOptions, clocParams);
     // enrich git log streams
-    const clocDict = (0, cloc_functions_1.clocFileDictFromClocStream$)(cloc);
+    const clocDict = (0, cloc_dictionary_1.clocFileDictFromClocStream$)(cloc);
     let _commitStream = (0, commit_cloc_functions_1.commitWithFileNumstatsEnrichedWithCloc$)(gitLogCommits, clocDict);
     _commitStream = after ? _commitStream.pipe((0, rxjs_1.filter)((c) => c.committerDate > after)) : _commitStream;
     _commitStream = _commitStream.pipe((0, rxjs_1.share)());
@@ -96,7 +97,7 @@ function _streams(commitLogPath, clocLogPath, clocSummaryPath, parallelRead) {
     const _filesStream = parallelRead
         ? (0, files_1.filesStream)(commitLogPath, clocLogPath)
         : (0, files_1.filesStreamFromEnrichedCommitsStream)(_commitStream).pipe((0, rxjs_1.share)());
-    const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
+    const _clocSummaryStream = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
     return { _commitStream, _filesStream, _clocSummaryStream };
 }
 exports._streams = _streams;

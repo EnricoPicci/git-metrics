@@ -1,5 +1,5 @@
 import { ClocParams } from "../../../cloc-functions/cloc-params"
-import { writeClocByfile } from "../../../cloc-functions/cloc.functions"
+import { writeClocByfile } from "../../../cloc-functions/cloc"
 
 /**
  * Calculates the lines of code for a folder containing multiple folders using the cloc tool.

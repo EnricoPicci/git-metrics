@@ -28,9 +28,10 @@ import {
 import { addProjectInfo } from '../../1-D-reports/add-project-info';
 import { addWorksheet, summaryWorkbook, writeWorkbook } from '../../1-E-summary-excel/summary-excel';
 import { commitWithFileNumstatsEnrichedWithCloc$ } from '../../../../git-cloc-functions/commit-cloc.functions';
-import { clocFileDictFromClocStream$, clocSummaryCsvRaw$ } from '../../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../../cloc-functions/cloc';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';
 import { ClocParams } from '../../../../cloc-functions/cloc-params';
+import { clocFileDictFromClocStream$ } from '../../../../cloc-functions/cloc-dictionary';
 
 export const allReports = [
     FILE_CHURN_REPORT_NAME,

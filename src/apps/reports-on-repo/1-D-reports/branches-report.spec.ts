@@ -6,7 +6,7 @@ import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { BranchesReportParams, projectAndBranchesReport } from './branches-report';
 import { commitDaylySummary } from '../1-C-aggregate-in-memory/commit-branch-tips-aggregate';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
-import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc';
 
 describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches as well as the general project info`, (done) => {

@@ -25,11 +25,13 @@ const functionForCommand = commandsAvailable[command];
 
 if (functionForCommand) {
     functionForCommand();
+} else {
+    console.log(`Command ${command} not found`);
+    console.log(`Commands allowed:`)
+
+    Object.keys(commandsAvailable).forEach(command => {
+        console.log(command);
+    })
 }
 
-console.log(`Command ${command} not found`);
-console.log(`Commands allowed:`)
 
-Object.keys(commandsAvailable).forEach(command => {
-    console.log(command);
-})

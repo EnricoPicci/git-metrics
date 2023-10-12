@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toClocFileDict = exports.buildOutfileName = exports.clocFileDictFromClocStream$ = exports.clocFileDictFromClocLogFile$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnGitRepo_no_vcs$ = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
+exports.toClocFileDict = exports.buildOutfileName = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnFolderNoGit$ = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -72,6 +72,9 @@ exports.clocSummaryCsvRaw$ = clocSummaryCsvRaw$;
 /**
  * Runs the cloc command on a Git repository and returns the result in the form of a stream of one ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
+ * By default the cloc command is run on the current directory.
+ * By default the cloc command is run with the --vcs=git option.
+ * This means that, if the repoPath points to a folder where there is git repo, then the files in the .gitignore are not counted.
  * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
@@ -82,14 +85,16 @@ exports.clocSummaryOnGitRepo$ = clocSummaryOnGitRepo$;
 /**
  * Runs the cloc command on a Git repository and returns the result in the form of a stream of one ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
- * The cloc command is run without the --vcs option.
- * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
+ * The cloc command is run without the --vcs=git option. This means that, if the repoPath points to a folder where there is git repo,
+ * the .gitignore is "ignored", hence also the files that should be excluded according to the .gitignore are counted.
+ * For instance, if the repo is a node project, then all the files in the node_modules folder are counted.
+ * @param folderPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
-function clocSummaryOnGitRepo_no_vcs$(repoPath = './') {
-    return clocSummary$(repoPath, undefined);
+function clocSummaryOnFolderNoGit$(folderPath = './') {
+    return clocSummary$(folderPath, undefined);
 }
-exports.clocSummaryOnGitRepo_no_vcs$ = clocSummaryOnGitRepo_no_vcs$;
+exports.clocSummaryOnFolderNoGit$ = clocSummaryOnFolderNoGit$;
 /**
  * Runs the cloc command and writes the result to a file.
  * The result is a summary in the sense that it shows results per language but not per file.
@@ -198,36 +203,6 @@ function writeClocByFile$(params, action = 'cloc') {
     }));
 }
 exports.writeClocByFile$ = writeClocByFile$;
-/**
- * Reads a cloc log file and returns an Observable that emits a dictionary of ClocFileInfo objects,
- * where each object represents the cloc info for a file.
- * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
- * If the cloc log file is not found, the function logs a message to the console and returns an Observable that emits
- * an empty dictionary.
- * @param clocLogPath The path to the cloc log file.
- * @returns An Observable that emits a dictionary of ClocFileInfo objects representing the cloc info for each file in the cloc log.
- */
-function clocFileDictFromClocLogFile$(clocLogPath) {
-    return (0, observable_fs_1.readLinesObs)(clocLogPath).pipe(toClocFileDict(clocLogPath), (0, rxjs_1.catchError)((err) => {
-        if (err.code === 'ENOENT') {
-            console.log(`!!!!!!!! file ${clocLogPath} not found`);
-            return (0, rxjs_1.of)({});
-        }
-        throw err;
-    }));
-}
-exports.clocFileDictFromClocLogFile$ = clocFileDictFromClocLogFile$;
-/**
- * Takes an Observable of strings representing the output of the cloc command (with the by-file option) and
- * returns an Observable that emits a dictionary of ClocFileInfo objects, where each object represents the cloc info for a file.
- * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
- * @param cloc$ An Observable of strings representing the output of the cloc command.
- * @returns An Observable that emits a dictionary of ClocFileInfo objects representing the cloc info for each file in the cloc log.
- */
-function clocFileDictFromClocStream$(cloc$) {
-    return cloc$.pipe((0, rxjs_1.toArray)(), toClocFileDict());
-}
-exports.clocFileDictFromClocStream$ = clocFileDictFromClocStream$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */

@@ -9,7 +9,7 @@ import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileAuthors } from '../1-C-aggregate-in-memory/file-authors-aggregate';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
-import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc';
 
 describe(`fileAuthorsReportWithProjectInfo`, () => {
     it(`generates the report about the authors of the files as well as the general project info`, (done) => {

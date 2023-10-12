@@ -10,7 +10,7 @@ import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";
 import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';
 import { ClocParams } from '../../../../cloc-functions/cloc-params';
-import { clocSummaryCsvRaw$, writeClocSummary } from '../../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$, writeClocSummary } from '../../../../cloc-functions/cloc';
 import { gitRepoPaths } from '../../../../git-functions/repo-path.functions';
 
 export function runAllReportsOnMergedRepos(

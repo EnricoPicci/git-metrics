@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.clocOnFolders = void 0;
-const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
+const cloc_1 = require("../../../cloc-functions/cloc");
 /**
  * Calculates the lines of code for a folder containing multiple folders using the cloc tool.
  * If the folder contains a .git folder, the cloc will be calculated on the repo contained in the folder.
@@ -20,7 +20,7 @@ function clocOnFolders(folderPath, outDir = './', outClocFilePrefix = '') {
         outClocFilePrefix,
         vcs: 'git',
     };
-    return (0, cloc_functions_1.writeClocByfile)(params);
+    return (0, cloc_1.writeClocByfile)(params);
 }
 exports.clocOnFolders = clocOnFolders;
 //# sourceMappingURL=cloc-on-folders.js.map

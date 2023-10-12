@@ -12,7 +12,7 @@ import { fromCsv } from '../../../tools/csv/from-csv';
 import { readAll } from '../1-A-read/read-all';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
-import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc';
 
 describe(`projectAndModuleChurnReport`, () => {
     it(`generates the report about the churn of modules`, (done) => {

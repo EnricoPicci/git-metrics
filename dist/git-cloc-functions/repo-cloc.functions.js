@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.clocOnRepos = void 0;
 const rxjs_1 = require("rxjs");
-const cloc_functions_1 = require("../cloc-functions/cloc.functions");
+const cloc_1 = require("../cloc-functions/cloc");
 const config_1 = require("../config");
 const repo_functions_1 = require("../git-functions/repo.functions");
 //********************************************************************************************************************** */
@@ -25,7 +25,7 @@ function clocOnRepos(folderPath, concurrency = config_1.CONFIG.CONCURRENCY) {
         code: 0,
     };
     return (0, rxjs_1.from)((0, repo_functions_1.reposInFolder)(folderPath)).pipe((0, rxjs_1.mergeMap)((repoPath) => {
-        return (0, cloc_functions_1.clocSummaryOnGitRepo_no_vcs$)(repoPath).pipe((0, rxjs_1.map)((clocStats) => {
+        return (0, cloc_1.clocSummaryOnGitRepo$)(repoPath).pipe((0, rxjs_1.map)((clocStats) => {
             const sumStats = clocStats.find((clocStat) => clocStat.language === 'SUM');
             if (!sumStats) {
                 console.log(`!!!!!!!!! No SUM stats found for repo ${repoPath}, i.e. no files to count for cloc`);

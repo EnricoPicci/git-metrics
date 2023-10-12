@@ -9,7 +9,7 @@ const rxjs_1 = require("rxjs");
 const read_all_1 = require("../../1-A-read/read-all");
 const create_outdir_1 = require("../../1-A-read/create-outdir");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
-const cloc_functions_1 = require("../../../../cloc-functions/cloc.functions");
+const cloc_1 = require("../../../../cloc-functions/cloc");
 const repo_path_functions_1 = require("../../../../git-functions/repo-path.functions");
 function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, noRenames, excludeRepoPaths) {
     // create the output directory if not existing
@@ -41,8 +41,8 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
             })));
             allFileStreams.push(_filesStream);
         });
-        const clocSummaryPath = (0, cloc_functions_1.writeClocSummary)({ folderPath: repoContainerFolderPath, outDir: _outDir, vcs: 'git' });
-        const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
+        const clocSummaryPath = (0, cloc_1.writeClocSummary)({ folderPath: repoContainerFolderPath, outDir: _outDir, vcs: 'git' });
+        const _clocSummaryStream = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
         return {
             allCommitStreamsMerged: (0, rxjs_1.merge)(...allCommitStreams),
             allFileStreamsMerged: (0, rxjs_1.merge)(...allFileStreams),

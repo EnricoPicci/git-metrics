@@ -2,7 +2,7 @@ import { map, tap, concatMap } from 'rxjs';
 import { commitsInfo } from '../query/all-commits-query';
 import { MongoReportParams } from './mongo-report';
 import { ProjectInfo } from '../../1-C-aggregate-types/project-info';
-import { clocSummaryCsvRaw$ } from '../../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../../cloc-functions/cloc';
 
 function mongoProjectCommitsInfo(params: MongoReportParams) {
     return commitsInfo(params.connectionString, params.dbName, params.commitsCollection!);

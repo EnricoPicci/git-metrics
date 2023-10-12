@@ -12,7 +12,7 @@ const branches_report_1 = require("./branches-report");
 const commit_branch_tips_aggregate_1 = require("../1-C-aggregate-in-memory/commit-branch-tips-aggregate");
 const read_all_1 = require("../1-A-read/read-all");
 const commits_and_branch_tips_1 = require("../1-B-git-enriched-streams/commits-and-branch-tips");
-const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
+const cloc_1 = require("../../../cloc-functions/cloc");
 describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches using this repo as a real repo`, (done) => {
         // input from the user
@@ -28,7 +28,7 @@ describe(`projectAndBranchesReport`, () => {
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         // generation of the source streams
         const _commitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
-        const _clocSummaryStream = (0, cloc_functions_1.clocSummaryCsvRaw$)(clocSummaryPath);
+        const _clocSummaryStream = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
         const params = {
             repoFolderPath,
             commitLog: commitLogPath,

@@ -9,7 +9,7 @@ import { readAll } from '../1-A-read/read-all';
 import { commitWithBranchTips } from '../1-B-git-enriched-streams/commits-and-branch-tips';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
-import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc';
 
 describe(`projectAndBranchesReport`, () => {
     it(`generates the report about the branches using this repo as a real repo`, (done) => {

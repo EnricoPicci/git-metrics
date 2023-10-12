@@ -1,6 +1,6 @@
 import { from, map, mergeMap, toArray } from "rxjs";
 
-import { clocSummaryOnGitRepo_no_vcs$ } from "../cloc-functions/cloc.functions";
+import { clocSummaryOnGitRepo$ } from "../cloc-functions/cloc";
 import { CONFIG } from "../config";
 import { ClocLanguageStats } from "../cloc-functions/cloc.model";
 import { reposInFolder } from "../git-functions/repo.functions";
@@ -30,7 +30,7 @@ export function clocOnRepos(folderPath: string, concurrency = CONFIG.CONCURRENCY
     }
     return from(reposInFolder(folderPath)).pipe(
         mergeMap((repoPath) => {
-            return clocSummaryOnGitRepo_no_vcs$(repoPath).pipe(
+            return clocSummaryOnGitRepo$(repoPath).pipe(
                 map((clocStats) => {
                     const sumStats = clocStats.find((clocStat) => clocStat.language === 'SUM');
                     if (!sumStats) {

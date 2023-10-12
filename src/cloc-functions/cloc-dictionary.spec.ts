@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
-import { clocFileDict } from './read-cloc-log';
+import { clocFileDictFromClocLogFile$ } from './cloc-dictionary';
 
-describe(`clocFileDict`, () => {
+describe(`clocFileDictFromClocLogFile$`, () => {
     it(`create a dictionary with the file path as key and the cloc info as value`, (done) => {
         const logName = 'git-repo-with-code-cloc.gitlog';
         const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}`);
 
-        clocFileDict(logFilePath)
+        clocFileDictFromClocLogFile$(logFilePath)
             .pipe(
                 tap((dict) => {
                     expect(Object.keys(dict).length).equal(3);
@@ -30,7 +30,7 @@ describe(`clocFileDict`, () => {
         const logName = 'not-existing-log.gitlog';
         const logFilePath = path.join(process.cwd(), `/test-data/output/${logName}`);
 
-        clocFileDict(logFilePath)
+        clocFileDictFromClocLogFile$(logFilePath)
             .pipe(
                 tap((dict) => {
                     expect(Object.keys(dict).length).equal(0);

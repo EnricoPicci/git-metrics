@@ -9,7 +9,7 @@ const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
 const cloc_1 = require("./cloc");
 const rxjs_1 = require("rxjs");
-const cloc_functions_1 = require("../../../cloc-functions/cloc.functions");
+const cloc_2 = require("../../../cloc-functions/cloc");
 describe(`clocSummaryAsStreamOfStrings$`, () => {
     it(`read the cloc summary and notifies each line containing stats for a language over a stream`, (done) => {
         const repo = 'git-repo-with-code';
@@ -19,7 +19,7 @@ describe(`clocSummaryAsStreamOfStrings$`, () => {
             vcs: 'git',
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const outFileCreatedSync = (0, cloc_functions_1.writeClocSummary)(Object.assign(Object.assign({}, clocParams), { outDir: './temp/', outClocFilePrefix: 'same-process-' }), 'test');
+        const outFileCreatedSync = (0, cloc_2.writeClocSummary)(Object.assign(Object.assign({}, clocParams), { outDir: './temp/', outClocFilePrefix: 'same-process-' }), 'test');
         (0, cloc_1.clocSummaryAsStreamOfStrings$)(clocParams)
             .pipe((0, operators_1.toArray)(), (0, operators_1.concatMap)((linesReadFromStream) => (0, observable_fs_1.readLinesObs)(outFileCreatedSync).pipe((0, operators_1.map)((linesReadFromFilecreatedSync) => ({
             linesReadFromStream,
@@ -52,7 +52,7 @@ describe(`clocSummaryAsStreamOfStrings$`, () => {
             vcs: 'git',
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const outFileSynch = (0, cloc_functions_1.writeClocSummary)(Object.assign(Object.assign({}, params), { outDir: './temp/', outClocFilePrefix: 'same-process' }), 'test');
+        const outFileSynch = (0, cloc_2.writeClocSummary)(Object.assign(Object.assign({}, params), { outDir: './temp/', outClocFilePrefix: 'same-process' }), 'test');
         const clocSummaryFile = path_1.default.join(process.cwd(), './temp', `${repo}-cloc-summary.csv`);
         (0, cloc_1.clocSummaryAsStreamOfStrings$)(params, clocSummaryFile)
             .pipe((0, operators_1.toArray)(), (0, operators_1.concatMap)(() => (0, rxjs_1.forkJoin)([(0, observable_fs_1.readLinesObs)(outFileSynch), (0, observable_fs_1.readLinesObs)(clocSummaryFile)])), (0, operators_1.tap)({

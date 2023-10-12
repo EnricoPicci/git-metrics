@@ -16,7 +16,7 @@ import { addProjectInfo } from '../../1-D-reports/add-project-info';
 import { addConsiderationsForBranchesReport, branchesReportCore } from '../../1-D-reports/branches-report';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';
 import { ClocParams } from '../../../../cloc-functions/cloc-params';
-import { clocSummaryCsvRaw$ } from '../../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../../cloc-functions/cloc';
 
 export function runBranchesReport(
     repoFolderPath: string,

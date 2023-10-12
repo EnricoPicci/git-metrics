@@ -1,10 +1,23 @@
-import { catchError, map, of, pipe, tap } from 'rxjs';
+import { Observable, catchError, map, of, pipe, tap, toArray } from 'rxjs';
+
 import { readLinesObs } from 'observable-fs';
 
-export type ClocInfo = { language: string; filename: string; blank: number; comment: number; code: number };
-export type ClocDictionary = { [path: string]: ClocInfo };
-// creates a dictionary where the key is the file path and the value is the ClocInfo for that file
-export function clocFileDict(clocLogPath: string) {
+import { ClocDictionary, ClocInfo } from './cloc-dictionary.model';
+
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
+
+/**
+ * Reads a cloc log file and returns an Observable that emits a dictionary of ClocFileInfo objects, 
+ * where each object represents the cloc info for a file.
+ * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
+ * If the cloc log file is not found, the function logs a message to the console and returns an Observable that emits 
+ * an empty dictionary.
+ * @param clocLogPath The path to the cloc log file.
+ * @returns An Observable that emits a dictionary of ClocFileInfo objects representing the cloc info for each file in the cloc log.
+ */
+export function clocFileDictFromClocLogFile$(clocLogPath: string) {
     return readLinesObs(clocLogPath).pipe(
         toClocFileDict(clocLogPath),
         catchError((err) => {
@@ -17,7 +30,23 @@ export function clocFileDict(clocLogPath: string) {
     );
 }
 
-export function toClocFileDict(clocLogPath?: string) {
+/**
+ * Takes an Observable of strings representing the output of the cloc command (with the by-file option) and 
+ * returns an Observable that emits a dictionary of ClocFileInfo objects, where each object represents the cloc info for a file.
+ * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
+ * @param cloc$ An Observable of strings representing the output of the cloc command.
+ * @returns An Observable that emits a dictionary of ClocFileInfo objects representing the cloc info for each file in the cloc log.
+ */
+export function clocFileDictFromClocStream$(cloc$: Observable<string>) {
+    return cloc$.pipe(toArray(), toClocFileDict());
+}
+
+//********************************************************************************************************************** */
+//****************************               Internals              **************************************************** */
+//********************************************************************************************************************** */
+// these functions may be exported for testing purposes
+
+function toClocFileDict(clocLogPath?: string) {
     const clocFileMsg = clocLogPath ? ` - cloc log file ${clocLogPath}` : '';
 
     return pipe(

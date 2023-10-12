@@ -5,8 +5,18 @@ import { executeCommandObs } from '../tools/execute-command/execute-command';
 import { ClocDiffStats, newClocDiffStatsWithError, newClocDiffStatsZeroed } from './cloc-diff.model';
 import { CLOC_CONFIG } from './config';
 
-// runClocDiff is a function that runs the cloc command to calculate the differences (restricted to the selected languages) between
-// 2 commits of the same repo and returns the result in the form of a ClocDiffLanguageStats array
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
+/**
+ * Runs the cloc command to calculate the differences (restricted to the selected languages) between 2 commits of the same 
+ * repo and returns the result in the form of a `ClocDiffLanguageStats` Observable stream.
+ * @param mostRecentCommit The SHA of the most recent commit.
+ * @param leastRecentCommit The SHA of the least recent commit.
+ * @param languages An array of languages to include in the cloc diff.
+ * @param folderPath The path to the folder containing the Git repository. Defaults to './'.
+ * @returns An Observable that emits a `ClocDiffStats` object representing the cloc diff between the two commits.
+ */
 export function runClocDiff(
     mostRecentCommit: string,
     leastRecentCommit: string,
@@ -48,6 +58,12 @@ Command: ${cmd}`;
         }),
     );
 }
+
+//********************************************************************************************************************** */
+//****************************               Internals              **************************************************** */
+//********************************************************************************************************************** */
+// these functions may be exported for testing purposes
+
 
 export function buildClocDiffAllCommand(
     mostRecentCommit: string,

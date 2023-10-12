@@ -5,7 +5,7 @@ import { readLinesObs } from 'observable-fs';
 import { clocSummaryAsStreamOfStrings$ } from './cloc';
 import { forkJoin } from 'rxjs';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
-import { writeClocSummary } from '../../../cloc-functions/cloc.functions';
+import { writeClocSummary } from '../../../cloc-functions/cloc';
 
 describe(`clocSummaryAsStreamOfStrings$`, () => {
     it(`read the cloc summary and notifies each line containing stats for a language over a stream`, (done) => {

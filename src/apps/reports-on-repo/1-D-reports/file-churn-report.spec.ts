@@ -11,7 +11,7 @@ import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
-import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc.functions';
+import { clocSummaryCsvRaw$ } from '../../../cloc-functions/cloc';
 
 describe(`fileChurnReportCore`, () => {
     it(`generates the report about the churn of files`, (done) => {

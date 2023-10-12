@@ -5,7 +5,7 @@ import {
     from,
 } from 'rxjs';
 
-import { clocSummary$ } from '../../../cloc-functions/cloc.functions';
+import { clocSummary$ } from '../../../cloc-functions/cloc';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
 import { buildOutfileName } from '../../../git-functions/utils/file-name-utils';
 
