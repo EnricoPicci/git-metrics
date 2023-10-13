@@ -49,6 +49,10 @@ exports.runReportsSingleThread = runReportsSingleThread;
 // runs the read operations which create the commit and the cloc files in parallel distinct processes and then reads the output files created
 // by the read operations to generate the reports - the report generation is performend concurrently in the main Node process
 function runReportsParallelReads(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, depthInFilesCoupling) {
+    // this check is set to avoid that the caller forgets to pass Date objects (which occured to me after a refactor)
+    if (!(before instanceof Date) || !(after instanceof Date)) {
+        throw new Error('before and after must be Date objects');
+    }
     // create the output directory if not existing
     (0, create_outdir_1.createDirIfNotExisting)(outDir);
     // read from git log and cloc
@@ -75,7 +79,10 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
     const { gitLogCommits, cloc, clocSummary } = (0, read_all_1.readStreamsDistinctProcesses)(commitOptions, clocParams);
     // enrich git log streams
     const clocDict = (0, cloc_dictionary_1.clocFileDictFromClocStream$)(cloc);
-    let _commitStream = (0, commit_cloc_functions_1.commitWithFileNumstatsEnrichedWithCloc$)(gitLogCommits, clocDict);
+    let _commitStream = (0, commit_cloc_functions_1.commitWithFileNumstatsEnrichedWithCloc$)(gitLogCommits, clocDict).pipe((0, rxjs_1.map)(c => {
+        console.log(c);
+        return c;
+    }));
     _commitStream = after ? _commitStream.pipe((0, rxjs_1.filter)((c) => c.committerDate > after)) : _commitStream;
     _commitStream = _commitStream.pipe((0, rxjs_1.share)());
     const _filesStream = (0, files_1.filesStreamFromEnrichedCommitsStream)(_commitStream).pipe((0, rxjs_1.filter)((file) => {

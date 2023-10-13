@@ -23,9 +23,11 @@ const functionForCommand = commandsAvailable[command];
 if (functionForCommand) {
     functionForCommand();
 }
-console.log(`Command ${command} not found`);
-console.log(`Commands allowed:`);
-Object.keys(commandsAvailable).forEach(command => {
-    console.log(command);
-});
+else {
+    console.log(`Command ${command} not found`);
+    console.log(`Commands allowed:`);
+    Object.keys(commandsAvailable).forEach(command => {
+        console.log(command);
+    });
+}
 //# sourceMappingURL=command.js.map

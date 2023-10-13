@@ -39,6 +39,7 @@ function newDiffsClocDiffStats(languages) {
             blank: 0,
             comment: 0,
             code: 0,
+            possibleCutPaste: false,
         };
         acc.diffs.added = Object.assign({}, clocDiffLanguageStats);
         acc.diffs.removed = Object.assign({}, clocDiffLanguageStats);

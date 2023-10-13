@@ -6,7 +6,8 @@ const commits_1 = require("./commits");
 // returns a stream of file committed data in the form of an Observable which notifies FileGitCommitEnriched reading data from files containing
 // the git log and cloc data
 function filesStream(commitLogPath, clocLogPath) {
-    return filesStreamFromEnrichedCommitsStream((0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath));
+    const _enrichedCommitStream = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath);
+    return filesStreamFromEnrichedCommitsStream(_enrichedCommitStream);
 }
 exports.filesStream = filesStream;
 function filesStreamFromEnrichedCommitsStream(enrichedCommitsStream) {

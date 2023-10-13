@@ -113,17 +113,18 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
             next: (commits) => {
                 (0, chai_1.expect)(commits).not.undefined;
                 (0, chai_1.expect)(commits.length).gt(0);
-                // we take the second commit since it has all fields with defined values, even the lines added
+                // we take the third oldest commit since it has all fields with defined values, even the lines added
                 // and lines deleted fields in the files data
-                const secondCommit = commits[1];
+                // we need to reverse since commits are sorted from the newest to the oldest
+                const thirdCommit = commits.reverse()[2];
                 // all fields should be defined hence we test them with the negation operator expectedto return false
                 // in this way we test the undefined case and the null case and the empty string case and the 0 case
-                (0, chai_1.expect)(!secondCommit.authorDate).to.be.false;
-                (0, chai_1.expect)(!secondCommit.authorName).to.be.false;
-                (0, chai_1.expect)(!secondCommit.hashShort).to.be.false;
-                (0, chai_1.expect)(!secondCommit.files).to.be.false;
-                (0, chai_1.expect)(secondCommit.files.length).gt(0);
-                const firstFile = secondCommit.files[0];
+                (0, chai_1.expect)(!thirdCommit.authorDate).to.be.false;
+                (0, chai_1.expect)(!thirdCommit.authorName).to.be.false;
+                (0, chai_1.expect)(!thirdCommit.hashShort).to.be.false;
+                (0, chai_1.expect)(!thirdCommit.files).to.be.false;
+                (0, chai_1.expect)(thirdCommit.files.length).gt(0);
+                const firstFile = thirdCommit.files[0];
                 (0, chai_1.expect)(!firstFile.linesAdded).to.be.false;
                 (0, chai_1.expect)(!firstFile.linesDeleted).to.be.false;
                 (0, chai_1.expect)(!firstFile.path).to.be.false;

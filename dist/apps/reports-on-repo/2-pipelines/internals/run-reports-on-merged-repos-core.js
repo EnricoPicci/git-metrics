@@ -35,7 +35,7 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
             allCommitStreams.push(_commitStream.pipe((0, rxjs_1.map)((commit) => {
                 const _commit = Object.assign({}, commit);
                 _commit.files.forEach((f) => {
-                    f.path = `${repoFolderPath}--${f.path}`;
+                    f.path = path_1.default.join(repoFolderPath, f.path);
                 });
                 return _commit;
             })));

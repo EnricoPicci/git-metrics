@@ -2,7 +2,7 @@ import { map, catchError, of } from 'rxjs';
 
 import { executeCommandObs } from '../tools/execute-command/execute-command';
 
-import { ClocDiffStats, newClocDiffStatsWithError, newClocDiffStatsZeroed } from './cloc-diff.model';
+import { ClocDiffLanguageStats, ClocDiffState, ClocDiffStats, newClocDiffStatsWithError, newClocDiffStatsZeroed } from './cloc-diff.model';
 import { CLOC_CONFIG } from './config';
 
 //********************************************************************************************************************** */
@@ -30,6 +30,7 @@ export function runClocDiff(
             let diffs: any;
             try {
                 diffs = JSON.parse(output);
+                evaluateIfPossibleCutPaste(diffs);
             } catch (error) {
                 if (output.includes('Nothing to count.')) {
                     return newClocDiffStatsZeroed(mostRecentCommit, leastRecentCommit);
@@ -78,4 +79,25 @@ export function buildClocDiffAllCommand(
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter}`;
+}
+
+function evaluateIfPossibleCutPaste(diffs: { [state in ClocDiffState]: ClocDiffLanguageStats; }) {
+    const added = diffs.added;
+    const removed = diffs.removed;
+    const languages = Object.keys(added);
+    languages.forEach((lang) => {
+        const addedStats = added[lang];
+        const removedStats = removed[lang];
+        // isPossibleCutPaste is true if the same amount of code was added and removed, as well as the amount of blank and comment
+        // lines. Also, the amount of files added and removed must be the same. Finally, the amount of code added must be greater than
+        // zero and the amount of comment and blank lines must be not null and greater than zero.
+        const isPossibleCutPaste = addedStats.code === removedStats.code &&
+            addedStats.blank === removedStats.blank &&
+            addedStats.comment === removedStats.comment &&
+            addedStats.nFiles === removedStats.nFiles &&
+            addedStats.code > 0 && !!addedStats.comment && !!addedStats.blank;
+        // the value of possibleCutPaste is the same for both added and removed ans is set based on the above calculation
+        addedStats.possibleCutPaste = isPossibleCutPaste;
+        removedStats.possibleCutPaste = isPossibleCutPaste;
+    })
 }

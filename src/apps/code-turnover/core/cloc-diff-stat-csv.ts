@@ -17,7 +17,8 @@ export function clocDiffStatToCsvWithBase(
             .map(([language, clocStats]) => {
                 return Object.entries(clocStats)
                     .map(([stat, value]) => {
-                        return { ...base, diffType: 'same', language, stat, value };
+                        // stats for the "same" case can never be the result of a cut and paste
+                        return { ...base, diffType: 'same', language, stat, value, possibleCutPaste: false };
                     })
                     .flat();
             })
@@ -27,9 +28,14 @@ export function clocDiffStatToCsvWithBase(
     if (clocDiffStat.added) {
         addedFlat = Object.entries(clocDiffStat.added)
             .map(([language, clocStats]) => {
+                // if the clocStat is marked as possible cut and paste, then this record could be the result of a cut and paste
+                // in particular, since we are in the "added" case, this record could represent the paste
+                const possibleCutPaste = clocStats.possibleCutPaste;
+                // delete the possibleCutPaste property from the clocStats object since we are going to copy it to the csv record
+                delete clocStats.possibleCutPaste;
                 return Object.entries(clocStats)
                     .map(([stat, value]) => {
-                        return { ...base, diffType: 'added', language, stat, value };
+                        return { ...base, diffType: 'added', language, stat, value, possibleCutPaste };
                     })
                     .flat();
             })
@@ -42,9 +48,14 @@ export function clocDiffStatToCsvWithBase(
     if (clocDiffStat.removed) {
         removedFlat = Object.entries(clocDiffStat.removed)
             .map(([language, clocStats]) => {
+                // if the clocStat is marked as possible cut and paste, then this record could be the result of a cut and paste
+                // in particular, since we are in the "removed" case, this record could represent the cut
+                const possibleCutPaste = clocStats.possibleCutPaste;
+                // delete the possibleCutPaste property from the clocStats object since we are going to copy it to the csv record
+                delete clocStats.possibleCutPaste;
                 return Object.entries(clocStats)
                     .map(([stat, value]) => {
-                        return { ...base, diffType: 'removed', language, stat, value };
+                        return { ...base, diffType: 'removed', language, stat, value, possibleCutPaste };
                     })
                     .flat();
             })
@@ -59,7 +70,8 @@ export function clocDiffStatToCsvWithBase(
             .map(([language, clocStats]) => {
                 return Object.entries(clocStats)
                     .map(([stat, value]) => {
-                        return { ...base, diffType: 'modified', language, stat, value };
+                        // stat representing modifications can never be the result of a cut and paste
+                        return { ...base, diffType: 'modified', language, stat, value, possibleCutPaste: false };
                     })
                     .flat();
             })

@@ -5,8 +5,8 @@ const commander_1 = require("commander");
 const run_reports_on_repo_core_1 = require("./internals/run-reports-on-repo-core");
 const DEFAULT_OUT_DIR = './';
 function launchReportsSingleThread() {
-    const { _options, _reports, _repoFolderPath, _depthInFilesCoupling } = readParams();
-    (0, run_reports_on_repo_core_1.runReportsSingleThread)(_reports, _repoFolderPath, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _options.concurrentReadOfCommits, _options.noRenames, !_options.countClocZero, _depthInFilesCoupling).subscribe({
+    const { _options, _reports, _repoFolderPath, _depthInFilesCoupling, _before, _after } = readParams();
+    (0, run_reports_on_repo_core_1.runReportsSingleThread)(_reports, _repoFolderPath, _options.filter, _after, _before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _options.concurrentReadOfCommits, _options.noRenames, !_options.countClocZero, _depthInFilesCoupling).subscribe({
         next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');
@@ -23,8 +23,8 @@ function launchReportsSingleThread() {
 }
 exports.launchReportsSingleThread = launchReportsSingleThread;
 function launchReportsParallelReads() {
-    const { _options, _reports, _repoFolderPath, _depthInFilesCoupling } = readParams();
-    (0, run_reports_on_repo_core_1.runReportsParallelReads)(_reports, _repoFolderPath, _options.filter, _options.after, _options.before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _options.concurrentReadOfCommits, _options.noRenames, !_options.countClocZero, _depthInFilesCoupling).subscribe({
+    const { _options, _reports, _repoFolderPath, _depthInFilesCoupling, _before, _after } = readParams();
+    (0, run_reports_on_repo_core_1.runReportsParallelReads)(_reports, _repoFolderPath, _options.filter, _after, _before, _options.outDir, _options.outFilePrefix, _options.clocDefsFile, _options.concurrentReadOfCommits, _options.noRenames, !_options.countClocZero, _depthInFilesCoupling).subscribe({
         next: ({ reports }) => {
             reports.forEach((report) => {
                 console.log('\n', '\n');
@@ -64,6 +64,8 @@ If more than one filter has to be specified, make sure they are separated by a s
     const _reports = (_a = _options.reports) !== null && _a !== void 0 ? _a : run_reports_on_repo_core_1.allReports;
     const _repoFolderPath = _options.repoFolderPath ? _options.repoFolderPath : process.cwd();
     const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
-    return { _options: program.opts(), _reports, _repoFolderPath, _depthInFilesCoupling };
+    const _before = _options.before ? new Date(_options.before) : new Date();
+    const _after = _options.after ? new Date(_options.after) : new Date(0);
+    return { _options: program.opts(), _reports, _before, _after, _repoFolderPath, _depthInFilesCoupling };
 }
 //# sourceMappingURL=run-reports-on-repo.js.map

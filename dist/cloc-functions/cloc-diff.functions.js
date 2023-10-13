@@ -24,6 +24,7 @@ function runClocDiff(mostRecentCommit, leastRecentCommit, languages, folderPath 
         let diffs;
         try {
             diffs = JSON.parse(output);
+            evaluateIfPossibleCutPaste(diffs);
         }
         catch (error) {
             if (output.includes('Nothing to count.')) {
@@ -66,4 +67,24 @@ function buildClocDiffAllCommand(mostRecentCommit, leastRecentCommit, languages,
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter}`;
 }
 exports.buildClocDiffAllCommand = buildClocDiffAllCommand;
+function evaluateIfPossibleCutPaste(diffs) {
+    const added = diffs.added;
+    const removed = diffs.removed;
+    const languages = Object.keys(added);
+    languages.forEach((lang) => {
+        const addedStats = added[lang];
+        const removedStats = removed[lang];
+        // isPossibleCutPaste is true if the same amount of code was added and removed, as well as the amount of blank and comment
+        // lines. Also, the amount of files added and removed must be the same. Finally, the amount of code added must be greater than
+        // zero and the amount of comment and blank lines must be not null and greater than zero.
+        const isPossibleCutPaste = addedStats.code === removedStats.code &&
+            addedStats.blank === removedStats.blank &&
+            addedStats.comment === removedStats.comment &&
+            addedStats.nFiles === removedStats.nFiles &&
+            addedStats.code > 0 && !!addedStats.comment && !!addedStats.blank;
+        // the value of possibleCutPaste is the same for both added and removed ans is set based on the above calculation
+        addedStats.possibleCutPaste = isPossibleCutPaste;
+        removedStats.possibleCutPaste = isPossibleCutPaste;
+    });
+}
 //# sourceMappingURL=cloc-diff.functions.js.map

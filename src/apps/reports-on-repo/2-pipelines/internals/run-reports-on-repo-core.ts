@@ -110,6 +110,11 @@ export function runReportsParallelReads(
     ignoreClocZero: boolean,
     depthInFilesCoupling: number,
 ) {
+    // this check is set to avoid that the caller forgets to pass Date objects (which occured to me after a refactor)
+    if (!(before instanceof Date) || !(after instanceof Date)) {
+        throw new Error('before and after must be Date objects');
+    }
+
     // create the output directory if not existing
     createDirIfNotExisting(outDir);
 

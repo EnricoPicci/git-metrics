@@ -4,14 +4,14 @@ import { allReports, runReportsSingleThread, runReportsParallelReads } from './i
 const DEFAULT_OUT_DIR = './';
 
 export function launchReportsSingleThread() {
-    const { _options, _reports, _repoFolderPath, _depthInFilesCoupling } = readParams();
+    const { _options, _reports, _repoFolderPath, _depthInFilesCoupling, _before, _after } = readParams();
 
     runReportsSingleThread(
         _reports,
         _repoFolderPath,
         _options.filter,
-        _options.after,
-        _options.before,
+        _after,
+        _before,
         _options.outDir,
         _options.outFilePrefix,
         _options.clocDefsFile,
@@ -36,14 +36,14 @@ export function launchReportsSingleThread() {
 }
 
 export function launchReportsParallelReads() {
-    const { _options, _reports, _repoFolderPath, _depthInFilesCoupling } = readParams();
+    const { _options, _reports, _repoFolderPath, _depthInFilesCoupling, _before, _after } = readParams();
 
     runReportsParallelReads(
         _reports,
         _repoFolderPath,
         _options.filter,
-        _options.after,
-        _options.before,
+        _after,
+        _before,
         _options.outDir,
         _options.outFilePrefix,
         _options.clocDefsFile,
@@ -123,6 +123,8 @@ If more than one filter has to be specified, make sure they are separated by a s
     const _reports = _options.reports ?? allReports;
     const _repoFolderPath = _options.repoFolderPath ? _options.repoFolderPath : process.cwd();
     const _depthInFilesCoupling = parseInt(_options.depthInFilesCoupling);
+    const _before = _options.before ? new Date(_options.before) : new Date();
+    const _after = _options.after ? new Date(_options.after) : new Date(0);
 
-    return { _options: program.opts(), _reports, _repoFolderPath, _depthInFilesCoupling };
+    return { _options: program.opts(), _reports, _before, _after, _repoFolderPath, _depthInFilesCoupling };
 }
