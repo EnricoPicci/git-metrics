@@ -7,7 +7,7 @@ exports._runReportsFromStreams = exports._streams = exports.runReportsOneStream 
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const read_all_1 = require("../../1-A-read/read-all");
-const create_outdir_1 = require("../../1-A-read/create-outdir");
+const fs_utils_1 = require("../../../../tools/fs-utils/fs-utils");
 const commits_1 = require("../../1-B-git-enriched-streams/commits");
 const files_1 = require("../../1-B-git-enriched-streams/files");
 const project_info_aggregate_1 = require("../../1-C-aggregate-in-memory/project-info-aggregate");
@@ -35,7 +35,7 @@ exports.allReports = [
 // runs the reports in the same main Node thread
 function runReportsSingleThread(reports, repoFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, depthInFilesCoupling) {
     // create the output directory if not existing
-    (0, create_outdir_1.createDirIfNotExisting)(outDir);
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     // read the data from git and cloc tool
     const commitOptions = { repoFolderPath, outDir, filter, noRenames, reverse: true };
     const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
@@ -54,7 +54,7 @@ function runReportsParallelReads(reports, repoFolderPath, filter, after, before,
         throw new Error('before and after must be Date objects');
     }
     // create the output directory if not existing
-    (0, create_outdir_1.createDirIfNotExisting)(outDir);
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     // read from git log and cloc
     const commitOptions = { repoFolderPath, outDir, filter, noRenames, reverse: true };
     const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
@@ -72,7 +72,7 @@ exports.runReportsParallelReads = runReportsParallelReads;
 // write the output of "git log" and "cloc" commands into intermediate files.
 function runReportsOneStream(reports, repoFolderPath, _filter, after, before, outDir, outFilePrefix, clocDefsPath, noRenames, ignoreClocZero, depthInFilesCoupling) {
     // create the output directory if not existing
-    (0, create_outdir_1.createDirIfNotExisting)(outDir);
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     // streams that read from git log and cloc
     const commitOptions = { repoFolderPath, outDir, filter: _filter, noRenames, reverse: true };
     const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };

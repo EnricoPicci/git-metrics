@@ -14,7 +14,7 @@ import { mongoAuthorChurnReport } from '../../report/mongo-author-churn-report';
 import { mongoModuleChurnReport } from '../../report/mongo-module-churn-report';
 import { mongoFileAuthorReport } from '../../report/mongo-file-author-report';
 import { mongoFilesCouplingReport } from '../../report/mongo-files-coupling-report';
-import { createDirIfNotExisting } from '../../../1-A-read/create-outdir';
+import { createDirIfNotExisting } from '../../../../../tools/fs-utils/fs-utils';
 import { GitLogCommitParams } from '../../../../../git-functions/git-params';
 import { ClocParams } from '../../../../../cloc-functions/cloc-params';
 

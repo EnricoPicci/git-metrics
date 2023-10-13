@@ -8,7 +8,7 @@ const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const read_all_1 = require("../../1-A-read/read-all");
-const create_outdir_1 = require("../../1-A-read/create-outdir");
+const fs_utils_1 = require("../../../../tools/fs-utils/fs-utils");
 const commits_1 = require("../../1-B-git-enriched-streams/commits");
 const commits_and_branch_tips_1 = require("../../1-B-git-enriched-streams/commits-and-branch-tips");
 const project_info_aggregate_1 = require("../../1-C-aggregate-in-memory/project-info-aggregate");
@@ -18,7 +18,7 @@ const branches_report_1 = require("../../1-D-reports/branches-report");
 const cloc_1 = require("../../../../cloc-functions/cloc");
 function runBranchesReport(repoFolderPath, after, outDir, outFilePrefix, clocDefsPath, noRenames) {
     // create the output directory if not existing
-    (0, create_outdir_1.createDirIfNotExisting)(outDir);
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     // read the data from git and cloc tool
     const commitOptions = {
         repoFolderPath,

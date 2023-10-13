@@ -19,10 +19,10 @@ const mongo_author_churn_report_1 = require("../../report/mongo-author-churn-rep
 const mongo_module_churn_report_1 = require("../../report/mongo-module-churn-report");
 const mongo_file_author_report_1 = require("../../report/mongo-file-author-report");
 const mongo_files_coupling_report_1 = require("../../report/mongo-files-coupling-report");
-const create_outdir_1 = require("../../../1-A-read/create-outdir");
+const fs_utils_1 = require("../../../../../tools/fs-utils/fs-utils");
 function loadMongRunReports(connectionString, outDir, repoFolderPath, dbName, after, filter, outFile, outClocFile, collName, buffer, clocDefsPath, logProgress, mongoConcurrency) {
     // create the output directory if not existing
-    (0, create_outdir_1.createDirIfNotExisting)(outDir);
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     // we must load all commits to be able to determine the creation date of a file
     // since the creation date is determined by the first commit the file was in, therefore we do not specify
     // the "after" propety in the "commitOptions" object

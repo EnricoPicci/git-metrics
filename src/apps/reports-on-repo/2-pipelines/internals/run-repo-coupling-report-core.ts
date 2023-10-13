@@ -1,4 +1,4 @@
-import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
+import { createDirIfNotExisting } from '../../../../tools/fs-utils/fs-utils';
 import { readAll } from '../../1-A-read/read-all';
 
 import { filesStream } from '../../1-B-git-enriched-streams/files';

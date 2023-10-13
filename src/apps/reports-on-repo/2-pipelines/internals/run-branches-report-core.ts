@@ -3,7 +3,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { readAll } from '../../1-A-read/read-all';
-import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
+import { createDirIfNotExisting } from '../../../../tools/fs-utils/fs-utils';
 
 import { enrichedCommitsStream } from '../../1-B-git-enriched-streams/commits';
 import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";

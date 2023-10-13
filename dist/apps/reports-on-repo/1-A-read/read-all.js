@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readStreamsDistinctProcesses = exports.readAllParallel = exports.readAll = void 0;
+exports.buildSummaryClocOutfile = exports.readStreamsDistinctProcesses = exports.readAllParallel = exports.readAll = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const commit_functions_1 = require("../../../git-functions/commit.functions");
@@ -31,7 +31,7 @@ exports.readAllParallel = readAllParallel;
 // builds the Observables that perform the read operations against a git repo in separate processes
 function readStreamsDistinctProcesses(commitOptions, clocParams) {
     const outGitFile = buildGitOutfile(commitOptions);
-    const outClocSummaryFile = (0, cloc_2.buildSummaryClocOutfile)(clocParams);
+    const outClocSummaryFile = buildSummaryClocOutfile(clocParams);
     return _streamsDistinctProcesses(commitOptions, clocParams, outGitFile, outClocSummaryFile);
 }
 exports.readStreamsDistinctProcesses = readStreamsDistinctProcesses;
@@ -51,4 +51,11 @@ function buildGitOutfile(config) {
     const out = path_1.default.join(outDir, outFile);
     return out;
 }
+function buildSummaryClocOutfile(params) {
+    const outDir = params.outDir ? params.outDir : './';
+    const outFile = (0, cloc_1.buildOutfileName)(params.outClocFile, params.folderPath, params.outClocFilePrefix, '-cloc-summary.csv');
+    const out = path_1.default.resolve(path_1.default.join(outDir, outFile));
+    return out;
+}
+exports.buildSummaryClocOutfile = buildSummaryClocOutfile;
 //# sourceMappingURL=read-all.js.map

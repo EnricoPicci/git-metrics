@@ -2,7 +2,7 @@ import path from 'path';
 import { concatMap, map, merge, Observable } from 'rxjs';
 
 import { readAll } from '../../1-A-read/read-all';
-import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
+import { createDirIfNotExisting } from '../../../../tools/fs-utils/fs-utils';
 
 import { FileGitCommitEnriched } from '../../1-B-git-enriched-types/git-types';
 import { CommitWithFileNumstats } from "../../../../git-functions/commit.model";

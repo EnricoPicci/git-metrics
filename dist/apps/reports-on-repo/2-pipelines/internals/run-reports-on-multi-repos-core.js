@@ -4,11 +4,11 @@ exports.runAllReportsOnMultiRepos = void 0;
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const read_all_1 = require("../../1-A-read/read-all");
-const create_outdir_1 = require("../../1-A-read/create-outdir");
+const fs_utils_1 = require("../../../../tools/fs-utils/fs-utils");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
 function runAllReportsOnMultiRepos(reports, repoFolderPaths, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, noRenames) {
     // create the output directory if not existing
-    (0, create_outdir_1.createDirIfNotExisting)(outDir);
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     const allReports = repoFolderPaths.map((repoFolderPath) => {
         // read the data from git and cloc tool
         const commitOptions = { repoFolderPath, outDir, filter, noRenames, reverse: true };

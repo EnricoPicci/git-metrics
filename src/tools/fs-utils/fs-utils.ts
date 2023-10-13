@@ -1,4 +1,5 @@
-import fs from 'fs'; // in Typescript
+import fs from "fs";
+
 
 export function createDirIfNotExisting(path: string) {
     if (!fs.existsSync(path)) {

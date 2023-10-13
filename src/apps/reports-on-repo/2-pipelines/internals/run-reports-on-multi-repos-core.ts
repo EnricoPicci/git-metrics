@@ -2,7 +2,7 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { readAll } from '../../1-A-read/read-all';
-import { createDirIfNotExisting } from '../../1-A-read/create-outdir';
+import { createDirIfNotExisting } from '../../../../tools/fs-utils/fs-utils';
 
 import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';

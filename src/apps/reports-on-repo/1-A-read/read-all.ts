@@ -9,10 +9,7 @@ import {
 import { buildOutfileName, clocByfile$, writeClocByFile$, writeClocByfile, writeClocSummary, writeClocSummary$ } from '../../../cloc-functions/cloc';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
 
-import {
-    buildSummaryClocOutfile,
-    clocSummaryAsStreamOfStrings$,
-} from './cloc';
+import { clocSummaryAsStreamOfStrings$ } from './cloc';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
@@ -76,5 +73,12 @@ function buildGitOutfile(config: GitLogCommitParams) {
     const _postfix = config.reverse ? COMMITS_FILE_REVERSE_POSTFIX : COMMITS_FILE_POSTFIX;
     const outFile = buildOutfileName(config.outFile!, config.repoFolderPath, config.outFilePrefix, _postfix);
     const out = path.join(outDir, outFile);
+    return out;
+}
+
+export function buildSummaryClocOutfile(params: ClocParams) {
+    const outDir = params.outDir ? params.outDir : './';
+    const outFile = buildOutfileName(params.outClocFile!, params.folderPath, params.outClocFilePrefix, '-cloc-summary.csv');
+    const out = path.resolve(path.join(outDir, outFile));
     return out;
 }
