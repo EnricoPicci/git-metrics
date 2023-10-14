@@ -2,7 +2,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const launch_count_repos_commits_1 = require("../apps/read-repos-commits/launch-count-repos-commits");
-const launch_cloc_on_folders_1 = require("../apps/cloc-on-folders/launch-cloc-on-folders");
 const launch_code_turnover_1 = require("../apps/code-turnover/launch-code-turnover");
 const run_reports_on_repo_1 = require("../apps/reports-on-repo/2-pipelines/run-reports-on-repo");
 const run_reports_on_merged_repos_1 = require("../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos");
@@ -11,7 +10,6 @@ const launch_code_turnover_and_reports_1 = require("../apps/code-turnover-and-re
 const command = process.argv[2];
 const commandsAvailable = {
     'read-repos-commits': launch_count_repos_commits_1.launchCountReposCommits,
-    'cloc-folders': launch_cloc_on_folders_1.launchClocOnFolder,
     'cloc-monthly-diff-repos': launch_code_turnover_1.launchMonthlyClocDiffRepos,
     'code-turnover': launch_code_turnover_1.launchCalculateCodeTurnover,
     'code-turnover-and-reports': launch_code_turnover_and_reports_1.launchRunReportsAndCodeTurnover,

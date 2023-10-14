@@ -1,6 +1,8 @@
 # git-metrics
 
-Tools to calculate some metrics out of git. This [article](https://betterprogramming.pub/a-data-driven-approach-to-improve-systems-understandability-d66369f75db) describes the spirit of this tools.
+Tools to calculate some metrics out of git. It uses [git](https://git-scm.com/) and [cloc](https://github.com/AlDanial/cloc) commands.
+
+This [article](https://betterprogramming.pub/a-data-driven-approach-to-improve-systems-understandability-d66369f75db) describes the spirit of this tools.
 
 # Table of Contents
 
@@ -39,22 +41,34 @@ Tools to calculate some metrics out of git. This [article](https://betterprogram
         1. [Options that can be used when using Mongo](#options-that-can-be-used-when-using-mongo)
 
 # OVERVIEW
+Data stored in the git commit records add the dimension of time and contributors to the analysis of code. In other words it tells how a codebase has evolved over time and who has done what.
 
-There are tools that analyze a single repo and there are tools that analyze more than one repo, the latter with the objective to highlight signals of potential coupling among the repos.
+Analyzing a codebase using the time and contributor dimension can cast some light on the work performed on a certain repo. For instance, looking at the parts of a codebase which have moved most in a certain period of time, we can derive where probably most of the work has been concentrated. 
 
-The tool can be run via the command `npx git-metrics` (with parameters if required, e.g. like `npx git-metrics -f '*.ts*' -a 2021-01-01 -d ../logs`).
+Other analysis are possible, for instance looking at the contributors and their work over time.
 
-We can also install the package locally and the run the command directly with node, e.g.
+The tool can be run via the command `npx git-metrics <sub-command> <parameters>` (where <sub-command> is the name of sub-commnad we want to launch, i.e. the type of analysis we want to perform, and <parameters> are the parameters required by the specific sub-command).
 
-`node ./dist/3-lib/run-reports-single-thread.js `.
+We can also install the package locally and the run the command directly within [node](https://nodejs.org), e.g.
 
-The package contains other subcommands other than the main (default) one. Such subcommands can be launched using the `-p` option, like this
+`node ./dist/lib/command.js <sub-command> <parameters>`.
 
-`npx -p git-metrics run-reports-single-thread`
+Running the command `npx git-metrics` prints the list of all available sub-commands.
 
-All the subcommands available are listed in the `bin` property of `package.json`.
+Running the command `npx git-metrics <sub-command> --help` prints the list of parameters required for a specific subcommand.
 
-# TOOLS TO ANALYZE REPOS - IN MEMORY AGGREGATION
+# code-turnover
+**code-turnover** is the measure of how many lines of code have been added or removed or modified in a certain period of time.
+
+It may be considered a proxy of the effort spent by developers on a certain codebase. 
+
+For instance, if in the month oj June we see that the **code-turnover** of a certain repo is 0, then we can deduce (with some approximation) that no effort has been spent on that repo. On the other hand, if we see that ***repo-A*** has a **code-turnover** of 10.000 and, in the same period of time, ***repo-B*** has a **code-turnover** of 1.000, we can suspect that much more work has been spent on ***repo-A*** than on ***repo-B***.
+
+**code-turnover** is a relative measure, not an absolute one, and should be used to highlight possible areas of investigation. In other words, it should be used to help us ask the right questions and not to provide us answers. Still, with all these limitations in mind, it is an objective quantitative measure that can be combined with other more qualitative considerations to help us better understand our codebases.
+
+The **code-turnover** analysis can be launched with the `code-turnover` sub-command as explained in more details in the [code-turnover README file](./src/apps/code-turnover/README.md). 
+
+<!-- # TOOLS TO ANALYZE REPOS - IN MEMORY AGGREGATION
 
 ## BASIC LOGICAL STEPS
 
@@ -387,4 +401,4 @@ There are some specific options for mongo. For instance, launching the followint
 -   '--clocDefsFile <string>': path of the file that contains the language definitions used by cloc (sse "force-lang-def" in http://cloc.sourceforge.net/
     #Options)`
 -   '--logProgress <boolean>': logs the progress in loading the mongo db with documents (default is false);
--   '--mongoConcurrency <number>': concurrency level used in insert and update operations (default is 1, i.e. no concurrency)
+-   '--mongoConcurrency <number>': concurrency level used in insert and update operations (default is 1, i.e. no concurrency) -->
