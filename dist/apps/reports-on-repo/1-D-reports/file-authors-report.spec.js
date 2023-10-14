@@ -25,7 +25,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
             commitLog: commitLogPath,
             outDir,
         };
-        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _commitStream = (0, commits_1.gitCommitStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _fileAuthors = (0, file_authors_aggregate_1.fileAuthors)(_filesStream, params.after);
         const _clocSummaryInfo = (0, cloc_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
@@ -61,7 +61,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
             outDir,
             after,
         };
-        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _commitStream = (0, commits_1.gitCommitStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _fileAuthors = (0, file_authors_aggregate_1.fileAuthors)(_filesStream, params.after);
         const _clocSummaryInfo = (0, cloc_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
@@ -94,7 +94,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         // generation of the source streams
-        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _commitStream = (0, commits_1.gitCommitStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _clocSummaryStream = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
         const params = {

@@ -156,7 +156,7 @@ describe(`projectAndFileChurnReport`, () => {
         const commitLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
         const clocLogPath = path_1.default.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
         // generation of the source streams
-        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _commitStream = (0, commits_1.gitCommitStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _clocSummaryInfo = (0, cloc_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
         const params = {
@@ -192,7 +192,7 @@ describe(`projectAndFileChurnReport`, () => {
         ];
         // generation of the source streams
         const _clocSummaryInfo = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
-        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _commitStream = (0, commits_1.gitCommitStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const params = {
             repoFolderPath,
@@ -233,7 +233,7 @@ describe(`projectAndFileChurnReport`, () => {
         ];
         // generation of the source streams
         const _clocSummaryInfo = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
-        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _commitStream = (0, commits_1.gitCommitStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const params = {
             repoFolderPath,
@@ -266,7 +266,7 @@ describe(`projectAndFileChurnReport`, () => {
         const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = (0, read_all_1.readAll)(commitOptions, clocParams);
         // generation of the source streams
-        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _commitStream = (0, commits_1.gitCommitStream)(commitLogPath);
         const _filesStream = (0, files_1.filesStream)(commitLogPath, clocLogPath);
         const _clocSummaryStream = (0, cloc_1.clocSummaryCsvRaw$)(clocSummaryPath);
         const params = {

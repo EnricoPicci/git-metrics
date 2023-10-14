@@ -8,9 +8,9 @@ import {
 } from '../../../git-functions/commit.functions';
 import { buildOutfileName, clocByfile$, writeClocByFile$, writeClocByfile, writeClocSummary, writeClocSummary$ } from '../../../cloc-functions/cloc';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
+import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 import { clocSummaryAsStreamOfStrings$ } from './cloc';
-import { ClocParams } from '../../../cloc-functions/cloc-params';
 
 // performs all the read operations against a git repo and return the file paths of the logs created out of the read operations
 export function readAll(commitOptions: GitLogCommitParams, clocParams: ClocParams) {

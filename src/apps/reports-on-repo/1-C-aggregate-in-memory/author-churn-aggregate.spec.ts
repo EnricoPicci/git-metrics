@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { tap } from 'rxjs';
-import { commitsStream } from '../1-B-git-enriched-streams/commits';
+import { gitCommitStream } from '../1-B-git-enriched-streams/commits';
 import { authorChurn, authorChurnDictionary } from './author-churn-aggregate';
 
 const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-commits.gitlog`;
 
 describe(`authorChurnDictionary`, () => {
     it(`reads the commit info and generates a dictionary with the author as key and an AuthurChurn object as value`, (done) => {
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         authorChurnDictionary(_commitStream)
             .pipe(
                 tap({
@@ -38,7 +38,7 @@ describe(`authorChurnDictionary`, () => {
     });
     it(`reads the commit info and generates a dictionary with the author as key and the number of commits as value
     considers only the commits after a certain date`, (done) => {
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const after = new Date('2021-01-01');
         authorChurnDictionary(_commitStream, after)
             .pipe(
@@ -60,7 +60,7 @@ describe(`authorChurnDictionary`, () => {
 describe(`authorChurnDictionary - special cases`, () => {
     it(`there is one commit without files for an author who does not have other commits - in this case this author does not apprea in the dictionary`, (done) => {
         const commitLogPath = `${process.cwd()}/test-data/output/a-git-repo-with-author-with-no-commits.gitlog`;
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         authorChurnDictionary(_commitStream)
             .pipe(
                 tap({
@@ -82,7 +82,7 @@ describe(`authorChurnDictionary - special cases`, () => {
 
 describe(`authorChurn`, () => {
     it(`reads the commit info and generates a stream of AuthorChurn objects`, (done) => {
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
         authorChurn(commits)
             .pipe(
                 tap({
@@ -105,7 +105,7 @@ describe(`authorChurn`, () => {
     });
     it(`reads the commit info and generates a stream of AuthorChurn objects
     considers only the commits after a certain date`, (done) => {
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
         const after = new Date('2021-01-01');
         authorChurn(commits, after)
             .pipe(

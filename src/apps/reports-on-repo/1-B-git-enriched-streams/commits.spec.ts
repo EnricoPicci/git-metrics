@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import path = require('path');
 import { toArray, tap } from 'rxjs';
-import { commitsStream, enrichedCommitsStream, filePathFromCommitPath, splitCommits } from './commits';
+import { gitCommitStream, enrichedCommitsStream, filePathFromCommitPath, splitCommits } from './commits';
 
 describe(`splitCommits`, () => {
     it(`returns a stream of arrays of strings, each array containing all the data related to a specific commit`, (done) => {
@@ -177,7 +177,7 @@ describe(`commitsStream`, () => {
     it(`returns a stream of GitCommitEnriched objects - one file is of type png and therefore has a not defined number of lines added and deleted
     which is set to 0`, (done) => {
         const logFilePath = path.join(process.cwd(), '/test-data/output/a-git-repo-png-file-commits.gitlog');
-        commitsStream(logFilePath).subscribe({
+        gitCommitStream(logFilePath).subscribe({
             next: (commits) => {
                 commits.files.forEach((f) => {
                     expect(f.linesAdded).gte(0);

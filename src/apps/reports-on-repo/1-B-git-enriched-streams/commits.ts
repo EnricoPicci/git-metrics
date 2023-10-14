@@ -1,11 +1,12 @@
 import { map, filter, concatMap, tap } from 'rxjs/operators';
 import { readLineObs } from 'observable-fs';
+
 import { clocFileDictFromClocLogFile$ } from '../../../cloc-functions/cloc-dictionary';
 import { ClocDictionary } from '../../../cloc-functions/cloc-dictionary.model';
+import { commitLines } from '../../../git-functions/commit.functions';
+import { CommitWithFileNumstatsEnrichedWithCloc, GitFileNumstatEnrichedWithCloc } from '../../../git-cloc-functions/commit-cloc.model';
 
 import { DEFAUL_CONFIG } from '../0-config/config';
-import { CommitWithFileNumstatsEnrichedWithCloc, GitFileNumstatEnrichedWithCloc } from '../../../git-cloc-functions/commit-cloc.model';
-import { commitLines } from '../../../git-functions/commit.functions';
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
@@ -18,9 +19,6 @@ export function enrichedCommitsStream(commitLogPath: string, clocLogPath: string
         concatMap((clocDict) => gitCommitStream(commitLogPath, clocDict)),
     );
     return after ? commitStream.pipe(filter((c) => c.committerDate > after)) : commitStream;
-}
-export function commitsStream(commitLogPath: string) {
-    return gitCommitStream(commitLogPath);
 }
 
 // Splits the content of a git log into single commits. Each commit is in the form of CommitDoc

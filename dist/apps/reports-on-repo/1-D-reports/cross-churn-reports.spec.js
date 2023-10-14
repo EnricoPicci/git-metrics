@@ -32,7 +32,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
         };
         const fChurnReport = (0, file_churn_report_1.fileChurnReportCore)(fileChurns, fParams);
         // build the author churn report
-        const commits = (0, commits_1.commitsStream)(commitLogPath);
+        const commits = (0, commits_1.gitCommitStream)(commitLogPath);
         const authorChurns = (0, author_churn_aggregate_1.authorChurn)(commits, after);
         const params = {
             commitLog: commitLogPath,
@@ -68,7 +68,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
         };
         const fChurnReport = (0, file_churn_report_1.fileChurnReportCore)(fileChurns, fParams);
         // build the author churn report
-        const commits = (0, commits_1.commitsStream)(commitLogPath);
+        const commits = (0, commits_1.gitCommitStream)(commitLogPath);
         const authorChurns = (0, author_churn_aggregate_1.authorChurn)(commits);
         const params = {
             commitLog: commitLogPath,
@@ -104,7 +104,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
         };
         const fChurnReport = (0, file_churn_report_1.fileChurnReportCore)(fileChurns, fParams);
         // build the author churn report
-        const commits = (0, commits_1.commitsStream)(commitLogPath);
+        const commits = (0, commits_1.gitCommitStream)(commitLogPath);
         const authorChurns = (0, author_churn_aggregate_1.authorChurn)(commits);
         const params = {
             commitLog: commitLogPath,

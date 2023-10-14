@@ -4,7 +4,7 @@ import path from 'path';
 import { tap, concatMap } from 'rxjs';
 import { fromCsv } from '../../../tools/csv/from-csv';
 import { filesStream } from '../1-B-git-enriched-streams/files';
-import { commitsStream } from '../1-B-git-enriched-streams/commits';
+import { gitCommitStream } from '../1-B-git-enriched-streams/commits';
 import { readAll } from '../1-A-read/read-all';
 import { fileChurnReportCore, FileChurnReportParams, projectAndFileChurnReport } from './file-churn-report';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
@@ -182,7 +182,7 @@ describe(`projectAndFileChurnReport`, () => {
         const clocLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-cloc.gitlog`);
 
         // generation of the source streams
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
 
@@ -225,7 +225,7 @@ describe(`projectAndFileChurnReport`, () => {
         ];
         // generation of the source streams
         const _clocSummaryInfo = clocSummaryCsvRaw$(clocSummaryPath);
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
 
         const params: FileChurnReportParams = {
@@ -273,7 +273,7 @@ describe(`projectAndFileChurnReport`, () => {
         ];
         // generation of the source streams
         const _clocSummaryInfo = clocSummaryCsvRaw$(clocSummaryPath);
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
 
         const params: FileChurnReportParams = {
@@ -312,7 +312,7 @@ describe(`projectAndFileChurnReport`, () => {
         const clocParams: ClocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, clocParams);
         // generation of the source streams
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
         const _clocSummaryStream = clocSummaryCsvRaw$(clocSummaryPath);
 

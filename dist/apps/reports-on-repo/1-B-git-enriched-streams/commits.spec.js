@@ -155,7 +155,7 @@ describe(`commitsStream`, () => {
     it(`returns a stream of GitCommitEnriched objects - one file is of type png and therefore has a not defined number of lines added and deleted
     which is set to 0`, (done) => {
         const logFilePath = path.join(process.cwd(), '/test-data/output/a-git-repo-png-file-commits.gitlog');
-        (0, commits_1.commitsStream)(logFilePath).subscribe({
+        (0, commits_1.gitCommitStream)(logFilePath).subscribe({
             next: (commits) => {
                 commits.files.forEach((f) => {
                     (0, chai_1.expect)(f.linesAdded).gte(0);

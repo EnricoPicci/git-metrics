@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.splitCommits = exports.COMMIT_RECORD_COUNTER = exports.filePathFromCommitPath = exports.newGitCommit = exports.gitCommitStream = exports.commitsStream = exports.enrichedCommitsStream = void 0;
+exports.splitCommits = exports.COMMIT_RECORD_COUNTER = exports.filePathFromCommitPath = exports.newGitCommit = exports.gitCommitStream = exports.enrichedCommitsStream = void 0;
 const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
 const cloc_dictionary_1 = require("../../../cloc-functions/cloc-dictionary");
-const config_1 = require("../0-config/config");
 const commit_functions_1 = require("../../../git-functions/commit.functions");
+const config_1 = require("../0-config/config");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // returns a stream of commits in the form of an Observable which notifies GitCommitEnriched objects reading data from files containing
@@ -15,10 +15,6 @@ function enrichedCommitsStream(commitLogPath, clocLogPath, after) {
     return after ? commitStream.pipe((0, operators_1.filter)((c) => c.committerDate > after)) : commitStream;
 }
 exports.enrichedCommitsStream = enrichedCommitsStream;
-function commitsStream(commitLogPath) {
-    return gitCommitStream(commitLogPath);
-}
-exports.commitsStream = commitsStream;
 // Splits the content of a git log into single commits. Each commit is in the form of CommitDoc
 function gitCommitStream(logFilePath, clocDict) {
     return splitCommits(logFilePath).pipe((0, operators_1.map)((commit) => newGitCommit(commit, clocDict)));

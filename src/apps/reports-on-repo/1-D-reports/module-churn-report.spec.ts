@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import path from 'path';
 import { tap, share, concatMap } from 'rxjs';
 import { filesStream } from '../1-B-git-enriched-streams/files';
-import { commitsStream } from '../1-B-git-enriched-streams/commits';
+import { gitCommitStream } from '../1-B-git-enriched-streams/commits';
 import { ModuleChurnReportParams, projectAndModuleChurnReport } from './module-churn-report';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
@@ -24,7 +24,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const outDir = `${process.cwd()}/temp`;
 
         const fileCommits = filesStream(commitLogPath, clocLogPath);
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
 
         const fileChurns = fileChurn(fileCommits, true).pipe(share());
@@ -71,7 +71,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const outDir = `${process.cwd()}/temp`;
 
         const fileCommits = filesStream(commitLogPath, clocLogPath);
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
 
         const fileChurns = fileChurn(fileCommits, true).pipe(share());
@@ -118,7 +118,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const outDir = `${process.cwd()}/temp`;
 
         const fileCommits = filesStream(commitLogPath, clocLogPath);
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
 
         const fileChurns = fileChurn(fileCommits, true).pipe(share());
@@ -175,7 +175,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const outDir = `${process.cwd()}/temp`;
 
         const fileCommits = filesStream(commitLogPath, clocLogPath);
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
 
         const fileChurns = fileChurn(fileCommits, true, after).pipe(share());
@@ -231,7 +231,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const clocParams: ClocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, clocParams);
         // generation of the source streams
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
         const _clocSummaryStream = clocSummaryCsvRaw$(clocSummaryPath);
 
@@ -282,7 +282,7 @@ describe(`projectAndModuleChurnReport`, () => {
         const outDir = `${process.cwd()}/temp`;
 
         const fileCommits = filesStream(commitLogPath, clocLogPath);
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
 
         const fileChurns = fileChurn(fileCommits, true).pipe(share());

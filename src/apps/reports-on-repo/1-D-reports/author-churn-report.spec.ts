@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
 import { authorChurn } from '../1-C-aggregate-in-memory/author-churn-aggregate';
-import { commitsStream, enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
+import { gitCommitStream, enrichedCommitsStream } from '../1-B-git-enriched-streams/commits';
 import { readAll } from '../1-A-read/read-all';
 import { authorChurnReportCore, AuthorChurnReportParams, projectAndAuthorChurnReport } from './author-churn-report';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
@@ -15,7 +15,7 @@ describe(`authorChurnReport`, () => {
         const repoName = 'a-git-repo-with-one-star-author';
         const commitLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
 
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
 
         const fileChurnStream = authorChurn(commits);
         const outDir = './temp';
@@ -43,7 +43,7 @@ describe(`authorChurnReport`, () => {
         unfortunately there are no files (e.g. because the filter is too restrictive)`, (done) => {
         const commitLogPath = path.join(process.cwd(), `/test-data/output/empty-gitlog.gitlog`);
 
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
 
         const fileChurnStream = authorChurn(commits);
         const outDir = './temp';
@@ -74,7 +74,7 @@ describe(`authorChurnReport - test some special cases`, () => {
         const repoName = 'a-git-repo-with-one-star-author';
         const commitLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
 
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
 
         const fileChurnStream = authorChurn(commits);
         const outDir = './temp';
@@ -101,7 +101,7 @@ describe(`authorChurnReport - test some special cases`, () => {
         const repoName = 'a-git-repo-uneven-author-churn';
         const commitLogPath = path.join(process.cwd(), `/test-data/output/${repoName}-commits.gitlog`);
 
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
 
         const fileChurnStream = authorChurn(commits);
         const outDir = './temp';
@@ -138,7 +138,7 @@ describe(`authorChurnReportWithProjectInfo`, () => {
             outDir,
         };
 
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _authorChurn = authorChurn(_commitStream, params.after);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);
@@ -171,7 +171,7 @@ describe(`authorChurnReportWithProjectInfo`, () => {
             after,
         };
 
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _authorChurn = authorChurn(_commitStream, params.after);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
         const _projectInfo = projectInfo(_commitStream, _clocSummaryInfo);

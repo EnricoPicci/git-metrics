@@ -28,7 +28,7 @@ describe(`projectAndBranchesReport`, () => {
         };
         const commitsWithBranchTips = (0, commits_1.enrichedCommitsStream)(commitLogPath, clocLogPath).pipe((0, commits_and_branch_tips_1.commitWithBranchTips)());
         const daylySummaryDictionary = (0, commit_branch_tips_aggregate_1.commitDaylySummary)(commitsWithBranchTips);
-        const _commitStream = (0, commits_1.commitsStream)(commitLogPath);
+        const _commitStream = (0, commits_1.gitCommitStream)(commitLogPath);
         const _clocSummaryInfo = (0, cloc_1.clocSummaryCsvRaw$)(repoFolderPath, 'git');
         const _projectInfo = (0, project_info_aggregate_1.projectInfo)(_commitStream, _clocSummaryInfo);
         (0, branches_report_1.projectAndBranchesReport)(daylySummaryDictionary, _projectInfo, params, csvFile, weeklyCsvFile)

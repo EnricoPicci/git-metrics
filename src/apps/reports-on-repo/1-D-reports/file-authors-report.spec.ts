@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
 import { filesStream } from '../1-B-git-enriched-streams/files';
-import { commitsStream } from '../1-B-git-enriched-streams/commits';
+import { gitCommitStream } from '../1-B-git-enriched-streams/commits';
 import { readAll } from '../1-A-read/read-all';
 import { FileAuthorsReportParams, projectAndFileAuthorsReport } from './file-authors-report';
 import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
@@ -26,7 +26,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
             outDir,
         };
 
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
         const _fileAuthors = fileAuthors(_filesStream, params.after);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
@@ -68,7 +68,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
             after,
         };
 
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
         const _fileAuthors = fileAuthors(_filesStream, params.after);
         const _clocSummaryInfo = clocSummaryCsvRaw$(repoFolderPath, 'git');
@@ -105,7 +105,7 @@ describe(`fileAuthorsReportWithProjectInfo`, () => {
         const clocParams: ClocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
         const [commitLogPath, clocLogPath, clocSummaryPath] = readAll(commitOptions, clocParams);
         // generation of the source streams
-        const _commitStream = commitsStream(commitLogPath);
+        const _commitStream = gitCommitStream(commitLogPath);
         const _filesStream = filesStream(commitLogPath, clocLogPath);
         const _clocSummaryStream = clocSummaryCsvRaw$(clocSummaryPath);
 

@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import path from 'path';
 import { forkJoin, tap } from 'rxjs';
 import { authorChurn } from '../1-C-aggregate-in-memory/author-churn-aggregate';
-import { commitsStream } from '../1-B-git-enriched-streams/commits';
+import { gitCommitStream } from '../1-B-git-enriched-streams/commits';
 import { authorChurnReportCore, AuthorChurnReportParams } from './author-churn-report';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
@@ -31,7 +31,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
         const fChurnReport = fileChurnReportCore(fileChurns, fParams);
 
         // build the author churn report
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
         const authorChurns = authorChurn(commits, after);
         const params: AuthorChurnReportParams = {
             commitLog: commitLogPath,
@@ -74,7 +74,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
         const fChurnReport = fileChurnReportCore(fileChurns, fParams);
 
         // build the author churn report
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
         const authorChurns = authorChurn(commits);
         const params: AuthorChurnReportParams = {
             commitLog: commitLogPath,
@@ -118,7 +118,7 @@ describe(`fileChurnReport compare with authorChurnReport`, () => {
         const fChurnReport = fileChurnReportCore(fileChurns, fParams);
 
         // build the author churn report
-        const commits = commitsStream(commitLogPath);
+        const commits = gitCommitStream(commitLogPath);
         const authorChurns = authorChurn(commits);
         const params: AuthorChurnReportParams = {
             commitLog: commitLogPath,
