@@ -1,15 +1,27 @@
 import path from 'path';
 
 import {
-    Observable, Subscriber, catchError, concatMap, defaultIfEmpty,
-    ignoreElements, map, merge, of, pipe, share, tap
+    Observable,
+    Subscriber,
+    catchError,
+    concatMap,
+    defaultIfEmpty,
+    ignoreElements,
+    map,
+    merge,
+    of,
+    pipe,
+    share,
+    tap,
 } from 'rxjs';
 
-import { appendFileObs, deleteFileObs, writeFileObs, } from 'observable-fs';
+import { appendFileObs, deleteFileObs, writeFileObs } from 'observable-fs';
 
 import {
-    executeCommand, executeCommandInShellNewProcessObs,
-    executeCommandNewProcessToLinesObs, executeCommandObs
+    executeCommand,
+    executeCommandInShellNewProcessObs,
+    executeCommandNewProcessToLinesObs,
+    executeCommandObs,
 } from '../tools/execute-command/execute-command';
 
 import { ClocDictionary, ClocFileInfo, ClocLanguageStats } from './cloc.model';
@@ -21,7 +33,7 @@ import { ClocParams } from './cloc-params';
 //********************************************************************************************************************** */
 
 /**
- * Runs the cloc command with the summary option and returns the result in the form of a stream emitting one 
+ * Runs the cloc command with the summary option and returns the result in the form of a stream emitting one
  * ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
  * @param path The path to run the cloc command on. Defaults to the current directory.
@@ -32,15 +44,23 @@ import { ClocParams } from './cloc-params';
 export function clocSummary$(path = './', vcs?: string, outfile = '') {
     return clocSummaryCsvRaw$(path, vcs).pipe(
         concatMap((output) => {
-            return outfile ?
-                writeFileObs(outfile, output).pipe(map(() => output)) :
-                of(output);
+            return outfile ? writeFileObs(outfile, output).pipe(map(() => output)) : of(output);
         }),
         map((output) => {
-            // remove the first line since it contains the header
-            const lines = output.slice(1);
+            let headerIndex = -1;
+            for (let i = 0; i < output.length; i++) {
+                if (output[i].startsWith('files,language,blank,comment,code')) {
+                    headerIndex = i;
+                    break;
+                }
+            }
+            // remove all the lines before the header and the header itself
+            // if headerIndex is -1, then the header was not found and therefore there are no statistics
+            // to return, so we return an empty array (this can occur if we run the cloc command on a folder that
+            // does not contain any files or does not exist)
+            const lines = headerIndex > -1 ? output.slice(headerIndex + 1) : [];
             const clocStatsArray: ClocLanguageStats[] = [];
-            lines.forEach(line => {
+            lines.forEach((line) => {
                 if (line.trim().length === 0) {
                     return;
                 }
@@ -78,19 +98,19 @@ export function clocSummaryCsvRaw$(path = './', vcs?: string) {
     const executable = CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
     return executeCommandObs(
         'run cloc summary',
-        `${executable} --csv ${_vcs} --timeout=${CLOC_CONFIG.TIMEOUT} ${path}`
+        `${executable} --csv ${_vcs} --timeout=${CLOC_CONFIG.TIMEOUT} ${path}`,
     ).pipe(
-        map(output => {
-            return output.split('\n').filter(l => l.trim().length > 0);
-        })
-    )
+        map((output) => {
+            return output.split('\n').filter((l) => l.trim().length > 0);
+        }),
+    );
 }
 
 /**
  * Runs the cloc command on a Git repository and returns the result in the form of a stream of one ClocLanguageStats array.
  * The result is a summary in the sense that it shows results per language but not per file.
  * By default the cloc command is run on the current directory.
- * By default the cloc command is run with the --vcs=git option. 
+ * By default the cloc command is run with the --vcs=git option.
  * This means that, if the repoPath points to a folder where there is git repo, then the files in the .gitignore are not counted.
  * @param repoPath The path to the Git repository to run the cloc command on. Defaults to the current directory.
  * @returns An Observable that emits a ClocLanguageStats array.
@@ -122,9 +142,7 @@ export function clocSummaryOnFolderNoGit$(folderPath = './') {
 export function writeClocSummary(params: ClocParams, action = 'writeClocS-cloc-summary.csvummary') {
     const [cmd, out] = clocSummaryCommand(params);
     executeCommand(action, cmd);
-    console.log(
-        `====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`,
-    );
+    console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
     console.log(`====>>>> cloc summary info saved on file ${out}`);
     return out;
 }
@@ -140,16 +158,13 @@ export function writeClocSummary$(params: ClocParams) {
     const folderPath = params.folderPath;
     const vcs = params.vcs;
     const outFile = buildClocOutfile(params, '-cloc-summary.csv');
-    return clocSummary$(folderPath, vcs, outFile).pipe(
-        ignoreElements(),
-        defaultIfEmpty(outFile),
-    );
+    return clocSummary$(folderPath, vcs, outFile).pipe(ignoreElements(), defaultIfEmpty(outFile));
 }
 
 /**
  * Executes the cloc command in a new process and returns the stream of lines output of the cloc command execution.
  * The result is per file, showing the number of lines in each file.
- * If `writeFile` is true, then the output of the cloc command will be written to a file with a name based on the 
+ * If `writeFile` is true, then the output of the cloc command will be written to a file with a name based on the
  * provided parameters.
  * @param params The parameters to pass to the cloc command.
  * @param action A comment describing the action we are going to perform.
@@ -165,7 +180,7 @@ export function clocByfile$(params: ClocParams, action = 'calculate cloc', write
     );
 
     // if writeFile is true, then calculate the name of the output file
-    let outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
+    const outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
 
     // create an Observable that deletes the output file if it exists and then takes the cloc strem
     // and appends each line to the output file
@@ -185,7 +200,7 @@ export function clocByfile$(params: ClocParams, action = 'calculate cloc', write
         // we are not interested in the output of this stream, since this stream is triggered only if writeFile is true
         // regardless of the value of writeFile, we want are going to trigger the _cloc stream with the merge function below
         // therefore, the cloc stream will be triggered regardless of the value of writeFile and will always emit
-        // what is produced by the cloc command, hence we must ignore the output of this stream (otherwise we would 
+        // what is produced by the cloc command, hence we must ignore the output of this stream (otherwise we would
         // have duplicate output)
         ignoreElements(),
     );
@@ -211,9 +226,7 @@ export function clocByfile$(params: ClocParams, action = 'calculate cloc', write
 export function writeClocByfile(params: ClocParams, action = 'writeClocByFile') {
     const [cmd, out] = clocByFileCommand(params);
     executeCommand(action, cmd);
-    console.log(
-        `====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`,
-    );
+    console.log(`====>>>> Number of lines in the files contained in the repo folder ${params.folderPath} calculated`);
     console.log(`====>>>> cloc by file info saved on file ${out}`);
     return out;
 }
@@ -267,7 +280,7 @@ function clocByFileCommand(params: ClocParams) {
     // npx cloc . --vcs=git --csv  --timeout=1000000 --out=/home/enrico/code/git-metrics/temp/git-metrics-cloc.csv --by-file
     const out = buildClocOutfile(params, '-cloc-byfile.csv');
     let cmd = clocCommand(params) + ` --out=${out}`;
-    cmd = cmd + ' --by-file'
+    cmd = cmd + ' --by-file';
     return [cmd, out];
 }
 function buildClocOutfile(config: ClocParams, endPart: string) {
@@ -297,7 +310,7 @@ export function buildOutfileName(outFile = '', repoFolder = '', prefix?: string,
     const _repoFolderName = isCurrentFolder ? path.parse(process.cwd()).name : repoFolderName;
     const _prefix = prefix ?? '';
     const _postfix = postfix ?? '';
-    return outFile ? outFile : `${_prefix}${(_repoFolderName)}${_postfix}`;
+    return outFile ? outFile : `${_prefix}${_repoFolderName}${_postfix}`;
 }
 
 function clocByfileCommandWithArgs(params: ClocParams) {
@@ -340,8 +353,8 @@ function ignoreUpTo(startToken: string) {
 }
 
 /**
- * Returns a custom rxjs operator that expects a stream emitting an array of lines representing the output of a cloc command 
- * (with the by-file option), and returns a stream that notifies a dictionary of ClocFileInfo objects, where each object 
+ * Returns a custom rxjs operator that expects a stream emitting an array of lines representing the output of a cloc command
+ * (with the by-file option), and returns a stream that notifies a dictionary of ClocFileInfo objects, where each object
  * represents the cloc info for a file.
  * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
  * @param clocLogPath The path to the cloc log file. If not provided, an empty dictionary is returned.
@@ -387,7 +400,7 @@ export function toClocFileDict(clocLogPath?: string) {
                     blank: parseInt(blank),
                     comment: parseInt(comment),
                     code: parseInt(code),
-                }
+                };
                 dict[filename] = stat;
                 return dict;
             }, {} as ClocDictionary);

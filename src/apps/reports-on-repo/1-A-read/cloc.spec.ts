@@ -12,11 +12,14 @@ describe(`clocSummaryAsStreamOfStrings$`, () => {
         const repo = 'git-repo-with-code';
         const clocParams: ClocParams = {
             folderPath: `./test-data/${repo}`,
-            outDir: '',  // outdir should not be mandatory since it is not used in this function   
+            outDir: '', // outdir should not be mandatory since it is not used in this function
             vcs: 'git',
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const outFileCreatedSync = writeClocSummary({ ...clocParams, outDir: './temp/', outClocFilePrefix: 'same-process-' }, 'test');
+        const outFileCreatedSync = writeClocSummary(
+            { ...clocParams, outDir: './temp/', outClocFilePrefix: 'same-process-' },
+            'test',
+        );
 
         clocSummaryAsStreamOfStrings$(clocParams)
             .pipe(
@@ -59,26 +62,36 @@ describe(`clocSummaryAsStreamOfStrings$`, () => {
             vcs: 'git',
         };
         // executes the summary cloc command synchronously to allow a test that compares this result with the result obtained by createClocNewProcess
-        const outFileSynch = writeClocSummary({ ...params, outDir: './temp/', outClocFilePrefix: 'same-process' }, 'test');
+        const outFileSynch = writeClocSummary(
+            { ...params, outDir: './temp/', outClocFilePrefix: 'same-process' },
+            'test',
+        );
 
         const clocSummaryFile = path.join(process.cwd(), './temp', `${repo}-cloc-summary.csv`);
 
         clocSummaryAsStreamOfStrings$(params, clocSummaryFile)
             .pipe(
                 toArray(),
-                concatMap(() => forkJoin([readLinesObs(outFileSynch), readLinesObs(clocSummaryFile)])),
+                concatMap((stringsFromStream) =>
+                    forkJoin([readLinesObs(outFileSynch), readLinesObs(clocSummaryFile)]).pipe(
+                        map(([linesReadSync, linesReadFromFileWrittenInThisTest]) => [
+                            linesReadSync,
+                            linesReadFromFileWrittenInThisTest,
+                            stringsFromStream,
+                        ]),
+                    ),
+                ),
                 tap({
-                    next: ([linesReadSync, linesReadFromFileWrittenInThisTest]) => {
-                        // skip the first line which contains statistical data which vary between the different executions
-                        // skip the last line which in one case is the empty string and in the other is null
-                        const _linesReadFromFileWrittenInThisTest = linesReadFromFileWrittenInThisTest.slice(1);
-                        // skip the first line which contains statistical data which vary between the different executions
-                        const _linesReadSync = linesReadSync.slice(1);
-                        _linesReadFromFileWrittenInThisTest.forEach((line, i) => {
-                            //  v 1.92  T=0.01 s (294.9 files/s, 1671.1 lines/s
-                            //  v 1.92  T=0.01 s (283.7 files/s, 1607.7 lines/s)
-                            const theOtherLine = _linesReadSync[i];
-                            expect(line).equal(theOtherLine);
+                    next: ([linesReadSync, linesReadFromFileWrittenInThisTest, stringsFromStream]) => {
+                        // each line which has been notified over the stream should be present in both files,
+                        // the one written synchronously at the beginning of the test and and the one written
+                        // as part of the stream
+                        // the content of linesReadSync and linesReadFromFileWrittenInThisTest may differ because of
+                        // header and other initial lines, but what is important, is that the lines notified over the
+                        // stream are present in both files
+                        stringsFromStream.forEach((line) => {
+                            expect(linesReadSync).contain(line);
+                            expect(linesReadFromFileWrittenInThisTest).contain(line);
                         });
                     },
                 }),
@@ -90,5 +103,4 @@ describe(`clocSummaryAsStreamOfStrings$`, () => {
                 complete: () => done(),
             });
     }).timeout(200000);
-
 });
