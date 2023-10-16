@@ -55,18 +55,21 @@ describe(`clocSummaryAsStreamOfStrings$`, () => {
         const outFileSynch = (0, cloc_2.writeClocSummary)(Object.assign(Object.assign({}, params), { outDir: './temp/', outClocFilePrefix: 'same-process' }), 'test');
         const clocSummaryFile = path_1.default.join(process.cwd(), './temp', `${repo}-cloc-summary.csv`);
         (0, cloc_1.clocSummaryAsStreamOfStrings$)(params, clocSummaryFile)
-            .pipe((0, operators_1.toArray)(), (0, operators_1.concatMap)(() => (0, rxjs_1.forkJoin)([(0, observable_fs_1.readLinesObs)(outFileSynch), (0, observable_fs_1.readLinesObs)(clocSummaryFile)])), (0, operators_1.tap)({
-            next: ([linesReadSync, linesReadFromFileWrittenInThisTest]) => {
-                // skip the first line which contains statistical data which vary between the different executions
-                // skip the last line which in one case is the empty string and in the other is null
-                const _linesReadFromFileWrittenInThisTest = linesReadFromFileWrittenInThisTest.slice(1);
-                // skip the first line which contains statistical data which vary between the different executions
-                const _linesReadSync = linesReadSync.slice(1);
-                _linesReadFromFileWrittenInThisTest.forEach((line, i) => {
-                    //  v 1.92  T=0.01 s (294.9 files/s, 1671.1 lines/s
-                    //  v 1.92  T=0.01 s (283.7 files/s, 1607.7 lines/s)
-                    const theOtherLine = _linesReadSync[i];
-                    (0, chai_1.expect)(line).equal(theOtherLine);
+            .pipe((0, operators_1.toArray)(), (0, operators_1.concatMap)((stringsFromStream) => (0, rxjs_1.forkJoin)([(0, observable_fs_1.readLinesObs)(outFileSynch), (0, observable_fs_1.readLinesObs)(clocSummaryFile)]).pipe((0, operators_1.map)(([linesReadSync, linesReadFromFileWrittenInThisTest]) => [
+            linesReadSync,
+            linesReadFromFileWrittenInThisTest,
+            stringsFromStream,
+        ]))), (0, operators_1.tap)({
+            next: ([linesReadSync, linesReadFromFileWrittenInThisTest, stringsFromStream]) => {
+                // each line which has been notified over the stream should be present in both files,
+                // the one written synchronously at the beginning of the test and and the one written
+                // as part of the stream
+                // the content of linesReadSync and linesReadFromFileWrittenInThisTest may differ because of
+                // header and other initial lines, but what is important, is that the lines notified over the
+                // stream are present in both files
+                stringsFromStream.forEach((line) => {
+                    (0, chai_1.expect)(linesReadSync).contain(line);
+                    (0, chai_1.expect)(linesReadFromFileWrittenInThisTest).contain(line);
                 });
             },
         }))

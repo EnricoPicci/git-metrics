@@ -23,14 +23,22 @@ const config_1 = require("./config");
  */
 function clocSummary$(path = './', vcs, outfile = '') {
     return clocSummaryCsvRaw$(path, vcs).pipe((0, rxjs_1.concatMap)((output) => {
-        return outfile ?
-            (0, observable_fs_1.writeFileObs)(outfile, output).pipe((0, rxjs_1.map)(() => output)) :
-            (0, rxjs_1.of)(output);
+        return outfile ? (0, observable_fs_1.writeFileObs)(outfile, output).pipe((0, rxjs_1.map)(() => output)) : (0, rxjs_1.of)(output);
     }), (0, rxjs_1.map)((output) => {
-        // remove the first line since it contains the header
-        const lines = output.slice(1);
+        let headerIndex = -1;
+        for (let i = 0; i < output.length; i++) {
+            if (output[i].startsWith('files,language,blank,comment,code')) {
+                headerIndex = i;
+                break;
+            }
+        }
+        // remove all the lines before the header and the header itself
+        // if headerIndex is -1, then the header was not found and therefore there are no statistics
+        // to return, so we return an empty array (this can occur if we run the cloc command on a folder that
+        // does not contain any files or does not exist)
+        const lines = headerIndex > -1 ? output.slice(headerIndex + 1) : [];
         const clocStatsArray = [];
-        lines.forEach(line => {
+        lines.forEach((line) => {
             if (line.trim().length === 0) {
                 return;
             }
@@ -64,8 +72,8 @@ exports.clocSummary$ = clocSummary$;
 function clocSummaryCsvRaw$(path = './', vcs) {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
     const executable = config_1.CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
-    return (0, execute_command_1.executeCommandObs)('run cloc summary', `${executable} --csv ${_vcs} --timeout=${config_1.CLOC_CONFIG.TIMEOUT} ${path}`).pipe((0, rxjs_1.map)(output => {
-        return output.split('\n').filter(l => l.trim().length > 0);
+    return (0, execute_command_1.executeCommandObs)('run cloc summary', `${executable} --csv ${_vcs} --timeout=${config_1.CLOC_CONFIG.TIMEOUT} ${path}`).pipe((0, rxjs_1.map)((output) => {
+        return output.split('\n').filter((l) => l.trim().length > 0);
     }));
 }
 exports.clocSummaryCsvRaw$ = clocSummaryCsvRaw$;
@@ -139,7 +147,7 @@ function clocByfile$(params, action = 'calculate cloc', writeFile = true) {
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
     const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe(ignoreUpTo('language,filename,blank,comment,code'), (0, rxjs_1.share)());
     // if writeFile is true, then calculate the name of the output file
-    let outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
+    const outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
     // create an Observable that deletes the output file if it exists and then takes the cloc strem
     // and appends each line to the output file
     const _writeFile = (0, observable_fs_1.deleteFileObs)(outFile).pipe((0, rxjs_1.catchError)((err) => {
@@ -155,7 +163,7 @@ function clocByfile$(params, action = 'calculate cloc', writeFile = true) {
     // we are not interested in the output of this stream, since this stream is triggered only if writeFile is true
     // regardless of the value of writeFile, we want are going to trigger the _cloc stream with the merge function below
     // therefore, the cloc stream will be triggered regardless of the value of writeFile and will always emit
-    // what is produced by the cloc command, hence we must ignore the output of this stream (otherwise we would 
+    // what is produced by the cloc command, hence we must ignore the output of this stream (otherwise we would
     // have duplicate output)
     (0, rxjs_1.ignoreElements)());
     const _streams = [_cloc];
@@ -255,7 +263,7 @@ function buildOutfileName(outFile = '', repoFolder = '', prefix, postfix) {
     const _repoFolderName = isCurrentFolder ? path_1.default.parse(process.cwd()).name : repoFolderName;
     const _prefix = prefix !== null && prefix !== void 0 ? prefix : '';
     const _postfix = postfix !== null && postfix !== void 0 ? postfix : '';
-    return outFile ? outFile : `${_prefix}${(_repoFolderName)}${_postfix}`;
+    return outFile ? outFile : `${_prefix}${_repoFolderName}${_postfix}`;
 }
 exports.buildOutfileName = buildOutfileName;
 function clocByfileCommandWithArgs(params) {

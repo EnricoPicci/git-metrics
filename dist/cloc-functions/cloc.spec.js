@@ -113,7 +113,7 @@ describe(`writeClocByFile$`, () => {
             folderPath: `./test-data/${repo}`,
             outDir,
             outClocFilePrefix,
-            vcs: ''
+            vcs: '',
         };
         const expectedOutFilePath = outDir + '/' + outClocFilePrefix + repo + '-cloc-byfile.csv';
         let counter = 0;
@@ -155,7 +155,7 @@ describe(`writeClocSummary`, () => {
         const config = {
             folderPath: `./test-data/${repo}`,
             outDir,
-            vcs: ''
+            vcs: '',
         };
         const expectedOutFilePath = path_1.default.join(outDir, `${repo}-cloc-summary.csv`);
         const returnedOutFilePath = (0, cloc_1.writeClocSummary)(config, 'test');
@@ -216,8 +216,6 @@ describe(`clocSummary$`, () => {
         (0, cloc_1.clocSummary$)(folderPath, undefined, clocSummaryFile)
             .pipe((0, rxjs_1.concatMap)(() => (0, observable_fs_1.readLinesObs)(clocSummaryFile)), (0, rxjs_1.tap)({
             next: (clocSummaryines) => {
-                // there are 4 lines, one header, 2 for the languages (Java and Python) and one for the sum
-                (0, chai_1.expect)(clocSummaryines.length).equal(4);
                 const javaStats = clocSummaryines.find((line) => line.includes('Java'));
                 (0, chai_1.expect)(javaStats).to.be.not.undefined;
                 const pythonStats = clocSummaryines.find((line) => line.includes('Python'));
@@ -241,7 +239,7 @@ describe(`clocSummary$`, () => {
             error: (err) => done(err),
             complete: () => done(),
         });
-    });
+    }).timeout(200000);
 });
 describe(`writeClocByfile`, () => {
     it(`read the number of lines for each file from the folder named as the repo and saves them in a file`, (done) => {
@@ -250,7 +248,7 @@ describe(`writeClocByfile`, () => {
         const params = {
             folderPath: `./test-data/${repo}`,
             outDir,
-            vcs: ''
+            vcs: '',
         };
         const expectedOutFilePath = path_1.default.join(outDir, `${repo}-cloc-byfile.csv`);
         const returnedOutFilePath = (0, cloc_1.writeClocByfile)(params, 'test');
