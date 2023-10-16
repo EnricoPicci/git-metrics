@@ -27,7 +27,7 @@ export function runClocDiff(
     // #todo - check if we need to specify { encoding: 'utf-8' } as an argument
     return executeCommandObs('run cloc --git-diff-all', cmd).pipe(
         map((output) => {
-            let diffs: any;
+            let diffs: { [state in ClocDiffState]: ClocDiffLanguageStats; };
             try {
                 diffs = JSON.parse(output);
                 evaluateIfPossibleCutPaste(diffs);

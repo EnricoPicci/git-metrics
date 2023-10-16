@@ -29,7 +29,7 @@ function executeCommandObs(action, command) {
             }
             subscriber.next(stdout);
             subscriber.complete();
-            console.log(`====>>>> Command executed successfully`);
+            console.log(`====>>>>$$$ Command "${command}" executed successfully`);
         });
     });
 }

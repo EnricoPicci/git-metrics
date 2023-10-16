@@ -70,6 +70,14 @@ export function calculateClocGitDiffsChildParent(
         }),
     );
 }
+/**
+ * Represents the options for the `calculateClocGitDiffsChildParent` function.
+ * @param languages An array of languages for which to calculate the cloc diffs - the empty array means that all languages are considered.
+ * @param removeBlanks Whether to remove the stats about the blank lines.
+ * @param removeNFiles Whether to remove the stats about the number of files added, removed or modified.
+ * @param removeComments Whether to remove the stats about the comments added, removed or modified.
+ * @param removeSame Whether to remove stats about the liens of code which have remained the same.
+ */
 export type CalculateClocGitDiffsChildParentOptions = {
     languages: string[],
     removeBlanks: boolean,

@@ -28,7 +28,7 @@ export function executeCommandObs(action: string, command: string) {
             }
             subscriber.next(stdout);
             subscriber.complete();
-            console.log(`====>>>> Command executed successfully`);
+            console.log(`====>>>>$$$ Command "${command}" executed successfully`);
         });
     });
 }
