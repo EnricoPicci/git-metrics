@@ -52,19 +52,27 @@ export function reportsAndCodeTurnover(
     const reportOnAllRepos$ = runAllReportsOnMergedRepos(reports, folderPath, filter, fromDate, toDate, outdir, outFilePrefix,
         clocDefsPath, ignoreClocZero, 0, concurrentReadOfCommits, noRenames, excludeRepoPaths)
 
-    const calculateCodeTurnover$ = calculateCodeTurnover(
-        folderPath,
-        outdir,
-        languages,
-        fromDate,
-        toDate,
-        concurrency,
-        excludeRepoPaths,
-        removeBlanks,
-        removeNFiles,
-        removeComments,
-        removeSame,
-    )
+    const options = { languages, removeBlanks, removeNFiles, removeComments, removeSame }
+    const calculateCodeTurnover$ = calculateCodeTurnover(folderPath, outdir, fromDate, toDate, concurrency, excludeRepoPaths, options)
 
     return concat(reportOnAllRepos$, calculateCodeTurnover$)
+}
+
+export type ReportsAndCodeTurnoverParams = {
+    folderPath: string,
+    fromDate: Date,
+    toDate: Date,
+    outdir: string,
+    languages: string[],
+    excludeRepoPaths: string[],
+    reports: string[],
+    outFilePrefix: string,
+    clocDefsPath: string,
+    concurrentReadOfCommits: boolean,
+    noRenames: boolean,
+    ignoreClocZero: boolean,
+    removeBlanks: boolean,
+    removeNFiles: boolean,
+    removeComments: boolean,
+    removeSame: boolean,
 }

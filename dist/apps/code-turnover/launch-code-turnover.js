@@ -8,7 +8,8 @@ const code_turnover_functions_1 = require("./core/code-turnover.functions");
 function launchCalculateCodeTurnover() {
     console.log('====>>>> Launching code-turnover calculation on Repos');
     const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
-    (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComments, removeSame).subscribe();
+    const options = { languages, removeBlanks, removeNFiles, removeComments, removeSame };
+    (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outdir, from, to, concurrency, excludeRepoPaths, options).subscribe();
 }
 exports.launchCalculateCodeTurnover = launchCalculateCodeTurnover;
 function launchMonthlyClocDiffRepos() {

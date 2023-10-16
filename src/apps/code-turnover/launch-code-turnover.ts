@@ -10,19 +10,16 @@ export function launchCalculateCodeTurnover() {
 
     const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths,
         removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
+    const options = { languages, removeBlanks, removeNFiles, removeComments, removeSame }
 
     calculateCodeTurnover(
         folderPath,
         outdir,
-        languages,
         from,
         to,
         concurrency,
         excludeRepoPaths,
-        removeBlanks,
-        removeNFiles,
-        removeComments,
-        removeSame
+        options
     ).subscribe();
 }
 

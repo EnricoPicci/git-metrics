@@ -30,7 +30,8 @@ const run_reports_on_merged_repos_core_1 = require("../../reports-on-repo/2-pipe
 function reportsAndCodeTurnover(folderPath, fromDate, toDate, outdir, languages, concurrency = config_1.CONFIG.CONCURRENCY, excludeRepoPaths = [], reports, outFilePrefix, clocDefsPath, concurrentReadOfCommits, noRenames, ignoreClocZero, removeBlanks, removeNFiles, removeComments, removeSame) {
     const filter = (0, language_extensions_dict_1.languageExtensions)(languages);
     const reportOnAllRepos$ = (0, run_reports_on_merged_repos_core_1.runAllReportsOnMergedRepos)(reports, folderPath, filter, fromDate, toDate, outdir, outFilePrefix, clocDefsPath, ignoreClocZero, 0, concurrentReadOfCommits, noRenames, excludeRepoPaths);
-    const calculateCodeTurnover$ = (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outdir, languages, fromDate, toDate, concurrency, excludeRepoPaths, removeBlanks, removeNFiles, removeComments, removeSame);
+    const options = { languages, removeBlanks, removeNFiles, removeComments, removeSame };
+    const calculateCodeTurnover$ = (0, code_turnover_functions_1.calculateCodeTurnover)(folderPath, outdir, fromDate, toDate, concurrency, excludeRepoPaths, options);
     return (0, rxjs_1.concat)(reportOnAllRepos$, calculateCodeTurnover$);
 }
 exports.reportsAndCodeTurnover = reportsAndCodeTurnover;

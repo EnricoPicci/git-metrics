@@ -8,7 +8,7 @@ import { reposCompactInFolderObs } from '../../../git-functions/repo.functions';
 import { RepoCompact } from '../../../git-functions/repo.model';
 import { ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
 
-import { calculateClocGitDiffsChildParent } from '../internals/commit-cloc-diff.function';
+import { CalculateClocGitDiffsChildParentOptions, calculateClocGitDiffsChildParent } from '../internals/commit-cloc-diff.function';
 import { CommitDiffStats } from './code-turnover.model';
 import { clocDiffStatToCsvWithBase } from './cloc-diff-stat-csv';
 
@@ -33,21 +33,17 @@ import { clocDiffStatToCsvWithBase } from './cloc-diff-stat-csv';
 export function calculateCodeTurnover(
     folderPath: string,
     outdir: string,
-    languages: string[],
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     concurrency: number,
     excludeRepoPaths: string[],
-    removeBlanks: boolean,
-    removeNFiles: boolean,
-    removeComment: boolean,
-    removeSame: boolean,
+    options: CalculateClocGitDiffsChildParentOptions,
 ) {
     const startTime = new Date().getTime();
     const folderName = path.basename(folderPath);
 
     return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
-        calculateClocDiffs(languages, concurrency, removeBlanks, removeNFiles, removeComment, removeSame),
+        calculateClocDiffs(concurrency, options),
         writeClocDiffs(outdir, folderName),
         tap(() => {
             const endTime = new Date().getTime();
@@ -65,12 +61,8 @@ export function calculateCodeTurnover(
  * @returns An rxJs operator that transforms a stream of RepoCompact in a stream of CommitDiffStats.
  */
 export function calculateClocDiffs(
-    languages: string[],
     concurrency: number,
-    removeBlanks: boolean,
-    removeNFiles: boolean,
-    removeComment: boolean,
-    removeSame: boolean,
+    options: CalculateClocGitDiffsChildParentOptions,
 ) {
     let diffsCompleted = 0;
     let diffsRemaining = 0;
@@ -95,7 +87,7 @@ export function calculateClocDiffs(
             return from(commitsWithRepo);
         }),
         mergeMap(({ commit, repoPath }) => {
-            return calculateClocGitDiffsChildParent(commit, repoPath, languages, removeBlanks, removeNFiles, removeComment, removeSame).pipe(
+            return calculateClocGitDiffsChildParent(commit, repoPath, options).pipe(
                 tap((stat) => {
                     if (stat.clocDiff.error) {
                         diffsErrored++;

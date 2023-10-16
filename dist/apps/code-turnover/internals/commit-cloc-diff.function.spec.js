@@ -9,15 +9,17 @@ describe('calculateClocGitDiffsChildParent', () => {
     In this case, for TypeScript files, the values for added or removed stats are all 0, but there are statistics for
     modified files since one file has been modified in one row.`, (done) => {
         const repoPath = '.';
-        const languages = ['TypeScript'];
-        const removeBlanks = false;
-        const removeNFiles = false;
-        const removeComment = false;
-        const removeSame = false;
+        const options = {
+            languages: ['TypeScript'],
+            removeBlanks: false,
+            removeNFiles: false,
+            removeComments: false,
+            removeSame: false
+        };
         (0, commit_functions_1.readCommitCompact$)(repoPath).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => {
             return commits.reverse()[2];
         }), (0, rxjs_1.concatMap)(secondCommitCompact => {
-            return (0, commit_cloc_diff_function_1.calculateClocGitDiffsChildParent)(secondCommitCompact, repoPath, languages, removeBlanks, removeNFiles, removeComment, removeSame);
+            return (0, commit_cloc_diff_function_1.calculateClocGitDiffsChildParent)(secondCommitCompact, repoPath, options);
         }))
             .subscribe({
             next: commitDiffStat => {
@@ -43,15 +45,17 @@ describe('calculateClocGitDiffsChildParent', () => {
     it(`statistics about blanks, comments and nFiles should be undefined since we are passing parameters 
     that say we want to remove them`, (done) => {
         const repoPath = '.';
-        const languages = ['TypeScript'];
-        const removeBlanks = true;
-        const removeNFiles = true;
-        const removeComment = true;
-        const removeSame = false;
+        const options = {
+            languages: ['TypeScript'],
+            removeBlanks: true,
+            removeNFiles: true,
+            removeComments: true,
+            removeSame: false
+        };
         (0, commit_functions_1.readCommitCompact$)(repoPath).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => {
             return commits.reverse()[2];
         }), (0, rxjs_1.concatMap)(secondCommitCompact => {
-            return (0, commit_cloc_diff_function_1.calculateClocGitDiffsChildParent)(secondCommitCompact, repoPath, languages, removeBlanks, removeNFiles, removeComment, removeSame);
+            return (0, commit_cloc_diff_function_1.calculateClocGitDiffsChildParent)(secondCommitCompact, repoPath, options);
         }))
             .subscribe({
             next: commitDiffStat => {

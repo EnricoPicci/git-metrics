@@ -17,12 +17,9 @@ import { CommitDiffStats } from '../core/code-turnover.model';
 export function calculateClocGitDiffsChildParent(
     commit: CommitCompact,
     repoPath: string,
-    languages: string[],
-    removeBlanks: boolean,
-    removeNFiles: boolean,
-    removeComment: boolean,
-    removeSame: boolean,
+    options: CalculateClocGitDiffsChildParentOptions,
 ) {
+    const { languages, removeBlanks, removeNFiles, removeComments: removeComment, removeSame } = options
     const childCommitSha = commit.sha;
     const parentCommitSha = `${childCommitSha}^1`;
     console.log(`Starting diff for ${repoPath} -- Date: ${commit.date.toLocaleDateString()}`);
@@ -72,6 +69,13 @@ export function calculateClocGitDiffsChildParent(
             );
         }),
     );
+}
+export type CalculateClocGitDiffsChildParentOptions = {
+    languages: string[],
+    removeBlanks: boolean,
+    removeNFiles: boolean,
+    removeComments: boolean,
+    removeSame: boolean,
 }
 
 // calculateMonthlyClocGitDiffs is a function that receives an object with the path to a repo and an array of commit pairs

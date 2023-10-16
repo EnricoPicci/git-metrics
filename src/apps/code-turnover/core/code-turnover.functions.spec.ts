@@ -12,19 +12,19 @@ describe('calculateCodeTurnover', () => {
         const toDate = new Date('2023-09-24');
         const concurrency = 1;
         const excludeRepoPaths = ['node_modules'];
+        const options = { languages, removeBlanks: false, removeNFiles: false, removeComments: false, removeSame: false }
 
-        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths,
-            false, false, false, false).subscribe({
-                next: commitDiffStats => {
-                    expect(commitDiffStats.length).greaterThan(0);
-                },
-                error: err => {
-                    done(err);
-                },
-                complete: () => {
-                    done();
-                }
-            })
+        calculateCodeTurnover(folderPath, outDir, fromDate, toDate, concurrency, excludeRepoPaths, options).subscribe({
+            next: commitDiffStats => {
+                expect(commitDiffStats.length).greaterThan(0);
+            },
+            error: err => {
+                done(err);
+            },
+            complete: () => {
+                done();
+            }
+        })
     }).timeout(200000);
 
     it(`should calculate no cloc diffs since there are no commits in the time window provided`, (done) => {
@@ -35,18 +35,18 @@ describe('calculateCodeTurnover', () => {
         const toDate = new Date('2023-09-23');
         const concurrency = 1;
         const excludeRepoPaths = ['node_modules'];
+        const options = { languages, removeBlanks: false, removeNFiles: false, removeComments: false, removeSame: false }
 
-        calculateCodeTurnover(folderPath, outDir, languages, fromDate, toDate, concurrency, excludeRepoPaths,
-            false, false, false, false).subscribe({
-                next: commitDiffStats => {
-                    expect(commitDiffStats.length).equal(0);
-                },
-                error: err => {
-                    done(err);
-                },
-                complete: () => {
-                    done();
-                }
-            })
+        calculateCodeTurnover(folderPath, outDir, fromDate, toDate, concurrency, excludeRepoPaths, options).subscribe({
+            next: commitDiffStats => {
+                expect(commitDiffStats.length).equal(0);
+            },
+            error: err => {
+                done(err);
+            },
+            complete: () => {
+                done();
+            }
+        })
     }).timeout(200000);
 });
