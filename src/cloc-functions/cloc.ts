@@ -4,8 +4,10 @@ import {
     Observable,
     Subscriber,
     catchError,
+    concat,
     concatMap,
     defaultIfEmpty,
+    from,
     ignoreElements,
     map,
     merge,
@@ -27,6 +29,7 @@ import {
 import { ClocDictionary, ClocFileInfo, ClocLanguageStats } from './cloc.model';
 import { CLOC_CONFIG } from './config';
 import { ClocParams } from './cloc-params';
+import { reposInFolder } from '../git-functions/repo.functions';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -175,7 +178,7 @@ export function clocByfile$(params: ClocParams, action = 'calculate cloc', write
     // execute the cloc command in a new process and return the stream of lines output of the cloc command execution
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
     const _cloc = executeCommandNewProcessToLinesObs(action, cmd, args, options).pipe(
-        ignoreUpTo('language,filename,blank,comment,code'),
+        ignoreUpTo(clocByfileHeader),
         share(),
     );
 
@@ -256,10 +259,42 @@ export function writeClocByFile$(params: ClocParams, action = 'cloc') {
     );
 }
 
+/**
+ * Searches for all Git repositories in a given folder and runs the cloc command with the --by-file option on each of them.
+ * Returns an Observable that notifies all the cloc info for all the repos in the form of lines of text which represent CSV records.
+ * The first line notified is the clocByFile header.
+ * Errors if the folderPath does not exist or is not a folder.
+ * Returns just the header if the folderPath does not contain any Git repository.
+ * @param folderPath The path to the folder to search for Git repositories.
+ * @returns An Observable that emits the cloc info for all the Git repositories in the given folder.
+ */
+export function clocByFileForRepos$(folderPath: string) {
+    const repos = reposInFolder(folderPath);
+    const cloc$ = from(repos).pipe(
+        concatMap((repoPath) => {
+            const params: ClocParams = {
+                folderPath: repoPath,
+                vcs: 'git',
+            };
+            return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPath, false);
+        }),
+    );
+    // return a file which is a concatenation of the cloc header followed by the cloc info for each repo
+    const header = `${clocByfileHeader}`;
+    return concat(of(header), cloc$);
+}
+
+
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
+
+
+/**
+ * Represents the header for the cloc command when the --by-file output format is specified.
+ */
+export const clocByfileHeader = 'language,filename,blank,comment,code';
 
 function clocCommand(params: ClocParams) {
     // npx cloc . --vcs=git --csv  --timeout=1000000

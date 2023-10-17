@@ -9,21 +9,26 @@ import { RepoCompact } from './repo.model';
 import { readCommitCompact$ } from './commit.functions';
 import { isToBeExcluded } from '../tools/strings-utils/is-to-be-excluded';
 
-// reposInFolder returns the list of git repos paths in a given folder including subfolders
+/**
+ * Returns the list of Git repository paths in a given folder, including subfolders.
+ * If a folder has a .git folder, it is considered a Git repository.
+ * @param folderPath The path to the folder to search for Git repositories.
+ * @returns An array of Git repository paths.
+ */
 export function reposInFolder(folderPath: string) {
-    let gitRepos: string[] = [];
+    let gitRepoPaths: string[] = [];
     const filesAndDirs = fs.readdirSync(folderPath);
     if (filesAndDirs.some((fileOrDir) => fileOrDir === '.git')) {
-        gitRepos.push(folderPath);
+        gitRepoPaths.push(folderPath);
     }
     filesAndDirs.forEach((fileOrDir) => {
         const absolutePath = path.join(folderPath, fileOrDir);
         if (fs.statSync(absolutePath).isDirectory()) {
-            const subRepos = reposInFolder(absolutePath);
-            gitRepos = gitRepos.concat(subRepos);
+            const subRepoPaths = reposInFolder(absolutePath);
+            gitRepoPaths = gitRepoPaths.concat(subRepoPaths);
         }
     });
-    return gitRepos;
+    return gitRepoPaths;
 }
 
 // cloneRepo clones a repo from a given url to a given path and returns the path of the cloned repo
