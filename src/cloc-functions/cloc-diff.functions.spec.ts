@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { buildClocDiffAllCommand, runClocDiff } from './cloc-diff.functions';
+import { buildClocDiffRelCommand, clocDiff$ } from './cloc-diff.functions';
 
 describe('buildClocDiffAllCommand', () => {
     it('should return a command string with the correct folder path, commits, and language filters', () => {
@@ -7,21 +7,21 @@ describe('buildClocDiffAllCommand', () => {
         const mostRecentCommit = 'abc123';
         const leastRecentCommit = 'def456';
         const languages = ['JavaScript', 'TypeScript'];
-        const expectedCommand = `cd ${folderPath} && cloc --git-diff-all --json --timeout=1000000 --include-lang=JavaScript,TypeScript ${leastRecentCommit} ${mostRecentCommit}`;
-        const command = buildClocDiffAllCommand(mostRecentCommit, leastRecentCommit, languages, folderPath);
+        const expectedCommand = `cd ${folderPath} && cloc --git-diff-rel --json --timeout=1000000 --include-lang=JavaScript,TypeScript ${leastRecentCommit} ${mostRecentCommit}`;
+        const command = buildClocDiffRelCommand(mostRecentCommit, leastRecentCommit, languages, folderPath);
         expect(command).equal(expectedCommand);
     });
 
     it('should return a command string with default folder path and language filters if not provided', () => {
         const mostRecentCommit = 'abc123';
         const leastRecentCommit = 'def456';
-        const expectedCommand = `cd ./ && cloc --git-diff-all --json --timeout=1000000 --include-lang=JavaScript ${leastRecentCommit} ${mostRecentCommit}`;
-        const command = buildClocDiffAllCommand(mostRecentCommit, leastRecentCommit, ['JavaScript']);
+        const expectedCommand = `cd ./ && cloc --git-diff-rel --json --timeout=1000000 --include-lang=JavaScript ${leastRecentCommit} ${mostRecentCommit}`;
+        const command = buildClocDiffRelCommand(mostRecentCommit, leastRecentCommit, ['JavaScript']);
         expect(command).equal(expectedCommand);
     });
 });
 
-describe('runClocDiff', () => {
+describe('clocDiff$', () => {
     it(`should generate an Observable that emits a value of type ClocDiffStats using the third commit of this project
     compared with the second commit of this project`, (done) => {
         const folderPath = './';
@@ -30,7 +30,7 @@ describe('runClocDiff', () => {
         const leastRecentCommit = `${thirdCommitSha}^1`;
         const languages = ['JavaScript', 'TypeScript'];
         let count = 0;
-        runClocDiff(mostRecentCommit, leastRecentCommit, languages, folderPath).subscribe({
+        clocDiff$(mostRecentCommit, leastRecentCommit, folderPath, languages).subscribe({
             next: (clocDiffStats) => {
                 count++;
                 expect(clocDiffStats).to.be.an('object');

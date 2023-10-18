@@ -1,8 +1,6 @@
 import path from 'path';
 
 import {
-    Observable,
-    Subscriber,
     catchError,
     concat,
     concatMap,
@@ -32,6 +30,7 @@ import { ClocDictionary, ClocFileInfo, ClocLanguageStats } from './cloc.model';
 import { CLOC_CONFIG } from './config';
 import { ClocParams } from './cloc-params';
 import { gitRepoPaths } from '../git-functions/repo-path.functions';
+import { ignoreUpTo } from '../tools/rxjs-operators/ignore-up-to';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -398,35 +397,6 @@ function clocByfileCommandWithArgs(params: ClocParams) {
     const options = { cwd: params.folderPath };
     const cmd = CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';
     return { cmd, args, options };
-}
-
-/**
- * Returns an operator function that filters the input Observable to only include lines of text
- * that come after the line that includes the specified start token.
- * @param startToken The start token to look for in the input stream.
- * @returns An operator function that filters the input Observable.
- */
-function ignoreUpTo(startToken: string) {
-    return (source: Observable<string>) => {
-        return new Observable((subscriber: Subscriber<string>) => {
-            let startOutput = false;
-            const subscription = source.subscribe({
-                next: (line) => {
-                    startOutput = startOutput || line.includes(startToken);
-                    if (startOutput) {
-                        subscriber.next(line);
-                    }
-                },
-                error: (err) => subscriber.error(err),
-                complete: () => {
-                    subscriber.complete();
-                },
-            });
-            return () => {
-                subscription.unsubscribe();
-            };
-        });
-    };
 }
 
 /**
