@@ -1,11 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clocFileDictFromClocStream$ = exports.clocFileDictFromClocLogFile$ = void 0;
+exports.clocFileDictFromClocStream$ = exports.clocFileDictFromClocLogFile$ = exports.clocFileDict$ = void 0;
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
+const cloc_1 = require("./cloc");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
+/**
+ * Returns an Observable that emits a dictionary where the keys are the file paths of the files contained
+ * in the folder and its subfolders and the values are the cloc info for the files.
+ * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
+ * If the folderPath points to a non existing folder, the function throws an error.
+ * @param folderPath The path to the folder to search for files.
+ * @returns An Observable that emits a dictionary of cloc info for all files in the given folder and its subfolders.
+ */
+function clocFileDict$(folderPath) {
+    const clocParams = {
+        folderPath,
+        vcs: 'git',
+    };
+    return (0, cloc_1.clocByfile$)(clocParams, 'create cloc log stream', false).pipe((0, rxjs_1.toArray)(), toClocFileDict());
+}
+exports.clocFileDict$ = clocFileDict$;
 /**
  * Reads a cloc log file and returns an Observable that emits a dictionary of ClocFileInfo objects,
  * where each object represents the cloc info for a file.
@@ -64,16 +81,16 @@ function toClocFileDict(clocLogPath) {
             if (clocInfo.length !== 5) {
                 throw new Error(`Format of cloc line not as expected: ${line} ${clocFileMsg}`);
             }
-            const [language, filename, blank, comment, code] = clocInfo;
-            if (filename.trim().length === 0) {
+            const [language, file, blank, comment, code] = clocInfo;
+            if (file.trim().length === 0) {
                 throw new Error(`The file neme in line ${clocInfo} is the empty string ${clocFileMsg}`);
             }
-            if (dict[filename]) {
-                throw new Error(`File ${filename} present more than once in cloc log ${clocFileMsg}`);
+            if (dict[file]) {
+                throw new Error(`File ${file} present more than once in cloc log ${clocFileMsg}`);
             }
-            dict[filename] = {
+            dict[file] = {
                 language,
-                filename,
+                file,
                 blank: parseInt(blank),
                 comment: parseInt(comment),
                 code: parseInt(code),

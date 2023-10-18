@@ -15,7 +15,7 @@ function calculateClocGitDiffsChildParent(commit, repoPath, options) {
     const childCommitSha = commit.sha;
     const parentCommitSha = `${childCommitSha}^1`;
     console.log(`Starting diff for ${repoPath} -- Date: ${commit.date.toLocaleDateString()}`);
-    return (0, cloc_diff_functions_1.runClocDiff)(childCommitSha, parentCommitSha, languages, repoPath).pipe((0, rxjs_1.concatMap)((clocDiff) => {
+    return (0, cloc_diff_functions_1.clocDiff$)(childCommitSha, parentCommitSha, repoPath, languages).pipe((0, rxjs_1.concatMap)((clocDiff) => {
         delete clocDiff.diffs.header;
         Object.values(clocDiff.diffs).forEach((diff) => {
             Object.values(diff).forEach((diffForLanguage) => {
@@ -42,7 +42,7 @@ function calculateClocGitDiffsChildParent(commit, repoPath, options) {
                 yearMonth: (0, commits_by_month_functions_1.yearMonthFromDate)(commit.date),
                 mostRecentCommitDate: commit.date.toLocaleDateString(),
                 leastRecentCommitDate: parentCommitDate,
-                comment: commit.comment,
+                comment: commit.subject,
                 clocDiff,
                 remoteOriginUrl: '',
             };
@@ -68,7 +68,7 @@ function calculateMonthlyClocGitDiffs(repoMonthlyCommitPairs, languages) {
         console.log(`Starting diff for ${yearMonth}-${repoPath}`);
         const diffObs = commitPair
             ? // the first commit is the most recent one
-                (0, cloc_diff_functions_1.runClocDiff)(commitPair[0].sha, commitPair[1].sha, languages, repoPath)
+                (0, cloc_diff_functions_1.clocDiff$)(commitPair[0].sha, commitPair[1].sha, repoPath, languages)
             : (0, rxjs_1.of)((0, cloc_diff_model_1.newDiffsClocDiffStats)(languages));
         return diffObs.pipe((0, rxjs_1.map)((clocDiff) => {
             console.log(`Completed diff for ${yearMonth}-${repoPath}`);

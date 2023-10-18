@@ -158,7 +158,7 @@ function newEmptyCommitCompact() {
         sha: '',
         date: new Date(0),
         author: '',
-        comment: '',
+        subject: '',
     };
     return commit;
 }
@@ -189,7 +189,7 @@ function newCommitCompactFromGitlog(commitDataFromGitlog) {
         sha,
         date: new Date(date),
         author: author,
-        comment,
+        subject: comment,
     };
     return commit;
 }

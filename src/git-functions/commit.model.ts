@@ -4,7 +4,7 @@ export interface CommitCompact {
     sha: string;
     date: Date;
     author: string,
-    comment: string,
+    subject: string,
 }
 
 export interface CommitPair {

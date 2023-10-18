@@ -8,19 +8,19 @@ describe('buildClocDiffAllCommand', () => {
         const mostRecentCommit = 'abc123';
         const leastRecentCommit = 'def456';
         const languages = ['JavaScript', 'TypeScript'];
-        const expectedCommand = `cd ${folderPath} && cloc --git-diff-all --json --timeout=1000000 --include-lang=JavaScript,TypeScript ${leastRecentCommit} ${mostRecentCommit}`;
-        const command = (0, cloc_diff_functions_1.buildClocDiffAllCommand)(mostRecentCommit, leastRecentCommit, languages, folderPath);
+        const expectedCommand = `cd ${folderPath} && cloc --git-diff-rel --json --timeout=1000000 --include-lang=JavaScript,TypeScript ${leastRecentCommit} ${mostRecentCommit}`;
+        const command = (0, cloc_diff_functions_1.buildClocDiffRelCommand)(mostRecentCommit, leastRecentCommit, languages, folderPath);
         (0, chai_1.expect)(command).equal(expectedCommand);
     });
     it('should return a command string with default folder path and language filters if not provided', () => {
         const mostRecentCommit = 'abc123';
         const leastRecentCommit = 'def456';
-        const expectedCommand = `cd ./ && cloc --git-diff-all --json --timeout=1000000 --include-lang=JavaScript ${leastRecentCommit} ${mostRecentCommit}`;
-        const command = (0, cloc_diff_functions_1.buildClocDiffAllCommand)(mostRecentCommit, leastRecentCommit, ['JavaScript']);
+        const expectedCommand = `cd ./ && cloc --git-diff-rel --json --timeout=1000000 --include-lang=JavaScript ${leastRecentCommit} ${mostRecentCommit}`;
+        const command = (0, cloc_diff_functions_1.buildClocDiffRelCommand)(mostRecentCommit, leastRecentCommit, ['JavaScript']);
         (0, chai_1.expect)(command).equal(expectedCommand);
     });
 });
-describe('runClocDiff', () => {
+describe('clocDiff$', () => {
     it(`should generate an Observable that emits a value of type ClocDiffStats using the third commit of this project
     compared with the second commit of this project`, (done) => {
         const folderPath = './';
@@ -29,7 +29,7 @@ describe('runClocDiff', () => {
         const leastRecentCommit = `${thirdCommitSha}^1`;
         const languages = ['JavaScript', 'TypeScript'];
         let count = 0;
-        (0, cloc_diff_functions_1.runClocDiff)(mostRecentCommit, leastRecentCommit, languages, folderPath).subscribe({
+        (0, cloc_diff_functions_1.clocDiff$)(mostRecentCommit, leastRecentCommit, folderPath, languages).subscribe({
             next: (clocDiffStats) => {
                 count++;
                 (0, chai_1.expect)(clocDiffStats).to.be.an('object');

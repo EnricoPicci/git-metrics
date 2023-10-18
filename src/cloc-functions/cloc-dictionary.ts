@@ -2,8 +2,9 @@ import { Observable, catchError, map, of, pipe, tap, toArray } from 'rxjs';
 
 import { readLinesObs } from 'observable-fs';
 
-import { ClocDictionary, ClocInfo } from './cloc-dictionary.model';
+import { ClocDictionary } from './cloc-dictionary.model';
 import { clocByfile$ } from './cloc';
+import { ClocFileInfo } from './cloc.model';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -93,20 +94,20 @@ function toClocFileDict(clocLogPath?: string) {
                 if (clocInfo.length !== 5) {
                     throw new Error(`Format of cloc line not as expected: ${line} ${clocFileMsg}`);
                 }
-                const [language, filename, blank, comment, code] = clocInfo;
-                if (filename.trim().length === 0) {
+                const [language, file, blank, comment, code] = clocInfo;
+                if (file.trim().length === 0) {
                     throw new Error(`The file neme in line ${clocInfo} is the empty string ${clocFileMsg}`);
                 }
-                if (dict[filename]) {
-                    throw new Error(`File ${filename} present more than once in cloc log ${clocFileMsg}`);
+                if (dict[file]) {
+                    throw new Error(`File ${file} present more than once in cloc log ${clocFileMsg}`);
                 }
-                dict[filename] = {
+                dict[file] = {
                     language,
-                    filename,
+                    file,
                     blank: parseInt(blank),
                     comment: parseInt(comment),
                     code: parseInt(code),
-                } as ClocInfo;
+                } as ClocFileInfo;
                 return dict;
             }, {} as ClocDictionary);
         }),

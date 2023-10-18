@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildClocDiffAllCommand = exports.runClocDiff = void 0;
+exports.buildClocDiffRelCommand = exports.clocDiff$ = void 0;
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const cloc_diff_model_1 = require("./cloc-diff.model");
@@ -14,13 +14,12 @@ const config_1 = require("./config");
  * @param mostRecentCommit The SHA of the most recent commit.
  * @param leastRecentCommit The SHA of the least recent commit.
  * @param languages An array of languages to include in the cloc diff.
- * @param folderPath The path to the folder containing the Git repository. Defaults to './'.
+ * @param repoFolderPath The path to the folder containing the Git repository. Defaults to './'.
  * @returns An Observable that emits a `ClocDiffStats` object representing the cloc diff between the two commits.
  */
-function runClocDiff(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
-    const cmd = buildClocDiffAllCommand(mostRecentCommit, leastRecentCommit, languages, folderPath);
-    // #todo - check if we need to specify { encoding: 'utf-8' } as an argument
-    return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-all', cmd).pipe((0, rxjs_1.map)((output) => {
+function clocDiff$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = []) {
+    const cmd = buildClocDiffRelCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
+    return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-rel', cmd).pipe((0, rxjs_1.map)((output) => {
         let diffs;
         try {
             diffs = JSON.parse(output);
@@ -44,7 +43,7 @@ Command: ${cmd}`;
         };
         return clocOutput;
     }), (0, rxjs_1.catchError)((error) => {
-        const err = `Error in buildClocDiffAllCommand for folder "${folderPath}"\nError: ${error}
+        const err = `Error in buildClocDiffAllCommand for folder "${repoFolderPath}"\nError: ${error}
 Command: ${cmd}`;
         console.error(err);
         console.error(`Command: ${cmd}`);
@@ -52,21 +51,20 @@ Command: ${cmd}`;
         return (0, rxjs_1.of)(clocOutputWithError);
     }));
 }
-exports.runClocDiff = runClocDiff;
+exports.clocDiff$ = clocDiff$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
-function buildClocDiffAllCommand(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
+function buildClocDiffRelCommand(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
     const cdCommand = `cd ${folderPath}`;
-    const clocDiffAllCommand = `cloc --git-diff-all --json --timeout=${config_1.CLOC_CONFIG.TIMEOUT}`;
-    // const clocDiffAllCommand = `cloc --diff --json --timeout=${CONFIG.CLOC_TIMEOUT}`
+    const clocDiffAllCommand = `cloc --git-diff-rel --json --timeout=${config_1.CLOC_CONFIG.TIMEOUT}`;
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter}`;
 }
-exports.buildClocDiffAllCommand = buildClocDiffAllCommand;
+exports.buildClocDiffRelCommand = buildClocDiffRelCommand;
 function evaluateIfPossibleCutPaste(diffs) {
     const added = diffs.added;
     const removed = diffs.removed;

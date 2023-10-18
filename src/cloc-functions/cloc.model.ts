@@ -14,7 +14,7 @@ export interface ClocStats {
 
 export interface ClocFileInfo {
     language: string;
-    filename: string;
+    file: string;
     blank: number;
     comment: number;
     code: number

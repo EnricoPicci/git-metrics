@@ -10,6 +10,7 @@ const observable_fs_1 = require("observable-fs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const config_1 = require("./config");
 const repo_path_functions_1 = require("../git-functions/repo-path.functions");
+const ignore_up_to_1 = require("../tools/rxjs-operators/ignore-up-to");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -146,7 +147,7 @@ exports.writeClocSummary$ = writeClocSummary$;
 function clocByfile$(params, action = 'calculate cloc', writeFile = true) {
     // execute the cloc command in a new process and return the stream of lines output of the cloc command execution
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
-    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe(ignoreUpTo(exports.clocByfileHeader), (0, rxjs_1.share)());
+    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe((0, ignore_up_to_1.ignoreUpTo)(exports.clocByfileHeader), (0, rxjs_1.share)());
     // if writeFile is true, then calculate the name of the output file
     const outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
     // create an Observable that deletes the output file if it exists and then takes the cloc strem
@@ -337,34 +338,6 @@ function clocByfileCommandWithArgs(params) {
     return { cmd, args, options };
 }
 /**
- * Returns an operator function that filters the input Observable to only include lines of text
- * that come after the line that includes the specified start token.
- * @param startToken The start token to look for in the input stream.
- * @returns An operator function that filters the input Observable.
- */
-function ignoreUpTo(startToken) {
-    return (source) => {
-        return new rxjs_1.Observable((subscriber) => {
-            let startOutput = false;
-            const subscription = source.subscribe({
-                next: (line) => {
-                    startOutput = startOutput || line.includes(startToken);
-                    if (startOutput) {
-                        subscriber.next(line);
-                    }
-                },
-                error: (err) => subscriber.error(err),
-                complete: () => {
-                    subscriber.complete();
-                },
-            });
-            return () => {
-                subscription.unsubscribe();
-            };
-        });
-    };
-}
-/**
  * Returns a custom rxjs operator that expects a stream emitting an array of lines representing the output of a cloc command
  * (with the by-file option), and returns a stream that notifies a dictionary of ClocFileInfo objects, where each object
  * represents the cloc info for a file.
@@ -406,7 +379,7 @@ function toClocFileDict(clocLogPath) {
             }
             const stat = {
                 language,
-                filename,
+                file: filename,
                 blank: parseInt(blank),
                 comment: parseInt(comment),
                 code: parseInt(code),

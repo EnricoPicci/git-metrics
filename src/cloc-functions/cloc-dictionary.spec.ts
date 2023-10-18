@@ -16,7 +16,7 @@ describe(`clocFileDict$`, () => {
                     const thisFilePath = __filename.substring(thisFolderPathLegth + 1);
                     const thisFileClocInfo = dict[thisFilePath]
                     expect(thisFileClocInfo.language).equal('TypeScript');
-                    expect(thisFileClocInfo.filename).equal(thisFilePath);
+                    expect(thisFileClocInfo.file).equal(thisFilePath);
                     expect(thisFileClocInfo.blank).gt(0);
                     expect(thisFileClocInfo.comment).gt(0);
                     expect(thisFileClocInfo.code).gt(0);
@@ -46,7 +46,7 @@ describe(`clocFileDictFromClocLogFile$`, () => {
                     expect(Object.keys(dict).length).equal(3);
                     const _fileName = 'hallo.java';
                     expect(dict[_fileName].language).equal('Java');
-                    expect(dict[_fileName].filename).equal(_fileName);
+                    expect(dict[_fileName].file).equal(_fileName);
                     expect(dict[_fileName].blank).equal(3);
                     expect(dict[_fileName].comment).equal(1);
                     expect(dict[_fileName].code).equal(5);

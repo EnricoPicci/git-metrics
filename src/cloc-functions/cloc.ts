@@ -443,7 +443,7 @@ export function toClocFileDict(clocLogPath?: string) {
                 }
                 const stat: ClocFileInfo = {
                     language,
-                    filename,
+                    file: filename,
                     blank: parseInt(blank),
                     comment: parseInt(comment),
                     code: parseInt(code),

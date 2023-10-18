@@ -50,7 +50,7 @@ export function calculateClocGitDiffsChildParent(
                         yearMonth: yearMonthFromDate(commit.date),
                         mostRecentCommitDate: commit.date.toLocaleDateString(),
                         leastRecentCommitDate: parentCommitDate,
-                        comment: commit.comment,
+                        comment: commit.subject,
                         clocDiff,
                         remoteOriginUrl: '',
                     };
