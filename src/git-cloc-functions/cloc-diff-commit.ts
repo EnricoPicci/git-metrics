@@ -37,6 +37,13 @@ export function clocDiffWithCommit$(
 ) {
     // first calculate the cloc dictionary and pass it down the pipe
     return clocFileDict$(pathToRepo).pipe(
+        catchError((err) => {
+            if (err.code === 'ENOENT') {
+                console.log(`!!!!!!!! folder ${pathToRepo} not found`);
+                process.exit(1);
+            }
+            throw err;
+        }),
         // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
         concatMap((clocFileDict) => {
             return readCommitCompact$(pathToRepo, fromDate, toDate).pipe(

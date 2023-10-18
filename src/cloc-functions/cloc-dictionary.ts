@@ -84,7 +84,7 @@ function toClocFileDict(clocLogPath?: string) {
                 }
             }
             if (sumLineIndex === undefined) {
-                throw new Error(`No line with SUM found`);
+                throw new Error(`Probably not a git repo (or any of the parent directories)`);
             }
             return lines.slice(0, sumLineIndex);
         }),

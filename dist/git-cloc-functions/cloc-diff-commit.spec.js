@@ -51,4 +51,22 @@ describe(`clocDiffWithCommit$`, () => {
         });
     }).timeout(200000);
 });
+describe(`writeClocDiffWithCommit$`, () => {
+    it(`calculates the differences between all commits in a certain timeframe for this repo and writes them to a csv file`, (done) => {
+        const pathToRepo = './';
+        const fromDate = new Date('2023-10-11');
+        const toDate = new Date('2023-10-12');
+        const outDir = './temp/';
+        (0, cloc_diff_commit_1.writeClocDiffWithCommit$)(pathToRepo, outDir, fromDate, toDate)
+            .pipe((0, rxjs_1.tap)({
+            next: (csvFile) => {
+                (0, chai_1.expect)(csvFile).to.be.a('string');
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
+});
 //# sourceMappingURL=cloc-diff-commit.spec.js.map
