@@ -7,6 +7,7 @@ import {
     concat,
     concatMap,
     defaultIfEmpty,
+    filter,
     from,
     ignoreElements,
     map,
@@ -14,6 +15,7 @@ import {
     of,
     pipe,
     share,
+    skip,
     tap,
 } from 'rxjs';
 
@@ -29,7 +31,7 @@ import {
 import { ClocDictionary, ClocFileInfo, ClocLanguageStats } from './cloc.model';
 import { CLOC_CONFIG } from './config';
 import { ClocParams } from './cloc-params';
-import { reposInFolder } from '../git-functions/repo.functions';
+import { gitRepoPaths } from '../git-functions/repo-path.functions';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -266,17 +268,24 @@ export function writeClocByFile$(params: ClocParams, action = 'cloc') {
  * Errors if the folderPath does not exist or is not a folder.
  * Returns just the header if the folderPath does not contain any Git repository.
  * @param folderPath The path to the folder to search for Git repositories.
+ * @param excludeRepoPaths An optional array of paths to exclude from the search.
  * @returns An Observable that emits the cloc info for all the Git repositories in the given folder.
  */
-export function clocByFileForRepos$(folderPath: string) {
-    const repos = reposInFolder(folderPath);
+export function clocByFileForRepos$(folderPath: string, excludeRepoPaths = []) {
+    const repos = gitRepoPaths(folderPath, excludeRepoPaths)
     const cloc$ = from(repos).pipe(
         concatMap((repoPath) => {
             const params: ClocParams = {
                 folderPath: repoPath,
                 vcs: 'git',
             };
-            return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPath, false);
+            return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPath, false).pipe(
+                // remove the first line which contains the csv header form all the streams representing
+                // the output of the cloc command execution on each repo
+                skip(1),
+                // remove the last line which contains the total
+                filter((line) => line.slice(0, 3) !== 'SUM')
+            );
         }),
     );
     // return a file which is a concatenation of the cloc header followed by the cloc info for each repo
@@ -284,6 +293,39 @@ export function clocByFileForRepos$(folderPath: string) {
     return concat(of(header), cloc$);
 }
 
+/**
+ * Writes the cloc info for all the Git repositories in a given folder to a file.
+ * The file name is derived from the folder path.
+ * Returns an Observable that notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
+ * @param folderPath The path to the folder to search for Git repositories.
+ * @param outDir The path to the folder where the output file should be saved. Defaults to the current directory.
+ * @param excludeRepoPaths An array of repository paths to exclude from the calculation.
+ * @returns An Observable that emits the name of the file where the cloc info is saved.
+ */
+export function writeClocByFileForRepos$(folderPath: string, outDir = './', excludeRepoPaths = []) {
+    const outFile = buildOutfileName('', folderPath, 'cloc-', '-byfile.csv');
+    const outFilePath = path.join(outDir, outFile);
+    return deleteFileObs(outFilePath).pipe(
+        catchError((err) => {
+            if (err.code === 'ENOENT') {
+                // complete so that the next operation can continue
+                return of(null);
+            }
+            throw new Error(err);
+        }),
+        concatMap(() => clocByFileForRepos$(folderPath, excludeRepoPaths)),
+        concatMap((line) => {
+            return appendFileObs(outFilePath, `${line}\n`);
+        }),
+        ignoreElements(),
+        defaultIfEmpty(outFilePath),
+        tap({
+            next: (outFilePath) => {
+                console.log(`====>>>> cloc info saved on file ${outFilePath}`);
+            },
+        }),
+    );
+}
 
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */

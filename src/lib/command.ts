@@ -6,6 +6,7 @@ import { launchReportsParallelReads } from '../apps/reports-on-repo/2-pipelines/
 import { launchAllReportsOnMergedRepos } from '../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos';
 import { launchBranchesReport } from '../apps/reports-on-repo/2-pipelines/run-branches-report';
 import { launchRunReportsAndCodeTurnover } from '../apps/code-turnover-and-reports/launch-code-turnover-and-reports';
+import { launchClocByfileForRepos } from '../apps/cloc-byfile-for-repos/launch-cloc-byfile-for-repos';
 
 const command = process.argv[2];
 
@@ -17,6 +18,7 @@ const commandsAvailable: { [command: string]: () => void } = {
     'run-reports-on-repo': launchReportsParallelReads,
     'run-reports-on-repos-in-folder': launchAllReportsOnMergedRepos,
     'run-branches-report-on-repo': launchBranchesReport,
+    'cloc-byfile-for-repos': launchClocByfileForRepos,
 }
 
 const functionForCommand = commandsAvailable[command];

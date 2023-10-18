@@ -6,7 +6,7 @@ const repo_path_functions_1 = require("./repo-path.functions");
 describe(`gitRepoPaths`, () => {
     it(`returns one folder since we start from the folder containing the current project and this folder is a git repo`, (done) => {
         const start = process.cwd();
-        (0, repo_path_functions_1.gitRepoPaths)(start)
+        (0, repo_path_functions_1.gitRepoPaths$)(start)
             .pipe((0, rxjs_1.tap)({
             next: (repos) => {
                 (0, chai_1.expect)(repos).not.undefined;

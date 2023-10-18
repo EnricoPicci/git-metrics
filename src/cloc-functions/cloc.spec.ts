@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { buildOutfileName, clocByFileForRepos$, clocByfileHeader, clocSummary$, writeClocByFile$, writeClocByfile, writeClocSummary } from './cloc';
+import { buildOutfileName, clocByFileForRepos$, clocByfileHeader, clocSummary$, writeClocByFile$, writeClocByFileForRepos$, writeClocByfile, writeClocSummary } from './cloc';
 import { ClocParams } from './cloc-params';
 import path from 'path';
 import { deleteFile } from '../tools/test-helpers/delete-file';
@@ -319,6 +319,13 @@ describe(`clocByFileForRepos$`, () => {
                     expect(clocInfos.length).gt(1);
                     const clocHeader = clocInfos[0];
                     expect(clocHeader).equal(clocByfileHeader);
+                    // check that the second line does not start with the cloc header repeated
+                    const secondLine = clocInfos[1];
+                    expect(secondLine.includes(clocByfileHeader)).false
+                    // find the last line which is not an empty string and check that it does not contain the sum
+                    const lastLine = clocInfos.reverse().find((line) => line.length > 0);
+                    expect(lastLine).not.undefined;
+                    expect(lastLine!.includes('SUM')).false;
                 },
                 error: (err) => done(err),
                 complete: () => done(),
@@ -345,5 +352,59 @@ describe(`clocByFileForRepos$`, () => {
                 complete: () => done(),
             }),
         ).subscribe();
+    }).timeout(200000);
+});
+
+describe(`writeClocByFileForRepos$`, () => {
+    it(`notifies the name of the file where the cloc info for the repos in the folder have been written`, (done) => {
+        const repoFolder = './';
+        const outDir = './temp';
+
+        let _outFile = '';
+        let numOfFiles = 0;
+
+        writeClocByFileForRepos$(repoFolder, outDir).pipe(
+            tap({
+                next: (outFile) => {
+                    _outFile = outFile;
+                    expect(outFile.length).gt(1);
+                },
+            }),
+            // read the file just written and check that it contains the cloc header
+            // save also the number of lines in the file so that later we can check that the file is overwritten
+            // when we call writeClocByFileForRepos$ again
+            concatMap((outFile) => readLinesObs(outFile)),
+            tap({
+                next: (lines) => {
+                    numOfFiles = lines.length;
+                    expect(lines[0]).equal(clocByfileHeader);
+                    expect(lines.length).gt(1);
+                },
+            }),
+            // now call writeClocByFileForRepos$ again and check that the file name is the same as the one returned in the first call
+            concatMap(() => writeClocByFileForRepos$(repoFolder, outDir)),
+            tap({
+                next: (outFile) => {
+                    expect(outFile).equal(_outFile);
+                },
+            }),
+            // now read the file written the second time and check that it has overwritten by comparing the number of lines
+            // if the number of lines is the same as the first time, it means that the file has  been overwritten
+            concatMap((outFile) => {
+                return readLinesObs(outFile)
+            }),
+            tap({
+                next: (lines) => {
+                    expect(lines.length).equal(numOfFiles);
+                },
+                error: (err) => done(err),
+                complete: () => done(),
+            }),
+        ).subscribe();
+    }).timeout(200000);
+    it(`it should throw and error since the folder does not exist`, () => {
+        const repoFolder = './folder-that-does-not-exist';
+
+        expect(() => writeClocByFileForRepos$(repoFolder)).to.throw;
     }).timeout(200000);
 });

@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { tap } from "rxjs";
-import { gitRepoPaths, fetchAllDirsFromGivenFolder, fetchAllGitReposFromGivenFolder } from "./repo-path.functions";
+import { gitRepoPaths$, fetchAllDirsFromGivenFolder, fetchAllGitReposFromGivenFolder } from "./repo-path.functions";
 
 
 describe(`gitRepoPaths`, () => {
     it(`returns one folder since we start from the folder containing the current project and this folder is a git repo`, (done) => {
         const start = process.cwd();
-        gitRepoPaths(start)
+        gitRepoPaths$(start)
             .pipe(
                 tap({
                     next: (repos) => {

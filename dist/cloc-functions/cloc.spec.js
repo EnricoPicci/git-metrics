@@ -271,4 +271,88 @@ describe(`writeClocByfile`, () => {
         });
     }).timeout(200000);
 });
+describe(`clocByFileForRepos$`, () => {
+    it(`notifies the cloc info for the files contained in all the repos of the folder of this projext.
+    Since this project contains just one repo, it notifies the cloc info for this repo.
+    It starts with the cloc header`, (done) => {
+        const repoFolder = './';
+        (0, cloc_1.clocByFileForRepos$)(repoFolder).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            next: (clocInfos) => {
+                (0, chai_1.expect)(clocInfos.length).gt(1);
+                const clocHeader = clocInfos[0];
+                (0, chai_1.expect)(clocHeader).equal(cloc_1.clocByfileHeader);
+                // check that the second line does not start with the cloc header repeated
+                const secondLine = clocInfos[1];
+                (0, chai_1.expect)(secondLine.includes(cloc_1.clocByfileHeader)).false;
+                // find the last line which is not an empty string and check that it does not contain the sum
+                const lastLine = clocInfos.reverse().find((line) => line.length > 0);
+                (0, chai_1.expect)(lastLine).not.undefined;
+                (0, chai_1.expect)(lastLine.includes('SUM')).false;
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        })).subscribe();
+    }).timeout(200000);
+    it(`it should throw and error since the folder does not exist`, () => {
+        const repoFolder = './folder-that-does-not-exist';
+        (0, chai_1.expect)(() => (0, cloc_1.clocByFileForRepos$)(repoFolder)).to.throw;
+    }).timeout(200000);
+    it(`notifies only the cloc header since the folder is not a git repo and does not contain any git repo`, (done) => {
+        const repoFolder = './src';
+        (0, cloc_1.clocByFileForRepos$)(repoFolder).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            next: (clocInfos) => {
+                (0, chai_1.expect)(clocInfos.length).equal(1);
+                const clocHeader = clocInfos[0];
+                (0, chai_1.expect)(clocHeader).equal(cloc_1.clocByfileHeader);
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        })).subscribe();
+    }).timeout(200000);
+});
+describe(`writeClocByFileForRepos$`, () => {
+    it(`notifies the name of the file where the cloc info for the repos in the folder have been written`, (done) => {
+        const repoFolder = './';
+        const outDir = './temp';
+        let _outFile = '';
+        let numOfFiles = 0;
+        (0, cloc_1.writeClocByFileForRepos$)(repoFolder, outDir).pipe((0, rxjs_1.tap)({
+            next: (outFile) => {
+                _outFile = outFile;
+                (0, chai_1.expect)(outFile.length).gt(1);
+            },
+        }), 
+        // read the file just written and check that it contains the cloc header
+        // save also the number of lines in the file so that later we can check that the file is overwritten
+        // when we call writeClocByFileForRepos$ again
+        (0, rxjs_1.concatMap)((outFile) => (0, observable_fs_1.readLinesObs)(outFile)), (0, rxjs_1.tap)({
+            next: (lines) => {
+                numOfFiles = lines.length;
+                (0, chai_1.expect)(lines[0]).equal(cloc_1.clocByfileHeader);
+                (0, chai_1.expect)(lines.length).gt(1);
+            },
+        }), 
+        // now call writeClocByFileForRepos$ again and check that the file name is the same as the one returned in the first call
+        (0, rxjs_1.concatMap)(() => (0, cloc_1.writeClocByFileForRepos$)(repoFolder, outDir)), (0, rxjs_1.tap)({
+            next: (outFile) => {
+                (0, chai_1.expect)(outFile).equal(_outFile);
+            },
+        }), 
+        // now read the file written the second time and check that it has overwritten by comparing the number of lines
+        // if the number of lines is the same as the first time, it means that the file has  been overwritten
+        (0, rxjs_1.concatMap)((outFile) => {
+            return (0, observable_fs_1.readLinesObs)(outFile);
+        }), (0, rxjs_1.tap)({
+            next: (lines) => {
+                (0, chai_1.expect)(lines.length).equal(numOfFiles);
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        })).subscribe();
+    }).timeout(200000);
+    it(`it should throw and error since the folder does not exist`, () => {
+        const repoFolder = './folder-that-does-not-exist';
+        (0, chai_1.expect)(() => (0, cloc_1.writeClocByFileForRepos$)(repoFolder)).to.throw;
+    }).timeout(200000);
+});
 //# sourceMappingURL=cloc.spec.js.map

@@ -7,6 +7,11 @@ import { isToBeExcluded } from "../tools/strings-utils/is-to-be-excluded";
 export function gitRepoPaths(startingFolder = './', excludeRepoPaths: string[] = []) {
     const repos = fetchAllGitReposFromGivenFolder(startingFolder).filter(r => !isToBeExcluded(r, excludeRepoPaths));
     console.log(`>>>>>>>>>> Found ${repos.length} git repos in ${startingFolder}`);
+    return repos;
+}
+
+export function gitRepoPaths$(startingFolder = './', excludeRepoPaths: string[] = []) {
+    const repos = gitRepoPaths(startingFolder, excludeRepoPaths);
     return of(repos);
 }
 

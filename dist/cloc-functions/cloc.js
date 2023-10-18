@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toClocFileDict = exports.buildOutfileName = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnFolderNoGit$ = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
+exports.toClocFileDict = exports.buildOutfileName = exports.clocByfileHeader = exports.writeClocByFileForRepos$ = exports.clocByFileForRepos$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnFolderNoGit$ = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const config_1 = require("./config");
+const repo_path_functions_1 = require("../git-functions/repo-path.functions");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -145,7 +146,7 @@ exports.writeClocSummary$ = writeClocSummary$;
 function clocByfile$(params, action = 'calculate cloc', writeFile = true) {
     // execute the cloc command in a new process and return the stream of lines output of the cloc command execution
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
-    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe(ignoreUpTo('language,filename,blank,comment,code'), (0, rxjs_1.share)());
+    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe(ignoreUpTo(exports.clocByfileHeader), (0, rxjs_1.share)());
     // if writeFile is true, then calculate the name of the output file
     const outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
     // create an Observable that deletes the output file if it exists and then takes the cloc strem
@@ -211,10 +212,70 @@ function writeClocByFile$(params, action = 'cloc') {
     }));
 }
 exports.writeClocByFile$ = writeClocByFile$;
+/**
+ * Searches for all Git repositories in a given folder and runs the cloc command with the --by-file option on each of them.
+ * Returns an Observable that notifies all the cloc info for all the repos in the form of lines of text which represent CSV records.
+ * The first line notified is the clocByFile header.
+ * Errors if the folderPath does not exist or is not a folder.
+ * Returns just the header if the folderPath does not contain any Git repository.
+ * @param folderPath The path to the folder to search for Git repositories.
+ * @param excludeRepoPaths An optional array of paths to exclude from the search.
+ * @returns An Observable that emits the cloc info for all the Git repositories in the given folder.
+ */
+function clocByFileForRepos$(folderPath, excludeRepoPaths = []) {
+    const repos = (0, repo_path_functions_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    const cloc$ = (0, rxjs_1.from)(repos).pipe((0, rxjs_1.concatMap)((repoPath) => {
+        const params = {
+            folderPath: repoPath,
+            vcs: 'git',
+        };
+        return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPath, false).pipe(
+        // remove the first line which contains the csv header form all the streams representing
+        // the output of the cloc command execution on each repo
+        (0, rxjs_1.skip)(1), 
+        // remove the last line which contains the total
+        (0, rxjs_1.filter)((line) => line.slice(0, 3) !== 'SUM'));
+    }));
+    // return a file which is a concatenation of the cloc header followed by the cloc info for each repo
+    const header = `${exports.clocByfileHeader}`;
+    return (0, rxjs_1.concat)((0, rxjs_1.of)(header), cloc$);
+}
+exports.clocByFileForRepos$ = clocByFileForRepos$;
+/**
+ * Writes the cloc info for all the Git repositories in a given folder to a file.
+ * The file name is derived from the folder path.
+ * Returns an Observable that notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
+ * @param folderPath The path to the folder to search for Git repositories.
+ * @param outDir The path to the folder where the output file should be saved. Defaults to the current directory.
+ * @param excludeRepoPaths An array of repository paths to exclude from the calculation.
+ * @returns An Observable that emits the name of the file where the cloc info is saved.
+ */
+function writeClocByFileForRepos$(folderPath, outDir = './', excludeRepoPaths = []) {
+    const outFile = buildOutfileName('', folderPath, 'cloc-', '-byfile.csv');
+    const outFilePath = path_1.default.join(outDir, outFile);
+    return (0, observable_fs_1.deleteFileObs)(outFilePath).pipe((0, rxjs_1.catchError)((err) => {
+        if (err.code === 'ENOENT') {
+            // complete so that the next operation can continue
+            return (0, rxjs_1.of)(null);
+        }
+        throw new Error(err);
+    }), (0, rxjs_1.concatMap)(() => clocByFileForRepos$(folderPath, excludeRepoPaths)), (0, rxjs_1.concatMap)((line) => {
+        return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
+    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
+        next: (outFilePath) => {
+            console.log(`====>>>> cloc info saved on file ${outFilePath}`);
+        },
+    }));
+}
+exports.writeClocByFileForRepos$ = writeClocByFileForRepos$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
+/**
+ * Represents the header for the cloc command when the --by-file output format is specified.
+ */
+exports.clocByfileHeader = 'language,filename,blank,comment,code';
 function clocCommand(params) {
     // npx cloc . --vcs=git --csv  --timeout=1000000
     const cd = `cd ${params.folderPath}`;

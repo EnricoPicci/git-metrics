@@ -11,7 +11,7 @@ import { _runReportsFromStreams, _streams } from './run-reports-on-repo-core';
 import { GitLogCommitParams } from '../../../../git-functions/git-params';
 import { ClocParams } from '../../../../cloc-functions/cloc-params';
 import { clocSummaryCsvRaw$, writeClocSummary } from '../../../../cloc-functions/cloc';
-import { gitRepoPaths } from '../../../../git-functions/repo-path.functions';
+import { gitRepoPaths$ } from '../../../../git-functions/repo-path.functions';
 
 export function runAllReportsOnMergedRepos(
     reports: string[],
@@ -32,7 +32,7 @@ export function runAllReportsOnMergedRepos(
     const _outDir = path.resolve(outDir ? outDir : '');
     createDirIfNotExisting(_outDir);
 
-    const repoFolderPaths = gitRepoPaths(repoContainerFolderPath, excludeRepoPaths);
+    const repoFolderPaths = gitRepoPaths$(repoContainerFolderPath, excludeRepoPaths);
 
     return repoFolderPaths.pipe(
         map((_repoFolderPaths) => {

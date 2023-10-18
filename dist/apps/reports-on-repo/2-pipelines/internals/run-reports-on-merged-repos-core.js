@@ -15,7 +15,7 @@ function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, af
     // create the output directory if not existing
     const _outDir = path_1.default.resolve(outDir ? outDir : '');
     (0, fs_utils_1.createDirIfNotExisting)(_outDir);
-    const repoFolderPaths = (0, repo_path_functions_1.gitRepoPaths)(repoContainerFolderPath, excludeRepoPaths);
+    const repoFolderPaths = (0, repo_path_functions_1.gitRepoPaths$)(repoContainerFolderPath, excludeRepoPaths);
     return repoFolderPaths.pipe((0, rxjs_1.map)((_repoFolderPaths) => {
         const allCommitStreams = [];
         const allFileStreams = [];

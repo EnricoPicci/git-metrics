@@ -10,7 +10,7 @@ const repo_path_functions_1 = require("../../../../git-functions/repo-path.funct
 describe(`gitRepos`, () => {
     it(`returns the folders that contain git repos starting from the folder containing this project`, (done) => {
         const start = path_1.default.parse(process.cwd()).dir;
-        (0, repo_path_functions_1.gitRepoPaths)(start)
+        (0, repo_path_functions_1.gitRepoPaths$)(start)
             .pipe((0, rxjs_1.tap)({
             next: (repos) => {
                 (0, chai_1.expect)(repos).not.undefined;

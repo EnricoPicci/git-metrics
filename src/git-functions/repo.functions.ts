@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
-import { tap, map, catchError, EMPTY, concatMap, filter, from, mergeMap, toArray } from 'rxjs';
+import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray } from 'rxjs';
 
 import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
 import { readCommitCompact$ } from './commit.functions';
-import { isToBeExcluded } from '../tools/strings-utils/is-to-be-excluded';
+import { gitRepoPaths } from './repo-path.functions';
 
 /**
  * Returns the list of Git repository paths in a given folder, including subfolders.
@@ -60,11 +60,8 @@ export function reposCompactInFolderObs(
     concurrency = 1,
     excludeRepoPaths: string[] = [],
 ) {
-    const repoPaths = reposInFolder(folderPath);
+    const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
     return from(repoPaths).pipe(
-        filter((repoPath) => {
-            return !isToBeExcluded(repoPath, excludeRepoPaths);
-        }),
         toArray(),
         tap((repoPaths) => {
             console.log(`Repos to be analyzed: ${repoPaths.length}`);

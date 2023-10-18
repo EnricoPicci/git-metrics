@@ -9,22 +9,27 @@ const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const commit_functions_1 = require("./commit.functions");
-const is_to_be_excluded_1 = require("../tools/strings-utils/is-to-be-excluded");
-// reposInFolder returns the list of git repos paths in a given folder including subfolders
+const repo_path_functions_1 = require("./repo-path.functions");
+/**
+ * Returns the list of Git repository paths in a given folder, including subfolders.
+ * If a folder has a .git folder, it is considered a Git repository.
+ * @param folderPath The path to the folder to search for Git repositories.
+ * @returns An array of Git repository paths.
+ */
 function reposInFolder(folderPath) {
-    let gitRepos = [];
+    let gitRepoPaths = [];
     const filesAndDirs = fs_1.default.readdirSync(folderPath);
     if (filesAndDirs.some((fileOrDir) => fileOrDir === '.git')) {
-        gitRepos.push(folderPath);
+        gitRepoPaths.push(folderPath);
     }
     filesAndDirs.forEach((fileOrDir) => {
         const absolutePath = path_1.default.join(folderPath, fileOrDir);
         if (fs_1.default.statSync(absolutePath).isDirectory()) {
-            const subRepos = reposInFolder(absolutePath);
-            gitRepos = gitRepos.concat(subRepos);
+            const subRepoPaths = reposInFolder(absolutePath);
+            gitRepoPaths = gitRepoPaths.concat(subRepoPaths);
         }
     });
-    return gitRepos;
+    return gitRepoPaths;
 }
 exports.reposInFolder = reposInFolder;
 // cloneRepo clones a repo from a given url to a given path and returns the path of the cloned repo
@@ -46,10 +51,8 @@ exports.cloneRepo = cloneRepo;
 // repos whose name is in the excludeRepoPaths array are excluded, in the excludeRepoPaths array
 // wildcards can be used, e.g. ['repo1', 'repo2', 'repo3*'] will exclude repo1, repo2 and all the repos that start with repo3
 function reposCompactInFolderObs(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = 1, excludeRepoPaths = []) {
-    const repoPaths = reposInFolder(folderPath);
-    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.filter)((repoPath) => {
-        return !(0, is_to_be_excluded_1.isToBeExcluded)(repoPath, excludeRepoPaths);
-    }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)((repoPaths) => {
+    const repoPaths = (0, repo_path_functions_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)((repoPaths) => {
         console.log(`Repos to be analyzed: ${repoPaths.length}`);
         repoPaths.forEach((repoPath) => {
             console.log(`Repo to be analyzed: ${repoPath}`);
