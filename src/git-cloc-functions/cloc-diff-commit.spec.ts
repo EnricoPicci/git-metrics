@@ -1,5 +1,5 @@
 import { tap, toArray } from "rxjs";
-import { clocDiffWithCommit$ } from "./cloc-diff-commit";
+import { clocDiffWithCommit$, writeClocDiffWithCommit$ } from "./cloc-diff-commit";
 import { expect } from "chai";
 
 describe(`clocDiffWithCommit$`, () => {
@@ -53,6 +53,28 @@ describe(`clocDiffWithCommit$`, () => {
                     next: (commitRecords) => {
                         expect(commitRecords).not.undefined;
                         expect(commitRecords.length).gt(0);
+                    },
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    }).timeout(200000);
+});
+
+describe(`writeClocDiffWithCommit$`, () => {
+    it(`calculates the differences between all commits in a certain timeframe for this repo and writes them to a csv file`, (done) => {
+        const pathToRepo = './'
+        const fromDate = new Date('2023-10-11')
+        const toDate = new Date('2023-10-12')
+        const outDir = './temp/'
+
+        writeClocDiffWithCommit$(pathToRepo, outDir, fromDate, toDate)
+            .pipe(
+                tap({
+                    next: (csvFile) => {
+                        expect(csvFile).to.be.a('string');
                     },
                 }),
             )
