@@ -1,7 +1,39 @@
 import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
-import { clocFileDictFromClocLogFile$ } from './cloc-dictionary';
+import { clocFileDict$, clocFileDictFromClocLogFile$ } from './cloc-dictionary';
+
+describe(`clocFileDict$`, () => {
+    it(`create a cloc dictionary for the folder where this project is contained`, (done) => {
+        const folderPath = './';
+
+        clocFileDict$(folderPath)
+            .pipe(
+                tap((dict) => {
+                    expect(Object.keys(dict).length).gt(0);
+                    // read the dict entry of this file
+                    const thisFolderPathLegth = process.cwd().length;
+                    const thisFilePath = __filename.substring(thisFolderPathLegth + 1);
+                    const thisFileClocInfo = dict[thisFilePath]
+                    expect(thisFileClocInfo.language).equal('TypeScript');
+                    expect(thisFileClocInfo.filename).equal(thisFilePath);
+                    expect(thisFileClocInfo.blank).gt(0);
+                    expect(thisFileClocInfo.comment).gt(0);
+                    expect(thisFileClocInfo.code).gt(0);
+                }),
+            )
+            .subscribe({
+                error: (err) => done(err),
+                complete: () => done(),
+            });
+    }).timeout(20000);
+
+    it(`throws since the folder does not exist`, () => {
+        const folderPath = 'not-existing-path';
+
+        expect(() => clocFileDict$(folderPath)).throw
+    });
+});
 
 describe(`clocFileDictFromClocLogFile$`, () => {
     it(`create a dictionary with the file path as key and the cloc info as value`, (done) => {

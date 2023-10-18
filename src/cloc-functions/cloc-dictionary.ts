@@ -3,10 +3,31 @@ import { Observable, catchError, map, of, pipe, tap, toArray } from 'rxjs';
 import { readLinesObs } from 'observable-fs';
 
 import { ClocDictionary, ClocInfo } from './cloc-dictionary.model';
+import { clocByfile$ } from './cloc';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
+
+
+/**
+ * Returns an Observable that emits a dictionary where the keys are the file paths of the files contained 
+ * in the folder and its subfolders and the values are the cloc info for the files.
+ * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
+ * If the folderPath points to a non existing folder, the function throws an error.
+ * @param folderPath The path to the folder to search for files.
+ * @returns An Observable that emits a dictionary of cloc info for all files in the given folder and its subfolders.
+ */
+export function clocFileDict$(folderPath: string) {
+    const clocParams = {
+        folderPath,
+        vcs: 'git',
+    };
+    return clocByfile$(clocParams, 'create cloc log stream', false).pipe(
+        toArray(),
+        toClocFileDict()
+    );
+}
 
 /**
  * Reads a cloc log file and returns an Observable that emits a dictionary of ClocFileInfo objects, 
