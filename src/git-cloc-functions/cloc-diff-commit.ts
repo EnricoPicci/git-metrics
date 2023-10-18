@@ -12,6 +12,11 @@ import { readCommitCompact$ } from "../git-functions/commit.functions";
 
 import { ClocDiffCommitEnriched } from "./cloc-diff-commit.model";
 
+//********************************************************************************************************************** */
+//****************************   APIs                               **************************************************** */
+//********************************************************************************************************************** */
+
+
 /**
  * Calculates the differences between the commits in a given time range (the comparison is performed with the parent commit of each commit),
  * enriched with the data retrieved using cloc (like lines of code, comments and blanks) as well as the data of the commit itself 
@@ -66,6 +71,7 @@ export function clocDiffWithCommit$(
                 ...clocInfo,
                 ...commit
             }
+            clocDiffCommitEnriched.possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched)
             return clocDiffCommitEnriched
         }),
     )
@@ -114,4 +120,19 @@ export function writeClocDiffWithCommit$(
             },
         }),
     )
+}
+
+
+//********************************************************************************************************************** */
+//****************************               Internals              **************************************************** */
+//********************************************************************************************************************** */
+// these functions may be exported for testing purposes
+
+// the change is a possible cut and paste if the number of lines of code added is equal to the number of lines removed
+// and the number of lines added is greater than 0 (which means that there are lines of code added and removed) 
+// and the number of lines modified is 0
+function isPossibleCutPaste(clocDiffCommitEnriched: ClocDiffCommitEnriched) {
+    return clocDiffCommitEnriched.code_added === clocDiffCommitEnriched.code_removed &&
+        clocDiffCommitEnriched.code_added > 0 &&
+        clocDiffCommitEnriched.code_modified === 0
 }
