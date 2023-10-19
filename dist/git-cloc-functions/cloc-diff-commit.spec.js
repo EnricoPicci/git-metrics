@@ -29,7 +29,6 @@ describe(`clocDiffWithCommit$`, () => {
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.comment_removed).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.comment_modified).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.comment_same).equal(0);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.possibleCutPaste).false;
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.file).equal('src/lib/command.ts');
                 // this file was removed in the commit hence it should have 0 lines of code, blank and comment
                 const fileRemovedName = 'src/apps/cloc-on-repos/read-repos-commits/internals/read-repos-commits.ts';

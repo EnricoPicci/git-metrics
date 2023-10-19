@@ -17,6 +17,7 @@ describe('clocDiffByfile$', () => {
                 (0, chai_1.expect)(clocDiffs).to.be.an('Array');
                 (0, chai_1.expect)(clocDiffs.length).eq(10);
                 clocDiffs.forEach(clocDiff => {
+                    var _a;
                     (0, chai_1.expect)(clocDiff).to.be.an('object');
                     (0, chai_1.expect)(clocDiff.blank_added).gte(0);
                     (0, chai_1.expect)(clocDiff.blank_removed).gte(0);
@@ -33,6 +34,11 @@ describe('clocDiffByfile$', () => {
                     (0, chai_1.expect)(clocDiff.extension).eq('ts');
                     (0, chai_1.expect)(clocDiff.file).to.be.a('string');
                     (0, chai_1.expect)(clocDiff.possibleCutPaste).eq(false);
+                    // test that the sum of the diffs contains numbers
+                    (0, chai_1.expect)(clocDiff.sumOfDiffs).to.be.an('object');
+                    (0, chai_1.expect)((_a = clocDiff.sumOfDiffs) === null || _a === void 0 ? void 0 : _a.code_added).gte(0);
+                    // test that the sum of the diffs is the same object for all diffs
+                    (0, chai_1.expect)(clocDiff.sumOfDiffs).eq(clocDiffs[0].sumOfDiffs);
                 });
             },
             error: (error) => {

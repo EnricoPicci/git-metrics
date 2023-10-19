@@ -4,9 +4,14 @@ exports.launchClocDiffByfileWithCommit = void 0;
 const commander_1 = require("commander");
 const cloc_diff_commit_1 = require("../../git-cloc-functions/cloc-diff-commit");
 function launchClocDiffByfileWithCommit() {
+    const start = Date.now();
     console.log('====>>>> Launching Cloc Diff Byfile with Commit For Repo');
     const { folderPath, outdir, from, to, languages } = readParams();
-    (0, cloc_diff_commit_1.writeClocDiffWithCommit$)(folderPath, outdir, from, to, languages).subscribe();
+    (0, cloc_diff_commit_1.writeClocDiffWithCommit$)(folderPath, outdir, from, to, languages).subscribe({
+        complete: () => {
+            console.log(`====>>>> Cloc Diff Byfile with Commit For Repo calculation completed in ${(Date.now() - start) / 1000} seconds`);
+        },
+    });
 }
 exports.launchClocDiffByfileWithCommit = launchClocDiffByfileWithCommit;
 function readParams() {

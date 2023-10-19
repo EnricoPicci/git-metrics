@@ -28,7 +28,13 @@ const commit_functions_1 = require("../git-functions/commit.functions");
  */
 function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = []) {
     // first calculate the cloc dictionary and pass it down the pipe
-    return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo).pipe(
+    return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo).pipe((0, rxjs_1.catchError)((err) => {
+        if (err.code === 'ENOENT') {
+            console.log(`!!!!!!!! folder ${pathToRepo} not found`);
+            process.exit(1);
+        }
+        throw err;
+    }), 
     // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
     (0, rxjs_1.concatMap)((clocFileDict) => {
         return (0, commit_functions_1.readCommitCompact$)(pathToRepo, fromDate, toDate).pipe((0, rxjs_1.map)((commit) => {

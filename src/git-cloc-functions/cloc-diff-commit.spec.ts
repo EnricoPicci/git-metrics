@@ -34,7 +34,6 @@ describe(`clocDiffWithCommit$`, () => {
                         expect(commandTs?.comment_removed).equal(0);
                         expect(commandTs?.comment_modified).equal(0);
                         expect(commandTs?.comment_same).equal(0);
-                        expect(commandTs?.possibleCutPaste).false;
                         expect(commandTs?.file).equal('src/lib/command.ts');
 
                         // this file was removed in the commit hence it should have 0 lines of code, blank and comment

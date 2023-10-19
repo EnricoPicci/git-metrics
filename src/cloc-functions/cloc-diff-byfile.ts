@@ -2,7 +2,7 @@ import { concatMap, filter, from, map, skip, toArray } from "rxjs";
 import { executeCommandObs } from "../tools/execute-command/execute-command";
 import { ignoreUpTo } from "../tools/rxjs-operators/ignore-up-to";
 import { CLOC_CONFIG } from "./config";
-import { newClocDiffByfile, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
+import { newClocDiffByfile, newClocDiffByfileWithCommitDiffs, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -69,6 +69,30 @@ export function clocDiffByfile$(
         // after having calculated the sum and set it to each diff object, stream again the array of diffs
         concatMap(arrayOfClocDiffByfile => {
             return from(arrayOfClocDiffByfile)
+        }),
+    )
+}
+
+/**
+ * Calculates the cloc diff for each file in a Git repository between two commits, considering only the files of languages 
+ * that are in the array of languages provided.
+ * Returns an Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
+ * @param mostRecentCommit The hash of the most recent commit.
+ * @param leastRecentCommit The hash of the least recent commit.
+ * @param repoFolderPath The path to the Git repository folder. Defaults to the current directory.
+ * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
+ * @returns An Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
+ */
+export function clocDiffByfileWithCommitDiffs$(
+    mostRecentCommit: string,
+    leastRecentCommit: string,
+    repoFolderPath = './',
+    languages: string[] = []
+) {
+    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
+        // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
+        map(clocDiffByfile => {
+            return newClocDiffByfileWithCommitDiffs(clocDiffByfile)
         }),
     )
 }

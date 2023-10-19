@@ -28,7 +28,36 @@ function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = '
     }), (0, ignore_up_to_1.ignoreUpTo)(exports.CLOC_DIFF_BYFILE_HEADER), 
     // skip the header line
     (0, rxjs_1.skip)(1), (0, rxjs_1.filter)(line => line.length > 0), (0, rxjs_1.map)(line => {
-        return (0, cloc_diff_byfile_model_1.newClocDiffByfile)(line);
+        return (0, cloc_diff_byfile_model_1.newClocDiffByfileWithSum)(line);
+    }), 
+    // cumulate all the values into an array, then calculate the sum of each property
+    // and set it to the sumOfDiffs property of each diff object
+    (0, rxjs_1.toArray)(), (0, rxjs_1.map)(arrayOfClocDiffByfile => {
+        const sumOfClocDiffByfile = arrayOfClocDiffByfile.reduce((acc, clocDiffByfile) => {
+            acc.code_added += clocDiffByfile.code_added;
+            acc.code_modified += clocDiffByfile.code_modified;
+            acc.code_removed += clocDiffByfile.code_removed;
+            acc.code_same += clocDiffByfile.code_same;
+            acc.blank_added += clocDiffByfile.blank_added;
+            acc.blank_modified += clocDiffByfile.blank_modified;
+            acc.blank_removed += clocDiffByfile.blank_removed;
+            acc.blank_same += clocDiffByfile.blank_same;
+            acc.comment_added += clocDiffByfile.comment_added;
+            acc.comment_modified += clocDiffByfile.comment_modified;
+            acc.comment_removed += clocDiffByfile.comment_removed;
+            acc.comment_same += clocDiffByfile.comment_same;
+            return acc;
+        }, (0, cloc_diff_byfile_model_1.newClocDiffByfile)(''));
+        sumOfClocDiffByfile.file = 'Sum of all files in the diff for the commit ' + mostRecentCommit;
+        sumOfClocDiffByfile.file = sumOfClocDiffByfile.file + ' compared to ' + leastRecentCommit;
+        for (const diff of arrayOfClocDiffByfile) {
+            diff.sumOfDiffs = sumOfClocDiffByfile;
+        }
+        return arrayOfClocDiffByfile;
+    }), 
+    // after having calculated the sum and set it to each diff object, stream again the array of diffs
+    (0, rxjs_1.concatMap)(arrayOfClocDiffByfile => {
+        return (0, rxjs_1.from)(arrayOfClocDiffByfile);
     }));
 }
 exports.clocDiffByfile$ = clocDiffByfile$;
