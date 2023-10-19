@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CLOC_DIFF_BYFILE_HEADER = exports.clocDiffWithParentByfile$ = exports.clocDiffByfile$ = void 0;
+exports.CLOC_DIFF_BYFILE_HEADER = exports.clocDiffWithParentByfile$ = exports.clocDiffByfileWithCommitDiffs$ = exports.clocDiffByfile$ = void 0;
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const ignore_up_to_1 = require("../tools/rxjs-operators/ignore-up-to");
@@ -61,6 +61,24 @@ function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = '
     }));
 }
 exports.clocDiffByfile$ = clocDiffByfile$;
+/**
+ * Calculates the cloc diff for each file in a Git repository between two commits, considering only the files of languages
+ * that are in the array of languages provided.
+ * Returns an Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
+ * @param mostRecentCommit The hash of the most recent commit.
+ * @param leastRecentCommit The hash of the least recent commit.
+ * @param repoFolderPath The path to the Git repository folder. Defaults to the current directory.
+ * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
+ * @returns An Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
+ */
+function clocDiffByfileWithCommitDiffs$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = []) {
+    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
+    // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
+    (0, rxjs_1.map)(clocDiffByfile => {
+        return (0, cloc_diff_byfile_model_1.newClocDiffByfileWithCommitDiffs)(clocDiffByfile);
+    }));
+}
+exports.clocDiffByfileWithCommitDiffs$ = clocDiffByfileWithCommitDiffs$;
 /**
  * Calculates the cloc diff for each file in a Git repository between a commit and its parent,
  * considering only the files of languages that are in the array of languages provided.

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl, reposCompactInFolderObs } from './repo.functions'
+import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl, reposCompactInFolderObs } from './repo'
 
 describe('reposCompactInFolderObs', () => {
     it('should return notify a stream of values since the difference between the commits is performed on this repo', (done) => {

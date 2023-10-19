@@ -1,7 +1,7 @@
 import { tap, toArray } from "rxjs";
 import { ClocParams } from "../cloc-functions/cloc-params";
 import { clocByfile$ } from "../cloc-functions/cloc";
-import { readCommitWithFileNumstat$ } from "../git-functions/commit.functions";
+import { readCommitWithFileNumstat$ } from "../git-functions/commit";
 import { GitLogCommitParams } from "../git-functions/git-params";
 import { commitWithFileNumstatsEnrichedWithCloc$ } from "./commit-cloc.functions";
 import { expect } from "chai";

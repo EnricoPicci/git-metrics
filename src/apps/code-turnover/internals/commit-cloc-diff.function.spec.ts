@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { concatMap, map, toArray } from "rxjs";
-import { readCommitCompact$ } from "../../../git-functions/commit.functions";
+import { readCommitCompact$ } from "../../../git-functions/commit";
 import { calculateClocGitDiffsChildParent } from "./commit-cloc-diff.function";
 
 

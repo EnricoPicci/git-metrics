@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const rxjs_1 = require("rxjs");
 const cloc_1 = require("../cloc-functions/cloc");
-const commit_functions_1 = require("../git-functions/commit.functions");
+const commit_1 = require("../git-functions/commit");
 const commit_cloc_functions_1 = require("./commit-cloc.functions");
 const chai_1 = require("chai");
 const cloc_dictionary_1 = require("../cloc-functions/cloc-dictionary");
@@ -16,7 +16,7 @@ describe(`commitWithFileNumstatsEnrichedWithCloc$`, () => {
             before: '2021-12-31',
             outDir: '',
         };
-        const commits$ = (0, commit_functions_1.readCommitWithFileNumstat$)(params);
+        const commits$ = (0, commit_1.readCommitWithFileNumstat$)(params);
         const clocParams = {
             folderPath: process.cwd(),
             vcs: 'git',

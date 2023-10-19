@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const rxjs_1 = require("rxjs");
-const commit_functions_1 = require("../../../git-functions/commit.functions");
+const commit_1 = require("../../../git-functions/commit");
 const commit_cloc_diff_function_1 = require("./commit-cloc-diff.function");
 describe('calculateClocGitDiffsChildParent', () => {
     it(`should calculate the cloc diffs between the third commit of this repo and its parent, which is the second commit.
@@ -16,7 +16,7 @@ describe('calculateClocGitDiffsChildParent', () => {
             removeComments: false,
             removeSame: false
         };
-        (0, commit_functions_1.readCommitCompact$)(repoPath).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => {
+        (0, commit_1.readCommitCompact$)(repoPath).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => {
             return commits.reverse()[2];
         }), (0, rxjs_1.concatMap)(secondCommitCompact => {
             return (0, commit_cloc_diff_function_1.calculateClocGitDiffsChildParent)(secondCommitCompact, repoPath, options);
@@ -52,7 +52,7 @@ describe('calculateClocGitDiffsChildParent', () => {
             removeComments: true,
             removeSame: false
         };
-        (0, commit_functions_1.readCommitCompact$)(repoPath).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => {
+        (0, commit_1.readCommitCompact$)(repoPath).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => {
             return commits.reverse()[2];
         }), (0, rxjs_1.concatMap)(secondCommitCompact => {
             return (0, commit_cloc_diff_function_1.calculateClocGitDiffsChildParent)(secondCommitCompact, repoPath, options);

@@ -8,7 +8,7 @@ import { toCsvObs } from "@enrico.piccinin/csv-tools";
 import { clocFileDict$ } from "../cloc-functions/cloc-dictionary";
 import { clocDiffWithParentByfile$ } from "../cloc-functions/cloc-diff-byfile";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
-import { readCommitCompact$ } from "../git-functions/commit.functions";
+import { readCommitCompact$ } from "../git-functions/commit";
 
 import { ClocDiffCommitEnriched } from "./cloc-diff-commit.model";
 

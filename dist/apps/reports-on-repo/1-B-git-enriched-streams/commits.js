@@ -4,7 +4,7 @@ exports.splitCommits = exports.COMMIT_RECORD_COUNTER = exports.filePathFromCommi
 const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
 const cloc_dictionary_1 = require("../../../cloc-functions/cloc-dictionary");
-const commit_functions_1 = require("../../../git-functions/commit.functions");
+const commit_1 = require("../../../git-functions/commit");
 const config_1 = require("../0-config/config");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -132,7 +132,7 @@ function splitCommits(logFilePath) {
             },
         }))
         : _readLineObs;
-    return _readLineObs.pipe((0, operators_1.filter)((line) => line.length > 0), (0, commit_functions_1.commitLines)(logFilePath));
+    return _readLineObs.pipe((0, operators_1.filter)((line) => line.length > 0), (0, commit_1.commitLines)(logFilePath));
 }
 exports.splitCommits = splitCommits;
 //# sourceMappingURL=commits.js.map

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SEP, newCommitCompactFromGitlog, readCommitCompact$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit.functions';
+import { SEP, newCommitCompactFromGitlog, readCommitCompact$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
 import path from 'path';

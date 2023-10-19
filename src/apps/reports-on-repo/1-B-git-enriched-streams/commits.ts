@@ -3,7 +3,7 @@ import { readLineObs } from 'observable-fs';
 
 import { clocFileDictFromClocLogFile$ } from '../../../cloc-functions/cloc-dictionary';
 import { ClocDictionary } from '../../../cloc-functions/cloc-dictionary.model';
-import { commitLines } from '../../../git-functions/commit.functions';
+import { commitLines } from '../../../git-functions/commit';
 import { CommitWithFileNumstatsEnrichedWithCloc, GitFileNumstatEnrichedWithCloc } from '../../../git-cloc-functions/commit-cloc.model';
 
 import { DEFAUL_CONFIG } from '../0-config/config';

@@ -10,7 +10,7 @@ const observable_fs_1 = require("observable-fs");
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const cloc_dictionary_1 = require("../cloc-functions/cloc-dictionary");
 const cloc_diff_byfile_1 = require("../cloc-functions/cloc-diff-byfile");
-const commit_functions_1 = require("../git-functions/commit.functions");
+const commit_1 = require("../git-functions/commit");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -37,7 +37,7 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
     }), 
     // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
     (0, rxjs_1.concatMap)((clocFileDict) => {
-        return (0, commit_functions_1.readCommitCompact$)(pathToRepo, fromDate, toDate).pipe((0, rxjs_1.map)((commit) => {
+        return (0, commit_1.readCommitCompact$)(pathToRepo, fromDate, toDate).pipe((0, rxjs_1.map)((commit) => {
             return { commit, clocFileDict };
         }));
     }), 

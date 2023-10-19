@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.repoCommitsByMonthRecords = exports.repoCommitsByMonthRecordsDict = exports.fillMissingMonths = exports.newReposWithCommitsByMonth = exports.newRepoCompactWithCommitsByMonths = exports.reposCompactWithCommitsByMonthsInFolderObs = void 0;
 const rxjs_1 = require("rxjs");
-const repo_functions_1 = require("../../../git-functions/repo.functions");
+const repo_1 = require("../../../git-functions/repo");
 const commits_by_month_functions_1 = require("./commits-by-month.functions");
 // reposCompactWithCommitsByMonthsInFolderObs returns an Observable that notifies the list of
 // RepoCompactWithCommitsByMonths objects representing all the repos in a given folder
 function reposCompactWithCommitsByMonthsInFolderObs(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = 1) {
-    const repoPaths = (0, repo_functions_1.reposInFolder)(folderPath);
+    const repoPaths = (0, repo_1.reposInFolder)(folderPath);
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
         return newRepoCompactWithCommitsByMonths(repoPath, fromDate, toDate);
     }, concurrency));
@@ -16,7 +16,7 @@ exports.reposCompactWithCommitsByMonthsInFolderObs = reposCompactWithCommitsByMo
 // newRepoCompactWithCommitsByMonths returns an Observable that notifies a new RepoCompactWithCommitsByMonths
 // filled with its commits sorted by date ascending
 function newRepoCompactWithCommitsByMonths(repoPath, fromDate = new Date(0), toDate = new Date(Date.now())) {
-    return (0, repo_functions_1.newRepoCompact)(repoPath, fromDate, toDate).pipe((0, rxjs_1.map)((repoCompact) => {
+    return (0, repo_1.newRepoCompact)(repoPath, fromDate, toDate).pipe((0, rxjs_1.map)((repoCompact) => {
         const _commitsByMonth = (0, commits_by_month_functions_1.newCommitsByMonth)(repoCompact.commits);
         const repo = Object.assign(Object.assign({}, repoCompact), { commitsByMonth: _commitsByMonth });
         return repo;

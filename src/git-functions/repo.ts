@@ -6,7 +6,7 @@ import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray } from 
 import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
-import { readCommitCompact$ } from './commit.functions';
+import { readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path.functions';
 
 /**

@@ -1,7 +1,7 @@
 import { EMPTY, catchError, from, map, mergeMap } from 'rxjs';
 
 import { CommitCompact } from '../../../git-functions/commit.model';
-import { reposInFolder, newRepoCompact } from '../../../git-functions/repo.functions';
+import { reposInFolder, newRepoCompact } from '../../../git-functions/repo';
 
 import { RepoCompactWithCommitsByMonths, ReposWithCommitsByMonths } from './repos-with-commits-by-month.model';
 import { newCommitsByMonth } from './commits-by-month.functions';

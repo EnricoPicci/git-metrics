@@ -5,7 +5,7 @@ import { forkJoin } from 'rxjs';
 import {
     COMMITS_FILE_POSTFIX, COMMITS_FILE_REVERSE_POSTFIX, readCommitWithFileNumstat$,
     writeCommitWithFileNumstat, writeCommitWithFileNumstat$
-} from '../../../git-functions/commit.functions';
+} from '../../../git-functions/commit';
 import { buildOutfileName, clocByfile$, writeClocByFile$, writeClocByfile, writeClocSummary, writeClocSummary$ } from '../../../cloc-functions/cloc';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';

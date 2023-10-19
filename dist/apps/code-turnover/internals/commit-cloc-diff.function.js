@@ -4,8 +4,8 @@ exports.calculateMonthlyClocGitDiffs = exports.calculateClocGitDiffsChildParent 
 const rxjs_1 = require("rxjs");
 const cloc_diff_functions_1 = require("../../../cloc-functions/cloc-diff.functions");
 const cloc_diff_model_1 = require("../../../cloc-functions/cloc-diff.model");
-const commit_functions_1 = require("../../../git-functions/commit.functions");
-const repo_functions_1 = require("../../../git-functions/repo.functions");
+const commit_1 = require("../../../git-functions/commit");
+const repo_1 = require("../../../git-functions/repo");
 const config_1 = require("../../../config");
 const commits_by_month_functions_1 = require("./commits-by-month.functions");
 // calculateClocGitDiffsChildParent is a function that receives a CommitCompact object and calculates the cloc diff
@@ -30,9 +30,9 @@ function calculateClocGitDiffsChildParent(commit, repoPath, options) {
         if (removeSame)
             clocDiff.diffs.same = {};
         // we read the parent of the child commit so that we can get the date of the parent commit
-        return (0, commit_functions_1.readOneCommitCompact$)(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(() => {
+        return (0, commit_1.readOneCommitCompact$)(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(() => {
             // in case of error we return an empty commit
-            return (0, rxjs_1.of)((0, commit_functions_1.newEmptyCommitCompact)());
+            return (0, rxjs_1.of)((0, commit_1.newEmptyCommitCompact)());
         }), (0, rxjs_1.map)((parentCommit) => {
             return { clocDiff, parentCommit };
         }), (0, rxjs_1.map)(({ clocDiff, parentCommit }) => {
@@ -50,8 +50,8 @@ function calculateClocGitDiffsChildParent(commit, repoPath, options) {
         }));
     }), (0, rxjs_1.concatMap)((stat) => {
         // we read the remoteOriginUrl of the repo
-        return (0, repo_functions_1.getRemoteOriginUrl)(stat.repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
-            remoteOriginUrl = (0, repo_functions_1.gitHttpsUrlFromGitUrl)(remoteOriginUrl);
+        return (0, repo_1.getRemoteOriginUrl)(stat.repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
+            remoteOriginUrl = (0, repo_1.gitHttpsUrlFromGitUrl)(remoteOriginUrl);
             stat.remoteOriginUrl = remoteOriginUrl;
             return stat;
         }));
