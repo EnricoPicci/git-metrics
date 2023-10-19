@@ -4,7 +4,7 @@ import { clocDiff$ } from '../../../cloc-functions/cloc-diff';
 import { newDiffsClocDiffStats, ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
 import { readOneCommitCompact$, newEmptyCommitCompact } from '../../../git-functions/commit';
 import { CommitCompact } from '../../../git-functions/commit.model';
-import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl } from '../../../git-functions/repo';
+import { getRemoteOriginUrl$, gitHttpsUrlFromGitUrl } from '../../../git-functions/repo';
 import { CONFIG } from '../../../config';
 
 import { yearMonthFromDate } from './commits-by-month.functions';
@@ -60,7 +60,7 @@ export function calculateClocGitDiffsChildParent(
         }),
         concatMap((stat) => {
             // we read the remoteOriginUrl of the repo
-            return getRemoteOriginUrl(stat.repoPath).pipe(
+            return getRemoteOriginUrl$(stat.repoPath).pipe(
                 map((remoteOriginUrl) => {
                     remoteOriginUrl = gitHttpsUrlFromGitUrl(remoteOriginUrl);
                     stat.remoteOriginUrl = remoteOriginUrl;

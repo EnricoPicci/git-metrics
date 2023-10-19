@@ -4,7 +4,7 @@ import { mergeMap, from, toArray, concatMap, tap, map, pipe } from 'rxjs';
 import { writeFileObs } from 'observable-fs';
 
 import { toCsv } from '../../../tools/csv/to-csv';
-import { reposCompactInFolderObs } from '../../../git-functions/repo';
+import { reposCompactInFolder$ } from '../../../git-functions/repo';
 import { RepoCompact } from '../../../git-functions/repo.model';
 import { ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
 
@@ -42,7 +42,7 @@ export function calculateCodeTurnover(
     const startTime = new Date().getTime();
     const folderName = path.basename(folderPath);
 
-    return reposCompactInFolderObs(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
+    return reposCompactInFolder$(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(
         calculateClocDiffs(concurrency, options),
         writeClocDiffs(outdir, folderName),
         tap(() => {

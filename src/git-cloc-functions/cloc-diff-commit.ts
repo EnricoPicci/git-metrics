@@ -8,7 +8,7 @@ import { toCsvObs } from "@enrico.piccinin/csv-tools";
 import { clocFileDict$ } from "../cloc-functions/cloc-dictionary";
 import { clocDiffWithParentByfile$ } from "../cloc-functions/cloc-diff-byfile";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
-import { readCommitCompact$ } from "../git-functions/commit";
+import { readCommitCompactWithParentDate$ } from "../git-functions/commit";
 
 import { ClocDiffCommitEnriched } from "./cloc-diff-commit.model";
 
@@ -46,7 +46,7 @@ export function clocDiffWithCommit$(
         }),
         // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
         concatMap((clocFileDict) => {
-            return readCommitCompact$(pathToRepo, fromDate, toDate).pipe(
+            return readCommitCompactWithParentDate$(pathToRepo, fromDate, toDate).pipe(
                 map((commit) => {
                     return { commit, clocFileDict }
                 })

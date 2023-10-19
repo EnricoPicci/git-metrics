@@ -5,7 +5,7 @@ const repo_1 = require("./repo");
 describe('reposCompactInFolderObs', () => {
     it('should return notify a stream of values since the difference between the commits is performed on this repo', (done) => {
         const repoPath = './';
-        (0, repo_1.reposCompactInFolderObs)(repoPath, new Date(0), new Date(Date.now())).subscribe({
+        (0, repo_1.reposCompactInFolder$)(repoPath, new Date(0), new Date(Date.now())).subscribe({
             next: (repoCompact) => {
                 (0, chai_1.expect)(repoCompact.path).equal(repoPath);
                 (0, chai_1.expect)(repoCompact.commits.length).gt(0);
@@ -37,7 +37,7 @@ describe('gitHttpsUrlFromGitSshUrl', () => {
 describe('getRemoteOriginUrl', () => {
     it('should return the remote origin url of a repo', (done) => {
         const repoPath = './';
-        (0, repo_1.getRemoteOriginUrl)(repoPath).subscribe({
+        (0, repo_1.getRemoteOriginUrl$)(repoPath).subscribe({
             next: (remoteOriginUrl) => {
                 (0, chai_1.expect)(typeof remoteOriginUrl).to.equal('string');
                 (0, chai_1.expect)(remoteOriginUrl.startsWith('https://')).to.be.true;
@@ -50,7 +50,7 @@ describe('getRemoteOriginUrl', () => {
     });
     it('should throw an error if the command fails', (done) => {
         const repoPathThatDoesNotExist = 'does-not-exist';
-        (0, repo_1.getRemoteOriginUrl)(repoPathThatDoesNotExist).subscribe({
+        (0, repo_1.getRemoteOriginUrl$)(repoPathThatDoesNotExist).subscribe({
             next: (remoteOriginUrl) => {
                 done(`should not return a value - unfortunately it returns: ${remoteOriginUrl}`);
             },

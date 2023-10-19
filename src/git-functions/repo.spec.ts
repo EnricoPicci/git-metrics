@@ -1,11 +1,11 @@
 import { expect } from 'chai'
-import { getRemoteOriginUrl, gitHttpsUrlFromGitUrl, reposCompactInFolderObs } from './repo'
+import { getRemoteOriginUrl$, gitHttpsUrlFromGitUrl, reposCompactInFolder$ } from './repo'
 
 describe('reposCompactInFolderObs', () => {
     it('should return notify a stream of values since the difference between the commits is performed on this repo', (done) => {
         const repoPath = './';
 
-        reposCompactInFolderObs(repoPath, new Date(0), new Date(Date.now())).subscribe({
+        reposCompactInFolder$(repoPath, new Date(0), new Date(Date.now())).subscribe({
             next: (repoCompact) => {
                 expect(repoCompact.path).equal(repoPath);
                 expect(repoCompact.commits.length).gt(0);
@@ -41,7 +41,7 @@ describe('gitHttpsUrlFromGitSshUrl', () => {
 describe('getRemoteOriginUrl', () => {
     it('should return the remote origin url of a repo', (done) => {
         const repoPath = './'
-        getRemoteOriginUrl(repoPath).subscribe({
+        getRemoteOriginUrl$(repoPath).subscribe({
             next: (remoteOriginUrl) => {
                 expect(typeof remoteOriginUrl).to.equal('string')
                 expect(remoteOriginUrl.startsWith('https://')).to.be.true
@@ -56,7 +56,7 @@ describe('getRemoteOriginUrl', () => {
 
     it('should throw an error if the command fails', (done) => {
         const repoPathThatDoesNotExist = 'does-not-exist'
-        getRemoteOriginUrl(repoPathThatDoesNotExist).subscribe({
+        getRemoteOriginUrl$(repoPathThatDoesNotExist).subscribe({
             next: (remoteOriginUrl) => {
                 done(`should not return a value - unfortunately it returns: ${remoteOriginUrl}`)
             },

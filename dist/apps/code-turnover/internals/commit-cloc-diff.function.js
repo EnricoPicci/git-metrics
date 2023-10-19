@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculateMonthlyClocGitDiffs = exports.calculateClocGitDiffsChildParent = void 0;
 const rxjs_1 = require("rxjs");
-const cloc_diff_functions_1 = require("../../../cloc-functions/cloc-diff.functions");
+const cloc_diff_1 = require("../../../cloc-functions/cloc-diff");
 const cloc_diff_model_1 = require("../../../cloc-functions/cloc-diff.model");
 const commit_1 = require("../../../git-functions/commit");
 const repo_1 = require("../../../git-functions/repo");
@@ -15,7 +15,7 @@ function calculateClocGitDiffsChildParent(commit, repoPath, options) {
     const childCommitSha = commit.sha;
     const parentCommitSha = `${childCommitSha}^1`;
     console.log(`Starting diff for ${repoPath} -- Date: ${commit.date.toLocaleDateString()}`);
-    return (0, cloc_diff_functions_1.clocDiff$)(childCommitSha, parentCommitSha, repoPath, languages).pipe((0, rxjs_1.concatMap)((clocDiff) => {
+    return (0, cloc_diff_1.clocDiff$)(childCommitSha, parentCommitSha, repoPath, languages).pipe((0, rxjs_1.concatMap)((clocDiff) => {
         delete clocDiff.diffs.header;
         Object.values(clocDiff.diffs).forEach((diff) => {
             Object.values(diff).forEach((diffForLanguage) => {
@@ -50,7 +50,7 @@ function calculateClocGitDiffsChildParent(commit, repoPath, options) {
         }));
     }), (0, rxjs_1.concatMap)((stat) => {
         // we read the remoteOriginUrl of the repo
-        return (0, repo_1.getRemoteOriginUrl)(stat.repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
+        return (0, repo_1.getRemoteOriginUrl$)(stat.repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
             remoteOriginUrl = (0, repo_1.gitHttpsUrlFromGitUrl)(remoteOriginUrl);
             stat.remoteOriginUrl = remoteOriginUrl;
             return stat;
@@ -68,7 +68,7 @@ function calculateMonthlyClocGitDiffs(repoMonthlyCommitPairs, languages) {
         console.log(`Starting diff for ${yearMonth}-${repoPath}`);
         const diffObs = commitPair
             ? // the first commit is the most recent one
-                (0, cloc_diff_functions_1.clocDiff$)(commitPair[0].sha, commitPair[1].sha, repoPath, languages)
+                (0, cloc_diff_1.clocDiff$)(commitPair[0].sha, commitPair[1].sha, repoPath, languages)
             : (0, rxjs_1.of)((0, cloc_diff_model_1.newDiffsClocDiffStats)(languages));
         return diffObs.pipe((0, rxjs_1.map)((clocDiff) => {
             console.log(`Completed diff for ${yearMonth}-${repoPath}`);

@@ -16,7 +16,7 @@ exports.reposCompactWithCommitsByMonthsInFolderObs = reposCompactWithCommitsByMo
 // newRepoCompactWithCommitsByMonths returns an Observable that notifies a new RepoCompactWithCommitsByMonths
 // filled with its commits sorted by date ascending
 function newRepoCompactWithCommitsByMonths(repoPath, fromDate = new Date(0), toDate = new Date(Date.now())) {
-    return (0, repo_1.newRepoCompact)(repoPath, fromDate, toDate).pipe((0, rxjs_1.map)((repoCompact) => {
+    return (0, repo_1.repoCompact$)(repoPath, fromDate, toDate).pipe((0, rxjs_1.map)((repoCompact) => {
         const _commitsByMonth = (0, commits_by_month_functions_1.newCommitsByMonth)(repoCompact.commits);
         const repo = Object.assign(Object.assign({}, repoCompact), { commitsByMonth: _commitsByMonth });
         return repo;

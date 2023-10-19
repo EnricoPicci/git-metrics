@@ -31,7 +31,7 @@ const cloc_diff_stat_csv_1 = require("./cloc-diff-stat-csv");
 function calculateCodeTurnover(folderPath, outdir, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency, excludeRepoPaths, options) {
     const startTime = new Date().getTime();
     const folderName = path_1.default.basename(folderPath);
-    return (0, repo_1.reposCompactInFolderObs)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(calculateClocDiffs(concurrency, options), writeClocDiffs(outdir, folderName), (0, rxjs_1.tap)(() => {
+    return (0, repo_1.reposCompactInFolder$)(folderPath, fromDate, toDate, concurrency, excludeRepoPaths).pipe(calculateClocDiffs(concurrency, options), writeClocDiffs(outdir, folderName), (0, rxjs_1.tap)(() => {
         const endTime = new Date().getTime();
         console.log(`====>>>> Total time to calculate cloc diffs: ${(endTime - startTime) / 1000} seconds`);
     }));

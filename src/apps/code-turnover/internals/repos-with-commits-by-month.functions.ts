@@ -1,7 +1,7 @@
 import { EMPTY, catchError, from, map, mergeMap } from 'rxjs';
 
 import { CommitCompact } from '../../../git-functions/commit.model';
-import { reposInFolder, newRepoCompact } from '../../../git-functions/repo';
+import { reposInFolder, repoCompact$ } from '../../../git-functions/repo';
 
 import { RepoCompactWithCommitsByMonths, ReposWithCommitsByMonths } from './repos-with-commits-by-month.model';
 import { newCommitsByMonth } from './commits-by-month.functions';
@@ -29,7 +29,7 @@ export function newRepoCompactWithCommitsByMonths(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
 ) {
-    return newRepoCompact(repoPath, fromDate, toDate).pipe(
+    return repoCompact$(repoPath, fromDate, toDate).pipe(
         map((repoCompact) => {
             const _commitsByMonth = newCommitsByMonth(repoCompact.commits);
             const repo: RepoCompactWithCommitsByMonths = { ...repoCompact, commitsByMonth: _commitsByMonth };

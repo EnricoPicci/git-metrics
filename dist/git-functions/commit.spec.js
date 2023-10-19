@@ -10,7 +10,7 @@ const path_1 = __importDefault(require("path"));
 const observable_fs_1 = require("observable-fs");
 const delete_file_1 = require("../tools/test-helpers/delete-file");
 const config_1 = require("../config");
-describe('readCommitFromLog$', () => {
+describe('readCommitCompact$', () => {
     it('should throw an error if repoPath is not provided', () => {
         (0, chai_1.expect)(() => (0, commit_1.readCommitCompact$)('')).to.throw();
     });
@@ -30,7 +30,7 @@ describe('readCommitFromLog$', () => {
         });
     });
 });
-describe('readOneCommitFromLog$', () => {
+describe('readOneCommitCompact$', () => {
     it('should throw an error if an not existing sha is provided', (done) => {
         const notExistingCommitSha = 'abc';
         const repoPath = './';
@@ -39,7 +39,7 @@ describe('readOneCommitFromLog$', () => {
                 done('should not return a value');
             },
             error: (error) => {
-                (0, chai_1.expect)(error instanceof Error).to.be.true;
+                (0, chai_1.expect)(error).equal(commit_1.ERROR_UNKNOWN_REVISION_OR_PATH);
                 done();
             },
             complete: () => {
@@ -359,5 +359,20 @@ describe(`newCommitCompactFromGitlog$`, () => {
         (0, chai_1.expect)(comment.includes(config_1.CONFIG.CSV_SEP)).false;
         (0, chai_1.expect)(comment.includes(config_1.CONFIG.CVS_SEP_SUBSTITUE)).true;
     });
+});
+describe('readCommitCompactWithParentDate$', () => {
+    it('should throw an error if repoPath is not provided', () => {
+        (0, chai_1.expect)(() => (0, commit_1.readCommitCompactWithParentDate$)('')).to.throw();
+    });
+    it('should return a stream of commit objects from this repo with the commit objects containing the parent date', (done) => {
+        (0, commit_1.readCommitCompactWithParentDate$)('./').pipe((0, rxjs_1.toArray)()).subscribe((commits) => {
+            (0, chai_1.expect)(commits instanceof Array).to.be.true;
+            (0, chai_1.expect)(commits.length).greaterThan(0);
+            // aSpecificCommit is a commit whose parent has a specific date to test (the date is immutable in the repo)
+            const aSpecificCommit = commits.find((commit) => commit.sha === 'ef7cf168d4744f2a2e0898ad6184a9a3d538e770');
+            (0, chai_1.expect)(aSpecificCommit === null || aSpecificCommit === void 0 ? void 0 : aSpecificCommit.parentDate.toISOString().split('T')[0]).equal(new Date('2023-10-12').toISOString().split('T')[0]);
+            done();
+        });
+    }).timeout(20000);
 });
 //# sourceMappingURL=commit.spec.js.map
