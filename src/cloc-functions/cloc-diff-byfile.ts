@@ -1,8 +1,8 @@
-import { concatMap, filter, from, map, skip } from "rxjs";
+import { concatMap, filter, from, map, skip, toArray } from "rxjs";
 import { executeCommandObs } from "../tools/execute-command/execute-command";
 import { ignoreUpTo } from "../tools/rxjs-operators/ignore-up-to";
 import { CLOC_CONFIG } from "./config";
-import { newClocDiffByfile } from "./cloc-diff-byfile.model";
+import { newClocDiffByfile, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -38,8 +38,38 @@ export function clocDiffByfile$(
         skip(1),
         filter(line => line.length > 0),
         map(line => {
-            return newClocDiffByfile(line)
-        })
+            return newClocDiffByfileWithSum(line)
+        }),
+        // cumulate all the values into an array, then calculate the sum of each property
+        // and set it to the sumOfDiffs property of each diff object
+        toArray(),
+        map(arrayOfClocDiffByfile => {
+            const sumOfClocDiffByfile = arrayOfClocDiffByfile.reduce((acc, clocDiffByfile) => {
+                acc.code_added += clocDiffByfile.code_added;
+                acc.code_modified += clocDiffByfile.code_modified;
+                acc.code_removed += clocDiffByfile.code_removed;
+                acc.code_same += clocDiffByfile.code_same;
+                acc.blank_added += clocDiffByfile.blank_added;
+                acc.blank_modified += clocDiffByfile.blank_modified;
+                acc.blank_removed += clocDiffByfile.blank_removed;
+                acc.blank_same += clocDiffByfile.blank_same;
+                acc.comment_added += clocDiffByfile.comment_added;
+                acc.comment_modified += clocDiffByfile.comment_modified;
+                acc.comment_removed += clocDiffByfile.comment_removed;
+                acc.comment_same += clocDiffByfile.comment_same;
+                return acc;
+            }, newClocDiffByfile(''));
+            sumOfClocDiffByfile.file = 'Sum of all files in the diff for the commit ' + mostRecentCommit;
+            sumOfClocDiffByfile.file = sumOfClocDiffByfile.file + ' compared to ' + leastRecentCommit;
+            for (const diff of arrayOfClocDiffByfile) {
+                diff.sumOfDiffs = sumOfClocDiffByfile;
+            }
+            return arrayOfClocDiffByfile;
+        }),
+        // after having calculated the sum and set it to each diff object, stream again the array of diffs
+        concatMap(arrayOfClocDiffByfile => {
+            return from(arrayOfClocDiffByfile)
+        }),
     )
 }
 

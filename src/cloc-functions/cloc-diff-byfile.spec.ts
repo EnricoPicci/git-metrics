@@ -35,6 +35,11 @@ describe('clocDiffByfile$', () => {
                     expect(clocDiff.extension).eq('ts');
                     expect(clocDiff.file).to.be.a('string');
                     expect(clocDiff.possibleCutPaste).eq(false);
+                    // test that the sum of the diffs contains numbers
+                    expect(clocDiff.sumOfDiffs).to.be.an('object');
+                    expect(clocDiff.sumOfDiffs?.code_added).gte(0);
+                    // test that the sum of the diffs is the same object for all diffs
+                    expect(clocDiff.sumOfDiffs).eq(clocDiffs[0].sumOfDiffs);
                 })
             },
             error: (error) => {
