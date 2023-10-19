@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { buildClocDiffRelCommand, clocDiff$ } from './cloc-diff.functions';
+import { buildClocDiffRelCommand, clocDiff$ } from './cloc-diff';
 
 describe('buildClocDiffAllCommand', () => {
     it('should return a command string with the correct folder path, commits, and language filters', () => {

@@ -9,7 +9,7 @@ import { appendFileObs, deleteFileObs } from 'observable-fs';
 
 import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 
-import { CommitCompact, newCommitWithFileNumstats } from './commit.model';
+import { CommitCompact, CommitCompactWithParentDate, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
 import { GitLogCommitParams } from './git-params';
 import { buildOutfileName } from './utils/file-name-utils';
@@ -69,6 +69,50 @@ export function readCommitCompact$(
 }
 
 /**
+ * Reads the commits in a Git repository for a certain period and returns an Observable of CommitCompactWithParentDate objects.
+ * The function reads the parent commit of each commit and adds the parent date to the resulting object.
+ * @param repoPath The path to the Git repository folder.
+ * @param fromDate The start date of the time range. Defaults to the beginning of time.
+ * @param toDate The end date of the time range. Defaults to the current date and time.
+ * @param noMerges A boolean indicating whether to exclude merge commits. Defaults to true.
+ * @returns An Observable of CommitCompactWithParentDate objects.
+ */
+export function readCommitCompactWithParentDate$(
+    repoPath: string,
+    fromDate = new Date(0),
+    toDate = new Date(Date.now()),
+    noMerges = true
+) {
+    return readCommitCompact$(repoPath, fromDate, toDate, noMerges).pipe(
+        concatMap((commit) => {
+            const parentCommitSha = `${commit.sha}^1`;
+            return readOneCommitCompact$(parentCommitSha, repoPath).pipe(
+                catchError(err => {
+                    // if the error is because the commit has no parent, then we set the parent date to the beginning of time
+                    if (err === ERROR_UNKNOWN_REVISION_OR_PATH) {
+                        const commitWithParentDate: CommitCompactWithParentDate = {
+                            ...commit,
+                            parentDate: new Date(0),
+                        };
+                        return of(commitWithParentDate);
+                    }
+                    // in case of error we return an empty commit
+                    console.log(err)
+                    return of(newEmptyCommitCompact());
+                }),
+                map((parentCommit) => {
+                    const commitWithParentDate: CommitCompactWithParentDate = {
+                        ...commit,
+                        parentDate: parentCommit.date,
+                    };
+                    return commitWithParentDate;
+                }),
+            );
+        }),
+    );
+}
+
+/**
  * Uses the git log command to fetch one commit given its sha.
  * Returns an Observable of a CommitCompact object representing the fetched commit.
  * Each CommitCompact object contains the commit sha, date, and author.
@@ -92,6 +136,9 @@ export function readOneCommitCompact$(commitSha: string, repoPath: string, verbo
             return commitCompact;
         }),
         catchError((error) => {
+            if (error.message.includes('unknown revision or path not in the working tree')) {
+                throw ERROR_UNKNOWN_REVISION_OR_PATH;
+            }
             const err = `Error in fetchOneCommit for repo "${repoPath} and commit ${commitSha}"\nError: ${error}
 Command: ${cmd}`;
             if (verbose) console.error(err);
@@ -100,6 +147,10 @@ Command: ${cmd}`;
         }),
     );
 }
+export const ERROR_UNKNOWN_REVISION_OR_PATH = {
+    name: 'ErrorUnknownParent',
+    message: 'Unknown revision or path - not in the working tree',
+};
 
 /**
  * Reads the commits from a Git repository and writes the output to a file.

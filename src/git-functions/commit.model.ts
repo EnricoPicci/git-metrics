@@ -7,6 +7,10 @@ export interface CommitCompact {
     subject: string,
 }
 
+export interface CommitCompactWithParentDate extends CommitCompact {
+    parentDate: Date,
+}
+
 export interface CommitPair {
     repoPath: string,
     yearMonth: string,

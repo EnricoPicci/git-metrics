@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SEP, newCommitCompactFromGitlog, readCommitCompact$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
+import { ERROR_UNKNOWN_REVISION_OR_PATH, SEP, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
 import path from 'path';
@@ -8,7 +8,7 @@ import { CommitWithFileNumstats } from './commit.model';
 import { deleteFile } from '../tools/test-helpers/delete-file';
 import { CONFIG } from '../config';
 
-describe('readCommitFromLog$', () => {
+describe('readCommitCompact$', () => {
     it('should throw an error if repoPath is not provided', () => {
         expect(() => readCommitCompact$('')).to.throw()
     });
@@ -33,7 +33,7 @@ describe('readCommitFromLog$', () => {
     });
 });
 
-describe('readOneCommitFromLog$', () => {
+describe('readOneCommitCompact$', () => {
     it('should throw an error if an not existing sha is provided', (done) => {
         const notExistingCommitSha = 'abc'
         const repoPath = './'
@@ -42,7 +42,7 @@ describe('readOneCommitFromLog$', () => {
                 done('should not return a value')
             },
             error: (error) => {
-                expect(error instanceof Error).to.be.true;
+                expect(error).equal(ERROR_UNKNOWN_REVISION_OR_PATH);
                 done();
             },
             complete: () => {
@@ -284,8 +284,6 @@ describe(`readCommitWithFileNumstatFromLog$`, () => {
     }).timeout(200000);
 });
 
-
-
 describe(`readCommitsCommand`, () => {
     const outDir = './temp';
     const outFile = 'this-git-repo-commits.log';
@@ -408,4 +406,23 @@ describe(`newCommitCompactFromGitlog$`, () => {
         expect(comment.includes(CONFIG.CSV_SEP)).false;
         expect(comment.includes(CONFIG.CVS_SEP_SUBSTITUE)).true;
     });
+});
+
+describe('readCommitCompactWithParentDate$', () => {
+    it('should throw an error if repoPath is not provided', () => {
+        expect(() => readCommitCompactWithParentDate$('')).to.throw()
+    });
+
+    it('should return a stream of commit objects from this repo with the commit objects containing the parent date', (done) => {
+        readCommitCompactWithParentDate$('./').pipe(
+            toArray()
+        ).subscribe((commits) => {
+            expect(commits instanceof Array).to.be.true;
+            expect(commits.length).greaterThan(0);
+            // aSpecificCommit is a commit whose parent has a specific date to test (the date is immutable in the repo)
+            const aSpecificCommit = commits.find((commit) => commit.sha === 'ef7cf168d4744f2a2e0898ad6184a9a3d538e770');
+            expect(aSpecificCommit?.parentDate.toISOString().split('T')[0]).equal(new Date('2023-10-12').toISOString().split('T')[0]);
+            done();
+        });
+    }).timeout(20000);
 });

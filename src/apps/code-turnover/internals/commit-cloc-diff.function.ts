@@ -1,6 +1,6 @@
 import { concatMap, catchError, of, map, from, mergeMap, reduce } from 'rxjs';
 
-import { clocDiff$ } from '../../../cloc-functions/cloc-diff.functions';
+import { clocDiff$ } from '../../../cloc-functions/cloc-diff';
 import { newDiffsClocDiffStats, ClocDiffStats } from '../../../cloc-functions/cloc-diff.model';
 import { readOneCommitCompact$, newEmptyCommitCompact } from '../../../git-functions/commit';
 import { CommitCompact } from '../../../git-functions/commit.model';
