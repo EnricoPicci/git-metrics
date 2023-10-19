@@ -23,9 +23,6 @@ describe(`clocDiffWithCommit$`, () => {
                         );
                         const commandTs = diffsInCommandTsFile[0];
                         expect(commandTs).not.undefined;
-                        expect(commandTs?.code).equal(31);
-                        expect(commandTs?.blank).equal(8);
-                        expect(commandTs?.comment).equal(0);
                         expect(commandTs?.code_added).equal(9);
                         expect(commandTs?.code_removed).equal(30);
                         expect(commandTs?.code_modified).equal(9);
@@ -39,6 +36,11 @@ describe(`clocDiffWithCommit$`, () => {
                         expect(commandTs?.comment_modified).equal(0);
                         expect(commandTs?.comment_same).equal(0);
                         expect(commandTs?.file).equal('src/lib/command.ts');
+                        // this file can mutate in terms of lines of code, blank and comment over time, hence we only
+                        // check that the values oc code, blank and comment are numbers 
+                        expect(commandTs?.code).gte(0);
+                        expect(commandTs?.blank).gte(0);
+                        expect(commandTs?.comment).gte(0);
 
                         // this file was removed in the commit hence it should have 0 lines of code, blank and comment
                         const fileRemovedName = 'src/apps/cloc-on-repos/read-repos-commits/internals/read-repos-commits.ts'

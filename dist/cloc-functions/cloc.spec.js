@@ -356,7 +356,7 @@ describe(`writeClocByFileForRepos$`, () => {
     }).timeout(200000);
 });
 describe(`clocByfile$`, () => {
-    it.only(`throws if the folder is not a git repo`, (done) => {
+    it(`throws if the folder is not a git repo`, (done) => {
         const params = {
             folderPath: '/',
             vcs: 'git',

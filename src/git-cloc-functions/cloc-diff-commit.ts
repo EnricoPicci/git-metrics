@@ -81,6 +81,8 @@ export function clocDiffWithCommit$(
                 ...clocInfo,
                 ...commit
             }
+            clocDiffCommitEnriched.file = path.join(pathToRepo, clocDiffCommitEnriched.file)
+            clocDiffCommitEnriched.file = path.relative(process.cwd(), clocDiffCommitEnriched.file)
             clocDiffCommitEnriched.possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched)
             return clocDiffCommitEnriched
         }),
@@ -171,6 +173,10 @@ export function writeClocDiffWithCommitForRepos$(
 
     return deleteFile$(outFilePath).pipe(
         concatMap(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages)),
+        map(csvRec => {
+            delete (csvRec as any).sumOfDiffs
+            return csvRec
+        }),
         toCsvObs(),
         concatMap((line) => {
             noCommitsFound = false;

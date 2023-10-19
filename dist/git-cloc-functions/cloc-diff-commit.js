@@ -64,6 +64,8 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
             };
         }
         const clocDiffCommitEnriched = Object.assign(Object.assign(Object.assign({}, clocDiffByfile), clocInfo), commit);
+        clocDiffCommitEnriched.file = path_1.default.join(pathToRepo, clocDiffCommitEnriched.file);
+        clocDiffCommitEnriched.file = path_1.default.relative(process.cwd(), clocDiffCommitEnriched.file);
         clocDiffCommitEnriched.possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched);
         return clocDiffCommitEnriched;
     }));
@@ -119,7 +121,10 @@ function writeClocDiffWithCommitForRepos$(folderPath, outDir = './', fromDate = 
     const outFilePath = path_1.default.join(outDir, outFile);
     let noCommitsFound = true;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages)), (0, rxjs_1.map)(csvRec => {
+        delete csvRec.sumOfDiffs;
+        return csvRec;
+    }), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         noCommitsFound = false;
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
