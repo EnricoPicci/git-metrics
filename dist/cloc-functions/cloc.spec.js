@@ -355,4 +355,20 @@ describe(`writeClocByFileForRepos$`, () => {
         (0, chai_1.expect)(() => (0, cloc_1.writeClocByFileForRepos$)(repoFolder)).to.throw;
     }).timeout(200000);
 });
+describe(`clocByfile$`, () => {
+    it.only(`throws if the folder is not a git repo`, (done) => {
+        const params = {
+            folderPath: '/',
+            vcs: 'git',
+        };
+        (0, cloc_1.clocByfile$)(params, 'test', false).pipe((0, rxjs_1.tap)({
+            next: (outFile) => {
+                (0, chai_1.expect)(outFile.length).gt(1);
+            },
+        })).subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
+});
 //# sourceMappingURL=cloc.spec.js.map

@@ -172,7 +172,7 @@ export function runReportsOneStream(
     const { gitLogCommits, cloc, clocSummary } = readStreamsDistinctProcesses(commitOptions, clocParams);
 
     // enrich git log streams
-    const clocDict = clocFileDictFromClocStream$(cloc);
+    const clocDict = clocFileDictFromClocStream$(cloc, repoFolderPath);
     let _commitStream = commitWithFileNumstatsEnrichedWithCloc$(gitLogCommits, clocDict).pipe(
         map(c => {
             console.log(c)

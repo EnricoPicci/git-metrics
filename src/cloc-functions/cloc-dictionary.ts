@@ -26,7 +26,7 @@ export function clocFileDict$(folderPath: string) {
     };
     return clocByfile$(clocParams, 'create cloc log stream', false).pipe(
         toArray(),
-        toClocFileDict()
+        toClocFileDict(folderPath)
     );
 }
 
@@ -57,10 +57,11 @@ export function clocFileDictFromClocLogFile$(clocLogPath: string) {
  * returns an Observable that emits a dictionary of ClocFileInfo objects, where each object represents the cloc info for a file.
  * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
  * @param cloc$ An Observable of strings representing the output of the cloc command.
+ * @param folder The path to the folder for which the cloc command was run.
  * @returns An Observable that emits a dictionary of ClocFileInfo objects representing the cloc info for each file in the cloc log.
  */
-export function clocFileDictFromClocStream$(cloc$: Observable<string>) {
-    return cloc$.pipe(toArray(), toClocFileDict());
+export function clocFileDictFromClocStream$(cloc$: Observable<string>, folder: string) {
+    return cloc$.pipe(toArray(), toClocFileDict(folder));
 }
 
 //********************************************************************************************************************** */
@@ -68,7 +69,7 @@ export function clocFileDictFromClocStream$(cloc$: Observable<string>) {
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
 
-function toClocFileDict(clocLogPath?: string) {
+function toClocFileDict(folder: string, clocLogPath?: string) {
     const clocFileMsg = clocLogPath ? ` - cloc log file ${clocLogPath}` : '';
 
     return pipe(
@@ -84,7 +85,7 @@ function toClocFileDict(clocLogPath?: string) {
                 }
             }
             if (sumLineIndex === undefined) {
-                throw new Error(`Probably not a git repo (or any of the parent directories)`);
+                console.warn(`${folder} - possibly not a git repo (or any of the parent directories) or no files found`);
             }
             return lines.slice(0, sumLineIndex);
         }),

@@ -8,6 +8,7 @@ import { launchBranchesReport } from '../apps/reports-on-repo/2-pipelines/run-br
 import { launchRunReportsAndCodeTurnover } from '../apps/code-turnover-and-reports/launch-code-turnover-and-reports';
 import { launchClocByfileForRepos } from '../apps/cloc-byfile-for-repos/launch-cloc-byfile-for-repos';
 import { launchClocDiffByfileWithCommit } from '../apps/cloc-diff-byfile-with-commit/launch-cloc-diff-byfile-with-commit';
+import { launchClocDiffByfileWithCommitForRepos } from '../apps/cloc-diff-byfile-with-commit-for-repos/launch-cloc-diff-byfile-with-commit-for-repos';
 
 const command = process.argv[2];
 
@@ -20,7 +21,8 @@ const commandsAvailable: { [command: string]: () => void } = {
     'run-reports-on-repos-in-folder': launchAllReportsOnMergedRepos,
     'run-branches-report-on-repo': launchBranchesReport,
     'cloc-byfile-for-repos': launchClocByfileForRepos,
-    'cloc-diff-byfile-with-commit': launchClocDiffByfileWithCommit
+    'cloc-diff-byfile-with-commit': launchClocDiffByfileWithCommit,
+    'cloc-diff-byfile-with-commit-for-repos': launchClocDiffByfileWithCommitForRepos
 }
 
 const functionForCommand = commandsAvailable[command];

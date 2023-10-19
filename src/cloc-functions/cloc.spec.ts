@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { buildOutfileName, clocByFileForRepos$, clocByfileHeader, clocSummary$, writeClocByFile$, writeClocByFileForRepos$, writeClocByfile, writeClocSummary } from './cloc';
+import { buildOutfileName, clocByFileForRepos$, clocByfile$, clocByfileHeader, clocSummary$, writeClocByFile$, writeClocByFileForRepos$, writeClocByfile, writeClocSummary } from './cloc';
 import { ClocParams } from './cloc-params';
 import path from 'path';
 import { deleteFile } from '../tools/test-helpers/delete-file';
@@ -407,4 +407,25 @@ describe(`writeClocByFileForRepos$`, () => {
 
         expect(() => writeClocByFileForRepos$(repoFolder)).to.throw;
     }).timeout(200000);
+});
+
+describe(`clocByfile$`, () => {
+    it(`throws if the folder is not a git repo`, (done) => {
+        const params: ClocParams = {
+            folderPath: '/',
+            vcs: 'git',
+        };
+
+        clocByfile$(params, 'test', false).pipe(
+            tap({
+                next: (outFile) => {
+                    expect(outFile.length).gt(1);
+                },
+            }),
+        ).subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
+
 });

@@ -12,6 +12,7 @@ const commit_model_1 = require("./commit.model");
 const config_1 = require("./config");
 const file_name_utils_1 = require("./utils/file-name-utils");
 const config_2 = require("../config");
+const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -150,13 +151,7 @@ function readCommitWithFileNumstat$(params, outFile = '') {
     // if an outFile is provided, _writeCommitLog is a stream that writes the commits to the outFile silently
     // (silently means that it does not emit anything and completes when the writing is completed)
     // if no outFile, _writeCommitLog is the EMPTY stream, i.e. a stream that emits nothing and immediately completes
-    const _writeCommitLog$ = outFile ? (0, observable_fs_1.deleteFileObs)(outFile).pipe((0, rxjs_1.catchError)((err) => {
-        if (err.code === 'ENOENT') {
-            // emit something so that the next operation can continue
-            return (0, rxjs_1.of)(null);
-        }
-        throw new Error(err);
-    }), (0, rxjs_1.concatMap)(() => _readCommitsData$), 
+    const _writeCommitLog$ = outFile ? (0, delete_file_ignore_if_missing_1.deleteFile$)(outFile).pipe((0, rxjs_1.concatMap)(() => _readCommitsData$), 
     // filter((line) => line.length > 0),
     (0, rxjs_1.concatMap)((line) => {
         const _line = `${line}\n`;

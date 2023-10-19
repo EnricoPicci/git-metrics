@@ -31,6 +31,7 @@ import { CLOC_CONFIG } from './config';
 import { ClocParams } from './cloc-params';
 import { gitRepoPaths } from '../git-functions/repo-path.functions';
 import { ignoreUpTo } from '../tools/rxjs-operators/ignore-up-to';
+import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -179,6 +180,9 @@ export function clocByfile$(params: ClocParams, action = 'calculate cloc', write
     // execute the cloc command in a new process and return the stream of lines output of the cloc command execution
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
     const _cloc = executeCommandNewProcessToLinesObs(action, cmd, args, options).pipe(
+        map((line) => {
+            return line.trim()
+        }),
         ignoreUpTo(clocByfileHeader),
         share(),
     );
@@ -188,14 +192,7 @@ export function clocByfile$(params: ClocParams, action = 'calculate cloc', write
 
     // create an Observable that deletes the output file if it exists and then takes the cloc strem
     // and appends each line to the output file
-    const _writeFile = deleteFileObs(outFile).pipe(
-        catchError((err) => {
-            if (err.code === 'ENOENT') {
-                // emit something so that the next operation can continue
-                return of(null);
-            }
-            throw new Error(err);
-        }),
+    const _writeFile = deleteFile$(outFile).pipe(
         concatMap(() => _cloc),
         concatMap((line) => {
             const _line = `${line}\n`;

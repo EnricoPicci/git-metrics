@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { tap } from "rxjs";
-import { gitRepoPaths$, fetchAllDirsFromGivenFolder, fetchAllGitReposFromGivenFolder } from "./repo-path.functions";
+import { gitRepoPaths$, fetchAllGitReposFromGivenFolder } from "./repo-path.functions";
 
 
 describe(`gitRepoPaths`, () => {
@@ -20,19 +20,6 @@ describe(`gitRepoPaths`, () => {
                 complete: () => done(),
             });
     }).timeout(200000);
-});
-
-describe(`fetchAllDirsFromGivenFolder`, () => {
-    it(`returns all the subfolders contained in the folder of this project`, () => {
-        const start = process.cwd();
-        const dirs = fetchAllDirsFromGivenFolder(start);
-        // we specify a big number of dirs since, in this folder, there the node_modules folder
-        // which contains a lot of subfolders
-        // This is to avoid that the test succeeds even if the function fetchAllDirsFromGivenFolder
-        // returns just the directories found at the top level of the folder of this project
-        const aBigNumberOfDirs = 100;
-        expect(dirs.length).gt(aBigNumberOfDirs);
-    });
 });
 
 describe(`fetchAllGitReposFromGivenFolder`, () => {

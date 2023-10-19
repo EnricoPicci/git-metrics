@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommit$ = void 0;
+exports.writeClocDiffWithCommitForRepos$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithCommit$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -11,6 +11,9 @@ const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const cloc_dictionary_1 = require("../cloc-functions/cloc-dictionary");
 const cloc_diff_byfile_1 = require("../cloc-functions/cloc-diff-byfile");
 const commit_1 = require("../git-functions/commit");
+const repo_path_functions_1 = require("../git-functions/repo-path.functions");
+const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
+const fs_utils_1 = require("../tools/fs-utils/fs-utils");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -67,6 +70,26 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
 }
 exports.clocDiffWithCommit$ = clocDiffWithCommit$;
 /**
+ * Calculates the cloc diff for each commit in each Git repository in a given folder between two dates,
+ * considering only the files of languages that are in the array of languages provided.
+ * Returns an Observable stream of objects of type ClocDiffCommitEnriched.
+ * Repos whose path is in the set of excluded repo paths are ignored.
+ * The changes that affect files that are not in the set of languages are ignored.
+ * @param folderPath The path to the folder containing the Git repositories.
+ * @param fromDate The start date of the time range. Defaults to the beginning of time.
+ * @param toDate The end date of the time range. Defaults to the current date and time.
+ * @param excludeRepoPaths An array of repository paths to exclude. Wildcards can be used. Defaults to an empty array.
+ * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
+ * @returns An Observable stream of objects of type ClocDiffCommitEnriched.
+ */
+function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], languages = []) {
+    const repoPaths = (0, repo_path_functions_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
+        return clocDiffWithCommit$(repoPath, fromDate, toDate, languages);
+    }));
+}
+exports.clocDiffWithCommitForRepos$ = clocDiffWithCommitForRepos$;
+/**
  * Writes the cloc diff information, enriched with lines of code data and commit data, for a Git repository to a CSV file.
  * The file name is derived from the repository name, the start date, and the end date.
  * Returns an Observable that notifies the name of the file where the cloc diff info is saved once the cloc command execution is finished.
@@ -81,13 +104,7 @@ function writeClocDiffWithCommit$(pathToRepo, outDir = './', fromDate = new Date
     const pathToRepoName = path_1.default.basename(pathToRepo);
     const outFile = `${pathToRepoName}-cloc-diff-commit-${fromDate.toISOString().split('T')[0]}-${toDate.toISOString().split('T')[0]}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
-    return (0, observable_fs_1.deleteFileObs)(outFilePath).pipe((0, rxjs_1.catchError)((err) => {
-        if (err.code === 'ENOENT') {
-            // complete so that the next operation can continue
-            return (0, rxjs_1.of)(null);
-        }
-        throw new Error(err);
-    }), (0, rxjs_1.concatMap)(() => clocDiffWithCommit$(pathToRepo, fromDate, toDate, languages)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommit$(pathToRepo, fromDate, toDate, languages)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
         next: (outFilePath) => {
@@ -96,6 +113,26 @@ function writeClocDiffWithCommit$(pathToRepo, outDir = './', fromDate = new Date
     }));
 }
 exports.writeClocDiffWithCommit$ = writeClocDiffWithCommit$;
+function writeClocDiffWithCommitForRepos$(folderPath, outDir = './', fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], languages = []) {
+    const folderName = path_1.default.basename(folderPath);
+    const outFile = `${folderName}-cloc-diff-commit-${fromDate.toISOString().split('T')[0]}-${toDate.toISOString().split('T')[0]}.csv`;
+    const outFilePath = path_1.default.join(outDir, outFile);
+    let noCommitsFound = true;
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+        noCommitsFound = false;
+        return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
+    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
+        next: (outFilePath) => {
+            if (noCommitsFound) {
+                console.log(`====>>>> no commits found in the given time range, for the given languages, in the given repos`);
+                return;
+            }
+            console.log(`====>>>> cloc-diff-commit-for-repos info saved on file ${outFilePath}`);
+        },
+    }));
+}
+exports.writeClocDiffWithCommitForRepos$ = writeClocDiffWithCommitForRepos$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */

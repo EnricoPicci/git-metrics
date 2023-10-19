@@ -1,10 +1,11 @@
 import { EMPTY, catchError, from, map, mergeMap } from 'rxjs';
 
 import { CommitCompact } from '../../../git-functions/commit.model';
-import { reposInFolder, repoCompact$ } from '../../../git-functions/repo';
+import { repoCompact$ } from '../../../git-functions/repo';
 
 import { RepoCompactWithCommitsByMonths, ReposWithCommitsByMonths } from './repos-with-commits-by-month.model';
 import { newCommitsByMonth } from './commits-by-month.functions';
+import { gitRepoPaths } from '../../../git-functions/repo-path.functions';
 
 // reposCompactWithCommitsByMonthsInFolderObs returns an Observable that notifies the list of
 // RepoCompactWithCommitsByMonths objects representing all the repos in a given folder
@@ -14,7 +15,7 @@ export function reposCompactWithCommitsByMonthsInFolderObs(
     toDate = new Date(Date.now()),
     concurrency = 1,
 ) {
-    const repoPaths = reposInFolder(folderPath);
+    const repoPaths = gitRepoPaths(folderPath);
     return from(repoPaths).pipe(
         mergeMap((repoPath) => {
             return newRepoCompactWithCommitsByMonths(repoPath, fromDate, toDate);

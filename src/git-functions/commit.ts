@@ -5,7 +5,7 @@ import {
     share, of, ignoreElements, merge, Observable, Subscriber, pipe
 } from 'rxjs';
 
-import { appendFileObs, deleteFileObs } from 'observable-fs';
+import { appendFileObs } from 'observable-fs';
 
 import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 
@@ -14,6 +14,7 @@ import { GIT_CONFIG } from './config';
 import { GitLogCommitParams } from './git-params';
 import { buildOutfileName } from './utils/file-name-utils';
 import { CONFIG } from '../config';
+import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -198,14 +199,7 @@ export function readCommitWithFileNumstat$(params: GitLogCommitParams, outFile =
     // if an outFile is provided, _writeCommitLog is a stream that writes the commits to the outFile silently
     // (silently means that it does not emit anything and completes when the writing is completed)
     // if no outFile, _writeCommitLog is the EMPTY stream, i.e. a stream that emits nothing and immediately completes
-    const _writeCommitLog$ = outFile ? deleteFileObs(outFile).pipe(
-        catchError((err) => {
-            if (err.code === 'ENOENT') {
-                // emit something so that the next operation can continue
-                return of(null);
-            }
-            throw new Error(err);
-        }),
+    const _writeCommitLog$ = outFile ? deleteFile$(outFile).pipe(
         concatMap(() => _readCommitsData$),
         // filter((line) => line.length > 0),
         concatMap((line) => {

@@ -104,14 +104,14 @@ export function clocDiffByfileWithCommitDiffs$(
  * @param commit The hash of the commit to calculate the cloc diff for.
  * @param repoFolderPath The path to the Git repository folder. Defaults to the current directory.
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
- * @returns An Observable stream of objects of type ClocDiffByfile.
+ * @returns An Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
  */
 export function clocDiffWithParentByfile$(
     commit: string,
     repoFolderPath = './',
     languages: string[] = [],
 ) {
-    return clocDiffByfile$(commit, `${commit}^1`, repoFolderPath, languages);
+    return clocDiffByfileWithCommitDiffs$(commit, `${commit}^1`, repoFolderPath, languages);
 }
 
 //********************************************************************************************************************** */

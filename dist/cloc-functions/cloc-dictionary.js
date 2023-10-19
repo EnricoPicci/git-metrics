@@ -20,7 +20,7 @@ function clocFileDict$(folderPath) {
         folderPath,
         vcs: 'git',
     };
-    return (0, cloc_1.clocByfile$)(clocParams, 'create cloc log stream', false).pipe((0, rxjs_1.toArray)(), toClocFileDict());
+    return (0, cloc_1.clocByfile$)(clocParams, 'create cloc log stream', false).pipe((0, rxjs_1.toArray)(), toClocFileDict(folderPath));
 }
 exports.clocFileDict$ = clocFileDict$;
 /**
@@ -47,17 +47,18 @@ exports.clocFileDictFromClocLogFile$ = clocFileDictFromClocLogFile$;
  * returns an Observable that emits a dictionary of ClocFileInfo objects, where each object represents the cloc info for a file.
  * The cloc info includes the number of blank lines, comment lines, and code lines in the file.
  * @param cloc$ An Observable of strings representing the output of the cloc command.
+ * @param folder The path to the folder for which the cloc command was run.
  * @returns An Observable that emits a dictionary of ClocFileInfo objects representing the cloc info for each file in the cloc log.
  */
-function clocFileDictFromClocStream$(cloc$) {
-    return cloc$.pipe((0, rxjs_1.toArray)(), toClocFileDict());
+function clocFileDictFromClocStream$(cloc$, folder) {
+    return cloc$.pipe((0, rxjs_1.toArray)(), toClocFileDict(folder));
 }
 exports.clocFileDictFromClocStream$ = clocFileDictFromClocStream$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
-function toClocFileDict(clocLogPath) {
+function toClocFileDict(folder, clocLogPath) {
     const clocFileMsg = clocLogPath ? ` - cloc log file ${clocLogPath}` : '';
     return (0, rxjs_1.pipe)(
     // remove the first line which contains the csv header
@@ -72,7 +73,7 @@ function toClocFileDict(clocLogPath) {
             }
         }
         if (sumLineIndex === undefined) {
-            throw new Error(`Probably not a git repo (or any of the parent directories)`);
+            console.warn(`${folder} - possibly not a git repo (or any of the parent directories) or no files found`);
         }
         return lines.slice(0, sumLineIndex);
     }), (0, rxjs_1.map)((lines) => {

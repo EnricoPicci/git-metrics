@@ -5,7 +5,7 @@ const commander_1 = require("commander");
 const cloc_diff_commit_1 = require("../../git-cloc-functions/cloc-diff-commit");
 function launchClocDiffByfileWithCommit() {
     const start = Date.now();
-    console.log('====>>>> Launching Cloc Diff Byfile with Commit For Repo');
+    console.log('====>>>> Launching Cloc Diff Byfile with Commit');
     const { folderPath, outdir, from, to, languages } = readParams();
     (0, cloc_diff_commit_1.writeClocDiffWithCommit$)(folderPath, outdir, from, to, languages).subscribe({
         complete: () => {

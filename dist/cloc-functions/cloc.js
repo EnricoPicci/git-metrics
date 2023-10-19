@@ -11,6 +11,7 @@ const execute_command_1 = require("../tools/execute-command/execute-command");
 const config_1 = require("./config");
 const repo_path_functions_1 = require("../git-functions/repo-path.functions");
 const ignore_up_to_1 = require("../tools/rxjs-operators/ignore-up-to");
+const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -147,18 +148,14 @@ exports.writeClocSummary$ = writeClocSummary$;
 function clocByfile$(params, action = 'calculate cloc', writeFile = true) {
     // execute the cloc command in a new process and return the stream of lines output of the cloc command execution
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
-    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe((0, ignore_up_to_1.ignoreUpTo)(exports.clocByfileHeader), (0, rxjs_1.share)());
+    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe((0, rxjs_1.map)((line) => {
+        return line.trim();
+    }), (0, ignore_up_to_1.ignoreUpTo)(exports.clocByfileHeader), (0, rxjs_1.share)());
     // if writeFile is true, then calculate the name of the output file
     const outFile = writeFile ? buildClocOutfile(params, '-cloc.csv') : '';
     // create an Observable that deletes the output file if it exists and then takes the cloc strem
     // and appends each line to the output file
-    const _writeFile = (0, observable_fs_1.deleteFileObs)(outFile).pipe((0, rxjs_1.catchError)((err) => {
-        if (err.code === 'ENOENT') {
-            // emit something so that the next operation can continue
-            return (0, rxjs_1.of)(null);
-        }
-        throw new Error(err);
-    }), (0, rxjs_1.concatMap)(() => _cloc), (0, rxjs_1.concatMap)((line) => {
+    const _writeFile = (0, delete_file_ignore_if_missing_1.deleteFile$)(outFile).pipe((0, rxjs_1.concatMap)(() => _cloc), (0, rxjs_1.concatMap)((line) => {
         const _line = `${line}\n`;
         return (0, observable_fs_1.appendFileObs)(outFile, _line);
     }), 

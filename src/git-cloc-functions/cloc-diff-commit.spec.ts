@@ -15,11 +15,15 @@ describe(`clocDiffWithCommit$`, () => {
                     next: (arrayOfClocDiffCommitEnriched) => {
                         expect(arrayOfClocDiffCommitEnriched.length).gt(0);
 
-                        const commandTs = arrayOfClocDiffCommitEnriched.find(
+                        // take the first diff for a certain file - since it is the first one it is not going to change
+                        // over time since the git history is immutable - being sure that it does not change over time
+                        // allows us to write a test for it
+                        const diffsInCommandTsFile = arrayOfClocDiffCommitEnriched.filter(
                             (clocDiffCommitEnriched) => clocDiffCommitEnriched.file === ('src/lib/command.ts')
                         );
+                        const commandTs = diffsInCommandTsFile[0];
                         expect(commandTs).not.undefined;
-                        expect(commandTs?.code).equal(29);
+                        expect(commandTs?.code).equal(31);
                         expect(commandTs?.blank).equal(8);
                         expect(commandTs?.comment).equal(0);
                         expect(commandTs?.code_added).equal(9);

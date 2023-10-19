@@ -3,8 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.cloneRepo$ = exports.reposInFolder = void 0;
-const fs_1 = __importDefault(require("fs"));
+exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.cloneRepo$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -13,28 +12,6 @@ const repo_path_functions_1 = require("./repo-path.functions");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
-/**
- * Returns the list of Git repository paths in a given folder, including subfolders.
- * If a folder has a .git folder, it is considered a Git repository.
- * @param folderPath The path to the folder to search for Git repositories.
- * @returns An array of Git repository paths.
- */
-function reposInFolder(folderPath) {
-    let gitRepoPaths = [];
-    const filesAndDirs = fs_1.default.readdirSync(folderPath);
-    if (filesAndDirs.some((fileOrDir) => fileOrDir === '.git')) {
-        gitRepoPaths.push(folderPath);
-    }
-    filesAndDirs.forEach((fileOrDir) => {
-        const absolutePath = path_1.default.join(folderPath, fileOrDir);
-        if (fs_1.default.statSync(absolutePath).isDirectory()) {
-            const subRepoPaths = reposInFolder(absolutePath);
-            gitRepoPaths = gitRepoPaths.concat(subRepoPaths);
-        }
-    });
-    return gitRepoPaths;
-}
-exports.reposInFolder = reposInFolder;
 // cloneRepo clones a repo from a given url to a given path and returns the path of the cloned repo
 /**
  * Clones a Git repository from a given URL to a given path and returns the path of the cloned repository.

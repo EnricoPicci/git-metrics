@@ -78,7 +78,7 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
     const clocParams = { folderPath: repoFolderPath, outDir, vcs: 'git' };
     const { gitLogCommits, cloc, clocSummary } = (0, read_all_1.readStreamsDistinctProcesses)(commitOptions, clocParams);
     // enrich git log streams
-    const clocDict = (0, cloc_dictionary_1.clocFileDictFromClocStream$)(cloc);
+    const clocDict = (0, cloc_dictionary_1.clocFileDictFromClocStream$)(cloc, repoFolderPath);
     let _commitStream = (0, commit_cloc_functions_1.commitWithFileNumstatsEnrichedWithCloc$)(gitLogCommits, clocDict).pipe((0, rxjs_1.map)(c => {
         console.log(c);
         return c;

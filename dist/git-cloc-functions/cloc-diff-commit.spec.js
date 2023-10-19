@@ -12,9 +12,13 @@ describe(`clocDiffWithCommit$`, () => {
             .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
             next: (arrayOfClocDiffCommitEnriched) => {
                 (0, chai_1.expect)(arrayOfClocDiffCommitEnriched.length).gt(0);
-                const commandTs = arrayOfClocDiffCommitEnriched.find((clocDiffCommitEnriched) => clocDiffCommitEnriched.file === ('src/lib/command.ts'));
+                // take the first diff for a certain file - since it is the first one it is not going to change
+                // over time since the git history is immutable - being sure that it does not change over time
+                // allows us to write a test for it
+                const diffsInCommandTsFile = arrayOfClocDiffCommitEnriched.filter((clocDiffCommitEnriched) => clocDiffCommitEnriched.file === ('src/lib/command.ts'));
+                const commandTs = diffsInCommandTsFile[0];
                 (0, chai_1.expect)(commandTs).not.undefined;
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code).equal(29);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code).equal(31);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank).equal(8);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.comment).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_added).equal(9);

@@ -5,7 +5,7 @@ import { writeClocDiffWithCommit$ } from "../../git-cloc-functions/cloc-diff-com
 export function launchClocDiffByfileWithCommit() {
     const start = Date.now();
 
-    console.log('====>>>> Launching Cloc Diff Byfile with Commit For Repo')
+    console.log('====>>>> Launching Cloc Diff Byfile with Commit')
 
     const { folderPath, outdir, from, to, languages } = readParams();
     writeClocDiffWithCommit$(folderPath, outdir, from, to, languages).subscribe({

@@ -22,7 +22,7 @@ describe(`commitWithFileNumstatsEnrichedWithCloc$`, () => {
             vcs: 'git',
         };
         const cloc$ = (0, cloc_1.clocByfile$)(clocParams, 'create cloc log', false);
-        const clocDict$ = (0, cloc_dictionary_1.clocFileDictFromClocStream$)(cloc$);
+        const clocDict$ = (0, cloc_dictionary_1.clocFileDictFromClocStream$)(cloc$, process.cwd());
         (0, commit_cloc_functions_1.commitWithFileNumstatsEnrichedWithCloc$)(commits$, clocDict$)
             .pipe((0, rxjs_1.tap)({
             next: (commitRec) => {

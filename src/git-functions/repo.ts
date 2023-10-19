@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 
 import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray } from 'rxjs';
@@ -13,28 +12,6 @@ import { gitRepoPaths } from './repo-path.functions';
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
 
-
-/**
- * Returns the list of Git repository paths in a given folder, including subfolders.
- * If a folder has a .git folder, it is considered a Git repository.
- * @param folderPath The path to the folder to search for Git repositories.
- * @returns An array of Git repository paths.
- */
-export function reposInFolder(folderPath: string) {
-    let gitRepoPaths: string[] = [];
-    const filesAndDirs = fs.readdirSync(folderPath);
-    if (filesAndDirs.some((fileOrDir) => fileOrDir === '.git')) {
-        gitRepoPaths.push(folderPath);
-    }
-    filesAndDirs.forEach((fileOrDir) => {
-        const absolutePath = path.join(folderPath, fileOrDir);
-        if (fs.statSync(absolutePath).isDirectory()) {
-            const subRepoPaths = reposInFolder(absolutePath);
-            gitRepoPaths = gitRepoPaths.concat(subRepoPaths);
-        }
-    });
-    return gitRepoPaths;
-}
 
 // cloneRepo clones a repo from a given url to a given path and returns the path of the cloned repo
 /**
