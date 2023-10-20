@@ -172,15 +172,20 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
     const file_code_turnover = clocDiffCommitEnriched.code_added +
         clocDiffCommitEnriched.code_removed +
         clocDiffCommitEnriched.code_modified;
+    // days_span is an integer number with no decimals that represents the number of days between the commit date 
+    // and the parent commit date
+    const days_span = Math.floor((clocDiffCommitEnriched.date.getTime() - clocDiffCommitEnriched.parentDate.getTime()) / (1000 * 60 * 60 * 24));
     const possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched);
-    let possibleMassiveRefactor = undefined;
+    let _maybe_mass_refact = false;
+    let _explain_mass_refact = undefined;
     if (options.fileMassiveRefactorThreshold || options.commitMassiveRefactorThreshold) {
-        possibleMassiveRefactor = isPossibleMassiveRefactor(file_code_turnover, commit_code_turnover, options.fileMassiveRefactorThreshold || -1, options.commitMassiveRefactorThreshold || -1);
+        const { maybe_mass_refact, explain_mass_refact } = isPossibleMassiveRefactor(file_code_turnover, commit_code_turnover, options.fileMassiveRefactorThreshold || -1, options.commitMassiveRefactorThreshold || -1);
+        _maybe_mass_refact = maybe_mass_refact;
+        _explain_mass_refact = explain_mass_refact;
     }
     const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { commit_code_turnover,
         file_code_turnover,
-        possibleCutPaste,
-        possibleMassiveRefactor });
+        days_span, maybe_cut_paste: possibleCutPaste, maybe_mass_refact: _maybe_mass_refact, explain_mass_refact: _explain_mass_refact });
     return infoWithDerivedData;
 }
 // the change is a possible cut and paste if the number of lines of code added is equal to the number of lines removed
@@ -195,8 +200,15 @@ function isPossibleCutPaste(clocDiffCommitEnriched) {
 // a file diff is a possible massive refactor if the file_code_turnover is greater than a given threshold
 // or if the commit_code_turnover is greater than a given threshold
 function isPossibleMassiveRefactor(file_code_turnover, commit_code_turnover, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold) {
-    return file_code_turnover > fileMassiveRefactorThreshold ||
-        commit_code_turnover > commitMassiveRefactorThreshold;
+    const file_turnover_above = file_code_turnover > fileMassiveRefactorThreshold;
+    const commit_turnover_above = commit_code_turnover > commitMassiveRefactorThreshold;
+    const maybe_mass_refact = file_turnover_above || commit_turnover_above;
+    let explain_mass_refact = '';
+    explain_mass_refact = file_turnover_above ? 'file turnover above threshold' : '';
+    explain_mass_refact = commit_turnover_above ? 'commit turnover above threshold' : '';
+    explain_mass_refact = file_turnover_above && commit_turnover_above ? 'both file and commit turnover above threshold' : '';
+    explain_mass_refact = explain_mass_refact !== null && explain_mass_refact !== void 0 ? explain_mass_refact : '-';
+    return { maybe_mass_refact, explain_mass_refact };
 }
 function formatClocDiffCommitEnrichedForCsv(csvRec, options) {
     // while we keep the type checking for csvRec so that we know which are the properties available

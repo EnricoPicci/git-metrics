@@ -250,23 +250,35 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
         clocDiffCommitEnriched.code_removed +
         clocDiffCommitEnriched.code_modified;
 
+    // days_span is an integer number with no decimals that represents the number of days between the commit date 
+    // and the parent commit date
+    const days_span = Math.floor((
+        clocDiffCommitEnriched.date.getTime() - clocDiffCommitEnriched.parentDate.getTime()
+    ) / (1000 * 60 * 60 * 24))
+
     const possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched)
-    let possibleMassiveRefactor: boolean | undefined = undefined
+
+    let _maybe_mass_refact = false
+    let _explain_mass_refact: string | undefined = undefined
     if (options.fileMassiveRefactorThreshold || options.commitMassiveRefactorThreshold) {
-        possibleMassiveRefactor = isPossibleMassiveRefactor(
+        const { maybe_mass_refact, explain_mass_refact } = isPossibleMassiveRefactor(
             file_code_turnover,
             commit_code_turnover,
             options.fileMassiveRefactorThreshold || -1,
             options.commitMassiveRefactorThreshold || -1,
         )
+        _maybe_mass_refact = maybe_mass_refact
+        _explain_mass_refact = explain_mass_refact
     }
 
     const infoWithDerivedData: ClocDiffCommitEnrichedWithDerivedData = {
         ...clocDiffCommitEnriched,
         commit_code_turnover,
         file_code_turnover,
-        possibleCutPaste,
-        possibleMassiveRefactor,
+        days_span,
+        maybe_cut_paste: possibleCutPaste,
+        maybe_mass_refact: _maybe_mass_refact,
+        explain_mass_refact: _explain_mass_refact
     }
     return infoWithDerivedData
 }
@@ -288,8 +300,15 @@ function isPossibleMassiveRefactor(
     commit_code_turnover: number,
     fileMassiveRefactorThreshold: number,
     commitMassiveRefactorThreshold: number) {
-    return file_code_turnover > fileMassiveRefactorThreshold ||
-        commit_code_turnover > commitMassiveRefactorThreshold
+    const file_turnover_above = file_code_turnover > fileMassiveRefactorThreshold
+    const commit_turnover_above = commit_code_turnover > commitMassiveRefactorThreshold
+    const maybe_mass_refact = file_turnover_above || commit_turnover_above
+    let explain_mass_refact = ''
+    explain_mass_refact = file_turnover_above ? 'file turnover above threshold' : ''
+    explain_mass_refact = commit_turnover_above ? 'commit turnover above threshold' : ''
+    explain_mass_refact = file_turnover_above && commit_turnover_above ? 'both file and commit turnover above threshold' : ''
+    explain_mass_refact = explain_mass_refact ?? '-'
+    return { maybe_mass_refact, explain_mass_refact }
 }
 
 
