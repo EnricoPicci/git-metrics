@@ -23,6 +23,17 @@ function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = '
     const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
     return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-rel --by-file --quiet', cmd).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n');
+    }), (0, rxjs_1.catchError)((err) => {
+        // we have encountered situations where cloc returns an error with a message containing text like this:
+        // "did not match any files\nFailed to create tarfile of files from git".
+        // In this case the error code is 25.
+        // We do not want to stop the execution of the script, so we just log the error and return an empty array.
+        if (err.code === 25) {
+            console.warn(`Non fatal Error executing command ${cmd}`, err.message);
+            const emptyArray = [];
+            return (0, rxjs_1.of)(emptyArray);
+        }
+        throw err;
     }), (0, rxjs_1.concatMap)(lines => {
         return (0, rxjs_1.from)(lines);
     }), (0, ignore_up_to_1.ignoreUpTo)(exports.CLOC_DIFF_BYFILE_HEADER), 
@@ -54,7 +65,7 @@ function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = '
             diff.sumOfDiffs = sumOfClocDiffByfile;
         }
         return arrayOfClocDiffByfile;
-    }), 
+    })).pipe(
     // after having calculated the sum and set it to each diff object, stream again the array of diffs
     (0, rxjs_1.concatMap)(arrayOfClocDiffByfile => {
         return (0, rxjs_1.from)(arrayOfClocDiffByfile);

@@ -1,4 +1,4 @@
-import { concatMap, filter, from, map, skip, toArray } from "rxjs";
+import { catchError, concatMap, filter, from, map, of, skip, toArray } from "rxjs";
 import { executeCommandObs } from "../tools/execute-command/execute-command";
 import { ignoreUpTo } from "../tools/rxjs-operators/ignore-up-to";
 import { CLOC_CONFIG } from "./config";
@@ -29,6 +29,18 @@ export function clocDiffByfile$(
     return executeCommandObs('run cloc --git-diff-rel --by-file --quiet', cmd).pipe(
         map((output) => {
             return output.split('\n');
+        }),
+        catchError((err) => {
+            // we have encountered situations where cloc returns an error with a message containing text like this:
+            // "did not match any files\nFailed to create tarfile of files from git".
+            // In this case the error code is 25.
+            // We do not want to stop the execution of the script, so we just log the error and return an empty array.
+            if (err.code === 25) {
+                console.warn(`Non fatal Error executing command ${cmd}`, err.message);
+                const emptyArray: string[] = [];
+                return of(emptyArray)
+            }
+            throw err;
         }),
         concatMap(lines => {
             return from(lines)
@@ -66,6 +78,7 @@ export function clocDiffByfile$(
             }
             return arrayOfClocDiffByfile;
         }),
+    ).pipe(
         // after having calculated the sum and set it to each diff object, stream again the array of diffs
         concatMap(arrayOfClocDiffByfile => {
             return from(arrayOfClocDiffByfile)
