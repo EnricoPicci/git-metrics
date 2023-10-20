@@ -13,6 +13,7 @@ const config_1 = require("./config");
 const file_name_utils_1 = require("./utils/file-name-utils");
 const config_2 = require("../config");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
+const commit_url_1 = require("./commit-url");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -58,18 +59,22 @@ exports.readCommitCompact$ = readCommitCompact$;
  */
 function readCommitCompactWithParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true) {
     return readCommitCompact$(repoPath, fromDate, toDate, noMerges).pipe((0, rxjs_1.concatMap)((commit) => {
+        return (0, commit_url_1.getGitlabCommitUrl)(repoPath, commit.sha).pipe((0, rxjs_1.map)((commitUrl) => {
+            return { commit, commitUrl };
+        }));
+    }), (0, rxjs_1.concatMap)(({ commit, commitUrl }) => {
         const parentCommitSha = `${commit.sha}^1`;
         return readOneCommitCompact$(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(err => {
             // if the error is because the commit has no parent, then we set the parent date to the beginning of time
             if (err === exports.ERROR_UNKNOWN_REVISION_OR_PATH) {
-                const commitWithParentDate = Object.assign(Object.assign({}, commit), { parentDate: new Date(0) });
+                const commitWithParentDate = Object.assign(Object.assign({}, commit), { parentDate: new Date(0), commitUrl });
                 return (0, rxjs_1.of)(commitWithParentDate);
             }
             // in case of error we return an empty commit
             console.log(err);
             return (0, rxjs_1.of)(newEmptyCommitCompact());
         }), (0, rxjs_1.map)((parentCommit) => {
-            const commitWithParentDate = Object.assign(Object.assign({}, commit), { parentDate: parentCommit.date });
+            const commitWithParentDate = Object.assign(Object.assign({}, commit), { parentDate: parentCommit.date, commitUrl });
             return commitWithParentDate;
         }));
     }));

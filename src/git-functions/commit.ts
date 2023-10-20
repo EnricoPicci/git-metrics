@@ -9,12 +9,13 @@ import { appendFileObs } from 'observable-fs';
 
 import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 
-import { CommitCompact, CommitCompactWithParentDate, newCommitWithFileNumstats } from './commit.model';
+import { CommitCompact, CommitCompactWithUrlAndParentDate, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
 import { GitLogCommitParams } from './git-params';
 import { buildOutfileName } from './utils/file-name-utils';
 import { CONFIG } from '../config';
 import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
+import { getGitlabCommitUrl } from './commit-url';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -86,14 +87,22 @@ export function readCommitCompactWithParentDate$(
 ) {
     return readCommitCompact$(repoPath, fromDate, toDate, noMerges).pipe(
         concatMap((commit) => {
+            return getGitlabCommitUrl(repoPath, commit.sha).pipe(
+                map((commitUrl) => {
+                    return { commit, commitUrl };
+                })
+            )
+        }),
+        concatMap(({ commit, commitUrl }) => {
             const parentCommitSha = `${commit.sha}^1`;
             return readOneCommitCompact$(parentCommitSha, repoPath).pipe(
                 catchError(err => {
                     // if the error is because the commit has no parent, then we set the parent date to the beginning of time
                     if (err === ERROR_UNKNOWN_REVISION_OR_PATH) {
-                        const commitWithParentDate: CommitCompactWithParentDate = {
+                        const commitWithParentDate: CommitCompactWithUrlAndParentDate = {
                             ...commit,
                             parentDate: new Date(0),
+                            commitUrl
                         };
                         return of(commitWithParentDate);
                     }
@@ -102,9 +111,10 @@ export function readCommitCompactWithParentDate$(
                     return of(newEmptyCommitCompact());
                 }),
                 map((parentCommit) => {
-                    const commitWithParentDate: CommitCompactWithParentDate = {
+                    const commitWithParentDate: CommitCompactWithUrlAndParentDate = {
                         ...commit,
                         parentDate: parentCommit.date,
+                        commitUrl
                     };
                     return commitWithParentDate;
                 }),

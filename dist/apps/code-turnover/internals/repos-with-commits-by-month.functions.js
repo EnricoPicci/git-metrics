@@ -4,11 +4,11 @@ exports.repoCommitsByMonthRecords = exports.repoCommitsByMonthRecordsDict = expo
 const rxjs_1 = require("rxjs");
 const repo_1 = require("../../../git-functions/repo");
 const commits_by_month_functions_1 = require("./commits-by-month.functions");
-const repo_path_functions_1 = require("../../../git-functions/repo-path.functions");
+const repo_path_1 = require("../../../git-functions/repo-path");
 // reposCompactWithCommitsByMonthsInFolderObs returns an Observable that notifies the list of
 // RepoCompactWithCommitsByMonths objects representing all the repos in a given folder
 function reposCompactWithCommitsByMonthsInFolderObs(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = 1) {
-    const repoPaths = (0, repo_path_functions_1.gitRepoPaths)(folderPath);
+    const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath);
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
         return newRepoCompactWithCommitsByMonths(repoPath, fromDate, toDate);
     }, concurrency));

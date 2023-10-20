@@ -26,7 +26,7 @@ export function clocDiffByfile$(
 ) {
     const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
 
-    return executeCommandObs('run cloc --git-diff-rel --by-file', cmd).pipe(
+    return executeCommandObs('run cloc --git-diff-rel --by-file --quiet', cmd).pipe(
         map((output) => {
             return output.split('\n');
         }),
@@ -128,7 +128,7 @@ function buildClocDiffRelByFileCommand(
     folderPath = './',
 ) {
     const cdCommand = `cd ${folderPath}`;
-    let clocDiffAllCommand = `cloc --git-diff-rel --csv --by-file --timeout=${CLOC_CONFIG.TIMEOUT}`;
+    let clocDiffAllCommand = `cloc --git-diff-rel --csv --by-file --timeout=${CLOC_CONFIG.TIMEOUT} --quiet`;
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;

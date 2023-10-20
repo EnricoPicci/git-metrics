@@ -7,6 +7,7 @@ import { readLinesObs } from 'observable-fs';
 import { CommitWithFileNumstats } from './commit.model';
 import { deleteFile } from '../tools/test-helpers/delete-file';
 import { CONFIG } from '../config';
+import { toYYYYMMDD } from '../tools/dates/date-functions';
 
 describe('readCommitCompact$', () => {
     it('should throw an error if repoPath is not provided', () => {
@@ -421,7 +422,10 @@ describe('readCommitCompactWithParentDate$', () => {
             expect(commits.length).greaterThan(0);
             // aSpecificCommit is a commit whose parent has a specific date to test (the date is immutable in the repo)
             const aSpecificCommit = commits.find((commit) => commit.sha === 'ef7cf168d4744f2a2e0898ad6184a9a3d538e770');
-            expect(aSpecificCommit?.parentDate.toISOString().split('T')[0]).equal(new Date('2023-10-12').toISOString().split('T')[0]);
+            if (!aSpecificCommit) {
+                throw new Error('aSpecificCommit is undefined');
+            }
+            expect(toYYYYMMDD(aSpecificCommit.parentDate)).equal(toYYYYMMDD(new Date('2023-10-12')));
             done();
         });
     }).timeout(20000);

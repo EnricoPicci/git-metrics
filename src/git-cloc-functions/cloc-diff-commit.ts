@@ -10,10 +10,11 @@ import { clocDiffWithParentByfile$ } from "../cloc-functions/cloc-diff-byfile";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
 import { readCommitCompactWithParentDate$ } from "../git-functions/commit";
 
-import { ClocDiffCommitEnriched } from "./cloc-diff-commit.model";
-import { gitRepoPaths } from "../git-functions/repo-path.functions";
+import { ClocDiffCommitEnriched, ClocDiffCommitEnrichedWithDerivedData } from "./cloc-diff-commit.model";
+import { gitRepoPaths } from "../git-functions/repo-path";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
 import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
+import { toYYYYMMDD } from "../tools/dates/date-functions";
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -36,7 +37,8 @@ export function clocDiffWithCommit$(
     pathToRepo: string,
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
-    languages: string[] = []
+    languages: string[] = [],
+    options: ClocDiffWithCommitOptions = {}
 ) {
     // first calculate the cloc dictionary and pass it down the pipe
     return clocFileDict$(pathToRepo).pipe(
@@ -81,12 +83,19 @@ export function clocDiffWithCommit$(
                 ...clocInfo,
                 ...commit
             }
+            // set the file path relative to the current working directory to make it easier to read and possibly to link
             clocDiffCommitEnriched.file = path.join(pathToRepo, clocDiffCommitEnriched.file)
             clocDiffCommitEnriched.file = path.relative(process.cwd(), clocDiffCommitEnriched.file)
-            clocDiffCommitEnriched.possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched)
-            return clocDiffCommitEnriched
+            // calculate the derived data
+            const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options)
+
+            return clocDiffCommitEnrichedWithDerivedData
         }),
     )
+}
+export type ClocDiffWithCommitOptions = {
+    fileMassiveRefactorThreshold?: number,
+    commitMassiveRefactorThreshold?: number,
 }
 
 /**
@@ -107,12 +116,13 @@ export function clocDiffWithCommitForRepos$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     excludeRepoPaths: string[] = [],
-    languages: string[] = []
+    languages: string[] = [],
+    options: ClocDiffWithCommitOptions = {}
 ) {
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
     return from(repoPaths).pipe(
         concatMap((repoPath) => {
-            return clocDiffWithCommit$(repoPath, fromDate, toDate, languages)
+            return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, options)
         })
     )
 }
@@ -136,7 +146,7 @@ export function writeClocDiffWithCommit$(
     languages: string[] = []
 ) {
     const pathToRepoName = path.basename(pathToRepo);
-    const outFile = `${pathToRepoName}-cloc-diff-commit-${fromDate.toISOString().split('T')[0]}-${toDate.toISOString().split('T')[0]}.csv`;
+    const outFile = `${pathToRepoName}-cloc-diff-commit-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
     const outFilePath = path.join(outDir, outFile);
 
     return deleteFile$(outFilePath).pipe(
@@ -155,16 +165,33 @@ export function writeClocDiffWithCommit$(
     )
 }
 
+/**
+ * Writes the cloc diff for each file in each commit in each Git repository in a given folder between two dates to a CSV file.
+ * Repos whose path is in the set of excluded repo paths are ignored.
+ * The changes that affect files that are not in the set of languages are ignored.
+ * The resulting CSV file is saved in the directory specified by the `outdir` option, or in the current directory 
+ * if no `outdir` is specified.
+ * @param folderPath The path to the folder containing the Git repositories.
+ * @param options An object containing options for the function. The options are:
+ *   - `outdir`: The directory where the resulting CSV file should be saved. Defaults to the current directory.
+ *   - `fromDate`: The start date of the time range. Defaults to the beginning of time.
+ *   - `toDate`: The end date of the time range. Defaults to the current date and time.
+ *   - `excludeRepoPaths`: An array of repository paths to exclude. Wildcards can be used. Defaults to an empty array.
+ *   - `languages`: An array of languages for which to calculate the cloc diff. Defaults to an empty array.
+ * @returns An Observable that emits the path of the resulting CSV file.
+ */
 export function writeClocDiffWithCommitForRepos$(
     folderPath: string,
-    outDir = './',
-    fromDate = new Date(0),
-    toDate = new Date(Date.now()),
-    excludeRepoPaths: string[] = [],
-    languages: string[] = []
+    options: WriteClocDiffWithCommitForReposOptions = {}
 ) {
+    const outDir = options.outdir || './'
+    const fromDate = options.fromDate || new Date(0)
+    const toDate = options.toDate || new Date(Date.now())
+    const excludeRepoPaths: string[] = options.excludeRepoPaths || []
+    const languages: string[] = options.languages || []
+
     const folderName = path.basename(folderPath);
-    const outFile = `${folderName}-cloc-diff-commit-${fromDate.toISOString().split('T')[0]}-${toDate.toISOString().split('T')[0]}.csv`;
+    const outFile = `${folderName}-cloc-diff-commit-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
     const outFilePath = path.join(outDir, outFile);
 
     let noCommitsFound = true;
@@ -172,9 +199,9 @@ export function writeClocDiffWithCommitForRepos$(
     createDirIfNotExisting(outDir);
 
     return deleteFile$(outFilePath).pipe(
-        concatMap(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages)),
-        map(csvRec => {
-            delete (csvRec as any).sumOfDiffs
+        concatMap(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages, options)),
+        map(clocDiffCommitEnriched => {
+            const csvRec = formatClocDiffCommitEnrichedForCsv(clocDiffCommitEnriched, options)
             return csvRec
         }),
         toCsvObs(),
@@ -195,12 +222,54 @@ export function writeClocDiffWithCommitForRepos$(
         }),
     )
 }
+export type WriteClocDiffWithCommitForReposOptions = {
+    outdir?: string,
+    fromDate?: Date,
+    toDate?: Date,
+    excludeRepoPaths?: string[],
+    languages?: string[],
+    removeBlanks?: boolean,
+    removeComments?: boolean,
+    removeSame?: boolean,
+} & ClocDiffWithCommitOptions
 
 
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
+
+function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, options: ClocDiffWithCommitOptions) {
+    const commit_code_turnover =
+        clocDiffCommitEnriched.commit_code_added +
+        clocDiffCommitEnriched.commit_code_removed +
+        clocDiffCommitEnriched.commit_code_modified;
+
+    const file_code_turnover =
+        clocDiffCommitEnriched.code_added +
+        clocDiffCommitEnriched.code_removed +
+        clocDiffCommitEnriched.code_modified;
+
+    const possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched)
+    let possibleMassiveRefactor: boolean | undefined = undefined
+    if (options.fileMassiveRefactorThreshold || options.commitMassiveRefactorThreshold) {
+        possibleMassiveRefactor = isPossibleMassiveRefactor(
+            file_code_turnover,
+            commit_code_turnover,
+            options.fileMassiveRefactorThreshold || -1,
+            options.commitMassiveRefactorThreshold || -1,
+        )
+    }
+
+    const infoWithDerivedData: ClocDiffCommitEnrichedWithDerivedData = {
+        ...clocDiffCommitEnriched,
+        commit_code_turnover,
+        file_code_turnover,
+        possibleCutPaste,
+        possibleMassiveRefactor,
+    }
+    return infoWithDerivedData
+}
 
 // the change is a possible cut and paste if the number of lines of code added is equal to the number of lines removed
 // and the number of lines added is greater than 0 (which means that there are lines of code added and removed) 
@@ -209,4 +278,53 @@ function isPossibleCutPaste(clocDiffCommitEnriched: ClocDiffCommitEnriched) {
     return clocDiffCommitEnriched.code_added === clocDiffCommitEnriched.code_removed &&
         clocDiffCommitEnriched.code_added > 0 &&
         clocDiffCommitEnriched.code_modified === 0
+}
+
+// isPossibleMassiveRefactor is a function that returns true if the commit is a possible massive refactor
+// a file diff is a possible massive refactor if the file_code_turnover is greater than a given threshold
+// or if the commit_code_turnover is greater than a given threshold
+function isPossibleMassiveRefactor(
+    file_code_turnover: number,
+    commit_code_turnover: number,
+    fileMassiveRefactorThreshold: number,
+    commitMassiveRefactorThreshold: number) {
+    return file_code_turnover > fileMassiveRefactorThreshold ||
+        commit_code_turnover > commitMassiveRefactorThreshold
+}
+
+
+
+function formatClocDiffCommitEnrichedForCsv(csvRec: ClocDiffCommitEnriched, options: WriteClocDiffWithCommitForReposOptions) {// define csvRecObj as of type any so that we can manipulate its properties without type checking
+    // while we keep the type checking for csvRec so that we know which are the properties available
+    const csvRecObj: any = csvRec
+    // delete the object containing the sum of the diffs (all data are stored in simple properties of csvRec)
+    delete csvRecObj.sumOfDiffs
+    // format the dates to YYYY-MM-DD
+    csvRecObj.date = toYYYYMMDD(csvRec.date)
+    csvRecObj.parentDate = toYYYYMMDD(csvRec.parentDate)
+
+    const removeBlanks = options.removeBlanks || false
+    const removeComments = options.removeComments || false
+    const removeSame = options.removeSame || false
+    if (removeBlanks) {
+        delete csvRecObj.blank_added
+        delete csvRecObj.blank_modified
+        delete csvRecObj.blank_removed
+        delete csvRecObj.blank_same
+        delete csvRecObj.blank
+    }
+    if (removeComments) {
+        delete csvRecObj.comment_added
+        delete csvRecObj.comment_modified
+        delete csvRecObj.comment_removed
+        delete csvRecObj.comment_same
+        delete csvRecObj.comment
+    }
+    if (removeSame) {
+        delete csvRecObj.blank_same
+        delete csvRecObj.comment_same
+        delete csvRecObj.code_same
+    }
+
+    return csvRecObj
 }

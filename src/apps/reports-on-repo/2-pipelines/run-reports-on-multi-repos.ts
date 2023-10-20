@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { runAllReportsOnMultiRepos } from './internals/run-reports-on-multi-repos-core';
 import { allReports } from './internals/run-reports-on-repo-core';
-import { gitRepoPaths$ } from '../../../git-functions/repo-path.functions';
+import { gitRepoPaths$ } from '../../../git-functions/repo-path';
 
 const DEFAULT_OUT_DIR = './';
 

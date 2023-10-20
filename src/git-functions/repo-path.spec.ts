@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { tap } from "rxjs";
-import { gitRepoPaths$, fetchAllGitReposFromGivenFolder } from "./repo-path.functions";
+import { gitRepoPaths$, fetchAllGitReposFromGivenFolder } from "./repo-path";
 
 
 describe(`gitRepoPaths`, () => {

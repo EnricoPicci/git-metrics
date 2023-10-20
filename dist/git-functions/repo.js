@@ -8,7 +8,7 @@ const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const commit_1 = require("./commit");
-const repo_path_functions_1 = require("./repo-path.functions");
+const repo_path_1 = require("./repo-path");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -46,7 +46,7 @@ exports.cloneRepo$ = cloneRepo$;
  * @returns An Observable that notifies the list of RepoCompact objects representing all the repos in the given folder.
  */
 function reposCompactInFolder$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = 1, excludeRepoPaths = []) {
-    const repoPaths = (0, repo_path_functions_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)((repoPaths) => {
         console.log(`Repos to be analyzed: ${repoPaths.length}`);
         repoPaths.forEach((repoPath) => {

@@ -10,6 +10,7 @@ const path_1 = __importDefault(require("path"));
 const observable_fs_1 = require("observable-fs");
 const delete_file_1 = require("../tools/test-helpers/delete-file");
 const config_1 = require("../config");
+const date_functions_1 = require("../tools/dates/date-functions");
 describe('readCommitCompact$', () => {
     it('should throw an error if repoPath is not provided', () => {
         (0, chai_1.expect)(() => (0, commit_1.readCommitCompact$)('')).to.throw();
@@ -370,7 +371,10 @@ describe('readCommitCompactWithParentDate$', () => {
             (0, chai_1.expect)(commits.length).greaterThan(0);
             // aSpecificCommit is a commit whose parent has a specific date to test (the date is immutable in the repo)
             const aSpecificCommit = commits.find((commit) => commit.sha === 'ef7cf168d4744f2a2e0898ad6184a9a3d538e770');
-            (0, chai_1.expect)(aSpecificCommit === null || aSpecificCommit === void 0 ? void 0 : aSpecificCommit.parentDate.toISOString().split('T')[0]).equal(new Date('2023-10-12').toISOString().split('T')[0]);
+            if (!aSpecificCommit) {
+                throw new Error('aSpecificCommit is undefined');
+            }
+            (0, chai_1.expect)((0, date_functions_1.toYYYYMMDD)(aSpecificCommit.parentDate)).equal((0, date_functions_1.toYYYYMMDD)(new Date('2023-10-12')));
             done();
         });
     }).timeout(20000);

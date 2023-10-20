@@ -1,13 +1,26 @@
 import { Command } from "commander";
-import { writeClocDiffWithCommitForRepos$ } from "../../git-cloc-functions/cloc-diff-commit";
+import { writeClocDiffWithCommitForRepos$, WriteClocDiffWithCommitForReposOptions } from "../../git-cloc-functions/cloc-diff-commit";
 
 export function launchClocDiffByfileWithCommitForRepos() {
     const start = Date.now();
 
     console.log('====>>>> Launching Cloc Diff Byfile with Commit For Repos')
 
-    const { folderPath, outdir, from, to, excludeRepoPaths, languages } = readParams();
-    writeClocDiffWithCommitForRepos$(folderPath, outdir, from, to, excludeRepoPaths, languages).subscribe({
+    const { folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages,
+        removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold } = readParams();
+    const options: WriteClocDiffWithCommitForReposOptions = {
+        outdir,
+        fromDate,
+        toDate,
+        excludeRepoPaths,
+        languages,
+        removeBlanks,
+        removeComments,
+        removeSame,
+        fileMassiveRefactorThreshold,
+        commitMassiveRefactorThreshold,
+    }
+    writeClocDiffWithCommitForRepos$(folderPath, options).subscribe({
         complete: () => {
             console.log(`\nCloc Diff Byfile with Commit For Repo calculation completed in ${(Date.now() - start) / 1000} seconds`);
         },
@@ -46,14 +59,44 @@ function readParams() {
             '--languages <string...>',
             `a space separated list of languages to be considered in the diff (e.g. --languages "Java" "Python")
              - default is the empty list which means all languages`,
+        )
+        .option(
+            '--removeBlanks',
+            `if this opion is specified, then the statistics about blank lines are removed from the cloc diff output`,
+        )
+        .option(
+            '--removeComments',
+            `if this opion is specified, the statistics about comment lines are removed from the cloc diff output`,
+        )
+        .option(
+            '--removeSame',
+            `if this opion is specified, the statistics about lines that are the same (i.e. unchanged) are removed from the cloc diff output`,
+        )
+        .option(
+            '--fileMassiveRefactorThreshold <number>',
+            `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive refactoring will be calculated
+            (the logic being that a diff on a file with a code turnover higher than the threshold is likely to be a massive refactoring)`,
+        )
+        .option(
+            '--commitMassiveRefactorThreshold',
+            `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive refactoring will be calculated
+            (the logic being that a diff belonging to a commit whose code-turnover higher than the threshold is likely to be a massive refactoring)`,
         );
 
     const _options = program.parse(process.argv).opts();
     const outdir = _options.outdir || process.cwd();
-    const from = _options.from ? new Date(_options.from) : new Date(0);
-    const to = _options.to ? new Date(_options.to) : new Date(Date.now());
+    const fromDate = _options.from ? new Date(_options.from) : new Date(0);
+    const toDate = _options.to ? new Date(_options.to) : new Date(Date.now());
     const excludeRepoPaths = _options.excludeRepoPaths || [];
     const languages = _options.languages || [];
+    const removeBlanks = _options.removeBlanks || false;
+    const removeComments = _options.removeComments || false;
+    const removeSame = _options.removeSame || false;
+    const fileMassiveRefactorThreshold = _options.fileMassiveRefactorThreshold || 0;
+    const commitMassiveRefactorThreshold = _options.commitMassiveRefactorThreshold || 0;
 
-    return { folderPath: _options.folderPath, outdir, from, to, excludeRepoPaths, languages };
+    return {
+        folderPath: _options.folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages,
+        removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold
+    };
 }

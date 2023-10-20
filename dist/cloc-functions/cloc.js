@@ -9,7 +9,7 @@ const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const config_1 = require("./config");
-const repo_path_functions_1 = require("../git-functions/repo-path.functions");
+const repo_path_1 = require("../git-functions/repo-path");
 const ignore_up_to_1 = require("../tools/rxjs-operators/ignore-up-to");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 //********************************************************************************************************************** */
@@ -221,7 +221,7 @@ exports.writeClocByFile$ = writeClocByFile$;
  * @returns An Observable that emits the cloc info for all the Git repositories in the given folder.
  */
 function clocByFileForRepos$(folderPath, excludeRepoPaths = []) {
-    const repos = (0, repo_path_functions_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    const repos = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     const cloc$ = (0, rxjs_1.from)(repos).pipe((0, rxjs_1.concatMap)((repoPath) => {
         const params = {
             folderPath: repoPath,

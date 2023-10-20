@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import path from 'path';
 import { tap } from 'rxjs';
-import { gitRepoPaths$, fetchAllGitReposFromGivenFolder } from '../../../../git-functions/repo-path.functions';
+import { gitRepoPaths$, fetchAllGitReposFromGivenFolder } from '../../../../git-functions/repo-path';
 
 describe(`gitRepos`, () => {
     it(`returns the folders that contain git repos starting from the folder containing this project`, (done) => {

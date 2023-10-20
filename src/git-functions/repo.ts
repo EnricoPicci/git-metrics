@@ -6,7 +6,7 @@ import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
 import { readCommitCompact$ } from './commit';
-import { gitRepoPaths } from './repo-path.functions';
+import { gitRepoPaths } from './repo-path';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */

@@ -29,7 +29,7 @@ import {
 import { ClocDictionary, ClocFileInfo, ClocLanguageStats } from './cloc.model';
 import { CLOC_CONFIG } from './config';
 import { ClocParams } from './cloc-params';
-import { gitRepoPaths } from '../git-functions/repo-path.functions';
+import { gitRepoPaths } from '../git-functions/repo-path';
 import { ignoreUpTo } from '../tools/rxjs-operators/ignore-up-to';
 import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
 

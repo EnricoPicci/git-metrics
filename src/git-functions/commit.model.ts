@@ -7,7 +7,8 @@ export interface CommitCompact {
     subject: string,
 }
 
-export interface CommitCompactWithParentDate extends CommitCompact {
+export interface CommitCompactWithUrlAndParentDate extends CommitCompact {
+    commitUrl: string,
     parentDate: Date,
 }
 

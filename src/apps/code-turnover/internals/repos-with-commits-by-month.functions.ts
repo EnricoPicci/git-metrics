@@ -5,7 +5,7 @@ import { repoCompact$ } from '../../../git-functions/repo';
 
 import { RepoCompactWithCommitsByMonths, ReposWithCommitsByMonths } from './repos-with-commits-by-month.model';
 import { newCommitsByMonth } from './commits-by-month.functions';
-import { gitRepoPaths } from '../../../git-functions/repo-path.functions';
+import { gitRepoPaths } from '../../../git-functions/repo-path';
 
 // reposCompactWithCommitsByMonthsInFolderObs returns an Observable that notifies the list of
 // RepoCompactWithCommitsByMonths objects representing all the repos in a given folder

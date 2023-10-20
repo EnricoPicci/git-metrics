@@ -21,7 +21,7 @@ const cloc_diff_byfile_model_1 = require("./cloc-diff-byfile.model");
  */
 function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = []) {
     const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
-    return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-rel --by-file', cmd).pipe((0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-rel --by-file --quiet', cmd).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n');
     }), (0, rxjs_1.concatMap)(lines => {
         return (0, rxjs_1.from)(lines);
@@ -99,7 +99,7 @@ exports.clocDiffWithParentByfile$ = clocDiffWithParentByfile$;
 exports.CLOC_DIFF_BYFILE_HEADER = 'File, == blank, != blank, + blank, - blank, == comment, != comment, + comment, - comment, == code, != code, + code, - code,';
 function buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
     const cdCommand = `cd ${folderPath}`;
-    let clocDiffAllCommand = `cloc --git-diff-rel --csv --by-file --timeout=${config_1.CLOC_CONFIG.TIMEOUT}`;
+    let clocDiffAllCommand = `cloc --git-diff-rel --csv --by-file --timeout=${config_1.CLOC_CONFIG.TIMEOUT} --quiet`;
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;

@@ -10,12 +10,12 @@ const read_all_1 = require("../../1-A-read/read-all");
 const fs_utils_1 = require("../../../../tools/fs-utils/fs-utils");
 const run_reports_on_repo_core_1 = require("./run-reports-on-repo-core");
 const cloc_1 = require("../../../../cloc-functions/cloc");
-const repo_path_functions_1 = require("../../../../git-functions/repo-path.functions");
+const repo_path_1 = require("../../../../git-functions/repo-path");
 function runAllReportsOnMergedRepos(reports, repoContainerFolderPath, filter, after, before, outDir, outFilePrefix, clocDefsPath, ignoreClocZero, depthInFilesCoupling, concurrentReadOfCommits, noRenames, excludeRepoPaths) {
     // create the output directory if not existing
     const _outDir = path_1.default.resolve(outDir ? outDir : '');
     (0, fs_utils_1.createDirIfNotExisting)(_outDir);
-    const repoFolderPaths = (0, repo_path_functions_1.gitRepoPaths$)(repoContainerFolderPath, excludeRepoPaths);
+    const repoFolderPaths = (0, repo_path_1.gitRepoPaths$)(repoContainerFolderPath, excludeRepoPaths);
     return repoFolderPaths.pipe((0, rxjs_1.map)((_repoFolderPaths) => {
         const allCommitStreams = [];
         const allFileStreams = [];

@@ -1,5 +1,12 @@
 import { ClocDiffByfileWithCommitDiffs } from "../cloc-functions/cloc-diff-byfile.model";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
-import { CommitCompactWithParentDate } from "../git-functions/commit.model";
+import { CommitCompactWithUrlAndParentDate } from "../git-functions/commit.model";
 
-export type ClocDiffCommitEnriched = ClocDiffByfileWithCommitDiffs & ClocFileInfo & CommitCompactWithParentDate 
+export type ClocDiffCommitEnriched = ClocDiffByfileWithCommitDiffs & ClocFileInfo & CommitCompactWithUrlAndParentDate
+
+export type ClocDiffCommitEnrichedWithDerivedData = ClocDiffCommitEnriched & {
+    commit_code_turnover: number;
+    file_code_turnover: number;
+    possibleCutPaste: boolean;
+    possibleMassiveRefactor?: boolean;
+}
