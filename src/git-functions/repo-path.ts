@@ -42,7 +42,20 @@ export function fetchAllGitReposFromGivenFolder(fullPath: string) {
     }
     filesAndDirs.forEach((fileOrDir) => {
         const absolutePath = path.join(fullPath, fileOrDir);
-        if (fs.statSync(absolutePath).isDirectory()) {
+        let fStats;
+        // we have seen situations where fs.statSync throws an error even though the file is returned by fs.readdirSync
+        // so we catch the error and log it, but we do not throw it
+        try {
+            fStats = fs.statSync(absolutePath)
+        } catch (err: any) {
+            // in the case we have seen the error code is ENOENT and the errno is -2
+            if (err.code === 'ENOENT' && err.errno === -2) {
+                console.error(`Error: ${err.message} for path ${absolutePath}`);
+                return gitRepos;
+            }
+            throw err;
+        }
+        if (fStats.isDirectory()) {
             const subRepos = fetchAllGitReposFromGivenFolder(absolutePath);
             gitRepos = gitRepos.concat(subRepos);
         }
