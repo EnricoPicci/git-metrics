@@ -39,7 +39,7 @@ function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(
     }), (0, rxjs_1.filter)((commit) => {
         return commit.trim().length > 0;
     }), (0, rxjs_1.map)((commit) => {
-        return newCommitCompactFromGitlog(commit);
+        return newCommitCompactFromGitlog(commit, repoPath);
     }), (0, rxjs_1.filter)((commit) => {
         return commit.date >= fromDate && commit.date <= toDate;
     }), (0, rxjs_1.catchError)((err) => {
@@ -99,7 +99,7 @@ function readOneCommitCompact$(commitSha, repoPath, verbose = true) {
     // the -n 1 option limits the number of commits to 1
     const cmd = `cd ${repoPath} && git log --pretty=%H,%ad,%an ${commitSha} -n 1`;
     return (0, execute_command_1.executeCommandObs)('read one commit from log', cmd).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((output) => {
-        const commitCompact = newCommitCompactFromGitlog(output[0]);
+        const commitCompact = newCommitCompactFromGitlog(output[0], repoPath);
         return commitCompact;
     }), (0, rxjs_1.catchError)((error) => {
         if (error.message.includes('unknown revision or path not in the working tree')) {
@@ -194,6 +194,7 @@ function newEmptyCommitCompact() {
         date: new Date(0),
         author: '',
         subject: '',
+        repo: ''
     };
     return commit;
 }
@@ -209,7 +210,7 @@ exports.SEP = config_1.GIT_CONFIG.COMMIT_REC_SEP;
  * @param commitDataFromGitlog A string in the format sha,date,author received from the git log command.
  * @returns A new `CommitCompact` object with the specified sha, author and date.
  */
-function newCommitCompactFromGitlog(commitDataFromGitlog) {
+function newCommitCompactFromGitlog(commitDataFromGitlog, repo) {
     const shaDateAuthorComment = commitDataFromGitlog.split(',');
     const sha = shaDateAuthorComment[0];
     const date = shaDateAuthorComment[1];
@@ -225,6 +226,7 @@ function newCommitCompactFromGitlog(commitDataFromGitlog) {
         date: new Date(date),
         author: author,
         subject: comment,
+        repo
     };
     return commit;
 }

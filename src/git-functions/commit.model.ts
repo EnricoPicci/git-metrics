@@ -5,6 +5,7 @@ export interface CommitCompact {
     date: Date;
     author: string,
     subject: string,
+    repo: string,
 }
 
 export interface CommitCompactWithUrlAndParentDate extends CommitCompact {

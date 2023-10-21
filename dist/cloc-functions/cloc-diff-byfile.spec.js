@@ -33,7 +33,6 @@ describe('clocDiffByfile$', () => {
                     (0, chai_1.expect)(clocDiff.comment_modified).gte(0);
                     (0, chai_1.expect)(clocDiff.extension).eq('ts');
                     (0, chai_1.expect)(clocDiff.file).to.be.a('string');
-                    (0, chai_1.expect)(clocDiff.possibleCutPaste).eq(false);
                     // test that the sum of the diffs contains numbers
                     (0, chai_1.expect)(clocDiff.sumOfDiffs).to.be.an('object');
                     (0, chai_1.expect)((_a = clocDiff.sumOfDiffs) === null || _a === void 0 ? void 0 : _a.code_added).gte(0);
@@ -81,7 +80,6 @@ describe('clocDiffByfileWithCommitDiffs$', () => {
                     (0, chai_1.expect)(clocDiff.comment_modified).gte(0);
                     (0, chai_1.expect)(clocDiff.extension).eq('ts');
                     (0, chai_1.expect)(clocDiff.file).to.be.a('string');
-                    (0, chai_1.expect)(clocDiff.possibleCutPaste).eq(false);
                     // test that the sum of the diffs of the commit contains numbers
                     (0, chai_1.expect)(clocDiff.commit_code_added).gte(0);
                     (0, chai_1.expect)(clocDiff.commit_code_removed).gte(0);

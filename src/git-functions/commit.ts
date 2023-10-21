@@ -58,7 +58,7 @@ export function readCommitCompact$(
             return commit.trim().length > 0;
         }),
         map((commit: string) => {
-            return newCommitCompactFromGitlog(commit);
+            return newCommitCompactFromGitlog(commit, repoPath);
         }),
         filter((commit: CommitCompact) => {
             return commit.date >= fromDate && commit.date <= toDate;
@@ -143,7 +143,7 @@ export function readOneCommitCompact$(commitSha: string, repoPath: string, verbo
     return executeCommandObs('read one commit from log', cmd).pipe(
         toArray(),
         map((output) => {
-            const commitCompact = newCommitCompactFromGitlog(output[0]);
+            const commitCompact = newCommitCompactFromGitlog(output[0], repoPath);
             return commitCompact;
         }),
         catchError((error) => {
@@ -257,6 +257,7 @@ export function newEmptyCommitCompact() {
         date: new Date(0),
         author: '',
         subject: '',
+        repo: ''
     };
     return commit;
 }
@@ -275,7 +276,7 @@ export const SEP = GIT_CONFIG.COMMIT_REC_SEP;
  * @param commitDataFromGitlog A string in the format sha,date,author received from the git log command.
  * @returns A new `CommitCompact` object with the specified sha, author and date.
  */
-export function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
+export function newCommitCompactFromGitlog(commitDataFromGitlog: string, repo: string) {
     const shaDateAuthorComment = commitDataFromGitlog.split(',');
     const sha = shaDateAuthorComment[0]
     const date = shaDateAuthorComment[1]
@@ -291,6 +292,7 @@ export function newCommitCompactFromGitlog(commitDataFromGitlog: string) {
         date: new Date(date),
         author: author,
         subject: comment,
+        repo
     };
     return commit;
 }

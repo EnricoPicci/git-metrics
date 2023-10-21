@@ -22,7 +22,6 @@ function newClocDiffByfile(csvLine) {
     const code_modified = fields[1] ? parseInt(fields[10]) : 0;
     const code_added = fields[1] ? parseInt(fields[11]) : 0;
     const code_removed = fields[1] ? parseInt(fields[12]) : 0;
-    const possibleCutPaste = false;
     const clocDiffByfile = {
         file,
         extension,
@@ -38,7 +37,6 @@ function newClocDiffByfile(csvLine) {
         code_modified,
         code_added,
         code_removed,
-        possibleCutPaste,
     };
     return clocDiffByfile;
 }

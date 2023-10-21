@@ -21,9 +21,6 @@ export type ClocDiffByfile = {
     code_modified: number;
     code_added: number;
     code_removed: number;
-    // indicates whether the file is a possible cut-and-paste candidate - the logic to determine this 
-    // could be to check whether the number of code lines added is equal to the number of code lines removed and not 0
-    possibleCutPaste: boolean;
 };
 
 export function newClocDiffByfile(csvLine: string) {
@@ -43,7 +40,6 @@ export function newClocDiffByfile(csvLine: string) {
     const code_modified = fields[1] ? parseInt(fields[10]) : 0;
     const code_added = fields[1] ? parseInt(fields[11]) : 0;
     const code_removed = fields[1] ? parseInt(fields[12]) : 0;
-    const possibleCutPaste = false;
     const clocDiffByfile: ClocDiffByfile = {
         file,
         extension,
@@ -59,7 +55,6 @@ export function newClocDiffByfile(csvLine: string) {
         code_modified,
         code_added,
         code_removed,
-        possibleCutPaste,
     };
     return clocDiffByfile
 }

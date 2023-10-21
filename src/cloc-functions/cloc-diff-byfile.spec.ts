@@ -34,7 +34,6 @@ describe('clocDiffByfile$', () => {
                     expect(clocDiff.comment_modified).gte(0);
                     expect(clocDiff.extension).eq('ts');
                     expect(clocDiff.file).to.be.a('string');
-                    expect(clocDiff.possibleCutPaste).eq(false);
                     // test that the sum of the diffs contains numbers
                     expect(clocDiff.sumOfDiffs).to.be.an('object');
                     expect(clocDiff.sumOfDiffs?.code_added).gte(0);
@@ -86,7 +85,6 @@ describe('clocDiffByfileWithCommitDiffs$', () => {
                     expect(clocDiff.comment_modified).gte(0);
                     expect(clocDiff.extension).eq('ts');
                     expect(clocDiff.file).to.be.a('string');
-                    expect(clocDiff.possibleCutPaste).eq(false);
                     // test that the sum of the diffs of the commit contains numbers
                     expect(clocDiff.commit_code_added).gte(0);
                     expect(clocDiff.commit_code_removed).gte(0);

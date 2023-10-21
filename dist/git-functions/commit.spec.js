@@ -355,7 +355,7 @@ describe(`writeCommitWithFileNumstat$`, () => {
 describe(`newCommitCompactFromGitlog$`, () => {
     it(`create a new CommitCompact from a line of the Git log and check that the comment does not contain csv separators`, () => {
         const gitLogLine = '../../repo-folder,2023-02,2/9/2023,2/8/2023,MY-APP-12, prepare folders, and app-demo,https://git/my-git/-/commit/123xyz,123xyz,added,java,code,0';
-        const commit = (0, commit_1.newCommitCompactFromGitlog)(gitLogLine);
+        const commit = (0, commit_1.newCommitCompactFromGitlog)(gitLogLine, 'a repo');
         const comment = commit.subject;
         (0, chai_1.expect)(comment.includes(config_1.CONFIG.CSV_SEP)).false;
         (0, chai_1.expect)(comment.includes(config_1.CONFIG.CVS_SEP_SUBSTITUE)).true;
