@@ -256,8 +256,6 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
         clocDiffCommitEnriched.date.getTime() - clocDiffCommitEnriched.parentDate.getTime()
     ) / (1000 * 60 * 60 * 24))
 
-    const possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched)
-
     let _maybe_mass_refact = false
     let _explain_mass_refact = '-'
     if (options.fileMassiveRefactorThreshold || options.commitMassiveRefactorThreshold) {
@@ -278,22 +276,12 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
         commit_code_turnover,
         file_code_turnover,
         days_span,
-        maybe_cut_paste: possibleCutPaste,
         maybe_mass_refact: _maybe_mass_refact,
         explain_mass_refact: _explain_mass_refact,
         maybe_generated,
         explain_generated,
     }
     return infoWithDerivedData
-}
-
-// the change is a possible cut and paste if the number of lines of code added is equal to the number of lines removed
-// and the number of lines added is greater than 0 (which means that there are lines of code added and removed) 
-// and the number of lines modified is 0
-function isPossibleCutPaste(clocDiffCommitEnriched: ClocDiffCommitEnriched) {
-    return clocDiffCommitEnriched.code_added === clocDiffCommitEnriched.code_removed &&
-        clocDiffCommitEnriched.code_added > 0 &&
-        clocDiffCommitEnriched.code_modified === 0
 }
 
 // isPossibleMassiveRefactor is a function that returns true if the commit is a possible massive refactor

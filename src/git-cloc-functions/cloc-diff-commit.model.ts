@@ -8,7 +8,6 @@ export type ClocDiffCommitEnrichedWithDerivedData = ClocDiffCommitEnriched & {
     commit_code_turnover: number;
     file_code_turnover: number;
     days_span: number;
-    maybe_cut_paste?: boolean;
     maybe_mass_refact: boolean;
     explain_mass_refact: string;
     maybe_generated: boolean;
