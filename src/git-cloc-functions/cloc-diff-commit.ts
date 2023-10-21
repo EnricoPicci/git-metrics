@@ -1,6 +1,6 @@
 import path from "path";
 
-import { catchError, concatMap, defaultIfEmpty, from, ignoreElements, map, tap } from "rxjs";
+import { catchError, concatMap, defaultIfEmpty, from, ignoreElements, map, tap, toArray } from "rxjs";
 
 import { appendFileObs } from "observable-fs";
 import { toCsvObs } from "@enrico.piccinin/csv-tools";
@@ -8,7 +8,7 @@ import { toCsvObs } from "@enrico.piccinin/csv-tools";
 import { clocFileDict$ } from "../cloc-functions/cloc-dictionary";
 import { clocDiffWithParentByfile$ } from "../cloc-functions/cloc-diff-byfile";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
-import { readCommitCompactWithUrlAndParentDate$ } from "../git-functions/commit";
+import { readCommitCompact$, readCommitCompactWithUrlAndParentDate$ } from "../git-functions/commit";
 
 import { ClocDiffCommitEnriched, ClocDiffCommitEnrichedWithDerivedData } from "./cloc-diff-commit.model";
 import { gitRepoPaths } from "../git-functions/repo-path";
@@ -38,8 +38,10 @@ export function clocDiffWithCommit$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     languages: string[] = [],
+    commitsCount = 0,
     options: ClocDiffWithCommitOptions = {}
 ) {
+    let commitCounter = 0
     // first calculate the cloc dictionary and pass it down the pipe
     return clocFileDict$(pathToRepo).pipe(
         catchError((err) => {
@@ -89,6 +91,11 @@ export function clocDiffWithCommit$(
             // calculate the derived data
             const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options)
 
+            // log progress
+            commitCounter++
+            const ofMsg = commitsCount == 0 ? '' : `of ${commitsCount} commits`
+            console.log(`commit ${commitCounter} ${ofMsg}`)
+
             return clocDiffCommitEnrichedWithDerivedData
         }),
     )
@@ -120,9 +127,13 @@ export function clocDiffWithCommitForRepos$(
     options: ClocDiffWithCommitOptions = {}
 ) {
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
-    return from(repoPaths).pipe(
-        concatMap((repoPath) => {
-            return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, options)
+    return countCommits(repoPaths, fromDate, toDate).pipe(
+        concatMap((commitsCount) => {
+            return from(repoPaths).pipe(
+                concatMap((repoPath) => {
+                    return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, commitsCount, options)
+                })
+            )
         })
     )
 }
@@ -356,4 +367,18 @@ function formatClocDiffCommitEnrichedForCsv(csvRec: ClocDiffCommitEnriched, opti
     }
 
     return csvRecObj
+}
+
+function countCommits(
+    repoPaths: string[],
+    fromDate = new Date(0),
+    toDate = new Date(Date.now()),
+) {
+    return from(repoPaths).pipe(
+        concatMap((repoPath) => {
+            return readCommitCompact$(repoPath, fromDate, toDate, true)
+        }),
+        toArray(),
+        map(commits => commits.length),
+    )
 }

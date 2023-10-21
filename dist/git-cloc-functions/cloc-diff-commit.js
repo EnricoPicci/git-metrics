@@ -30,7 +30,8 @@ const date_functions_1 = require("../tools/dates/date-functions");
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable of ClocDiffCommitEnriched objects.
  */
-function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = [], options = {}) {
+function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = [], commitsCount = 0, options = {}) {
+    let commitCounter = 0;
     // first calculate the cloc dictionary and pass it down the pipe
     return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo).pipe((0, rxjs_1.catchError)((err) => {
         if (err.code === 'ENOENT') {
@@ -70,6 +71,10 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
         clocDiffCommitEnriched.file = path_1.default.relative(process.cwd(), clocDiffCommitEnriched.file);
         // calculate the derived data
         const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options);
+        // log progress
+        commitCounter++;
+        const ofMsg = commitsCount == 0 ? '' : `of ${commitsCount} commits`;
+        console.log(`commit ${commitCounter} ${ofMsg}`);
         return clocDiffCommitEnrichedWithDerivedData;
     }));
 }
@@ -89,8 +94,10 @@ exports.clocDiffWithCommit$ = clocDiffWithCommit$;
  */
 function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], languages = [], options = {}) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
-    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
-        return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, options);
+    return countCommits(repoPaths, fromDate, toDate).pipe((0, rxjs_1.concatMap)((commitsCount) => {
+        return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
+            return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, commitsCount, options);
+        }));
     }));
 }
 exports.clocDiffWithCommitForRepos$ = clocDiffWithCommitForRepos$;
@@ -252,5 +259,10 @@ function formatClocDiffCommitEnrichedForCsv(csvRec, options) {
         delete csvRecObj.code_same;
     }
     return csvRecObj;
+}
+function countCommits(repoPaths, fromDate = new Date(0), toDate = new Date(Date.now())) {
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
+        return (0, commit_1.readCommitCompact$)(repoPath, fromDate, toDate, true);
+    }), (0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => commits.length));
 }
 //# sourceMappingURL=cloc-diff-commit.js.map
