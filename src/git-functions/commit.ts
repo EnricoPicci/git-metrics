@@ -71,15 +71,15 @@ export function readCommitCompact$(
 }
 
 /**
- * Reads the commits in a Git repository for a certain period and returns an Observable of CommitCompactWithParentDate objects.
- * The function reads the parent commit of each commit and adds the parent date to the resulting object.
+ * Reads the commits in a Git repository for a certain period and returns an Observable of CommitCompactWithUrlAndParentDate objects.
+ * The function fills the usl for the commit and reads the parent commit of each commit and adds the parent date to the resulting object.
  * @param repoPath The path to the Git repository folder.
  * @param fromDate The start date of the time range. Defaults to the beginning of time.
  * @param toDate The end date of the time range. Defaults to the current date and time.
  * @param noMerges A boolean indicating whether to exclude merge commits. Defaults to true.
- * @returns An Observable of CommitCompactWithParentDate objects.
+ * @returns An Observable of CommitCompactWithUrlAndParentDate objects.
  */
-export function readCommitCompactWithParentDate$(
+export function readCommitCompactWithUrlAndParentDate$(
     repoPath: string,
     fromDate = new Date(0),
     toDate = new Date(Date.now()),

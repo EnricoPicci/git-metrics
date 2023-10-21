@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ERROR_UNKNOWN_REVISION_OR_PATH, SEP, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
+import { ERROR_UNKNOWN_REVISION_OR_PATH, SEP, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
 import path from 'path';
@@ -411,11 +411,11 @@ describe(`newCommitCompactFromGitlog$`, () => {
 
 describe('readCommitCompactWithParentDate$', () => {
     it('should throw an error if repoPath is not provided', () => {
-        expect(() => readCommitCompactWithParentDate$('')).to.throw()
+        expect(() => readCommitCompactWithUrlAndParentDate$('')).to.throw()
     });
 
     it('should return a stream of commit objects from this repo with the commit objects containing the parent date', (done) => {
-        readCommitCompactWithParentDate$('./').pipe(
+        readCommitCompactWithUrlAndParentDate$('./').pipe(
             toArray()
         ).subscribe((commits) => {
             expect(commits instanceof Array).to.be.true;

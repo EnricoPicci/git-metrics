@@ -206,7 +206,9 @@ function isPossibleMassiveRefactor(file_code_turnover, commit_code_turnover, fil
     let explain_mass_refact = '';
     explain_mass_refact = file_turnover_above ? 'file turnover above threshold' : '';
     explain_mass_refact = commit_turnover_above ? 'commit turnover above threshold' : '';
-    explain_mass_refact = file_turnover_above && commit_turnover_above ? 'both file and commit turnover above threshold' : '';
+    explain_mass_refact = file_turnover_above && commit_turnover_above ?
+        'both file and commit turnover above threshold' :
+        explain_mass_refact;
     explain_mass_refact = explain_mass_refact !== null && explain_mass_refact !== void 0 ? explain_mass_refact : '-';
     return { maybe_mass_refact, explain_mass_refact };
 }
