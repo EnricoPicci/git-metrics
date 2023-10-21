@@ -363,10 +363,10 @@ describe(`newCommitCompactFromGitlog$`, () => {
 });
 describe('readCommitCompactWithParentDate$', () => {
     it('should throw an error if repoPath is not provided', () => {
-        (0, chai_1.expect)(() => (0, commit_1.readCommitCompactWithParentDate$)('')).to.throw();
+        (0, chai_1.expect)(() => (0, commit_1.readCommitCompactWithUrlAndParentDate$)('')).to.throw();
     });
     it('should return a stream of commit objects from this repo with the commit objects containing the parent date', (done) => {
-        (0, commit_1.readCommitCompactWithParentDate$)('./').pipe((0, rxjs_1.toArray)()).subscribe((commits) => {
+        (0, commit_1.readCommitCompactWithUrlAndParentDate$)('./').pipe((0, rxjs_1.toArray)()).subscribe((commits) => {
             (0, chai_1.expect)(commits instanceof Array).to.be.true;
             (0, chai_1.expect)(commits.length).greaterThan(0);
             // aSpecificCommit is a commit whose parent has a specific date to test (the date is immutable in the repo)

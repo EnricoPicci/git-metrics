@@ -41,7 +41,7 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
     }), 
     // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
     (0, rxjs_1.concatMap)((clocFileDict) => {
-        return (0, commit_1.readCommitCompactWithParentDate$)(pathToRepo, fromDate, toDate).pipe((0, rxjs_1.map)((commit) => {
+        return (0, commit_1.readCommitCompactWithUrlAndParentDate$)(pathToRepo, fromDate, toDate).pipe((0, rxjs_1.map)((commit) => {
             return { commit, clocFileDict };
         }));
     }), 
@@ -177,15 +177,17 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
     const days_span = Math.floor((clocDiffCommitEnriched.date.getTime() - clocDiffCommitEnriched.parentDate.getTime()) / (1000 * 60 * 60 * 24));
     const possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched);
     let _maybe_mass_refact = false;
-    let _explain_mass_refact = undefined;
+    let _explain_mass_refact = '-';
     if (options.fileMassiveRefactorThreshold || options.commitMassiveRefactorThreshold) {
         const { maybe_mass_refact, explain_mass_refact } = isPossibleMassiveRefactor(file_code_turnover, commit_code_turnover, options.fileMassiveRefactorThreshold || -1, options.commitMassiveRefactorThreshold || -1);
         _maybe_mass_refact = maybe_mass_refact;
         _explain_mass_refact = explain_mass_refact;
     }
+    const { maybe_generated, explain_generated } = isPossibleGenerated(clocDiffCommitEnriched);
     const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { commit_code_turnover,
         file_code_turnover,
-        days_span, maybe_cut_paste: possibleCutPaste, maybe_mass_refact: _maybe_mass_refact, explain_mass_refact: _explain_mass_refact });
+        days_span, maybe_cut_paste: possibleCutPaste, maybe_mass_refact: _maybe_mass_refact, explain_mass_refact: _explain_mass_refact, maybe_generated,
+        explain_generated });
     return infoWithDerivedData;
 }
 // the change is a possible cut and paste if the number of lines of code added is equal to the number of lines removed
@@ -211,6 +213,22 @@ function isPossibleMassiveRefactor(file_code_turnover, commit_code_turnover, fil
         explain_mass_refact;
     explain_mass_refact = explain_mass_refact !== null && explain_mass_refact !== void 0 ? explain_mass_refact : '-';
     return { maybe_mass_refact, explain_mass_refact };
+}
+// isPossibleGenerated is a function that returns true if the commit is a possible generated file
+// a file diff is a possible generated file if the file name contains the string 'generated'
+// or if the commit subject contains the string 'generated'
+function isPossibleGenerated(clocDiffCommitEnriched) {
+    const file_generated = clocDiffCommitEnriched.file.toLowerCase().includes('generated');
+    const commit_generated = clocDiffCommitEnriched.subject.toLowerCase().includes('generated');
+    const maybe_generated = file_generated || commit_generated;
+    let explain_generated = '';
+    explain_generated = file_generated ? 'file name contains "generated"' : '';
+    explain_generated = commit_generated ? 'commit message contains "generated"' : '';
+    explain_generated = file_generated && commit_generated ?
+        'both file name and commit message contain "generated"' :
+        explain_generated;
+    explain_generated = explain_generated !== null && explain_generated !== void 0 ? explain_generated : '-';
+    return { maybe_generated, explain_generated };
 }
 function formatClocDiffCommitEnrichedForCsv(csvRec, options) {
     // while we keep the type checking for csvRec so that we know which are the properties available

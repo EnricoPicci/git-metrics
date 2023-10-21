@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.ERROR_UNKNOWN_REVISION_OR_PATH = exports.readOneCommitCompact$ = exports.readCommitCompactWithParentDate$ = exports.readCommitCompact$ = void 0;
+exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.ERROR_UNKNOWN_REVISION_OR_PATH = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -49,15 +49,15 @@ function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(
 }
 exports.readCommitCompact$ = readCommitCompact$;
 /**
- * Reads the commits in a Git repository for a certain period and returns an Observable of CommitCompactWithParentDate objects.
- * The function reads the parent commit of each commit and adds the parent date to the resulting object.
+ * Reads the commits in a Git repository for a certain period and returns an Observable of CommitCompactWithUrlAndParentDate objects.
+ * The function fills the usl for the commit and reads the parent commit of each commit and adds the parent date to the resulting object.
  * @param repoPath The path to the Git repository folder.
  * @param fromDate The start date of the time range. Defaults to the beginning of time.
  * @param toDate The end date of the time range. Defaults to the current date and time.
  * @param noMerges A boolean indicating whether to exclude merge commits. Defaults to true.
- * @returns An Observable of CommitCompactWithParentDate objects.
+ * @returns An Observable of CommitCompactWithUrlAndParentDate objects.
  */
-function readCommitCompactWithParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true) {
+function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true) {
     return readCommitCompact$(repoPath, fromDate, toDate, noMerges).pipe((0, rxjs_1.concatMap)((commit) => {
         return (0, commit_url_1.getGitlabCommitUrl)(repoPath, commit.sha).pipe((0, rxjs_1.map)((commitUrl) => {
             return { commit, commitUrl };
@@ -79,7 +79,7 @@ function readCommitCompactWithParentDate$(repoPath, fromDate = new Date(0), toDa
         }));
     }));
 }
-exports.readCommitCompactWithParentDate$ = readCommitCompactWithParentDate$;
+exports.readCommitCompactWithUrlAndParentDate$ = readCommitCompactWithUrlAndParentDate$;
 /**
  * Uses the git log command to fetch one commit given its sha.
  * Returns an Observable of a CommitCompact object representing the fetched commit.

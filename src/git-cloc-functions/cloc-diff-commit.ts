@@ -259,7 +259,7 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
     const possibleCutPaste = isPossibleCutPaste(clocDiffCommitEnriched)
 
     let _maybe_mass_refact = false
-    let _explain_mass_refact: string | undefined = undefined
+    let _explain_mass_refact = '-'
     if (options.fileMassiveRefactorThreshold || options.commitMassiveRefactorThreshold) {
         const { maybe_mass_refact, explain_mass_refact } = isPossibleMassiveRefactor(
             file_code_turnover,
@@ -271,6 +271,8 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
         _explain_mass_refact = explain_mass_refact
     }
 
+    const { maybe_generated, explain_generated } = isPossibleGenerated(clocDiffCommitEnriched)
+
     const infoWithDerivedData: ClocDiffCommitEnrichedWithDerivedData = {
         ...clocDiffCommitEnriched,
         commit_code_turnover,
@@ -278,7 +280,9 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
         days_span,
         maybe_cut_paste: possibleCutPaste,
         maybe_mass_refact: _maybe_mass_refact,
-        explain_mass_refact: _explain_mass_refact
+        explain_mass_refact: _explain_mass_refact,
+        maybe_generated,
+        explain_generated,
     }
     return infoWithDerivedData
 }
@@ -313,6 +317,22 @@ function isPossibleMassiveRefactor(
     return { maybe_mass_refact, explain_mass_refact }
 }
 
+// isPossibleGenerated is a function that returns true if the commit is a possible generated file
+// a file diff is a possible generated file if the file name contains the string 'generated'
+// or if the commit subject contains the string 'generated'
+function isPossibleGenerated(clocDiffCommitEnriched: ClocDiffCommitEnriched) {
+    const file_generated = clocDiffCommitEnriched.file.toLowerCase().includes('generated')
+    const commit_generated = clocDiffCommitEnriched.subject.toLowerCase().includes('generated')
+    const maybe_generated = file_generated || commit_generated
+    let explain_generated = ''
+    explain_generated = file_generated ? 'file name contains "generated"' : ''
+    explain_generated = commit_generated ? 'commit message contains "generated"' : ''
+    explain_generated = file_generated && commit_generated ?
+        'both file name and commit message contain "generated"' :
+        explain_generated
+    explain_generated = explain_generated ?? '-'
+    return { maybe_generated, explain_generated }
+}
 
 
 function formatClocDiffCommitEnrichedForCsv(csvRec: ClocDiffCommitEnriched, options: WriteClocDiffWithCommitForReposOptions) {// define csvRecObj as of type any so that we can manipulate its properties without type checking
