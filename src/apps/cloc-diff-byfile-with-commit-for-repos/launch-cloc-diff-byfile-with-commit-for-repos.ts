@@ -20,6 +20,7 @@ export function launchClocDiffByfileWithCommitForRepos() {
         fileMassiveRefactorThreshold,
         commitMassiveRefactorThreshold,
     }
+
     writeClocDiffWithCommitForRepos$(folderPath, options).subscribe({
         complete: () => {
             console.log(`\nCloc Diff Byfile with Commit For Repo calculation completed in ${(Date.now() - start) / 1000} seconds`);
@@ -78,7 +79,7 @@ function readParams() {
             (the logic being that a diff on a file with a code turnover higher than the threshold is likely to be a massive refactoring)`,
         )
         .option(
-            '--commitMassiveRefactorThreshold',
+            '--commitMassiveRefactorThreshold <number>',
             `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive refactoring will be calculated
             (the logic being that a diff belonging to a commit whose code-turnover higher than the threshold is likely to be a massive refactoring)`,
         );

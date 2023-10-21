@@ -176,7 +176,7 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
     // and the parent commit date
     const days_span = Math.floor((clocDiffCommitEnriched.date.getTime() - clocDiffCommitEnriched.parentDate.getTime()) / (1000 * 60 * 60 * 24));
     let _maybe_mass_refact = false;
-    let _explain_mass_refact = '-';
+    let _explain_mass_refact = '';
     if (options.fileMassiveRefactorThreshold || options.commitMassiveRefactorThreshold) {
         const { maybe_mass_refact, explain_mass_refact } = isPossibleMassiveRefactor(file_code_turnover, commit_code_turnover, options.fileMassiveRefactorThreshold || -1, options.commitMassiveRefactorThreshold || -1);
         _maybe_mass_refact = maybe_mass_refact;
@@ -197,12 +197,12 @@ function isPossibleMassiveRefactor(file_code_turnover, commit_code_turnover, fil
     const commit_turnover_above = commit_code_turnover > commitMassiveRefactorThreshold;
     const maybe_mass_refact = file_turnover_above || commit_turnover_above;
     let explain_mass_refact = '';
-    explain_mass_refact = file_turnover_above ? 'file turnover above threshold' : '';
-    explain_mass_refact = commit_turnover_above ? 'commit turnover above threshold' : '';
+    explain_mass_refact = file_turnover_above ? `file turnover above threshold (${file_code_turnover} > ${fileMassiveRefactorThreshold})` : '';
+    explain_mass_refact = commit_turnover_above ? `commit turnover above threshold (${commit_code_turnover} > ${commitMassiveRefactorThreshold})` : '';
     explain_mass_refact = file_turnover_above && commit_turnover_above ?
         'both file and commit turnover above threshold' :
         explain_mass_refact;
-    explain_mass_refact = explain_mass_refact !== null && explain_mass_refact !== void 0 ? explain_mass_refact : '-';
+    explain_mass_refact = explain_mass_refact == '' ? '-' : explain_mass_refact;
     return { maybe_mass_refact, explain_mass_refact };
 }
 // isPossibleGenerated is a function that returns true if the commit is a possible generated file
@@ -218,7 +218,7 @@ function isPossibleGenerated(clocDiffCommitEnriched) {
     explain_generated = file_generated && commit_generated ?
         'both file name and commit message contain "generated"' :
         explain_generated;
-    explain_generated = explain_generated !== null && explain_generated !== void 0 ? explain_generated : '-';
+    explain_generated = explain_generated == '' ? '-' : explain_generated;
     return { maybe_generated, explain_generated };
 }
 function formatClocDiffCommitEnrichedForCsv(csvRec, options) {

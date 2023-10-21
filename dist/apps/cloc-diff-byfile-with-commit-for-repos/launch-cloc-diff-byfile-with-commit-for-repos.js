@@ -48,7 +48,7 @@ function readParams() {
         .option('--removeSame', `if this opion is specified, the statistics about lines that are the same (i.e. unchanged) are removed from the cloc diff output`)
         .option('--fileMassiveRefactorThreshold <number>', `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive refactoring will be calculated
             (the logic being that a diff on a file with a code turnover higher than the threshold is likely to be a massive refactoring)`)
-        .option('--commitMassiveRefactorThreshold', `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive refactoring will be calculated
+        .option('--commitMassiveRefactorThreshold <number>', `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive refactoring will be calculated
             (the logic being that a diff belonging to a commit whose code-turnover higher than the threshold is likely to be a massive refactoring)`);
     const _options = program.parse(process.argv).opts();
     const outdir = _options.outdir || process.cwd();
