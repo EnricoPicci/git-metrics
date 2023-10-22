@@ -16,6 +16,7 @@ import { buildOutfileName } from './utils/file-name-utils';
 import { CONFIG } from '../config';
 import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
 import { getGitlabCommitUrl } from './commit-url';
+import { toYYYYMMDD } from '../tools/dates/date-functions';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -42,10 +43,16 @@ export function readCommitCompact$(
     const _noMerges = noMerges ? '--no-merges' : '';
     const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%s" ${_noMerges}`;
 
+    const options = [
+        'log', '--pretty=format:%H,%ad,%an,%s',
+        '--after=' + toYYYYMMDD(fromDate), '--before=' + toYYYYMMDD(toDate)
+    ]
+    if (noMerges) options.push('--no-merges')
+
     return executeCommandNewProcessToLinesObs(
         `Read commits`,
         'git',
-        ['log', '--pretty=format:%H,%ad,%an,%s', '--no-merges'],
+        options,
         { cwd: repoPath },
     ).pipe(
         map((commits: string) => {
@@ -59,9 +66,6 @@ export function readCommitCompact$(
         }),
         map((commit: string) => {
             return newCommitCompactFromGitlog(commit, repoPath);
-        }),
-        filter((commit: CommitCompact) => {
-            return commit.date >= fromDate && commit.date <= toDate;
         }),
         catchError((err: Error) => {
             console.error(`Error: "fetchCommits" while executing command "${command}" - error ${err.stack}`);
