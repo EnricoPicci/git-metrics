@@ -30,8 +30,10 @@ const date_functions_1 = require("../tools/dates/date-functions");
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable of ClocDiffCommitEnriched objects.
  */
-function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = [], commitsCount = 0, options = {}) {
-    let commitCounter = 0;
+function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = [], progess = {
+    totNumOfCommits: 0,
+    commitCounter: 0,
+}, options = {}) {
     // first calculate the cloc dictionary and pass it down the pipe
     return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo).pipe((0, rxjs_1.catchError)((err) => {
         if (err.code === 'ENOENT') {
@@ -43,6 +45,10 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
     // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
     (0, rxjs_1.concatMap)((clocFileDict) => {
         return (0, commit_1.readCommitCompactWithUrlAndParentDate$)(pathToRepo, fromDate, toDate).pipe((0, rxjs_1.map)((commit) => {
+            // log progress
+            progess.commitCounter++;
+            const ofMsg = progess.totNumOfCommits == 0 ? '' : `of ${progess.totNumOfCommits} commits`;
+            console.log(`commit ${progess.commitCounter} ${ofMsg}`);
             return { commit, clocFileDict };
         }));
     }), 
@@ -71,10 +77,6 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
         clocDiffCommitEnriched.file = path_1.default.relative(process.cwd(), clocDiffCommitEnriched.file);
         // calculate the derived data
         const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options);
-        // log progress
-        commitCounter++;
-        const ofMsg = commitsCount == 0 ? '' : `of ${commitsCount} commits`;
-        console.log(`commit ${commitCounter} ${ofMsg}`);
         return clocDiffCommitEnrichedWithDerivedData;
     }));
 }
@@ -94,9 +96,13 @@ exports.clocDiffWithCommit$ = clocDiffWithCommit$;
  */
 function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], languages = [], options = {}) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
-    return countCommits(repoPaths, fromDate, toDate).pipe((0, rxjs_1.concatMap)((commitsCount) => {
+    return countCommits(repoPaths, fromDate, toDate).pipe((0, rxjs_1.concatMap)((totNumOfCommits) => {
+        let progess = {
+            totNumOfCommits,
+            commitCounter: 0,
+        };
         return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
-            return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, commitsCount, options);
+            return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, progess, options);
         }));
     }));
 }
@@ -173,6 +179,7 @@ exports.writeClocDiffWithCommitForRepos$ = writeClocDiffWithCommitForRepos$;
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
 function calculateDerivedData(clocDiffCommitEnriched, options) {
+    const date_month = clocDiffCommitEnriched.date.toISOString().slice(0, 7);
     const commit_code_turnover = clocDiffCommitEnriched.commit_code_added +
         clocDiffCommitEnriched.commit_code_removed +
         clocDiffCommitEnriched.commit_code_modified;
@@ -190,7 +197,8 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
         _explain_mass_refact = explain_mass_refact;
     }
     const { maybe_generated, explain_generated } = isPossibleGenerated(clocDiffCommitEnriched);
-    const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { commit_code_turnover,
+    const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { date_month,
+        commit_code_turnover,
         file_code_turnover,
         days_span, maybe_mass_refact: _maybe_mass_refact, explain_mass_refact: _explain_mass_refact, maybe_generated,
         explain_generated });
