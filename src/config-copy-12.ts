@@ -1,6 +1,6 @@
 export const CONFIG = {
     // Default concurrency (used in the mergeMap operator)
-    CONCURRENCY: 11,
+    CONCURRENCY: 12,
 
     // csv separator
     CSV_SEP: ',',
