@@ -28,7 +28,7 @@ export function diff$(
                 isRenameCopy: boolean,
             }[] = [];
 
-            for (let i = 0; i < tokens.length; i++) {
+            for (let i = 0; i < tokens.filter(token => token.length > 0).length; i++) {
                 const linedAddedDeletedAndName = tokens[i].split('\t');
                 // there must be 3 values per lines added and deleted and one value for the file name
                 if (linedAddedDeletedAndName.length !== 3) {
@@ -37,16 +37,21 @@ export function diff$(
                 }
                 const linesAdded = parseInt(linedAddedDeletedAndName[0]);
                 const linesDeleted = parseInt(linedAddedDeletedAndName[1]);
-                const preImageFileName = linedAddedDeletedAndName[2];
+                let preImageFileName = '';
                 let postImageFileName = ''
                 // check if tokens[i + 1] can be split eith \t - if yes, then thenext token holds the lines added and deleted
                 // of the next diff, otherwise we are in the case of a rename or copy and the next token holds the new file name
                 const nextToken = tokens[i + 1];
-                const nextTokenParts = nextToken.split('\t');
-                const isRenameCopy = nextTokenParts.length !== 3;
+                const nextNextToken = tokens[i + 2];
+                const nextNextTokenParts = nextNextToken.split('\t');
+                const isRenameCopy = nextNextTokenParts.length !== 3;
+
+                preImageFileName = nextToken;
+                i++
 
                 if (isRenameCopy) {
                     postImageFileName = nextToken;
+                    preImageFileName = nextNextToken;
                     i++;
                 }
 

@@ -35,4 +35,18 @@ describe('diff$', () => {
             complete: () => done()
         });
     });
+
+    it.only('should a list just one commit which is a copy/rename', (done) => {
+        const repoPath = './';
+        const commit = '3f95ae69844907dcefd1790c7acab3514ef5901a';
+        const parentCommit = `${commit}^1`;
+        diff$(commit, parentCommit, repoPath).pipe(
+            tap((diffs) => {
+                expect(diffs.length).equal(23);
+            })
+        ).subscribe({
+            error: (err) => done(err),
+            complete: () => done()
+        });
+    });
 });
