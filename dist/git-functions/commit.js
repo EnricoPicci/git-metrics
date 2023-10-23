@@ -14,6 +14,7 @@ const file_name_utils_1 = require("./utils/file-name-utils");
 const config_2 = require("../config");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 const commit_url_1 = require("./commit-url");
+const date_functions_1 = require("../tools/dates/date-functions");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -32,7 +33,13 @@ function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(
         throw new Error(`Path is mandatory`);
     const _noMerges = noMerges ? '--no-merges' : '';
     const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%s" ${_noMerges}`;
-    return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', ['log', '--pretty=format:%H,%ad,%an,%s', '--no-merges'], { cwd: repoPath }).pipe((0, rxjs_1.map)((commits) => {
+    const options = [
+        'log', '--pretty=format:%H,%ad,%an,%s',
+        '--after=' + (0, date_functions_1.toYYYYMMDD)(fromDate), '--before=' + (0, date_functions_1.toYYYYMMDD)(toDate)
+    ];
+    if (noMerges)
+        options.push('--no-merges');
+    return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', options, { cwd: repoPath }).pipe((0, rxjs_1.map)((commits) => {
         return commits.split('\n');
     }), (0, rxjs_1.concatMap)((commits) => {
         return (0, rxjs_1.from)(commits);
@@ -40,8 +47,6 @@ function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(
         return commit.trim().length > 0;
     }), (0, rxjs_1.map)((commit) => {
         return newCommitCompactFromGitlog(commit, repoPath);
-    }), (0, rxjs_1.filter)((commit) => {
-        return commit.date >= fromDate && commit.date <= toDate;
     }), (0, rxjs_1.catchError)((err) => {
         console.error(`Error: "fetchCommits" while executing command "${command}" - error ${err.stack}`);
         return rxjs_1.EMPTY;

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import path = require('path');
 import { toArray, tap } from 'rxjs';
-import { gitCommitStream, enrichedCommitsStream, filePathFromCommitPath, splitCommits } from './commits';
+import { gitCommitStream, enrichedCommitsStream, splitCommits } from './commits';
 
 describe(`splitCommits`, () => {
     it(`returns a stream of arrays of strings, each array containing all the data related to a specific commit`, (done) => {
@@ -186,62 +186,5 @@ describe(`commitsStream`, () => {
             },
             complete: () => done(),
         });
-    });
-});
-
-describe(`filePathFromCommitPath`, () => {
-    it(`returns the file path for a commit path that does NOT represent a rename`, () => {
-        const commitPath = 'clients/src/main/java/org/apache/kafka/clients/admin/KafkaAdminClient.java';
-        const path = filePathFromCommitPath(commitPath);
-        expect(path).equal(commitPath);
-    });
-});
-
-describe(`filePathFromCommitPath in case of renames`, () => {
-    // examples of renames
-    //// clients/src/main/java/org/apache/kafka/clients/admin/{DecommissionBrokerOptions.java => UnregisterBrokerOptions.java}
-    //// storage/src/main/java/org/apache/kafka/{server/log/internals => storage/internals/log}/EpochEntry.java
-    //// metadata/src/test/java/org/apache/kafka/controller/ControllerPurgatoryTest.java => server-common/src/test/java/org/apache/kafka/deferred/DeferredEventQueueTest.java
-    //// {metadata/src/main/java/org/apache/kafka/controller => server-common/src/main/java/org/apache/kafka/deferred}/DeferredEvent.java
-    it(`returns the file path for a commit path that DOES represent a rename of just the file name`, () => {
-        const commitPath =
-            'clients/src/main/java/org/apache/kafka/clients/admin/{DecommissionBrokerOptions.java => UnregisterBrokerOptions.java}';
-        const expectedPath = 'clients/src/main/java/org/apache/kafka/clients/admin/UnregisterBrokerOptions.java';
-        const path = filePathFromCommitPath(commitPath);
-        expect(path).equal(expectedPath);
-    });
-    it(`returns the file path for a commit path that DOES represent a rename of a subfolder`, () => {
-        const commitPath =
-            'storage/src/main/java/org/apache/kafka/{server/log/internals => storage/internals/log}/EpochEntry.java';
-        const expectedPath = 'storage/src/main/java/org/apache/kafka/storage/internals/log/EpochEntry.java';
-        const path = filePathFromCommitPath(commitPath);
-        expect(path).equal(expectedPath);
-    });
-    it(`returns the file path for a commit path that DOES represent a rename of the entire path starting from the root`, () => {
-        const commitPath =
-            'metadata/src/test/java/org/apache/kafka/controller/ControllerPurgatoryTest.java => server-common/src/test/java/org/apache/kafka/deferred/DeferredEventQueueTest.java';
-        const expectedPath = 'server-common/src/test/java/org/apache/kafka/deferred/DeferredEventQueueTest.java';
-        const path = filePathFromCommitPath(commitPath);
-        expect(path).equal(expectedPath);
-    });
-    it(`returns the file path for a commit path that DOES represent a rename of the first part of the path`, () => {
-        const commitPath =
-            '{metadata/src/main/java/org/apache/kafka/controller => server-common/src/main/java/org/apache/kafka/deferred}/DeferredEvent.java';
-        const expectedPath = 'server-common/src/main/java/org/apache/kafka/deferred/DeferredEvent.java';
-        const path = filePathFromCommitPath(commitPath);
-        expect(path).equal(expectedPath);
-    });
-    it(`returns the file path for a commit path that DOES represent a rename with removal of a part of the path`, () => {
-        const commitPath =
-            'clients/src/main/java/org/apache/kafka/clients/{consumer/internals => }/StaleMetadataException.java';
-        const expectedPath = 'clients/src/main/java/org/apache/kafka/clients/StaleMetadataException.java';
-        const path = filePathFromCommitPath(commitPath);
-        expect(path).equal(expectedPath);
-    });
-    it(`returns the file path for a commit path that DOES represent a rename with introduction of a part of the path`, () => {
-        const commitPath = 'clients/src/main/java/{ => org/apache}/kafka/common/record/InvalidRecordException.java';
-        const expectedPath = 'clients/src/main/java/org/apache/kafka/common/record/InvalidRecordException.java';
-        const path = filePathFromCommitPath(commitPath);
-        expect(path).equal(expectedPath);
     });
 });
