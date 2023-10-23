@@ -7,7 +7,7 @@ import { commitLines } from '../../../git-functions/commit';
 import { CommitWithFileNumstatsEnrichedWithCloc, GitFileNumstatEnrichedWithCloc } from '../../../git-cloc-functions/commit-cloc.model';
 
 import { DEFAUL_CONFIG } from '../0-config/config';
-import { filePathFromCommitPath } from '../../../git-functions/commit.model';
+import { renamedFilePath } from "../../../git-functions/file-path";
 
 const SEP = DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 
@@ -67,14 +67,14 @@ function newGitFileNumstat(fileInfo: string, clocDict?: ClocDictionary) {
     const fileNumstat: GitFileNumstatEnrichedWithCloc = {
         linesAdded,
         linesDeleted,
-        path: filePathFromCommitPath(fileNumstatData[2]),
+        path: renamedFilePath(fileNumstatData[2]),
         code: 0,
         comment: 0,
         blank: 0,
     };
     if (clocDict) {
         let _path = fileNumstat.path;
-        _path = filePathFromCommitPath(_path);
+        _path = renamedFilePath(_path);
 
         const pathWithStartingDotSlash = './' + _path;
         const clocFileInfo = clocDict[_path] || clocDict[pathWithStartingDotSlash]

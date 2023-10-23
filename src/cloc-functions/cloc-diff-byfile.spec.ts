@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { clocDiffByfile$, clocDiffByfileWithCommitDiffs$ } from "./cloc-diff-byfile";
+import { clocDiffByfile$, clocDiffByfileWithCommitData$ } from "./cloc-diff-byfile";
 import { toArray } from "rxjs";
 
 describe('clocDiffByfile$', () => {
@@ -63,7 +63,7 @@ describe('clocDiffByfileWithCommitDiffs$', () => {
         const folderPath = './'
         const languages = ['TypeScript'];
 
-        clocDiffByfileWithCommitDiffs$(mostRecentCommit, leastRecentCommit, folderPath, languages).pipe(
+        clocDiffByfileWithCommitData$(mostRecentCommit, leastRecentCommit, folderPath, languages).pipe(
             toArray()
         ).subscribe({
             next: (clocDiffs) => {

@@ -2,7 +2,7 @@ import { catchError, concatMap, filter, from, map, of, skip, toArray } from "rxj
 import { executeCommandObs } from "../tools/execute-command/execute-command";
 import { ignoreUpTo } from "../tools/rxjs-operators/ignore-up-to";
 import { CLOC_CONFIG } from "./config";
-import { newClocDiffByfile, newClocDiffByfileWithCommitDiffs, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
+import { newClocDiffByfile, newClocDiffByfileWithCommitData, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -96,7 +96,7 @@ export function clocDiffByfile$(
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
  */
-export function clocDiffByfileWithCommitDiffs$(
+export function clocDiffByfileWithCommitData$(
     mostRecentCommit: string,
     leastRecentCommit: string,
     repoFolderPath = './',
@@ -105,7 +105,7 @@ export function clocDiffByfileWithCommitDiffs$(
     return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
         // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
         map(clocDiffByfile => {
-            return newClocDiffByfileWithCommitDiffs(clocDiffByfile)
+            return newClocDiffByfileWithCommitData(clocDiffByfile)
         }),
     )
 }
@@ -124,7 +124,7 @@ export function clocDiffWithParentByfile$(
     repoFolderPath = './',
     languages: string[] = [],
 ) {
-    return clocDiffByfileWithCommitDiffs$(commit, `${commit}^1`, repoFolderPath, languages);
+    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages);
 }
 
 //********************************************************************************************************************** */

@@ -1,8 +1,8 @@
-import { ClocDiffByfileWithCommitDiffs } from "../cloc-functions/cloc-diff-byfile.model";
+import { ClocDiffByfileWithCommitData } from "../cloc-functions/cloc-diff-byfile.model";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
 import { CommitCompactWithUrlAndParentDate } from "../git-functions/commit.model";
 
-export type ClocDiffCommitEnriched = ClocDiffByfileWithCommitDiffs & ClocFileInfo & CommitCompactWithUrlAndParentDate
+export type ClocDiffCommitEnriched = ClocDiffByfileWithCommitData & ClocFileInfo & CommitCompactWithUrlAndParentDate
 
 export type ClocDiffCommitEnrichedWithDerivedData = ClocDiffCommitEnriched & {
     date_month: string;
