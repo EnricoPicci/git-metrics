@@ -10,59 +10,13 @@ export function diff$(
     const cmd = buildDiffCommand(mostRecentCommit, leastRecentCommit, repoFolderPath, similarityIndex);
     return executeCommandObs('run git diff', cmd).pipe(
         map((output) => {
-            const tokens = output.split('\0');
+            const tokens = output.split('\0').filter((token) => token.length > 0);
             if (tokens.length === 0) {
                 console.log(`No files changed between ${mostRecentCommit} and ${leastRecentCommit}`);
                 return [];
             }
-            if (tokens.length % 3 < 0) {
-                throw new Error(`Error parsing git diff output: ${output} - we expect at least 3 values per line
-                as per documentation https://git-scm.com/docs/git-diff#_other_diff_formats`);
-            }
 
-            const diffs: {
-                linesAdded: number,
-                linesDeleted: number,
-                preImageFileName: string,
-                postImageFileName: string,
-                isRenameCopy: boolean,
-            }[] = [];
-
-            for (let i = 0; i < tokens.filter(token => token.length > 0).length; i++) {
-                const linedAddedDeletedAndName = tokens[i].split('\t');
-                // there must be 3 values per lines added and deleted and one value for the file name
-                if (linedAddedDeletedAndName.length !== 3) {
-                    throw new Error(`Error parsing git diff output: ${output} - we expect 2 values per line
-                    as per documentation https://git-scm.com/docs/git-diff#_other_diff_formats`);
-                }
-                const linesAdded = parseInt(linedAddedDeletedAndName[0]);
-                const linesDeleted = parseInt(linedAddedDeletedAndName[1]);
-                let preImageFileName = '';
-                let postImageFileName = ''
-                // check if tokens[i + 1] can be split eith \t - if yes, then thenext token holds the lines added and deleted
-                // of the next diff, otherwise we are in the case of a rename or copy and the next token holds the new file name
-                const nextToken = tokens[i + 1];
-                const nextNextToken = tokens[i + 2];
-                const nextNextTokenParts = nextNextToken.split('\t');
-                const isRenameCopy = nextNextTokenParts.length !== 3;
-
-                preImageFileName = nextToken;
-                i++
-
-                if (isRenameCopy) {
-                    postImageFileName = nextToken;
-                    preImageFileName = nextNextToken;
-                    i++;
-                }
-
-                diffs.push({
-                    linesAdded,
-                    linesDeleted,
-                    preImageFileName,
-                    postImageFileName,
-                    isRenameCopy
-                });
-            }
+            const diffs = splitDiffs(tokens);
             return diffs;
         })
     );
@@ -77,4 +31,72 @@ function buildDiffCommand(
     const cdCommand = `cd ${folderPath}`;
     let clocDiffAllCommand = `git diff --numstat -M${similarityIndex} -z ${mostRecentCommit} ${leastRecentCommit}`;
     return `${cdCommand} && ${clocDiffAllCommand} `;
+}
+
+export function splitDiffs(tokens: string[]) {
+    const diffs: {
+        linesAdded: number,
+        linesDeleted: number,
+        filePath: string,
+        preImagePath: string,
+        isRenameCopy: boolean,
+    }[] = [];
+
+    for (let i = 0; i < tokens.length; i++) {
+        // diffs come as either 1 or 3 tuples of tokens
+        // If a diff does NOT represent a rename or copy, then we have 1 token
+        // If a diff represents a rename or copy, then we have 3 tokens
+        // Example of a diff that does NOT represent a rename or copy:
+        // '69\t69\tdist/apps/code-turnover/internals/commit-monthly-pair.functions.spec.js',
+        // Example of a diff that represents a rename or copy:
+        // '0\t0\t',
+        // 'src/config-copy-copy-xx.ts',
+        // 'src/config-copy-xx.ts',
+        //
+        // To understand if it is a rename/copy situation, we need to check how the token[i] can be split with \t
+        // If it can be split in 3 parts and the third part is not the empty line, then we have NOT a rename/copy situation
+        // and the 3 parts represent lines added, lines deleted, and file path (which we call preImagePath).
+        // If it can be split in 3 parts and the third part is the empty line, then we have a rename/copy situation and the 2 non empty
+        // parts represent lines added and lines deleted - in this case the token[i+1] represents the preImage file path and 
+        // the token[i+2] represents the postImage file path.
+        // If token[i] cannot be split in 3 parts, then we have an error
+        const thisToken = tokens[i];
+        const thisTokenParts = thisToken.split('\t');
+        if (thisTokenParts.length !== 3) {
+            throw new Error(`Error parsing git diff output for token: ${thisToken}
+                    we expect 3 values containing lines added, lines deleted, and file path (in case on no rename/copy)
+                    or an empty string (in case of rename/copy)
+                    as per documentation https://git-scm.com/docs/git-diff#_other_diff_formats`);
+        }
+        const isRenameCopy = thisTokenParts[2].length === 0;
+
+        // in all cases the first 2 parts of thisTokenParts contain the lines added and deleted
+        const linesAdded = parseInt(thisTokenParts[0]);
+        const linesDeleted = parseInt(thisTokenParts[1]);
+
+        // in case of a rename/copy the preImagePath contains the name of the file before the rename/copy
+        let preImagePath = '';
+        let filePath = '';
+
+        // in case of a rename/copy the preImagePath is the token[i+1] and the postImagePath is the token[i+2]
+        if (isRenameCopy) {
+            filePath = tokens[i + 1];
+            preImagePath = tokens[i + 2];
+            // we increment the cursor by 2 because we have already processed the token[i+1] and token[i+2]
+            i = i + 2;
+        }
+        // in case of NOT a rename/copy the filePath is the third part of the token[i] split by \t and the preImagePath is the empty string
+        else {
+            filePath = thisTokenParts[2];
+        }
+
+        diffs.push({
+            linesAdded,
+            linesDeleted,
+            filePath,
+            preImagePath,
+            isRenameCopy
+        });
+    }
+    return diffs;
 }
