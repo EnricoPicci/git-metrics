@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newClocDiffByfileWithCommitDiffs = exports.newClocDiffByfileWithSum = exports.newClocDiffByfile = void 0;
+exports.newClocDiffByfileWithCommitData = exports.newClocDiffByfileWithSum = exports.newClocDiffByfile = void 0;
 const path_1 = __importDefault(require("path"));
 function newClocDiffByfile(csvLine) {
     const fields = csvLine.split(',');
@@ -47,12 +47,12 @@ function newClocDiffByfileWithSum(csvLine) {
     return clocDiffByfileWithSum;
 }
 exports.newClocDiffByfileWithSum = newClocDiffByfileWithSum;
-function newClocDiffByfileWithCommitDiffs(diffRec) {
+function newClocDiffByfileWithCommitData(diffRec) {
     if (!diffRec.sumOfDiffs) {
         throw new Error('The sum of the diffs must be calculated before calculating the commit diffs');
     }
     const clocDiffByfileWithCommitDiffs = Object.assign(Object.assign({}, diffRec), { commit_code_added: diffRec.sumOfDiffs.code_added, commit_code_removed: diffRec.sumOfDiffs.code_removed, commit_code_modified: diffRec.sumOfDiffs.code_modified, commit_code_same: diffRec.sumOfDiffs.code_same });
     return clocDiffByfileWithCommitDiffs;
 }
-exports.newClocDiffByfileWithCommitDiffs = newClocDiffByfileWithCommitDiffs;
+exports.newClocDiffByfileWithCommitData = newClocDiffByfileWithCommitData;
 //# sourceMappingURL=cloc-diff-byfile.model.js.map

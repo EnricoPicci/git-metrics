@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const commit_1 = require("./commit");
+const errors_1 = require("./errors");
 const rxjs_1 = require("rxjs");
 const path_1 = __importDefault(require("path"));
 const observable_fs_1 = require("observable-fs");
@@ -40,7 +41,7 @@ describe('readOneCommitCompact$', () => {
                 done('should not return a value');
             },
             error: (error) => {
-                (0, chai_1.expect)(error).equal(commit_1.ERROR_UNKNOWN_REVISION_OR_PATH);
+                (0, chai_1.expect)(error).equal(errors_1.ERROR_UNKNOWN_REVISION_OR_PATH);
                 done();
             },
             complete: () => {

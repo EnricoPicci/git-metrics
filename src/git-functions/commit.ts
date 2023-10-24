@@ -17,6 +17,8 @@ import { CONFIG } from '../config';
 import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
 import { getGitlabCommitUrl } from './commit-url';
 import { toYYYYMMDD } from '../tools/dates/date-functions';
+import { isUnknownRevisionError } from './errors';
+import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -151,7 +153,7 @@ export function readOneCommitCompact$(commitSha: string, repoPath: string, verbo
             return commitCompact;
         }),
         catchError((error) => {
-            if (error.message.includes('unknown revision or path not in the working tree')) {
+            if (isUnknownRevisionError(error)) {
                 throw ERROR_UNKNOWN_REVISION_OR_PATH;
             }
             const err = `Error in fetchOneCommit for repo "${repoPath} and commit ${commitSha}"\nError: ${error}
@@ -162,11 +164,6 @@ Command: ${cmd}`;
         }),
     );
 }
-export const ERROR_UNKNOWN_REVISION_OR_PATH = {
-    name: 'ErrorUnknownParent',
-    message: 'Unknown revision or path - not in the working tree',
-};
-
 /**
  * Reads the commits from a Git repository and writes the output to a file.
  * For each commit all the files changed in the commit are listed with the number of lines added and deleted.

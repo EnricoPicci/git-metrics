@@ -76,19 +76,22 @@ export function newClocDiffByfileWithSum(csvLine: string) {
     return clocDiffByfileWithSum;
 }
 
+export type ClocDiffByfileWithIsCopy = ClocDiffByfile & { isCopy: boolean; };
+export type ClocDiffByfileWithSumAndIsCopy = ClocDiffByfileWithSum & ClocDiffByfileWithIsCopy;
+
 /**
  * Represents the same type as ClocDiffByfile, but it also includes the number of lines of code added, removed, modified, and unchanged 
  * in the commit.
  * The info about the changes at commit level may be used to evaluate if the change belongs to a massive refactoring.
  * For isntance, it is reasonable to think that a single commit that has a large number of changes is a massive refactoring.
  */
-export type ClocDiffByfileWithCommitData = ClocDiffByfile & {
+export type ClocDiffByfileWithCommitData = ClocDiffByfileWithIsCopy & {
     commit_code_added: number;
     commit_code_removed: number;
     commit_code_modified: number;
     commit_code_same: number;
 };
-export function newClocDiffByfileWithCommitData(diffRec: ClocDiffByfileWithSum) {
+export function newClocDiffByfileWithCommitData(diffRec: ClocDiffByfileWithSumAndIsCopy) {
     if (!diffRec.sumOfDiffs) {
         throw new Error('The sum of the diffs must be calculated before calculating the commit diffs');
     }
