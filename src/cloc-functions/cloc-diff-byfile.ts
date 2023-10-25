@@ -1,4 +1,4 @@
-import { catchError, concatMap, filter, from, map, of, skip, toArray } from "rxjs";
+import { catchError, concatMap, filter, from, map, of, skip, tap, toArray } from "rxjs";
 import { executeCommandObs } from "../tools/execute-command/execute-command";
 import { ignoreUpTo } from "../tools/rxjs-operators/ignore-up-to";
 import { CLOC_CONFIG } from "./config";
@@ -24,8 +24,23 @@ export function clocDiffByfile$(
     leastRecentCommit: string,
     repoFolderPath = './',
     languages: string[] = [],
+    progress: {
+        totNumOfCommits: number,
+        commitCounter: number,
+    } = {
+            totNumOfCommits: 0,
+            commitCounter: 0,
+        },
 ) {
     return executeClocGitDiffRel(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
+        tap({
+            next: () => {
+                // log progress
+                progress.commitCounter++
+                const ofMsg = progress.totNumOfCommits == 0 ? '' : `of ${progress.totNumOfCommits} commits`
+                console.log(`commit ${progress.commitCounter} ${ofMsg}`)
+            }
+        }),
         concatMap(lines => {
             return from(lines)
         }),
@@ -84,11 +99,18 @@ export function clocDiffByfile$(
                 }),
             )
         }),
-        // after having calculated the sum and set it to each diff object, stream again the array of diffs
-        concatMap(arrayOfClocDiffByfile => {
-            return from(arrayOfClocDiffByfile)
-        }),
     )
+        // we need to concatenate 2 pipes since "pipe" TypeScript overrides are define so that "pipe" can take at most 9 operators
+        // and when we add a 10th operator, the compiler makes "pipe" return Observable<unknown> instead of Observable<whateverType>
+        // and with Observable<unknown> the downstream operators do not compile.
+        // Since the above "pipe" has reached the limit of 9 operators, we cannot add the "concatMap" operator to it.
+        // Therefore, to make type inference work, we need to concatenate 2 pipes
+        .pipe(
+            // after having calculated the sum and set it to each diff object, stream again the array of diffs
+            concatMap(arrayOfClocDiffByfile => {
+                return from(arrayOfClocDiffByfile)
+            }),
+        ).pipe()
 }
 
 /**
@@ -105,9 +127,16 @@ export function clocDiffByfileWithCommitData$(
     mostRecentCommit: string,
     leastRecentCommit: string,
     repoFolderPath = './',
-    languages: string[] = []
+    languages: string[] = [],
+    progress: {
+        totNumOfCommits: number,
+        commitCounter: number,
+    } = {
+            totNumOfCommits: 0,
+            commitCounter: 0,
+        },
 ) {
-    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
+    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress).pipe(
         // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
         map(clocDiffByfile => {
             return newClocDiffByfileWithCommitData(clocDiffByfile)
@@ -128,8 +157,15 @@ export function clocDiffWithParentByfile$(
     commit: string,
     repoFolderPath = './',
     languages: string[] = [],
+    progress: {
+        totNumOfCommits: number,
+        commitCounter: number,
+    } = {
+            totNumOfCommits: 0,
+            commitCounter: 0,
+        },
 ) {
-    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages);
+    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, progress);
 }
 
 //********************************************************************************************************************** */

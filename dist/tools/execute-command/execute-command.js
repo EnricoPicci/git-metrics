@@ -27,9 +27,9 @@ function executeCommandObs(action, command) {
             if (stderr.length > 0) {
                 console.log(`!!!!!!!! Message on stadard error:\n${stderr}`);
             }
+            console.log(`====>>>>$$$ Command "${command}" executed successfully`);
             subscriber.next(stdout);
             subscriber.complete();
-            console.log(`====>>>>$$$ Command "${command}" executed successfully`);
         });
     });
 }

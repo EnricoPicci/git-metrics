@@ -38,7 +38,7 @@ export function clocDiffWithCommit$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     languages: string[] = [],
-    progess: {
+    progress: {
         totNumOfCommits: number,
         commitCounter: number,
     } = {
@@ -60,10 +60,6 @@ export function clocDiffWithCommit$(
         concatMap((clocFileDict) => {
             return readCommitCompactWithUrlAndParentDate$(pathToRepo, fromDate, toDate).pipe(
                 map((commit) => {
-                    // log progress
-                    progess.commitCounter++
-                    const ofMsg = progess.totNumOfCommits == 0 ? '' : `of ${progess.totNumOfCommits} commits`
-                    console.log(`commit ${progess.commitCounter} ${ofMsg}`)
                     return { commit, clocFileDict }
                 })
             )
@@ -71,7 +67,7 @@ export function clocDiffWithCommit$(
         // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
         // together with the cloc dictionary and the commit
         concatMap(({ commit, clocFileDict }) => {
-            return clocDiffWithParentByfile$(commit.sha, pathToRepo, languages).pipe(
+            return clocDiffWithParentByfile$(commit.sha, pathToRepo, languages, progress).pipe(
                 map((clocDiffByfile) => {
                     return { clocDiffByfile, clocFileDict, commit }
                 })

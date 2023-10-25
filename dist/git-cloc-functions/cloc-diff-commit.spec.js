@@ -15,11 +15,11 @@ describe(`clocDiffWithCommit$`, () => {
                 // take the first diff for a certain file - since it is the first one it is not going to change
                 // over time since the git history is immutable - being sure that it does not change over time
                 // allows us to write a test for it
-                // WARNING: it seems that the number of lines of code added, removed, modified, and same can change
-                // in contraddiction what I had just written above
+                // WARNING: it seems that the number of lines of code added, removed, modified, and same may change
+                // in contraddiction what I had just written above. Yesterday (2023-10-24) the test was red with these values
                 // The file diff belongs to this commit
                 // https://github.com/EnricoPicci/git-metrics/commit/ce8ccf86c9dd954c2210bb1f2171bc827bb2566a
-                // as by 2023-10-24 the test is green
+                // as by 2023-10-25 the test is green
                 const diffsInCommandTsFile = arrayOfClocDiffCommitEnriched.filter((clocDiffCommitEnriched) => clocDiffCommitEnriched.file === ('src/lib/command.ts'));
                 const commandTs = diffsInCommandTsFile[0];
                 (0, chai_1.expect)(commandTs).not.undefined;

@@ -61,7 +61,7 @@ exports.copyRenamesDict$ = copyRenamesDict$;
 // these functions may be exported for testing purposes
 function buildDiffCommand(mostRecentCommit, leastRecentCommit, folderPath, similarityIndex) {
     const cdCommand = `cd ${folderPath}`;
-    let clocDiffAllCommand = `git diff --numstat -M${similarityIndex}% -z ${mostRecentCommit} ${leastRecentCommit}`;
+    let clocDiffAllCommand = `git diff --numstat -M${similarityIndex}% -z ${leastRecentCommit} ${mostRecentCommit}`;
     return `${cdCommand} && ${clocDiffAllCommand} `;
 }
 function splitDiffs(tokens) {
@@ -97,12 +97,15 @@ function splitDiffs(tokens) {
         const linesAdded = parseInt(thisTokenParts[0]);
         const linesDeleted = parseInt(thisTokenParts[1]);
         // in case of a rename/copy the preImagePath contains the name of the file before the rename/copy
+        // and the postImagePath contains the name of the file after the rename/copy
         let preImagePath = '';
+        let postImagePath = '';
         let filePath = '';
         // in case of a rename/copy the preImagePath is the token[i+1] and the postImagePath is the token[i+2]
         if (isRenameCopy) {
-            filePath = tokens[i + 1];
-            preImagePath = tokens[i + 2];
+            preImagePath = tokens[i + 1];
+            postImagePath = tokens[i + 2];
+            filePath = postImagePath;
             // we increment the cursor by 2 because we have already processed the token[i+1] and token[i+2]
             i = i + 2;
         }
