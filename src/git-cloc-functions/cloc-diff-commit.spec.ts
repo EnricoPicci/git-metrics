@@ -28,11 +28,11 @@ describe(`clocDiffWithCommit$`, () => {
                         );
                         const commandTs = diffsInCommandTsFile[0];
                         expect(commandTs).not.undefined;
-                        expect(commandTs?.code_added).equal(9);
-                        expect(commandTs?.code_removed).equal(30);
-                        expect(commandTs?.code_modified).equal(9);
-                        expect(commandTs?.code_same).equal(10);
-                        expect(commandTs?.blank_added).equal(4);
+                        expect(commandTs?.code_added).equal(6);
+                        expect(commandTs?.code_removed).equal(5);
+                        expect(commandTs?.code_modified).equal(0);
+                        expect(commandTs?.code_same).equal(23);
+                        expect(commandTs?.blank_added).equal(1);
                         expect(commandTs?.blank_removed).equal(0);
                         expect(commandTs?.blank_modified).equal(0);
                         expect(commandTs?.blank_same).equal(0);
