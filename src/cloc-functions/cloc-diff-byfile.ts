@@ -2,7 +2,8 @@ import { catchError, concatMap, filter, from, map, of, skip, toArray } from "rxj
 import { executeCommandObs } from "../tools/execute-command/execute-command";
 import { ignoreUpTo } from "../tools/rxjs-operators/ignore-up-to";
 import { CLOC_CONFIG } from "./config";
-import { newClocDiffByfile, newClocDiffByfileWithCommitData, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
+import { ClocDiffByfileWithSumAndIsCopy, newClocDiffByfile, newClocDiffByfileWithCommitData, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
+import { copyRenamesDict$ } from "../git-functions/diff-file";
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -24,24 +25,7 @@ export function clocDiffByfile$(
     repoFolderPath = './',
     languages: string[] = [],
 ) {
-    const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
-
-    return executeCommandObs('run cloc --git-diff-rel --by-file --quiet', cmd).pipe(
-        map((output) => {
-            return output.split('\n');
-        }),
-        catchError((err) => {
-            // we have encountered situations where cloc returns an error with a message containing text like this:
-            // "did not match any files\nFailed to create tarfile of files from git".
-            // In this case the error code is 25.
-            // We do not want to stop the execution of the script, so we just log the error and return an empty array.
-            if (err.code === 25) {
-                console.warn(`Non fatal Error executing command ${cmd}`, err.message);
-                const emptyArray: string[] = [];
-                return of(emptyArray)
-            }
-            throw err;
-        }),
+    return executeClocGitDiffRel(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
         concatMap(lines => {
             return from(lines)
         }),
@@ -78,7 +62,28 @@ export function clocDiffByfile$(
             }
             return arrayOfClocDiffByfile;
         }),
-    ).pipe(
+        // read the differences returned by the git diff command using the diff$ function
+        // these difference mark the files that have been copied or renamed
+        // we use this info to mark as copyRename the files that have been copied or renamed
+        // we continue to use the cloc --git-diff-rel command since this gives us the info about the lines of code, comments, and blanks
+        // as well as the info about which lines have been modified and therefore it is more useful to calculate
+        // the code turnover.
+        // At the same time, marking the diffs which are copies improves the accuracy of the code turnover calculation because
+        // we may decide to filter such diffs when we run the analysis
+        concatMap(arrayOfClocDiffByfile => {
+            return copyRenamesDict$(mostRecentCommit, leastRecentCommit, repoFolderPath).pipe(
+                map(copyRenameDict => {
+                    const addDataWithCopyInfo = arrayOfClocDiffByfile.map((diff) => {
+                        const diffWithIsCopy: ClocDiffByfileWithSumAndIsCopy = { ...diff, isCopy: false }
+                        if (copyRenameDict[diff.file]) {
+                            diffWithIsCopy.isCopy = true;
+                        }
+                        return diffWithIsCopy;
+                    })
+                    return addDataWithCopyInfo
+                }),
+            )
+        }),
         // after having calculated the sum and set it to each diff object, stream again the array of diffs
         concatMap(arrayOfClocDiffByfile => {
             return from(arrayOfClocDiffByfile)
@@ -146,4 +151,31 @@ function buildClocDiffRelByFileCommand(
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter}`;
+}
+
+function executeClocGitDiffRel(
+    mostRecentCommit: string,
+    leastRecentCommit: string,
+    repoFolderPath: string,
+    languages: string[] = [],
+) {
+    const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
+
+    return executeCommandObs('run cloc --git-diff-rel --by-file --quiet', cmd).pipe(
+        map((output) => {
+            return output.split('\n');
+        }),
+        catchError((err) => {
+            // we have encountered situations where cloc returns an error with a message containing text like this:
+            // "did not match any files\nFailed to create tarfile of files from git".
+            // In this case the error code is 25.
+            // We do not want to stop the execution of the script, so we just log the error and return an empty array.
+            if (err.code === 25) {
+                console.warn(`Non fatal Error executing command ${cmd}`, err.message);
+                const emptyArray: string[] = [];
+                return of(emptyArray)
+            }
+            throw err;
+        }),
+    )
 }

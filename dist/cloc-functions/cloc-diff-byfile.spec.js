@@ -48,6 +48,24 @@ describe('clocDiffByfile$', () => {
             }
         });
     }).timeout(1000000);
+    it(`should generate an Observable that emits a stream of ClocDiffByfile objects one of which is a copy/rename`, (done) => {
+        const commit = '4fe2715e3a915cf31c8759a9e499404047fa2104';
+        const mostRecentCommit = commit;
+        const leastRecentCommit = `${commit}^1`;
+        const folderPath = './';
+        (0, cloc_diff_byfile_1.clocDiffByfile$)(mostRecentCommit, leastRecentCommit, folderPath).pipe((0, rxjs_1.toArray)()).subscribe({
+            next: (clocDiffs) => {
+                const clocDiffsCopyRename = clocDiffs.filter(clocDiff => clocDiff.isCopy);
+                (0, chai_1.expect)(clocDiffsCopyRename.length).eq(1);
+            },
+            error: (error) => {
+                done(error);
+            },
+            complete: () => {
+                done();
+            }
+        });
+    }).timeout(1000000);
 });
 describe('clocDiffByfileWithCommitDiffs$', () => {
     it(`should generate an Observable that emits a stream of ClocDiffByfileWithCommitDiffs objects which represent the differences
@@ -60,7 +78,7 @@ describe('clocDiffByfileWithCommitDiffs$', () => {
         const leastRecentCommit = `${thirdCommitSha}^1`;
         const folderPath = './';
         const languages = ['TypeScript'];
-        (0, cloc_diff_byfile_1.clocDiffByfileWithCommitDiffs$)(mostRecentCommit, leastRecentCommit, folderPath, languages).pipe((0, rxjs_1.toArray)()).subscribe({
+        (0, cloc_diff_byfile_1.clocDiffByfileWithCommitData$)(mostRecentCommit, leastRecentCommit, folderPath, languages).pipe((0, rxjs_1.toArray)()).subscribe({
             next: (clocDiffs) => {
                 (0, chai_1.expect)(clocDiffs).to.be.an('Array');
                 (0, chai_1.expect)(clocDiffs.length).eq(10);

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.ERROR_UNKNOWN_REVISION_OR_PATH = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
+exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -15,6 +15,8 @@ const config_2 = require("../config");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 const commit_url_1 = require("./commit-url");
 const date_functions_1 = require("../tools/dates/date-functions");
+const errors_1 = require("./errors");
+const errors_2 = require("./errors");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -71,7 +73,7 @@ function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0)
         const parentCommitSha = `${commit.sha}^1`;
         return readOneCommitCompact$(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(err => {
             // if the error is because the commit has no parent, then we set the parent date to the beginning of time
-            if (err === exports.ERROR_UNKNOWN_REVISION_OR_PATH) {
+            if (err === errors_2.ERROR_UNKNOWN_REVISION_OR_PATH) {
                 const commitWithParentDate = Object.assign(Object.assign({}, commit), { parentDate: new Date(0), commitUrl });
                 return (0, rxjs_1.of)(commitWithParentDate);
             }
@@ -107,8 +109,8 @@ function readOneCommitCompact$(commitSha, repoPath, verbose = true) {
         const commitCompact = newCommitCompactFromGitlog(output[0], repoPath);
         return commitCompact;
     }), (0, rxjs_1.catchError)((error) => {
-        if (error.message.includes('unknown revision or path not in the working tree')) {
-            throw exports.ERROR_UNKNOWN_REVISION_OR_PATH;
+        if ((0, errors_1.isUnknownRevisionError)(error)) {
+            throw errors_2.ERROR_UNKNOWN_REVISION_OR_PATH;
         }
         const err = `Error in fetchOneCommit for repo "${repoPath} and commit ${commitSha}"\nError: ${error}
 Command: ${cmd}`;
@@ -119,10 +121,6 @@ Command: ${cmd}`;
     }));
 }
 exports.readOneCommitCompact$ = readOneCommitCompact$;
-exports.ERROR_UNKNOWN_REVISION_OR_PATH = {
-    name: 'ErrorUnknownParent',
-    message: 'Unknown revision or path - not in the working tree',
-};
 /**
  * Reads the commits from a Git repository and writes the output to a file.
  * For each commit all the files changed in the commit are listed with the number of lines added and deleted.

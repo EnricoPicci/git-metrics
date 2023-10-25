@@ -6,7 +6,7 @@ const observable_fs_1 = require("observable-fs");
 const cloc_dictionary_1 = require("../../../cloc-functions/cloc-dictionary");
 const commit_1 = require("../../../git-functions/commit");
 const config_1 = require("../0-config/config");
-const commit_model_1 = require("../../../git-functions/commit.model");
+const file_path_1 = require("../../../git-functions/file-path");
 const SEP = config_1.DEFAUL_CONFIG.GIT_COMMIT_REC_SEP;
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // returns a stream of commits in the form of an Observable which notifies GitCommitEnriched objects reading data from files containing
@@ -59,14 +59,14 @@ function newGitFileNumstat(fileInfo, clocDict) {
     const fileNumstat = {
         linesAdded,
         linesDeleted,
-        path: (0, commit_model_1.filePathFromCommitPath)(fileNumstatData[2]),
+        path: (0, file_path_1.renamedFilePath)(fileNumstatData[2]),
         code: 0,
         comment: 0,
         blank: 0,
     };
     if (clocDict) {
         let _path = fileNumstat.path;
-        _path = (0, commit_model_1.filePathFromCommitPath)(_path);
+        _path = (0, file_path_1.renamedFilePath)(_path);
         const pathWithStartingDotSlash = './' + _path;
         const clocFileInfo = clocDict[_path] || clocDict[pathWithStartingDotSlash];
         // it may be that cloc does not read info for files which are considered not relevant, e.g. *.txt or files without extensions

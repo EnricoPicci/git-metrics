@@ -15,14 +15,19 @@ describe(`clocDiffWithCommit$`, () => {
                 // take the first diff for a certain file - since it is the first one it is not going to change
                 // over time since the git history is immutable - being sure that it does not change over time
                 // allows us to write a test for it
+                // WARNING: it seems that the number of lines of code added, removed, modified, and same can change
+                // in contraddiction what I had just written above
+                // The file diff belongs to this commit
+                // https://github.com/EnricoPicci/git-metrics/commit/ce8ccf86c9dd954c2210bb1f2171bc827bb2566a
+                // as by 2023-10-24 the test is green
                 const diffsInCommandTsFile = arrayOfClocDiffCommitEnriched.filter((clocDiffCommitEnriched) => clocDiffCommitEnriched.file === ('src/lib/command.ts'));
                 const commandTs = diffsInCommandTsFile[0];
                 (0, chai_1.expect)(commandTs).not.undefined;
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_added).equal(9);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_removed).equal(30);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_modified).equal(9);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_same).equal(10);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_added).equal(4);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_added).equal(6);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_removed).equal(5);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_modified).equal(0);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_same).equal(23);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_added).equal(1);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_removed).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_modified).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_same).equal(0);
@@ -32,12 +37,41 @@ describe(`clocDiffWithCommit$`, () => {
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.comment_same).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.file).equal('src/lib/command.ts');
                 // this file can mutate in terms of lines of code, blank and comment over time, hence we only
-                // check that the values oc code, blank and comment are numbers 
+                // check that the values of code, blank and comment are numbers 
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code).gte(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank).gte(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.comment).gte(0);
-                // this file was removed in the commit hence it should have 0 lines of code, blank and comment
-                const fileRemovedName = 'src/apps/cloc-on-repos/read-repos-commits/internals/read-repos-commits.ts';
+                // test that isCopy is false
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.isCopy).equal(false);
+            },
+        }), (0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            next: (commitRecords) => {
+                (0, chai_1.expect)(commitRecords).not.undefined;
+                (0, chai_1.expect)(commitRecords.length).gt(0);
+            },
+        }))
+            .subscribe({
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    }).timeout(200000);
+    it(`if a file has been cancelled in the period considered, is should be found in the differences but should
+    not have values for code, comments and blanks`, (done) => {
+        const pathToRepo = './';
+        const fromDate = new Date('2023-10-23');
+        const toDate = new Date('2023-10-25');
+        (0, cloc_diff_commit_1.clocDiffWithCommit$)(pathToRepo, fromDate, toDate)
+            .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
+            next: (arrayOfClocDiffCommitEnriched) => {
+                // this file was removed in the period considered in the commit 97cf7ebcecc0de1e321b62b89783360b8c586054
+                // hence it should have 0 lines of code, blank and comment
+                // WARNING: the commit 97cf7ebcecc0de1e321b62b89783360b8c586054 has 3 deleted files but the command
+                // cloc --git-diff-rel --by-file --csv 97cf7ebcecc0de1e321b62b89783360b8c586054^1 97cf7ebcecc0de1e321b62b89783360b8c586054
+                // returns only 'src/config-copy-yy.ts'
+                // while the command
+                // git diff --numstat 97cf7ebcecc0de1e321b62b89783360b8c586054^1 97cf7ebcecc0de1e321b62b89783360b8c586054
+                // shows all 3
+                const fileRemovedName = 'src/config-copy-yy.ts';
                 const fileRemoved = arrayOfClocDiffCommitEnriched.find((clocDiffCommitEnriched) => clocDiffCommitEnriched.file === fileRemovedName);
                 (0, chai_1.expect)(fileRemoved).not.undefined;
                 (0, chai_1.expect)(fileRemoved === null || fileRemoved === void 0 ? void 0 : fileRemoved.code).equal(0);

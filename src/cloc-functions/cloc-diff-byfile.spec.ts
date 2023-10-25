@@ -49,6 +49,28 @@ describe('clocDiffByfile$', () => {
             }
         });
     }).timeout(1000000);
+
+    it(`should generate an Observable that emits a stream of ClocDiffByfile objects one of which is a copy/rename`, (done) => {
+        const commit = '4fe2715e3a915cf31c8759a9e499404047fa2104'
+        const mostRecentCommit = commit;
+        const leastRecentCommit = `${commit}^1`;
+        const folderPath = './'
+
+        clocDiffByfile$(mostRecentCommit, leastRecentCommit, folderPath).pipe(
+            toArray()
+        ).subscribe({
+            next: (clocDiffs) => {
+                const clocDiffsCopyRename = clocDiffs.filter(clocDiff => clocDiff.isCopy);
+                expect(clocDiffsCopyRename.length).eq(1);
+            },
+            error: (error) => {
+                done(error);
+            },
+            complete: () => {
+                done();
+            }
+        });
+    }).timeout(1000000);
 });
 
 describe('clocDiffByfileWithCommitDiffs$', () => {
