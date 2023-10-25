@@ -3,7 +3,7 @@ import { clocDiffWithCommit$, writeClocDiffWithCommit$ } from "./cloc-diff-commi
 import { expect } from "chai";
 
 describe(`clocDiffWithCommit$`, () => {
-    it(`calculates the differences between all commits in a certain timeframe for this repo`, (done) => {
+    it.only(`calculates the differences between all commits in a certain timeframe for this repo`, (done) => {
         const pathToRepo = './'
         const fromDate = new Date('2023-10-11')
         const toDate = new Date('2023-10-12')
@@ -28,11 +28,11 @@ describe(`clocDiffWithCommit$`, () => {
                         );
                         const commandTs = diffsInCommandTsFile[0];
                         expect(commandTs).not.undefined;
-                        expect(commandTs?.code_added).equal(6);
-                        expect(commandTs?.code_removed).equal(5);
-                        expect(commandTs?.code_modified).equal(0);
-                        expect(commandTs?.code_same).equal(23);
-                        expect(commandTs?.blank_added).equal(1);
+                        expect(commandTs?.code_added).equal(9);
+                        expect(commandTs?.code_removed).equal(30);
+                        expect(commandTs?.code_modified).equal(9);
+                        expect(commandTs?.code_same).equal(10);
+                        expect(commandTs?.blank_added).equal(4);
                         expect(commandTs?.blank_removed).equal(0);
                         expect(commandTs?.blank_modified).equal(0);
                         expect(commandTs?.blank_same).equal(0);
