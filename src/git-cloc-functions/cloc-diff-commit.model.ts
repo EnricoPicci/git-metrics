@@ -5,7 +5,7 @@ import { CommitCompactWithUrlAndParentDate } from "../git-functions/commit.model
 export type ClocDiffCommitEnriched = ClocDiffByfileWithCommitData & ClocFileInfo & CommitCompactWithUrlAndParentDate
 
 export type ClocDiffCommitEnrichedWithDerivedData = ClocDiffCommitEnriched & {
-    date_month: string;
+    year_month: string;
     commit_code_turnover: number;
     file_code_turnover: number;
     days_span: number;

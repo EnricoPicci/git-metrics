@@ -331,7 +331,7 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
 
     const infoWithDerivedData: ClocDiffCommitEnrichedWithDerivedData = {
         ...clocDiffCommitEnriched,
-        date_month,
+        year_month: date_month,
         commit_code_turnover,
         file_code_turnover,
         days_span,

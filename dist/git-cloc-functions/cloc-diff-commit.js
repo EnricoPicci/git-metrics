@@ -16,14 +16,55 @@ const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensio
 const fs_utils_1 = require("../tools/fs-utils/fs-utils");
 const date_functions_1 = require("../tools/dates/date-functions");
 //********************************************************************************************************************** */
+//****************************   Module objectives                               *************************************** */
+//********************************************************************************************************************** */
+/**
+ * cloc-diff-commit contain functions which calculate the differences between the commits in a given time range.
+ * This is achieved by mixing cloc and git commands.
+ * cloc and git commands are executed using the `child_process` module. Therefore the communicate asynchronously with the main thread.
+ * For this reason, the functions in this module use the rxJs library and return Observables.
+ *
+ * The core function of this module is clocDiffWithCommit$.
+ * It takes a path to a Git repository folder and returns an Observable of ClocDiffCommitEnriched objects,
+ * each containing the differences for a file that has changed in a single commit when compared to its parent commit.
+ * All the commits in the given time range are considered.
+ *
+ * The functions of this module are used to calculate the code-turnover, i.e. the sum of the lines of code added, removed and modified,
+ * for each file in each commit in the period of time considered.
+ * code-turnover can be calculated either on a single repo or on all the repos which are in a given folder.
+ *
+ * There are also functions that can write the records calculated by the functions of this module to a CSV file for further analysis.
+ *
+**/
+//********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
 /**
  * Calculates the differences between the commits in a given time range (the comparison is performed with the parent commit of each commit),
  * enriched with the data retrieved using cloc (like lines of code, comments and blanks) as well as the data of the commit itself
  * (like author, date, message, etc.).
- * The function returns an Observable of ClocDiffCommitEnriched objects, each containing the differences for all the files
- * that have changed in the single commit when compared to its parent commit.
+ * The function returns an Observable of ClocDiffCommitEnrichedWithDerivedData objects.
+ * Each ClocDiffCommitEnrichedWithDerivedData represents the changes that one file has undergone in a single commit
+ * when compared to its parent commit.
+ * All the commits in the given time range are considered and all the files changed in each commit are considered.
+ * For instance, if in the time range there have been 10 commits and each commit has changed 5 files, then
+ * the function will return an Observable representing a stream emitting 50 ClocDiffCommitEnrichedWithDerivedData objects.
+ *
+ * The core steps are the following
+ * 1. calculate the cloc dictionary for the repository using the "cloc" command - this dictionary contains the info about
+ * the lines of code, comments and blanks for each file in the current state of the repository
+ * (i.e. the folder of the repo and all its subfolders)
+ * 2. read the commits in the given time range - this data is retrieved using the "git log" command and then enriched with the
+ * url of the repository (obtained with the "git config --get remote.origin.url") and the date of the parent commit
+ * (obtained again with the "git log" command applied only to the parent commit)
+ * 3. calculate the differences for each file that has changed in each commit when compared to its parent commit - this data is
+ * retrieved using the "cloc --git-diff-rel --by-file" command and then enriched with the data from
+ * the cloc dictionary and the commit data - we also call the "git diff --numstat" command to retrieve which files are considered
+ * to be copy or rename of other files (this info is not returned by the "cloc" command) and we use it to mark wheter a file
+ * is a copy or rename of another file
+ * 4. calculate the derived data - for instance we calculate the code turnover for each file change, where the code-tunover is the
+ * sum of the lines of code added, removed and modified
+ *
  * @param pathToRepo The path to the Git repository folder.
  * @param fromDate The start date of the time range. Defaults to the beginning of time.
  * @param toDate The end date of the time range. Defaults to the current date and time.
@@ -193,8 +234,7 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
         _explain_mass_refact = explain_mass_refact;
     }
     const { maybe_generated, explain_generated } = isPossibleGenerated(clocDiffCommitEnriched);
-    const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { date_month,
-        commit_code_turnover,
+    const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { year_month: date_month, commit_code_turnover,
         file_code_turnover,
         days_span, maybe_mass_refact: _maybe_mass_refact, explain_mass_refact: _explain_mass_refact, maybe_generated,
         explain_generated });
