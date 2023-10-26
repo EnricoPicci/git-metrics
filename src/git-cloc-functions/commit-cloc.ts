@@ -15,9 +15,11 @@ import { CommitWithFileNumstats, GitFileNumstat } from "../git-functions/commit.
  * If a file present in the commit is not present in the cloc dictionary, it means that the file is either a file
  * not considered by cloc (e.g. a binary file) or a file that has been deleted after the commit was created. In this case
  * the file is enriched with 0 lines of code, comments and blanks.
- * @param commits$ An Observable of `CommitWithFileNumstats` objects representing the commits with the number of lines added and removed for each file in each commit.
+ * @param commits$ An Observable of `CommitWithFileNumstats` objects representing the commits with the number of lines 
+ * added and removed for each file in each commit.
  * @param clocDictionary$ An Observable of `ClocDictionary` objects representing the cloc info for each file in the repository.
- * @returns An Observable that emits a stream of `CommitWithFileNumstatsEnrichedWithCloc` objects representing the commits enriched with the number of lines of code, comments, and blanks for each file in each commit.
+ * @returns An Observable that emits a stream of `CommitWithFileNumstatsEnrichedWithCloc` objects representing the commits 
+ * enriched with the number of lines of code, comments, and blanks for each file in each commit.
  */
 export function commitWithFileNumstatsEnrichedWithCloc$(
     commits$: Observable<CommitWithFileNumstats>,

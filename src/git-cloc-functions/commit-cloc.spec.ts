@@ -3,7 +3,7 @@ import { ClocParams } from "../cloc-functions/cloc-params";
 import { clocByfile$ } from "../cloc-functions/cloc";
 import { readCommitWithFileNumstat$ } from "../git-functions/commit";
 import { GitLogCommitParams } from "../git-functions/git-params";
-import { commitWithFileNumstatsEnrichedWithCloc$ } from "./commit-cloc.functions";
+import { commitWithFileNumstatsEnrichedWithCloc$ } from "./commit-cloc";
 import { expect } from "chai";
 import { clocFileDictFromClocStream$ } from "../cloc-functions/cloc-dictionary";
 

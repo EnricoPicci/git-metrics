@@ -19,7 +19,7 @@ const module_churn_report_1 = require("../../1-D-reports/module-churn-report");
 const report_generators_1 = require("./report-generators");
 const add_project_info_1 = require("../../1-D-reports/add-project-info");
 const summary_excel_1 = require("../../1-E-summary-excel/summary-excel");
-const commit_cloc_functions_1 = require("../../../../git-cloc-functions/commit-cloc.functions");
+const commit_cloc_1 = require("../../../../git-cloc-functions/commit-cloc");
 const cloc_1 = require("../../../../cloc-functions/cloc");
 const cloc_dictionary_1 = require("../../../../cloc-functions/cloc-dictionary");
 exports.allReports = [
@@ -79,7 +79,7 @@ function runReportsOneStream(reports, repoFolderPath, _filter, after, before, ou
     const { gitLogCommits, cloc, clocSummary } = (0, read_all_1.readStreamsDistinctProcesses)(commitOptions, clocParams);
     // enrich git log streams
     const clocDict = (0, cloc_dictionary_1.clocFileDictFromClocStream$)(cloc, repoFolderPath);
-    let _commitStream = (0, commit_cloc_functions_1.commitWithFileNumstatsEnrichedWithCloc$)(gitLogCommits, clocDict).pipe((0, rxjs_1.map)(c => {
+    let _commitStream = (0, commit_cloc_1.commitWithFileNumstatsEnrichedWithCloc$)(gitLogCommits, clocDict).pipe((0, rxjs_1.map)(c => {
         console.log(c);
         return c;
     }));
