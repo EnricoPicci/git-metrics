@@ -11,3 +11,6 @@ Other enrichments are the url of the repo (if there is a remote url) and the dat
 The functions of this library calculate the code turnover, i.e. the total amount of lines of code changed, added or modified in a certain period.
 
 code-turnover can be considered a proxy of the work performed on a certain code base in a certain period.
+
+# core of the module
+The core of the module is in the [cloc-diff-commit](./cloc-diff-commit.ts) file.

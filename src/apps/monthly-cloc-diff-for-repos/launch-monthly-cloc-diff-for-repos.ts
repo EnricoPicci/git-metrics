@@ -3,25 +3,6 @@ import { Command } from 'commander';
 import { CONFIG } from '../../config';
 
 import { calculateMonthlyClocDiffsOnRepos } from './core/cloc-monthly-diff-repos';
-import { calculateCodeTurnover } from './core/code-turnover.functions';
-
-export function launchCalculateCodeTurnover() {
-    console.log('====>>>> Launching code-turnover calculation on Repos');
-
-    const { folderPath, outdir, languages, from, to, concurrency, excludeRepoPaths,
-        removeBlanks, removeNFiles, removeComments, removeSame } = readParams();
-    const options = { languages, removeBlanks, removeNFiles, removeComments, removeSame }
-
-    calculateCodeTurnover(
-        folderPath,
-        outdir,
-        from,
-        to,
-        concurrency,
-        excludeRepoPaths,
-        options
-    ).subscribe();
-}
 
 export function launchMonthlyClocDiffRepos() {
     console.log('====>>>> Launching Monthly Cloc diff on Repos');

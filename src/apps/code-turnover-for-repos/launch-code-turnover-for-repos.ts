@@ -1,10 +1,10 @@
 import { Command } from "commander";
 import { writeClocDiffWithCommitForRepos$, WriteClocDiffWithCommitForReposOptions } from "../../git-cloc-functions/cloc-diff-commit";
 
-export function launchClocDiffByfileWithCommitForRepos() {
+export function launchCodeTurnoverForRepos() {
     const start = Date.now();
 
-    console.log('====>>>> Launching Cloc Diff Byfile with Commit For Repos')
+    console.log('====>>>> Launching code-turnover For Repos')
 
     const { folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages,
         removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold } = readParams();
