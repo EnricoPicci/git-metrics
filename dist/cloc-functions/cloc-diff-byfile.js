@@ -20,8 +20,18 @@ const diff_file_1 = require("../git-functions/diff-file");
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable stream of objects of type ClocDiffByfile.
  */
-function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = []) {
-    return executeClocGitDiffRel(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe((0, rxjs_1.concatMap)(lines => {
+function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], progress = {
+    totNumOfCommits: 0,
+    commitCounter: 0,
+}) {
+    return executeClocGitDiffRel(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe((0, rxjs_1.tap)({
+        next: () => {
+            // log progress
+            progress.commitCounter++;
+            const ofMsg = progress.totNumOfCommits == 0 ? '' : `of ${progress.totNumOfCommits} commits`;
+            console.log(`commit ${progress.commitCounter} ${ofMsg}`);
+        }
+    }), (0, rxjs_1.concatMap)(lines => {
         return (0, rxjs_1.from)(lines);
     }), (0, ignore_up_to_1.ignoreUpTo)(exports.CLOC_DIFF_BYFILE_HEADER), 
     // skip the header line
@@ -72,11 +82,17 @@ function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = '
             });
             return addDataWithCopyInfo;
         }));
-    }), 
+    }))
+        // we need to concatenate 2 pipes since "pipe" TypeScript overrides are define so that "pipe" can take at most 9 operators
+        // and when we add a 10th operator, the compiler makes "pipe" return Observable<unknown> instead of Observable<whateverType>
+        // and with Observable<unknown> the downstream operators do not compile.
+        // Since the above "pipe" has reached the limit of 9 operators, we cannot add the "concatMap" operator to it.
+        // Therefore, to make type inference work, we need to concatenate 2 pipes
+        .pipe(
     // after having calculated the sum and set it to each diff object, stream again the array of diffs
     (0, rxjs_1.concatMap)(arrayOfClocDiffByfile => {
         return (0, rxjs_1.from)(arrayOfClocDiffByfile);
-    }));
+    })).pipe();
 }
 exports.clocDiffByfile$ = clocDiffByfile$;
 /**
@@ -89,8 +105,11 @@ exports.clocDiffByfile$ = clocDiffByfile$;
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
  */
-function clocDiffByfileWithCommitData$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = []) {
-    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
+function clocDiffByfileWithCommitData$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], progress = {
+    totNumOfCommits: 0,
+    commitCounter: 0,
+}) {
+    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress).pipe(
     // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
     (0, rxjs_1.map)(clocDiffByfile => {
         return (0, cloc_diff_byfile_model_1.newClocDiffByfileWithCommitData)(clocDiffByfile);
@@ -106,8 +125,11 @@ exports.clocDiffByfileWithCommitData$ = clocDiffByfileWithCommitData$;
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
  */
-function clocDiffWithParentByfile$(commit, repoFolderPath = './', languages = []) {
-    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages);
+function clocDiffWithParentByfile$(commit, repoFolderPath = './', languages = [], progress = {
+    totNumOfCommits: 0,
+    commitCounter: 0,
+}) {
+    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, progress);
 }
 exports.clocDiffWithParentByfile$ = clocDiffWithParentByfile$;
 //********************************************************************************************************************** */

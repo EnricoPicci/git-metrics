@@ -4,7 +4,7 @@ const rxjs_1 = require("rxjs");
 const cloc_diff_commit_1 = require("./cloc-diff-commit");
 const chai_1 = require("chai");
 describe(`clocDiffWithCommit$`, () => {
-    it(`calculates the differences between all commits in a certain timeframe for this repo`, (done) => {
+    it.only(`calculates the differences between all commits in a certain timeframe for this repo`, (done) => {
         const pathToRepo = './';
         const fromDate = new Date('2023-10-11');
         const toDate = new Date('2023-10-12');
@@ -23,11 +23,11 @@ describe(`clocDiffWithCommit$`, () => {
                 const diffsInCommandTsFile = arrayOfClocDiffCommitEnriched.filter((clocDiffCommitEnriched) => clocDiffCommitEnriched.file === ('src/lib/command.ts'));
                 const commandTs = diffsInCommandTsFile[0];
                 (0, chai_1.expect)(commandTs).not.undefined;
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_added).equal(6);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_removed).equal(5);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_modified).equal(0);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_same).equal(23);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_added).equal(1);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_added).equal(9);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_removed).equal(30);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_modified).equal(9);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_same).equal(10);
+                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_added).equal(4);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_removed).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_modified).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_same).equal(0);

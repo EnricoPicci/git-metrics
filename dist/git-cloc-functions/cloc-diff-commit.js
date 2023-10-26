@@ -30,7 +30,7 @@ const date_functions_1 = require("../tools/dates/date-functions");
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable of ClocDiffCommitEnriched objects.
  */
-function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = [], progess = {
+function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = [], progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
 }, options = {}) {
@@ -45,17 +45,13 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
     // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
     (0, rxjs_1.concatMap)((clocFileDict) => {
         return (0, commit_1.readCommitCompactWithUrlAndParentDate$)(pathToRepo, fromDate, toDate).pipe((0, rxjs_1.map)((commit) => {
-            // log progress
-            progess.commitCounter++;
-            const ofMsg = progess.totNumOfCommits == 0 ? '' : `of ${progess.totNumOfCommits} commits`;
-            console.log(`commit ${progess.commitCounter} ${ofMsg}`);
             return { commit, clocFileDict };
         }));
     }), 
     // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
     // together with the cloc dictionary and the commit
     (0, rxjs_1.concatMap)(({ commit, clocFileDict }) => {
-        return (0, cloc_diff_byfile_1.clocDiffWithParentByfile$)(commit.sha, pathToRepo, languages).pipe((0, rxjs_1.map)((clocDiffByfile) => {
+        return (0, cloc_diff_byfile_1.clocDiffWithParentByfile$)(commit.sha, pathToRepo, languages, progress).pipe((0, rxjs_1.map)((clocDiffByfile) => {
             return { clocDiffByfile, clocFileDict, commit };
         }));
     }), 
