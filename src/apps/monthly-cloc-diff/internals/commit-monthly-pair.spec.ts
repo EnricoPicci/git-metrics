@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { commitMonthlyPairs, commitsMonthlyPairsForRepos } from './commit-monthly-pair.functions';
+import { commitMonthlyPairs, commitsMonthlyPairsForRepos } from './commit-monthly-pair';
 import { CommitTuple } from './commit-tuple.model';
 import { CommitCompact } from '../../../git-functions/commit.model';
 

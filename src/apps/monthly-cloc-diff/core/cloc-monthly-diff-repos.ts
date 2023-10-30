@@ -6,13 +6,13 @@ import { toCsv } from '@enrico.piccinin/csv-tools';
 
 import { CONFIG } from '../../../config';
 
-import { commitsMonthlyPairsForRepos } from '../internals/commit-monthly-pair.functions';
+import { commitsMonthlyPairsForRepos } from '../internals/commit-monthly-pair';
 import {
     reposCompactWithCommitsByMonthsInFolderObs,
     newReposWithCommitsByMonth,
     repoCommitsByMonthRecordsDict,
 } from '../internals/repos-with-commits-by-month.functions';
-import { calculateMonthlyClocGitDiffs } from '../internals/commit-cloc-diff.function';
+import { calculateMonthlyClocGitDiffs } from '../internals/commit-cloc-diff';
 import { RepoMonthlyClocDiffStats } from '../internals/commit-cloc-diff.model';
 import { clocDiffStatToCsvWithBase } from './cloc-diff-stat-csv';
 

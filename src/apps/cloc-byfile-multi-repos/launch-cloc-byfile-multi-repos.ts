@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { writeClocByFileForRepos$ } from "../../cloc-functions/cloc";
 
-export function launchClocByfileForRepos() {
+export function launchClocByfileMultiRepos() {
     console.log('====>>>> Launching Cloc For Repos')
 
     const { folderPath, outdir, excludeRepoPaths } = readParams();

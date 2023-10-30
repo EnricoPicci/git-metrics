@@ -1,7 +1,6 @@
 import path from 'path';
 
 import {
-    catchError,
     concat,
     concatMap,
     defaultIfEmpty,
@@ -17,7 +16,7 @@ import {
     tap,
 } from 'rxjs';
 
-import { appendFileObs, deleteFileObs, writeFileObs } from 'observable-fs';
+import { appendFileObs, writeFileObs } from 'observable-fs';
 
 import {
     executeCommand,
@@ -301,14 +300,7 @@ export function clocByFileForRepos$(folderPath: string, excludeRepoPaths = []) {
 export function writeClocByFileForRepos$(folderPath: string, outDir = './', excludeRepoPaths = []) {
     const outFile = buildOutfileName('', folderPath, 'cloc-', '-byfile.csv');
     const outFilePath = path.join(outDir, outFile);
-    return deleteFileObs(outFilePath).pipe(
-        catchError((err) => {
-            if (err.code === 'ENOENT') {
-                // complete so that the next operation can continue
-                return of(null);
-            }
-            throw new Error(err);
-        }),
+    return deleteFile$(outFilePath).pipe(
         concatMap(() => clocByFileForRepos$(folderPath, excludeRepoPaths)),
         concatMap((line) => {
             return appendFileObs(outFilePath, `${line}\n`);

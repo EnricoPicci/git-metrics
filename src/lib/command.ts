@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { launchCountReposCommits } from '../apps/read-repos-commits/launch-count-repos-commits';
-import { launchMonthlyClocDiffRepos } from '../apps/monthly-cloc-diff-for-repos/launch-monthly-cloc-diff-for-repos';
+import { launchMonthlyClocDiffRepos } from '../apps/monthly-cloc-diff/launch-monthly-cloc-diff';
 
-import { launchCodeTurnoverForRepos } from '../apps/code-turnover-for-repos/launch-code-turnover-for-repos';
-import { launchClocByfileForRepos } from '../apps/cloc-byfile-for-repos/launch-cloc-byfile-for-repos';
+import { launchCodeTurnoverForRepos } from '../apps/code-turnover/launch-code-turnover';
+import { launchClocByfileMultiRepos } from '../apps/cloc-byfile-multi-repos/launch-cloc-byfile-multi-repos';
 
 import { launchReportsParallelReads } from '../apps/reports-on-repo/2-pipelines/run-reports-on-repo';
 import { launchAllReportsOnMergedRepos } from '../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos';
@@ -19,7 +19,7 @@ const commandsAvailable: { [command: string]: () => void } = {
     'run-reports-on-repo': launchReportsParallelReads,
     'run-reports-on-repos-in-folder': launchAllReportsOnMergedRepos,
     'run-branches-report-on-repo': launchBranchesReport,
-    'cloc-byfile-for-repos': launchClocByfileForRepos,
+    'cloc-byfile-multi-repos': launchClocByfileMultiRepos,
 }
 
 const functionForCommand = commandsAvailable[command];
@@ -27,11 +27,14 @@ const functionForCommand = commandsAvailable[command];
 if (functionForCommand) {
     functionForCommand();
 } else {
-    console.log(`Command ${command} not found`);
+    if (command) {
+        console.log(`Command ${command} not found`);
+    }
+
     console.log(`Commands allowed:`)
 
     Object.keys(commandsAvailable).forEach(command => {
-        console.log(command);
+        console.log('- ' + command);
     })
 }
 

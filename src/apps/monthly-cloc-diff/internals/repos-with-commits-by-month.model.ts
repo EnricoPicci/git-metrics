@@ -1,7 +1,7 @@
 import { CommitCompact } from "../../../git-functions/commit.model";
 import { RepoCompact } from "../../../git-functions/repo.model";
 
-import { CommitsByMonths } from "./commits-by-month.functions";
+import { CommitsByMonths } from "./commits-by-month";
 
 export interface RepoCompactWithCommitsByMonths extends RepoCompact {
     commitsByMonth: CommitsByMonths;

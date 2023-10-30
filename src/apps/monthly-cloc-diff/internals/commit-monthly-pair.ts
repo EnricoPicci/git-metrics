@@ -15,8 +15,8 @@ import { CommitTuple } from './commit-tuple.model';
 //
 // The result of this function will be:
 // 2020-03              [commit9, commit6]
-// 2020-02              [commit6, commit3]
-// 2020-01              [commit3, commit1]
+// 2020-02              [commit6, commit2]
+// 2020-01              [commit2, commit1]
 //
 // If a month has no commits then the value for that month will be null and the commit to be used to calculate
 // the diff generated in the previous month will be the first commit found going backwards, for instance

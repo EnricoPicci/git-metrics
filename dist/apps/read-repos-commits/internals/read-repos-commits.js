@@ -8,7 +8,7 @@ const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
-const repos_with_commits_by_month_functions_1 = require("../../monthly-cloc-diff-for-repos/internals/repos-with-commits-by-month.functions");
+const repos_with_commits_by_month_functions_1 = require("../../monthly-cloc-diff/internals/repos-with-commits-by-month.functions");
 // readReposCommits reads all the repos contained in a directory and returns an observable of an array of RepoCompact
 function readReposCommits(folderPath, outdir, fromDate = new Date(0), toDate = new Date(Date.now()), concurrency = 1) {
     const folderName = path_1.default.basename(folderPath);

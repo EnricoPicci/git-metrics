@@ -39,9 +39,16 @@ Command: ${cmd}`;
     }));
 }
 exports.diff$ = diff$;
-// copyRenamesDict$ is a function that calculates the git diff between two commits and returns an Observable that emits one
-// object of type GitDiffFileDict, where the keys are the file paths which represents copy or renames and the values are the
-// GitDiffFile objects representing the copy or rename.
+/**
+ * Calculates the git diff between two commits and returns an Observable that emits one object of type GitDiffFileDict,
+ * where the keys are the file paths which represents copy or renames and the values are the GitDiffFile objects representing
+ * the copy or rename.
+ * @param mostRecentCommit The SHA of the most recent commit.
+ * @param leastRecentCommit The SHA of the least recent commit.
+ * @param repoFolderPath The path to the Git repository folder. Defaults to the current directory.
+ * @param similarityIndex The similarity index to use for rename detection. Defaults to 50.
+ * @returns An Observable that emits one object of type GitDiffFileDict representing the copy or rename operations between the two Git commits.
+ */
 function copyRenamesDict$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', similarityIndex = 50) {
     return diff$(mostRecentCommit, leastRecentCommit, repoFolderPath, similarityIndex).pipe((0, rxjs_1.map)((diffs) => {
         const copyRenamesDict = {};

@@ -251,13 +251,7 @@ exports.clocByFileForRepos$ = clocByFileForRepos$;
 function writeClocByFileForRepos$(folderPath, outDir = './', excludeRepoPaths = []) {
     const outFile = buildOutfileName('', folderPath, 'cloc-', '-byfile.csv');
     const outFilePath = path_1.default.join(outDir, outFile);
-    return (0, observable_fs_1.deleteFileObs)(outFilePath).pipe((0, rxjs_1.catchError)((err) => {
-        if (err.code === 'ENOENT') {
-            // complete so that the next operation can continue
-            return (0, rxjs_1.of)(null);
-        }
-        throw new Error(err);
-    }), (0, rxjs_1.concatMap)(() => clocByFileForRepos$(folderPath, excludeRepoPaths)), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocByFileForRepos$(folderPath, excludeRepoPaths)), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
         next: (outFilePath) => {

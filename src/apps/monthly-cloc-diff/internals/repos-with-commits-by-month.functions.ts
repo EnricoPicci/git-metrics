@@ -4,7 +4,7 @@ import { CommitCompact } from '../../../git-functions/commit.model';
 import { repoCompact$ } from '../../../git-functions/repo';
 
 import { RepoCompactWithCommitsByMonths, ReposWithCommitsByMonths } from './repos-with-commits-by-month.model';
-import { newCommitsByMonth } from './commits-by-month.functions';
+import { newCommitsByMonth } from './commits-by-month';
 import { gitRepoPaths } from '../../../git-functions/repo-path';
 
 // reposCompactWithCommitsByMonthsInFolderObs returns an Observable that notifies the list of
