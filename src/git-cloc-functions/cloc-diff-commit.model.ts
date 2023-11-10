@@ -5,6 +5,7 @@ import { CommitCompactWithUrlAndParentDate } from "../git-functions/commit.model
 export type ClocDiffCommitEnriched = ClocDiffByfileWithCommitData & ClocFileInfo & CommitCompactWithUrlAndParentDate
 
 export type ClocDiffCommitEnrichedWithDerivedData = ClocDiffCommitEnriched & {
+    module: string;
     year_month: string;
     commit_code_turnover: number;
     file_code_turnover: number;
@@ -13,4 +14,11 @@ export type ClocDiffCommitEnrichedWithDerivedData = ClocDiffCommitEnriched & {
     explain_mass_refact: string;
     maybe_generated: boolean;
     explain_generated: string;
+    massive_remove: boolean;
 }
+
+export type ClocDiffWithCommitOptions = {
+    fileMassiveRefactorThreshold?: number;
+    commitMassiveRefactorThreshold?: number;
+    commitMassiveRemoveThreshold?: number;
+};

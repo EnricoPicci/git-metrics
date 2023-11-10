@@ -14,7 +14,7 @@ import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignor
 import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
 import { toYYYYMMDD } from "../tools/dates/date-functions";
 
-import { ClocDiffCommitEnriched, ClocDiffCommitEnrichedWithDerivedData } from "./cloc-diff-commit.model";
+import { ClocDiffCommitEnriched, ClocDiffCommitEnrichedWithDerivedData, ClocDiffWithCommitOptions } from "./cloc-diff-commit.model";
 
 //********************************************************************************************************************** */
 //****************************   Module objectives                               *************************************** */
@@ -140,10 +140,6 @@ export function clocDiffWithCommit$(
             return clocDiffCommitEnrichedWithDerivedData
         }),
     )
-}
-export type ClocDiffWithCommitOptions = {
-    fileMassiveRefactorThreshold?: number,
-    commitMassiveRefactorThreshold?: number,
 }
 
 /**
@@ -296,6 +292,8 @@ export type WriteClocDiffWithCommitForReposOptions = {
 // these functions may be exported for testing purposes
 
 function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, options: ClocDiffWithCommitOptions) {
+    const module = path.dirname(clocDiffCommitEnriched.file);
+
     const date_month = clocDiffCommitEnriched.date.toISOString().slice(0, 7);
 
     const commit_code_turnover =
@@ -329,8 +327,11 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
 
     const { maybe_generated, explain_generated } = isPossibleGenerated(clocDiffCommitEnriched)
 
+    const massive_remove = isMassiveRemove(clocDiffCommitEnriched, options.commitMassiveRemoveThreshold || 0.9)
+
     const infoWithDerivedData: ClocDiffCommitEnrichedWithDerivedData = {
         ...clocDiffCommitEnriched,
+        module,
         year_month: date_month,
         commit_code_turnover,
         file_code_turnover,
@@ -339,6 +340,7 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
         explain_mass_refact: _explain_mass_refact,
         maybe_generated,
         explain_generated,
+        massive_remove
     }
     return infoWithDerivedData
 }
@@ -379,6 +381,13 @@ function isPossibleGenerated(clocDiffCommitEnriched: ClocDiffCommitEnriched) {
         explain_generated
     explain_generated = explain_generated == '' ? '-' : explain_generated
     return { maybe_generated, explain_generated }
+}
+
+// returns true if the vast majority of the changes in the commit are removals
+function isMassiveRemove(csvRec: ClocDiffCommitEnriched, massiveRemovalThreshold: number) {
+    const commitRemovedLines = csvRec.commit_code_removed
+    const commitCodeTurnover = csvRec.commit_code_added + csvRec.commit_code_removed + csvRec.commit_code_modified
+    return commitRemovedLines / commitCodeTurnover > massiveRemovalThreshold
 }
 
 

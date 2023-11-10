@@ -216,6 +216,7 @@ exports.writeClocDiffWithCommitForRepos$ = writeClocDiffWithCommitForRepos$;
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
 function calculateDerivedData(clocDiffCommitEnriched, options) {
+    const module = path_1.default.dirname(clocDiffCommitEnriched.file);
     const date_month = clocDiffCommitEnriched.date.toISOString().slice(0, 7);
     const commit_code_turnover = clocDiffCommitEnriched.commit_code_added +
         clocDiffCommitEnriched.commit_code_removed +
@@ -234,10 +235,12 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
         _explain_mass_refact = explain_mass_refact;
     }
     const { maybe_generated, explain_generated } = isPossibleGenerated(clocDiffCommitEnriched);
-    const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { year_month: date_month, commit_code_turnover,
+    const massive_remove = isMassiveRemove(clocDiffCommitEnriched, options.commitMassiveRemoveThreshold || 0.9);
+    const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { module, year_month: date_month, commit_code_turnover,
         file_code_turnover,
         days_span, maybe_mass_refact: _maybe_mass_refact, explain_mass_refact: _explain_mass_refact, maybe_generated,
-        explain_generated });
+        explain_generated,
+        massive_remove });
     return infoWithDerivedData;
 }
 // isPossibleMassiveRefactor is a function that returns true if the commit is a possible massive refactor
@@ -271,6 +274,12 @@ function isPossibleGenerated(clocDiffCommitEnriched) {
         explain_generated;
     explain_generated = explain_generated == '' ? '-' : explain_generated;
     return { maybe_generated, explain_generated };
+}
+// returns true if the vast majority of the changes in the commit are removals
+function isMassiveRemove(csvRec, massiveRemovalThreshold) {
+    const commitRemovedLines = csvRec.commit_code_removed;
+    const commitCodeTurnover = csvRec.commit_code_added + csvRec.commit_code_removed + csvRec.commit_code_modified;
+    return commitRemovedLines / commitCodeTurnover > massiveRemovalThreshold;
 }
 function formatClocDiffCommitEnrichedForCsv(csvRec, options) {
     // while we keep the type checking for csvRec so that we know which are the properties available

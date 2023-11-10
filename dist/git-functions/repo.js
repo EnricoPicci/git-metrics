@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.cloneRepo$ = void 0;
+exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -27,13 +27,76 @@ function cloneRepo$(url, repoPath) {
         throw new Error(`Path is mandatory`);
     const repoName = path_1.default.basename(repoPath);
     const command = `git clone ${url} ${repoPath.replaceAll(' ', '_')}`;
-    return (0, execute_command_1.executeCommandObs)(`Clone ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} cloned`), (0, rxjs_1.map)(() => repoPath), (0, rxjs_1.catchError)((err) => {
+    return (0, execute_command_1.executeCommandObs)(`Clone ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} cloned`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
         console.error(`!!!!!!!!!!!!!!! Error: while cloning repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
         return rxjs_1.EMPTY;
     }));
 }
 exports.cloneRepo$ = cloneRepo$;
+/**
+ * Pulls a Git repository from a given path and returns an Observable that emits the path of the pulled repository
+ * once the pull is completed.
+ * @param repoPath The path to the Git repository folder.
+ * @returns An Observable that emits the path of the pulled repository once the pull is completed.
+ * @throws An error if the repoPath parameter is not provided.
+ */
+function pullRepo$(repoPath) {
+    if (!repoPath)
+        throw new Error(`Path is mandatory`);
+    const repoName = path_1.default.basename(repoPath);
+    const command = `cd ${repoPath} && git pull`;
+    return (0, execute_command_1.executeCommandObs)(`Pull ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} pulled`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+        console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
+        console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
+        console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
+        const pullError = new PullError(err, repoPath);
+        return (0, rxjs_1.of)(pullError);
+    }));
+}
+exports.pullRepo$ = pullRepo$;
+class PullError {
+    constructor(error, repoPath) {
+        this.repoPath = '';
+        this.error = error;
+        this.repoPath = repoPath;
+    }
+}
+;
+/**
+ * Pulls all the Git repositories in a given folder and returns an Observable that emits the paths of the pulled repositories.
+ * @param folderPath The path to the folder containing the Git repositories.
+ * @param concurrency The maximum number of concurrent requests. Defaults to 1.
+ * @param excludeRepoPaths An array of repository names to exclude. Wildcards can be used. Defaults to an empty array.
+ * @returns An Observable that emits the paths of the pulled repositories.
+ */
+function pullAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
+    const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    console.log(`Repos to be pulled: ${repoPaths.length}`);
+    let counter = 0;
+    const reposErroring = [];
+    repoPaths.forEach((repoPath) => {
+        console.log(`Repo to be pulled: ${repoPath}`);
+    });
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
+        return pullRepo$(repoPath);
+    }, concurrency), (0, rxjs_1.tap)({
+        next: (val) => {
+            if (val instanceof PullError) {
+                reposErroring.push(val.repoPath);
+            }
+            console.log(`Pulled ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
+        },
+        complete: () => {
+            console.log(`Pulled ${counter} repos of ${repoPaths.length}`);
+            console.log(`Errored repos: ${reposErroring.length}`);
+            reposErroring.forEach((repoPath) => {
+                console.log(`- ${repoPath} errored`);
+            });
+        }
+    }));
+}
+exports.pullAllRepos$ = pullAllRepos$;
 /**
  * Returns an Observable that notifies the list of RepoCompact objects representing all the repos in a given folder.
  * Repos whose name is in the excludeRepoPaths array are excluded. Wildcards can be used,

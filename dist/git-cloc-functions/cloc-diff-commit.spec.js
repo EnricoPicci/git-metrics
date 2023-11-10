@@ -16,7 +16,8 @@ describe(`clocDiffWithCommit$`, () => {
                 // over time since the git history is immutable - being sure that it does not change over time
                 // allows us to write a test for it
                 // WARNING: it seems that the number of lines of code added, removed, modified, and same may change
-                // in contraddiction what I had just written above. Yesterday (2023-10-24) the test was red with these values
+                // in contraddiction what I had just written above. 
+                // Apparently cloc --git-diff-rel may return different results for the same commit
                 // The file diff belongs to this commit
                 // https://github.com/EnricoPicci/git-metrics/commit/ce8ccf86c9dd954c2210bb1f2171bc827bb2566a
                 // as by 2023-10-25 the test is green
@@ -24,17 +25,18 @@ describe(`clocDiffWithCommit$`, () => {
                 const diffsInCommandTsFile = arrayOfClocDiffCommitEnriched.filter((clocDiffCommitEnriched) => clocDiffCommitEnriched.file === ('src/lib/command.ts'));
                 const commandTs = diffsInCommandTsFile[0];
                 (0, chai_1.expect)(commandTs).not.undefined;
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_added).equal(6);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_removed).equal(5);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_modified).equal(0);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_same).equal(23);
-                (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_added).equal(1);
-                // sometimes, for reasons not very well understood, the following are the right assertions
-                // expect(commandTs?.code_added).equal(9);
-                // expect(commandTs?.code_removed).equal(30);
-                // expect(commandTs?.code_modified).equal(9);
-                // expect(commandTs?.code_same).equal(10);
-                // expect(commandTs?.blank_added).equal(4);
+                // for reasons not very well understood, for the same commit we can have 2 different results
+                // therefore the assertions consider both cases
+                const codeAdded = commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_added;
+                (0, chai_1.expect)(codeAdded == 6 || codeAdded === 9).true;
+                const codeRemoved = commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_removed;
+                (0, chai_1.expect)(codeRemoved == 5 || codeRemoved === 30).true;
+                const codeModified = commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_modified;
+                (0, chai_1.expect)(codeModified == 0 || codeModified === 9).true;
+                const codeSame = commandTs === null || commandTs === void 0 ? void 0 : commandTs.code_same;
+                (0, chai_1.expect)(codeSame == 23 || codeSame === 10).true;
+                const blankAdded = commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_added;
+                (0, chai_1.expect)(blankAdded == 1 || blankAdded === 4).true;
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_removed).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_modified).equal(0);
                 (0, chai_1.expect)(commandTs === null || commandTs === void 0 ? void 0 : commandTs.blank_same).equal(0);

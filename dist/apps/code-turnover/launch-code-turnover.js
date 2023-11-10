@@ -6,7 +6,7 @@ const cloc_diff_commit_1 = require("../../git-cloc-functions/cloc-diff-commit");
 function launchCodeTurnoverForRepos() {
     const start = Date.now();
     console.log('====>>>> Launching code-turnover For Repos');
-    const { folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages, removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold } = readParams();
+    const { folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages, removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold, commitMassiveRemoveThreshold } = readParams();
     const options = {
         outdir,
         fromDate,
@@ -18,6 +18,7 @@ function launchCodeTurnoverForRepos() {
         removeSame,
         fileMassiveRefactorThreshold,
         commitMassiveRefactorThreshold,
+        commitMassiveRemoveThreshold
     };
     (0, cloc_diff_commit_1.writeClocDiffWithCommitForRepos$)(folderPath, options).subscribe({
         complete: () => {
@@ -49,7 +50,10 @@ function readParams() {
         .option('--fileMassiveRefactorThreshold <number>', `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive refactoring will be calculated
             (the logic being that a diff on a file with a code turnover higher than the threshold is likely to be a massive refactoring)`)
         .option('--commitMassiveRefactorThreshold <number>', `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive refactoring will be calculated
-            (the logic being that a diff belonging to a commit whose code-turnover higher than the threshold is likely to be a massive refactoring)`);
+            (the logic being that a diff belonging to a commit whose code-turnover higher than the threshold is likely to be a massive refactoring)`)
+        .option('--commitMassiveRemoveThreshold <number>', `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive removal will be calculated
+            (the logic being that a diff belonging to a commit whose code-turnover is mainly a massive removal can be filtered out from the 
+            code turnover analysis)`);
     const _options = program.parse(process.argv).opts();
     const outdir = _options.outdir || process.cwd();
     const fromDate = _options.from ? new Date(_options.from) : new Date(0);
@@ -61,9 +65,11 @@ function readParams() {
     const removeSame = _options.removeSame || false;
     const fileMassiveRefactorThreshold = _options.fileMassiveRefactorThreshold || 0;
     const commitMassiveRefactorThreshold = _options.commitMassiveRefactorThreshold || 0;
+    const commitMassiveRemoveThreshold = _options.commitMassiveRemoveThreshold || 0.9;
     return {
         folderPath: _options.folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages,
-        removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold
+        removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold,
+        commitMassiveRemoveThreshold
     };
 }
 //# sourceMappingURL=launch-code-turnover.js.map

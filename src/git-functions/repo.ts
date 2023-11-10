@@ -1,12 +1,13 @@
 import path from 'path';
 
-import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray } from 'rxjs';
+import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignoreElements, defaultIfEmpty, of } from 'rxjs';
 
 import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
 import { readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
+import { FetchError, PullError } from './repo.errors';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -30,12 +31,144 @@ export function cloneRepo$(url: string, repoPath: string) {
 
     return executeCommandObs(`Clone ${repoName}`, command).pipe(
         tap(() => `${repoName} cloned`),
-        map(() => repoPath),
+        ignoreElements(),
+        defaultIfEmpty(repoPath),
         catchError((err) => {
             console.error(`!!!!!!!!!!!!!!! Error: while cloning repo "${repoName}" - error code: ${err.code}`);
             console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
             return EMPTY;
         }),
+    );
+}
+
+/**
+ * Pulls a Git repository from a given path and returns an Observable that emits the path of the pulled repository
+ * once the pull is completed.
+ * @param repoPath The path to the Git repository folder.
+ * @returns An Observable that emits the path of the pulled repository once the pull is completed.
+ * @throws An error if the repoPath parameter is not provided.
+ */
+export function pullRepo$(repoPath: string) {
+    if (!repoPath) throw new Error(`Path is mandatory`);
+
+    const repoName = path.basename(repoPath);
+    const command = `cd ${repoPath} && git pull`;
+
+    return executeCommandObs(`Pull ${repoName}`, command).pipe(
+        tap(() => `${repoName} pulled`),
+        ignoreElements(),
+        defaultIfEmpty(repoPath),
+        catchError((err) => {
+            console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
+            console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
+            console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
+            const pullError = new PullError(err, repoPath);
+            return of(pullError);
+        }),
+    );
+}
+/**
+ * Pulls all the Git repositories in a given folder and returns an Observable that emits the paths of the pulled repositories.
+ * @param folderPath The path to the folder containing the Git repositories.
+ * @param concurrency The maximum number of concurrent requests. Defaults to 1.
+ * @param excludeRepoPaths An array of repository names to exclude. Wildcards can be used. Defaults to an empty array.
+ * @returns An Observable that emits the paths of the pulled repositories.
+ */
+export function pullAllRepos$(folderPath: string, concurrency = 1, excludeRepoPaths: string[] = []) {
+    const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
+    console.log(`Repos to be pulled: ${repoPaths.length}`);
+
+    let counter = 0;
+    const reposErroring: string[] = [];
+
+    repoPaths.forEach((repoPath) => {
+        console.log(`Repo to be pulled: ${repoPath}`);
+    });
+    return from(repoPaths).pipe(
+        mergeMap((repoPath) => {
+            return pullRepo$(repoPath);
+        }, concurrency),
+        tap({
+            next: (val) => {
+                if (val instanceof PullError) {
+                    reposErroring.push(val.repoPath);
+                }
+                console.log(`Pulled ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
+            },
+            complete: () => {
+                console.log(`Pulled ${counter} repos of ${repoPaths.length}`);
+                console.log(`Errored repos: ${reposErroring.length}`);
+                reposErroring.forEach((repoPath) => {
+                    console.log(`- ${repoPath} errored`);
+                });
+            }
+        })
+    );
+}
+
+/**
+ * Fetches a Git repository from a given path and returns an Observable that emits the path of the fetched repository
+ * once the fetch is completed.
+ * @param repoPath The path to the Git repository folder.
+ * @returns An Observable that emits the path of the fetched repository once the fetch is completed.
+ * @throws An error if the repoPath parameter is not provided.
+ */
+export function fetchRepo$(repoPath: string) {
+    if (!repoPath) throw new Error(`Path is mandatory`);
+
+    const repoName = path.basename(repoPath);
+    const command = `cd ${repoPath} && git fetch --all`;
+
+    return executeCommandObs(`Fetch ${repoName}`, command).pipe(
+        tap(() => `${repoName} fetched`),
+        ignoreElements(),
+        defaultIfEmpty(repoPath),
+        catchError((err) => {
+            console.error(`!!!!!!!!!!!!!!! Error: while fetching repo "${repoName}" - error code: ${err.code}`);
+            console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
+            console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
+            const pullError = new FetchError(err, repoPath);
+            return of(pullError);
+        }),
+    );
+}
+
+/**
+ * Fetches all the Git repositories in a given folder and returns an Observable that emits the paths of the fetched repositories.
+ * @param folderPath The path to the folder containing the Git repositories.
+ * @param concurrency The maximum number of concurrent requests. Defaults to 1.
+ * @param excludeRepoPaths An array of repository names to exclude. Wildcards can be used. Defaults to an empty array.
+ * @returns An Observable that emits the paths of the fetched repositories.
+ */
+export function fetchAllRepos$(folderPath: string, concurrency = 1, excludeRepoPaths: string[] = []) {
+    const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
+    console.log(`Repos to be fetched: ${repoPaths.length}`);
+
+    let counter = 0;
+    const reposErroring: string[] = [];
+
+    repoPaths.forEach((repoPath) => {
+        console.log(`Repo to be fetched: ${repoPath}`);
+    });
+    return from(repoPaths).pipe(
+        mergeMap((repoPath) => {
+            return fetchRepo$(repoPath);
+        }, concurrency),
+        tap({
+            next: (val) => {
+                if (val instanceof FetchError) {
+                    reposErroring.push(val.repoPath);
+                }
+                console.log(`Fetched ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
+            },
+            complete: () => {
+                console.log(`Fetched ${counter} repos of ${repoPaths.length}`);
+                console.log(`Errored repos: ${reposErroring.length}`);
+                reposErroring.forEach((repoPath) => {
+                    console.log(`- ${repoPath} errored`);
+                });
+            }
+        })
     );
 }
 
