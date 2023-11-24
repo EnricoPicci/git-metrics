@@ -18,3 +18,9 @@ export class FetchError extends GitError {
         super(error, repoPath);
     }
 }
+
+export class CheckoutError extends GitError {
+    constructor(error: any, repoPath: string) {
+        super(error, repoPath);
+    }
+}
