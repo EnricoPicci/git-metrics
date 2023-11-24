@@ -43,6 +43,19 @@ import { ClocDiffCommitEnriched, ClocDiffCommitEnrichedWithDerivedData, ClocDiff
 //********************************************************************************************************************** */
 
 /**
+ * Calculates the code turnover for a set of repositories and returns an Observable that emits when the operation is complete.
+ * @param folderPath The path to the folder containing the repositories.
+ * @param options An object containing options for the operation. Defaults to an empty object.
+ * @returns An Observable that emits when the operation is complete.
+ */
+export function codeTurnover$(
+    folderPath: string,
+    options: WriteClocDiffWithCommitForReposOptions = {}
+) {
+    return writeClocDiffWithCommitForRepos$(folderPath, options)
+}
+
+/**
  * Calculates the differences between the commits in a given time range (the comparison is performed with the parent commit of each commit),
  * enriched with the data retrieved using cloc (like lines of code, comments and blanks) as well as the data of the commit itself 
  * (like author, date, message, etc.).

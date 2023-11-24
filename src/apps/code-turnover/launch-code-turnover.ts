@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { writeClocDiffWithCommitForRepos$, WriteClocDiffWithCommitForReposOptions } from "../../git-cloc-functions/cloc-diff-commit";
+import { codeTurnover$, WriteClocDiffWithCommitForReposOptions } from "../../git-cloc-functions/cloc-diff-commit";
 import { ClocDiffCommitEnriched } from "../../git-cloc-functions/cloc-diff-commit.model";
 
 export function launchCodeTurnoverForRepos(jiraIdExtractor?: (commit: ClocDiffCommitEnriched) => string) {
@@ -25,9 +25,9 @@ export function launchCodeTurnoverForRepos(jiraIdExtractor?: (commit: ClocDiffCo
         jiraIdExtractor
     }
 
-    writeClocDiffWithCommitForRepos$(folderPath, options).subscribe({
+    codeTurnover$(folderPath, options).subscribe({
         complete: () => {
-            console.log(`\nCloc Diff Byfile with Commit For Repo calculation completed in ${(Date.now() - start) / 1000} seconds`);
+            console.log(`\nCode turnover (i.e. Cloc Diff Byfile with Commit For Repo) calculation completed in ${(Date.now() - start) / 1000} seconds`);
         },
     })
 }
