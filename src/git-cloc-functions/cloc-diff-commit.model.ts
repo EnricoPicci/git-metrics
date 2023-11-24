@@ -9,16 +9,20 @@ export type ClocDiffCommitEnrichedWithDerivedData = ClocDiffCommitEnriched & {
     year_month: string;
     commit_code_turnover: number;
     file_code_turnover: number;
+    commit_code_turnover_no_removed_lines: number;
+    file_code_turnover_no_removed_lines: number;
     days_span: number;
     maybe_mass_refact: boolean;
     explain_mass_refact: string;
     maybe_generated: boolean;
     explain_generated: string;
     massive_remove: boolean;
+    jira_id: string;
 }
 
 export type ClocDiffWithCommitOptions = {
     fileMassiveRefactorThreshold?: number;
     commitMassiveRefactorThreshold?: number;
     commitMassiveRemoveThreshold?: number;
+    jiraIdExtractor?: (commit: ClocDiffCommitEnriched) => string | undefined;
 };

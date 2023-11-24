@@ -27,17 +27,22 @@ export function clocDiffByfile$(
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
+        errorCounter: number,
     } = {
             totNumOfCommits: 0,
             commitCounter: 0,
+            errorCounter: 0,
         },
 ) {
-    return executeClocGitDiffRel(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
+    return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
         tap({
-            next: () => {
+            next: (lines) => {
                 // log progress
+                if (lines[0] === 'Nothing to count.') {
+                    progress.errorCounter++
+                }
                 progress.commitCounter++
-                const ofMsg = progress.totNumOfCommits == 0 ? '' : `of ${progress.totNumOfCommits} commits`
+                const ofMsg = progress.totNumOfCommits == 0 ? '' : `of ${progress.totNumOfCommits} commits - nothing to count: ${progress.errorCounter} `
                 console.log(`commit ${progress.commitCounter} ${ofMsg}`)
             }
         }),
@@ -131,9 +136,11 @@ export function clocDiffByfileWithCommitData$(
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
+        errorCounter: number,
     } = {
             totNumOfCommits: 0,
             commitCounter: 0,
+            errorCounter: 0,
         },
 ) {
     return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress).pipe(
@@ -160,9 +167,11 @@ export function clocDiffWithParentByfile$(
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
+        errorCounter: number,
     } = {
             totNumOfCommits: 0,
             commitCounter: 0,
+            errorCounter: 0,
         },
 ) {
     return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, progress);
@@ -189,7 +198,7 @@ function buildClocDiffRelByFileCommand(
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter}`;
 }
 
-function executeClocGitDiffRel(
+function executeClocGitDiffRel$(
     mostRecentCommit: string,
     leastRecentCommit: string,
     repoFolderPath: string,

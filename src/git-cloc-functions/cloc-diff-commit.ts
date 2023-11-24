@@ -82,9 +82,11 @@ export function clocDiffWithCommit$(
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
+        errorCounter: number,
     } = {
             totNumOfCommits: 0,
             commitCounter: 0,
+            errorCounter: 0,
         },
     options: ClocDiffWithCommitOptions = {}
 ) {
@@ -166,9 +168,10 @@ export function clocDiffWithCommitForRepos$(
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
     return countCommits(repoPaths, fromDate, toDate).pipe(
         concatMap((totNumOfCommits) => {
-            let progess = {
+            const progess = {
                 totNumOfCommits,
                 commitCounter: 0,
+                errorCounter: 0,
             }
             return from(repoPaths).pipe(
                 concatMap((repoPath) => {
@@ -300,10 +303,15 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
         clocDiffCommitEnriched.commit_code_added +
         clocDiffCommitEnriched.commit_code_removed +
         clocDiffCommitEnriched.commit_code_modified;
-
     const file_code_turnover =
         clocDiffCommitEnriched.code_added +
         clocDiffCommitEnriched.code_removed +
+        clocDiffCommitEnriched.code_modified;
+    const commit_code_turnover_no_removed_lines =
+        clocDiffCommitEnriched.commit_code_added +
+        clocDiffCommitEnriched.commit_code_modified;
+    const file_code_turnover_no_removed_lines =
+        clocDiffCommitEnriched.code_added +
         clocDiffCommitEnriched.code_modified;
 
     // days_span is an integer number with no decimals that represents the number of days between the commit date 
@@ -329,18 +337,24 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
 
     const massive_remove = isMassiveRemove(clocDiffCommitEnriched, options.commitMassiveRemoveThreshold || 0.9)
 
+    const _jiraId = options.jiraIdExtractor ? options.jiraIdExtractor(clocDiffCommitEnriched) : '-'
+    const jiraId = _jiraId ? _jiraId : '-'
+
     const infoWithDerivedData: ClocDiffCommitEnrichedWithDerivedData = {
         ...clocDiffCommitEnriched,
         module,
         year_month: date_month,
         commit_code_turnover,
         file_code_turnover,
+        commit_code_turnover_no_removed_lines,
+        file_code_turnover_no_removed_lines,
         days_span,
         maybe_mass_refact: _maybe_mass_refact,
         explain_mass_refact: _explain_mass_refact,
         maybe_generated,
         explain_generated,
-        massive_remove
+        massive_remove,
+        jira_id: jiraId,
     }
     return infoWithDerivedData
 }
@@ -391,7 +405,8 @@ function isMassiveRemove(csvRec: ClocDiffCommitEnriched, massiveRemovalThreshold
 }
 
 
-function formatClocDiffCommitEnrichedForCsv(csvRec: ClocDiffCommitEnriched, options: WriteClocDiffWithCommitForReposOptions) {// define csvRecObj as of type any so that we can manipulate its properties without type checking
+function formatClocDiffCommitEnrichedForCsv(csvRec: ClocDiffCommitEnriched, options: WriteClocDiffWithCommitForReposOptions) {
+    // define csvRecObj as of type any so that we can manipulate its properties without type checking
     // while we keep the type checking for csvRec so that we know which are the properties available
     const csvRecObj: any = csvRec
     // delete the object containing the sum of the diffs (all data are stored in simple properties of csvRec)
