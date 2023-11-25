@@ -1,3 +1,8 @@
+/**
+ * Converts a Date object to a string in the format 'YYYY-MM-DD'.
+ * @param date The Date object to convert.
+ * @returns A string representing the date in the format 'YYYY-MM-DD'.
+ */
 export function toYYYYMMDD(date: Date) {
     return date.toISOString().split('T')[0];
 }

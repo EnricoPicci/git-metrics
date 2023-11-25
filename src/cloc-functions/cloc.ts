@@ -383,6 +383,13 @@ function clocByfileCommandWithArgs(params: ClocParams) {
     if (params.vcs) {
         args.push(`--vcs=${params.vcs}`);
     }
+    if (params.notMatch && params.notMatch?.length > 0) {
+        // excludeRegex is a string that contains the strings to be excluded separated by !
+        // for instance if notMatch is ['*db*', '*ods*'], then excludeRegex will be '*db*|*ods*'
+        const excludeRegex = params.notMatch.join('|');
+        args.push(`--not-match-d=(${excludeRegex})`);
+        args.push(`--fullpath`);
+    }
     const options = { cwd: params.folderPath };
     const cmd = CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';
     return { cmd, args, options };

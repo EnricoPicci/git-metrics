@@ -410,21 +410,45 @@ describe(`writeClocByFileForRepos$`, () => {
 });
 
 describe(`clocByfile$`, () => {
-    it(`throws if the folder is not a git repo`, (done) => {
+    it(`completes if the folder is not a git repo`, (done) => {
         const params: ClocParams = {
-            folderPath: '/',
+            folderPath: '/',  // the root folder of the file system is not a git repo
             vcs: 'git',
         };
 
-        clocByfile$(params, 'test', false).pipe(
+        clocByfile$(params, 'test', false)
+            .subscribe({
+                error: (err) => {
+                    done(err)
+                },
+                complete: () => {
+                    done()
+                },
+            });
+    }).timeout(200000);
+
+    it(`excludes files whose path contain certain strings`, (done) => {
+        const params: ClocParams = {
+            folderPath: '.',  // thit project repo
+            vcs: 'git',
+            notMatch: ['src', 'test-data', 'dist'],
+        };
+
+        clocByfile$(params, 'test exclude', false).pipe(
+            toArray(),
             tap({
-                next: (outFile) => {
-                    expect(outFile.length).gt(1);
+                next: (files) => {
+                    // having removed the src folder, the number of files should be less than 100
+                    expect(files.length).lt(100);
                 },
             }),
         ).subscribe({
-            error: (err) => done(err),
-            complete: () => done(),
+            error: (err) => {
+                done(err)
+            },
+            complete: () => {
+                done()
+            },
         });
     }).timeout(200000);
 

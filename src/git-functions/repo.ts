@@ -173,12 +173,12 @@ export function fetchAllRepos$(folderPath: string, concurrency = 1, excludeRepoP
 }
 
 /**
- * Checks out a Git repository at a specific date and returns an Observable that emits the path to the repository.
+ * Checks out a Git repository at a specific date and returns an Observable that emits the path to the repository
+ * or a CheckoutError if an error occurs during the checkout process.
  * @param repoPath The path to the Git repository.
  * @param date The date to check out the repository at.
  * @param branch The branch to check out. Defaults to 'master'.
- * @returns An Observable that emits the path to the repository.
- * @throws An error if the repoPath parameter is not provided.
+ * @returns An Observable that emits the path to the repository or a CheckoutError if an error occurs during the checkout process.
  */
 export function checkoutRepoAtDate$(repoPath: string, date: Date, branch = 'master') {
     if (!repoPath) throw new Error(`Path is mandatory`);
@@ -203,6 +203,16 @@ export function checkoutRepoAtDate$(repoPath: string, date: Date, branch = 'mast
     );
 }
 
+/**
+ * Checks out all repositories in a folder at a specific date and returns an Observable that emits the path to each repository.
+ * If an error occurs during the checkout process, the Observable emits a CheckoutError object.
+ * @param folderPath The path to the folder containing the repositories.
+ * @param date The date to check out the repositories at.
+ * @param concurrency The maximum number of concurrent checkouts. Defaults to 1.
+ * @param excludeRepoPaths An array of repository paths to exclude from the checkout. Defaults to an empty array.
+ * @returns An Observable that emits the path to each repository as it is checked out.
+ * @throws A CheckoutError if an error occurs during the checkout process.
+ */
 export function checkoutAllReposAtDate$(folderPath: string, date: Date, concurrency = 1, excludeRepoPaths: string[] = []) {
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
     console.log(`Repos to be checkedout: ${repoPaths.length}`);

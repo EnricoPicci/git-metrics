@@ -5,4 +5,5 @@ export type ClocParams = {
     outClocFilePrefix?: string;
     clocDefsPath?: string;
     vcs: string;
+    notMatch?: string[];
 };

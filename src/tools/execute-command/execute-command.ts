@@ -92,7 +92,9 @@ function bufferToLines() {
                     remainder = lines.splice(lines.length - 1)[0];
                     lines.forEach((l) => subscriber.next(l));
                 },
-                error: (err) => subscriber.error(err),
+                error: (err) => {
+                    subscriber.error(err)
+                },
                 complete: () => {
                     if (started && remainder.length > 0) {
                         subscriber.next(remainder);
