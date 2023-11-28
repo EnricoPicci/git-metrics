@@ -14,7 +14,7 @@ export function executeCommand(action: string, command: string) {
     return ret;
 }
 
-export function executeCommandObs(action: string, command: string) {
+export function executeCommandObs(action: string, command: string, stdErrorHandler?: (stderr: string) => Error | null) {
     return new Observable((subscriber: Subscriber<string>) => {
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);
         console.log(`====>>>> ${command}`);
@@ -24,7 +24,15 @@ export function executeCommandObs(action: string, command: string) {
                 return
             }
             if (stderr.length > 0) {
-                console.log(`!!!!!!!! Message on stadard error:\n${stderr}`);
+                stdErrorHandler = stdErrorHandler ?? ((stderr) => {
+                    console.log(`!!!!!!!! Message on stadard error:\n${stderr}`)
+                    return null
+                });
+                const notifyError = stdErrorHandler(stderr);
+                if (notifyError) {
+                    subscriber.error(notifyError);
+                    return
+                }
             }
             console.log(`====>>>>$$$ Command "${command}" executed successfully`);
             subscriber.next(stdout);
@@ -62,8 +70,8 @@ export function executeCommandNewProcessObs(
             subscriber.error(error);
         });
         cmd.on('close', (code) => {
-            subscriber.complete();
             console.log(`====>>>> Command ${command} with args ${args} executed - exit code ${code}`);
+            subscriber.complete();
         });
     });
 }

@@ -8,6 +8,7 @@ import { RepoCompact } from './repo.model';
 import { readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
 import { CheckoutError, FetchError, PullError } from './repo.errors';
+import { toYYYYMMDD } from '../tools/dates/date-functions';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -180,27 +181,81 @@ export function fetchAllRepos$(folderPath: string, concurrency = 1, excludeRepoP
  * @param branch The branch to check out. Defaults to 'master'.
  * @returns An Observable that emits the path to the repository or a CheckoutError if an error occurs during the checkout process.
  */
-export function checkoutRepoAtDate$(repoPath: string, date: Date, branch = 'master') {
+export function checkoutRepoAtDate$(
+    repoPath: string,
+    date: Date,
+    options: CheckoutRepoOptions
+) {
     if (!repoPath) throw new Error(`Path is mandatory`);
 
-    const repoName = path.basename(repoPath);
-    // convert date to YYYY-MM-DD format
-    const dateString = date.toISOString().split('T')[0];
-    const gitRevlistCmd = `git rev-list -n 1  --before="${dateString}" ${branch}`
-    const command = `cd ${repoPath} && git checkout \`${gitRevlistCmd}\``;
+    const { stdErrorHandler } = options;
 
-    return executeCommandObs(`checkout ${repoName} at date before=${dateString}`, command).pipe(
-        tap(() => `${repoName} checked out`),
+    let gitCommand = ''
+
+    // build the command to fetch the default branch name
+    // see https://stackoverflow.com/a/67170894
+    gitCommand = `cd ${repoPath} && git fetch --all && git branch --remotes --list '*/HEAD'`;
+    const fetchBranchName$ = executeCommandObs(`fetch default branch name for ${repoPath}`, gitCommand).pipe(
+        map((output) => {
+            // the output is something like:
+            // fetching origin
+            // origin/HEAD -> origin/master
+            // hence we split the second line with / and take the third element
+            const lines = output.split('\n');
+            if (lines.length < 2) {
+                throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
+                we expected to have at least 2 lines with the first one being something like "fetching origin" but we got "${output}"`);
+            }
+            // we take the second line which we expect to be something like "origin/HEAD -> origin/master"
+            const parts = output.split('\n')[1].split('/');
+            if (parts.length !== 3) {
+                throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
+                we expected a string with format "origin/HEAD -> origin/master" but we got "${output}"`);
+            }
+            const branchName = parts[2];
+            return branchName;
+        })
+    )
+
+    const commitAtDate$ = (branchName: string) => {
+        // convert date to YYYY-MM-DD format
+        const dateString = toYYYYMMDD(date);
+        gitCommand = `cd ${repoPath} && git rev-list -n 1  --before="${dateString}" ${branchName}`
+        return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe(
+            tap((commitSha) => {
+                if (!commitSha) {
+                    throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
+                    we expected to have a commit sha but we got "${commitSha}"`);
+                }
+                console.log(`Commit at date ${dateString} for branch ${branchName} is ${commitSha}`)
+            }),
+        )
+    }
+
+    const repoName = path.basename(repoPath);
+    const checkout$ = (commitSha: string) => {
+        gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
+        return executeCommandObs(`checkout ${repoName} at commit ${commitSha}`, gitCommand, stdErrorHandler).pipe(
+            tap(() => `${repoName} checked out`),
+        )
+    }
+
+    return fetchBranchName$.pipe(
+        concatMap(commitAtDate$),
+        concatMap(checkout$),
         ignoreElements(),
         defaultIfEmpty(repoPath),
         catchError((err) => {
             console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoName}" - error code: ${err.code}`);
             console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
-            console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
+            console.error(`!!!!!!!!!!!!!!! Command erroring: "${gitCommand}"`);
             const _error = new CheckoutError(err, repoPath);
             return of(_error);
         }),
     );
+}
+export type CheckoutRepoOptions = {
+    stdErrorHandler?: (stdError: string) => Error | null
 }
 
 /**
@@ -213,7 +268,9 @@ export function checkoutRepoAtDate$(repoPath: string, date: Date, branch = 'mast
  * @returns An Observable that emits the path to each repository as it is checked out.
  * @throws A CheckoutError if an error occurs during the checkout process.
  */
-export function checkoutAllReposAtDate$(folderPath: string, date: Date, concurrency = 1, excludeRepoPaths: string[] = []) {
+export function checkoutAllReposAtDate$(folderPath: string, date: Date, options: CheckoutAllReposAtDateOptions) {
+    options.concurrency = options.concurrency || 1;
+    const { concurrency, excludeRepoPaths } = options;
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
     console.log(`Repos to be checkedout: ${repoPaths.length}`);
 
@@ -225,7 +282,7 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, concurre
     });
     return from(repoPaths).pipe(
         mergeMap((repoPath) => {
-            return checkoutRepoAtDate$(repoPath, date);
+            return checkoutRepoAtDate$(repoPath, date, options);
         }, concurrency),
         tap({
             next: (val) => {
@@ -243,6 +300,12 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, concurre
             }
         })
     );
+}
+export type CheckoutAllReposAtDateOptions = {
+    concurrency?: number,
+    excludeRepoPaths?: string[],
+    stdErrorHandler?: (stdError: string) => Error | null
+    branch: string
 }
 
 /**
