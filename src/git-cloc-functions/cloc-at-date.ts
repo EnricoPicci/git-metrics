@@ -57,14 +57,23 @@ export function clocAtDateByFileForRepos$(
                         // remove the last line which contains the total
                         filter((line) => line.slice(0, 3) !== 'SUM'),
                         map((line) => {
+                            const fields = line.split(',');
+                            const filePath = fields[1];
+                            const module = path.dirname(filePath);
+
+                            const repoPathParts = repoPathOrError.split(path.sep);
+                            const numberOfRepoPathParts = repoPathParts.length;
+                            const repoName = repoPathParts[numberOfRepoPathParts - 1];
+                            const repoDirName = numberOfRepoPathParts > 1 ?
+                                repoPathParts[numberOfRepoPathParts - 2] : '-';
                             // add the repopath and the date in YYYY-MM-DD format at the end of each line
-                            return `${line},${repoPathOrError},${toYYYYMMDD(date)}`;
+                            return `${line},${repoPathOrError},${toYYYYMMDD(date)},${module}, ${repoName}, ${repoDirName}`;
                         })
                     );
                 }),
             )
         }),
-        startWith(`${clocByfileHeader},repo,date`)
+        startWith(`${clocByfileHeader},repo,date,module,repoName,repoDirName`)
     );
 }
 
@@ -114,6 +123,7 @@ export function writeClocFromToDateByFileForRepos$(
         branch: 'master'
     },
 ) {
+    const start = new Date();
     const { outDir } = options;
     if (!outDir) {
         throw new Error('outDir is required');
@@ -147,6 +157,8 @@ export function writeClocFromToDateByFileForRepos$(
                 } else {
                     console.log(`====>>>> No errors encountered`);
                 }
+                const end = new Date();
+                console.log(`====>>>> writeClocFromToDateByFileForRepos$ completed in ${(end.getTime() - start.getTime()) / 1000} seconds`);
             },
         }),
     );

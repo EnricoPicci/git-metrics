@@ -204,13 +204,15 @@ export function checkoutRepoAtDate$(
             const lines = output.split('\n');
             if (lines.length < 2) {
                 throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
-                we expected to have at least 2 lines with the first one being something like "fetching origin" but we got "${output}"`);
+                we expected to have at least 2 lines with the first one being something like "fetching origin" but we got "${output}"
+                Command erroring: "${gitCommand}"`);
             }
             // we take the second line which we expect to be something like "origin/HEAD -> origin/master"
             const parts = output.split('\n')[1].split('/');
             if (parts.length !== 3) {
                 throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
-                we expected a string with format "origin/HEAD -> origin/master" but we got "${output}"`);
+                we expected a string with format "origin/HEAD -> origin/master" but we got "${output}"
+                Command erroring: "${gitCommand}"`);
             }
             const branchName = parts[2];
             return branchName;
@@ -225,7 +227,8 @@ export function checkoutRepoAtDate$(
             tap((commitSha) => {
                 if (!commitSha) {
                     throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
-                    we expected to have a commit sha but we got "${commitSha}"`);
+                    we expected to have a commit sha but we got "${commitSha}"
+                    Command erroring: "${gitCommand}"`);
                 }
                 console.log(`Commit at date ${dateString} for branch ${branchName} is ${commitSha}`)
             }),
