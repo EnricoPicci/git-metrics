@@ -164,6 +164,7 @@ Command: ${cmd}`;
         }),
     );
 }
+
 /**
  * Reads the commits from a Git repository and writes the output to a file.
  * For each commit all the files changed in the commit are listed with the number of lines added and deleted.
@@ -263,6 +264,67 @@ export function newEmptyCommitCompact() {
     return commit;
 }
 
+/**
+ * Fetches the commit SHA for a Git repository at a specific date and returns an Observable that emits the commit SHA.
+ * If a commit is not found, it throws an error. This is the case when there is no commit at the date or before it.
+ * @param repoPath The path to the Git repository.
+ * @param date The date to fetch the commit SHA at.
+ * @param branchName The branch to fetch the commit SHA from.
+ * @returns An Observable that emits the commit SHA for the repository at the specified date.
+ * @throws An error if the commit SHA could not be fetched.
+ */
+export function commitAtDate$(repoPath: string, date: Date, branchName: string) {
+    // convert date to YYYY-MM-DD format
+    const dateString = toYYYYMMDD(date);
+    const gitCommand = `cd ${repoPath} && git rev-list -n 1  --before="${dateString}" ${branchName}`
+    return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe(
+        map(commitSha => {
+            return commitSha.trim()
+        }),
+        tap((commitSha) => {
+            if (!commitSha) {
+                throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
+                    we expected to have a commit sha but we got an empty string.
+                    This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
+                    Command erroring: "${gitCommand}"`);
+            }
+            console.log(`Commit at date ${dateString} for branch ${branchName} is ${commitSha}`)
+        }),
+    )
+}
+
+/**
+ * Checks out a Git repository at a specific commit SHA and returns an Observable that emits when the operation is complete.
+ * If no error handler is provided, the function uses a default error handler that checks if the error message contains
+ * the string 'fatal: ambiguous argument' and if so, it returns an Error object with the error message otherwise it returns null,
+ * i.e. it ignores the error.
+ * @param repoPath The path to the Git repository.
+ * @param commitSha The commit SHA to check out the repository at.
+ * @param stdErrorHandler An optional error handler function that takes the standard error output of the git command and returns an Error object or null.
+ * @returns An Observable that emits when the operation is complete.
+ * @throws An error if the checkout operation fails.
+ */
+export function checkout$(repoPath: string, commitSha: string, stdErrorHandler?: ((stdError: string) => Error | null)) {
+    const defaultStdErrorHandler = (stderr: string) => {
+        console.log(`Message on stadard error:\n${stderr}`)
+        let retVal: Error | null = null
+        if (stderr.includes('fatal: ambiguous argument')) {
+            retVal = new Error(stderr)
+            retVal.name = 'CheckoutError'
+            retVal.message = stderr
+        }
+        return retVal
+    }
+
+    const repoName = path.basename(repoPath);
+    const gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
+    return executeCommandObs(
+        `checkout ${repoName} at commit ${commitSha}`,
+        gitCommand,
+        stdErrorHandler || defaultStdErrorHandler).pipe(
+            tap(() => `${repoName} checked out`),
+        )
+}
 
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */

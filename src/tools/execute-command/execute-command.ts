@@ -14,6 +14,17 @@ export function executeCommand(action: string, command: string) {
     return ret;
 }
 
+/**
+ * Executes a shell command and returns an Observable that emits the standard output of the command.
+ * If the command sends any output to the standard error stream, the stdErrorHandler function is called with the standard error output.
+ * Such function can return an Error object to notify the error or null to ignore the error.
+ * @param action A string describing the action being performed by the command.
+ * @param command The shell command to execute.
+ * @param stdErrorHandler An optional error handler function that takes the standard error output of the command 
+ * and returns an Error object or null.
+ * @returns An Observable that emits the standard output of the command.
+ * @throws An error if the command execution fails or if the stdErrorHandler function returns an Error object.
+ */
 export function executeCommandObs(action: string, command: string, stdErrorHandler?: (stderr: string) => Error | null) {
     return new Observable((subscriber: Subscriber<string>) => {
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);

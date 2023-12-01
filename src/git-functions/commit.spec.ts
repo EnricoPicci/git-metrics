@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SEP, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
+import { SEP, commitAtDate$, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
@@ -400,7 +400,7 @@ describe(`writeCommitWithFileNumstat$`, () => {
     });
 });
 
-describe(`newCommitCompactFromGitlog$`, () => {
+describe(`newCommitCompactFromGitlog`, () => {
     it(`create a new CommitCompact from a line of the Git log and check that the comment does not contain csv separators`, () => {
         const gitLogLine = '../../repo-folder,2023-02,2/9/2023,2/8/2023,MY-APP-12, prepare folders, and app-demo,https://git/my-git/-/commit/123xyz,123xyz,added,java,code,0'
         const commit = newCommitCompactFromGitlog(gitLogLine, 'a repo')
@@ -430,4 +430,56 @@ describe('readCommitCompactWithParentDate$', () => {
             done();
         });
     }).timeout(20000);
+});
+
+describe(`commitAtDate$`, () => {
+    it(`it should notify the sha of the only commit found at a specific date.
+    We use the repo of this project to find a specific commit at a specific date`, (done) => {
+        const thisRepoPath = './' // the repo of this project
+        const date = new Date('2023-11-10')
+        const branchName = 'main'
+
+        commitAtDate$(thisRepoPath, date, branchName).subscribe({
+            next: (commitSha) => {
+                expect(commitSha).equal('109853555729d84e7920a96fde0c2c3257b21cb3');
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+
+    it(`it should notify the sha of the first commit found before a specific date, since at that date there are no commits.
+    We use the repo of this project to find a specific commit at a specific date`, (done) => {
+        const thisRepoPath = './' // the repo of this project
+        const date = new Date('2023-11-12')  // there is no commit at this date
+        const branchName = 'main'
+
+        commitAtDate$(thisRepoPath, date, branchName).subscribe({
+            next: (commitSha) => {
+                expect(commitSha).equal('109853555729d84e7920a96fde0c2c3257b21cb3');
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+
+    it(`it should error since there are no commits at the date or before it.
+    We use the repo of this project to find a specific commit at a specific date`, (done) => {
+        const thisRepoPath = './' // the repo of this project
+        const date = new Date('2012-11-12')  // there is no commit at this date
+        const branchName = 'main'
+
+        commitAtDate$(thisRepoPath, date, branchName).subscribe({
+            next: (commitSha) => {
+                done(new Error(`should not notify a commit sha since there should not be commits at the date ${date} or before it
+                Instead it notifies ${commitSha}`));
+            },
+            error: (err) => {
+                // the error should be defined
+                expect(!err).false
+                done()
+            },
+            complete: () => done(new Error(`should not complete since it should error`)),
+        });
+    });
 });

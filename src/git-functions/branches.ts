@@ -1,9 +1,10 @@
 import path from "path";
 
-import { executeCommand } from "../tools/execute-command/execute-command";
+import { executeCommand, executeCommandObs } from "../tools/execute-command/execute-command";
 
 import { GitCommandParams } from "./git-params";
 import { buildOutfileName } from "./utils/file-name-utils";
+import { map } from "rxjs";
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -24,6 +25,40 @@ export function readBranchesGraph(config: GitCommandParams) {
     );
     console.log(`====>>>> Output saved on file ${out}`);
     return out;
+}
+/**
+ * Fetches the default branch name for a Git repository and returns an Observable that emits the branch name.
+ * @param repoPath The path to the Git repository.
+ * @returns An Observable that emits the default branch name for the repository.
+ * @throws An error if the output of the git command does not match the expected format.
+ */
+export function defaultBranchName$(repoPath: string) {
+    // build the command to fetch the default branch name
+    // see https://stackoverflow.com/a/67170894
+    const gitCommand = `cd ${repoPath} && git fetch --all && git branch --remotes --list '*/HEAD'`;
+    return executeCommandObs(`fetch default branch name for ${repoPath}`, gitCommand).pipe(
+        map((output) => {
+            // the output is something like:
+            // fetching origin
+            // origin/HEAD -> origin/master
+            // hence we split the second line with / and take the third element
+            const lines = output.split('\n');
+            if (lines.length < 2) {
+                throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
+                we expected to have at least 2 lines with the first one being something like "fetching origin" but we got "${output}"
+                Command erroring: "${gitCommand}"`);
+            }
+            // we take the second line which we expect to be something like "origin/HEAD -> origin/master"
+            const parts = output.split('\n')[1].split('/');
+            if (parts.length !== 3) {
+                throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
+                we expected a string with format "origin/HEAD -> origin/master" but we got "${output}"
+                Command erroring: "${gitCommand}"`);
+            }
+            const branchName = parts[2];
+            return branchName;
+        })
+    )
 }
 
 

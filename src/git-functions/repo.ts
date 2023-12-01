@@ -5,10 +5,10 @@ import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignore
 import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
-import { readCommitCompact$ } from './commit';
+import { commitAtDate$, readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
 import { CheckoutError, FetchError, PullError } from './repo.errors';
-import { toYYYYMMDD } from '../tools/dates/date-functions';
+import { defaultBranchName$ } from './branches';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -191,50 +191,6 @@ export function checkoutRepoAtDate$(
     const { stdErrorHandler } = options;
 
     let gitCommand = ''
-
-    // build the command to fetch the default branch name
-    // see https://stackoverflow.com/a/67170894
-    gitCommand = `cd ${repoPath} && git fetch --all && git branch --remotes --list '*/HEAD'`;
-    const fetchBranchName$ = executeCommandObs(`fetch default branch name for ${repoPath}`, gitCommand).pipe(
-        map((output) => {
-            // the output is something like:
-            // fetching origin
-            // origin/HEAD -> origin/master
-            // hence we split the second line with / and take the third element
-            const lines = output.split('\n');
-            if (lines.length < 2) {
-                throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
-                we expected to have at least 2 lines with the first one being something like "fetching origin" but we got "${output}"
-                Command erroring: "${gitCommand}"`);
-            }
-            // we take the second line which we expect to be something like "origin/HEAD -> origin/master"
-            const parts = output.split('\n')[1].split('/');
-            if (parts.length !== 3) {
-                throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
-                we expected a string with format "origin/HEAD -> origin/master" but we got "${output}"
-                Command erroring: "${gitCommand}"`);
-            }
-            const branchName = parts[2];
-            return branchName;
-        })
-    )
-
-    const commitAtDate$ = (branchName: string) => {
-        // convert date to YYYY-MM-DD format
-        const dateString = toYYYYMMDD(date);
-        gitCommand = `cd ${repoPath} && git rev-list -n 1  --before="${dateString}" ${branchName}`
-        return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe(
-            tap((commitSha) => {
-                if (!commitSha) {
-                    throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
-                    we expected to have a commit sha but we got "${commitSha}"
-                    Command erroring: "${gitCommand}"`);
-                }
-                console.log(`Commit at date ${dateString} for branch ${branchName} is ${commitSha}`)
-            }),
-        )
-    }
-
     const repoName = path.basename(repoPath);
     const checkout$ = (commitSha: string) => {
         gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
@@ -243,8 +199,8 @@ export function checkoutRepoAtDate$(
         )
     }
 
-    return fetchBranchName$.pipe(
-        concatMap(commitAtDate$),
+    return defaultBranchName$(repoPath).pipe(
+        concatMap(branch => commitAtDate$(repoPath, date, branch)),
         concatMap(checkout$),
         ignoreElements(),
         defaultIfEmpty(repoPath),
