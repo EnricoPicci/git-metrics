@@ -5,7 +5,7 @@ import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignore
 import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
-import { commitAtDate$, readCommitCompact$ } from './commit';
+import { checkout$, commitAtDate$, readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
 import { CheckoutError, FetchError, PullError } from './repo.errors';
 import { defaultBranchName$ } from './branches';
@@ -190,24 +190,14 @@ export function checkoutRepoAtDate$(
 
     const { stdErrorHandler } = options;
 
-    let gitCommand = ''
-    const repoName = path.basename(repoPath);
-    const checkout$ = (commitSha: string) => {
-        gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
-        return executeCommandObs(`checkout ${repoName} at commit ${commitSha}`, gitCommand, stdErrorHandler).pipe(
-            tap(() => `${repoName} checked out`),
-        )
-    }
-
     return defaultBranchName$(repoPath).pipe(
         concatMap(branch => commitAtDate$(repoPath, date, branch)),
-        concatMap(checkout$),
+        concatMap(commitSha => checkout$(repoPath, commitSha, stdErrorHandler)),
         ignoreElements(),
         defaultIfEmpty(repoPath),
         catchError((err) => {
-            console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoName}" - error code: ${err.code}`);
+            console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" - error code: ${err.code}`);
             console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
-            console.error(`!!!!!!!!!!!!!!! Command erroring: "${gitCommand}"`);
             const _error = new CheckoutError(err, repoPath);
             return of(_error);
         }),
