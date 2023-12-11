@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dayToWeekDictionary = exports.diffInDays = exports.addDays = exports.toYYYYMMDD = void 0;
+/**
+ * Converts a Date object to a string in the format 'YYYY-MM-DD'.
+ * @param date The Date object to convert.
+ * @returns A string representing the date in the format 'YYYY-MM-DD'.
+ */
 function toYYYYMMDD(date) {
     return date.toISOString().split('T')[0];
 }

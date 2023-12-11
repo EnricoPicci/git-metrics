@@ -23,12 +23,16 @@ const diff_file_1 = require("../git-functions/diff-file");
 function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
+    errorCounter: 0,
 }) {
-    return executeClocGitDiffRel(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe((0, rxjs_1.tap)({
-        next: () => {
+    return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe((0, rxjs_1.tap)({
+        next: (lines) => {
             // log progress
+            if (lines[0] === 'Nothing to count.') {
+                progress.errorCounter++;
+            }
             progress.commitCounter++;
-            const ofMsg = progress.totNumOfCommits == 0 ? '' : `of ${progress.totNumOfCommits} commits`;
+            const ofMsg = progress.totNumOfCommits == 0 ? '' : `of ${progress.totNumOfCommits} commits - nothing to count: ${progress.errorCounter} `;
             console.log(`commit ${progress.commitCounter} ${ofMsg}`);
         }
     }), (0, rxjs_1.concatMap)(lines => {
@@ -108,6 +112,7 @@ exports.clocDiffByfile$ = clocDiffByfile$;
 function clocDiffByfileWithCommitData$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
+    errorCounter: 0,
 }) {
     return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress).pipe(
     // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
@@ -128,6 +133,7 @@ exports.clocDiffByfileWithCommitData$ = clocDiffByfileWithCommitData$;
 function clocDiffWithParentByfile$(commit, repoFolderPath = './', languages = [], progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
+    errorCounter: 0,
 }) {
     return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, progress);
 }
@@ -145,7 +151,7 @@ function buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, lang
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter}`;
 }
-function executeClocGitDiffRel(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = []) {
+function executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = []) {
     const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
     return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-rel --by-file --quiet', cmd).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n');

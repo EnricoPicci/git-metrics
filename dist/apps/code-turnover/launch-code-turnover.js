@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchCodeTurnoverForRepos = void 0;
 const commander_1 = require("commander");
 const cloc_diff_commit_1 = require("../../git-cloc-functions/cloc-diff-commit");
-function launchCodeTurnoverForRepos() {
+function launchCodeTurnoverForRepos(jiraIdExtractor) {
     const start = Date.now();
     console.log('====>>>> Launching code-turnover For Repos');
     const { folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages, removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold, commitMassiveRemoveThreshold } = readParams();
@@ -18,11 +18,12 @@ function launchCodeTurnoverForRepos() {
         removeSame,
         fileMassiveRefactorThreshold,
         commitMassiveRefactorThreshold,
-        commitMassiveRemoveThreshold
+        commitMassiveRemoveThreshold,
+        jiraIdExtractor
     };
-    (0, cloc_diff_commit_1.writeClocDiffWithCommitForRepos$)(folderPath, options).subscribe({
+    (0, cloc_diff_commit_1.codeTurnover$)(folderPath, options).subscribe({
         complete: () => {
-            console.log(`\nCloc Diff Byfile with Commit For Repo calculation completed in ${(Date.now() - start) / 1000} seconds`);
+            console.log(`\nCode turnover (i.e. Cloc Diff Byfile with Commit For Repo) calculation completed in ${(Date.now() - start) / 1000} seconds`);
         },
     });
 }
@@ -69,7 +70,7 @@ function readParams() {
     return {
         folderPath: _options.folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages,
         removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold,
-        commitMassiveRemoveThreshold
+        commitMassiveRemoveThreshold,
     };
 }
 //# sourceMappingURL=launch-code-turnover.js.map

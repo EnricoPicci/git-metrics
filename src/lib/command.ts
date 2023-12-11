@@ -9,6 +9,7 @@ import { launchClocByfileMultiRepos } from '../apps/cloc-byfile-multi-repos/laun
 import { launchReportsParallelReads } from '../apps/reports-on-repo/2-pipelines/run-reports-on-repo';
 import { launchAllReportsOnMergedRepos } from '../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos';
 import { launchBranchesReport } from '../apps/reports-on-repo/2-pipelines/run-branches-report';
+import { launchFetchRepos } from '../apps/fetch-repos/launch-fetch-repos';
 
 const command = process.argv[2];
 
@@ -20,6 +21,7 @@ const commandsAvailable: { [command: string]: () => void } = {
     'run-reports-on-repos-in-folder': launchAllReportsOnMergedRepos,
     'run-branches-report-on-repo': launchBranchesReport,
     'cloc-byfile-multi-repos': launchClocByfileMultiRepos,
+    'fetch-repos': launchFetchRepos,
 }
 
 const functionForCommand = commandsAvailable[command];

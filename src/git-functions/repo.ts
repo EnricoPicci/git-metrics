@@ -163,8 +163,9 @@ export function fetchAllRepos$(folderPath: string, concurrency = 1, excludeRepoP
                 console.log(`Fetched ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
             },
             complete: () => {
-                console.log(`Fetched ${counter} repos of ${repoPaths.length}`);
-                console.log(`Errored repos: ${reposErroring.length}`);
+                console.log(`\nFetched ${counter} repos of ${repoPaths.length}`);
+                console.log(`\nNumber of erroring repos: ${reposErroring.length}`);
+                console.log(`Erroring repos:`);
                 reposErroring.forEach((repoPath) => {
                     console.log(`- ${repoPath} errored`);
                 });

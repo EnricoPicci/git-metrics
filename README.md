@@ -1,6 +1,6 @@
 # git-metrics
 
-**git-metrics** is set of libraries and apps to calculate different measures on git repos.
+**git-metrics** is set of apps used to work with git repos and calculate different measures on git repos.
 
 ## run git-metrics apps
 
@@ -21,7 +21,8 @@ Executing `npx git-metrics <app-name> -h` prints on the console the help for the
 - **read-repos-commits**: reads all the commit records of a set of repos and save them on csv files - the result can be used to have an high level idea of how intense is the work on a certain codebase
 - **cloc-byfile-multi-repos**: calculates the lines of code/comments/blanks on all the files in all the repos contained in a certain folder using the [cloc](https://github.com/AlDanial/cloc) command which, by default, works on a single repo
 - **cloc-monthly-diff-repos**: calculates statistics about the changes that occurred on a codebase on a monthly basis, i.e. calculating the differences in the codebase between the last commit of a month and the last commit of the previous month
-- **reports**: there are also different reports that can be run on repos to gather statistics about, for instance, the files that have changed most in a certain period of time, the authors that have contributed more and so on
+- **reports**: there are different reports that can be run on repos to gather statistics about, for instance, the files that have changed most in a certain period of time, the authors that have contributed more and so on
+- [**fetch-repos**](./src/apps/fetch-repos/README.md): fetches the git repos contained in a folder and its subfolders
 
 ## libraries
 The apps use [git](https://git-scm.com/) and [cloc](https://github.com/AlDanial/cloc) commands to calculate their statistics.

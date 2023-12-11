@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeClocDiffWithCommitForRepos$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithCommit$ = void 0;
+exports.writeClocDiffWithCommitForRepos$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithCommit$ = exports.codeTurnover$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -40,6 +40,16 @@ const date_functions_1 = require("../tools/dates/date-functions");
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
 /**
+ * Calculates the code turnover for a set of repositories and returns an Observable that emits when the operation is complete.
+ * @param folderPath The path to the folder containing the repositories.
+ * @param options An object containing options for the operation. Defaults to an empty object.
+ * @returns An Observable that emits when the operation is complete.
+ */
+function codeTurnover$(folderPath, options = {}) {
+    return writeClocDiffWithCommitForRepos$(folderPath, options);
+}
+exports.codeTurnover$ = codeTurnover$;
+/**
  * Calculates the differences between the commits in a given time range (the comparison is performed with the parent commit of each commit),
  * enriched with the data retrieved using cloc (like lines of code, comments and blanks) as well as the data of the commit itself
  * (like author, date, message, etc.).
@@ -74,6 +84,7 @@ const date_functions_1 = require("../tools/dates/date-functions");
 function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = [], progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
+    errorCounter: 0,
 }, options = {}) {
     // first calculate the cloc dictionary and pass it down the pipe
     return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo).pipe((0, rxjs_1.catchError)((err) => {
@@ -134,9 +145,10 @@ exports.clocDiffWithCommit$ = clocDiffWithCommit$;
 function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], languages = [], options = {}) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     return countCommits(repoPaths, fromDate, toDate).pipe((0, rxjs_1.concatMap)((totNumOfCommits) => {
-        let progess = {
+        const progess = {
             totNumOfCommits,
             commitCounter: 0,
+            errorCounter: 0,
         };
         return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
             return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, progess, options);
@@ -224,6 +236,10 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
     const file_code_turnover = clocDiffCommitEnriched.code_added +
         clocDiffCommitEnriched.code_removed +
         clocDiffCommitEnriched.code_modified;
+    const commit_code_turnover_no_removed_lines = clocDiffCommitEnriched.commit_code_added +
+        clocDiffCommitEnriched.commit_code_modified;
+    const file_code_turnover_no_removed_lines = clocDiffCommitEnriched.code_added +
+        clocDiffCommitEnriched.code_modified;
     // days_span is an integer number with no decimals that represents the number of days between the commit date 
     // and the parent commit date
     const days_span = Math.floor((clocDiffCommitEnriched.date.getTime() - clocDiffCommitEnriched.parentDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -236,11 +252,15 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
     }
     const { maybe_generated, explain_generated } = isPossibleGenerated(clocDiffCommitEnriched);
     const massive_remove = isMassiveRemove(clocDiffCommitEnriched, options.commitMassiveRemoveThreshold || 0.9);
+    const _jiraId = options.jiraIdExtractor ? options.jiraIdExtractor(clocDiffCommitEnriched) : '-';
+    const jiraId = _jiraId ? _jiraId : '-';
     const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { module, year_month: date_month, commit_code_turnover,
         file_code_turnover,
+        commit_code_turnover_no_removed_lines,
+        file_code_turnover_no_removed_lines,
         days_span, maybe_mass_refact: _maybe_mass_refact, explain_mass_refact: _explain_mass_refact, maybe_generated,
         explain_generated,
-        massive_remove });
+        massive_remove, jira_id: jiraId });
     return infoWithDerivedData;
 }
 // isPossibleMassiveRefactor is a function that returns true if the commit is a possible massive refactor
@@ -282,6 +302,7 @@ function isMassiveRemove(csvRec, massiveRemovalThreshold) {
     return commitRemovedLines / commitCodeTurnover > massiveRemovalThreshold;
 }
 function formatClocDiffCommitEnrichedForCsv(csvRec, options) {
+    // define csvRecObj as of type any so that we can manipulate its properties without type checking
     // while we keep the type checking for csvRec so that we know which are the properties available
     const csvRecObj = csvRec;
     // delete the object containing the sum of the diffs (all data are stored in simple properties of csvRec)

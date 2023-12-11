@@ -320,9 +320,17 @@ function buildOutfileName(outFile = '', repoFolder = '', prefix, postfix) {
 }
 exports.buildOutfileName = buildOutfileName;
 function clocByfileCommandWithArgs(params) {
+    var _a;
     const args = ['cloc', '.', '--csv', `--timeout=${config_1.CLOC_CONFIG.TIMEOUT}`, '--by-file'];
     if (params.vcs) {
         args.push(`--vcs=${params.vcs}`);
+    }
+    if (params.notMatch && ((_a = params.notMatch) === null || _a === void 0 ? void 0 : _a.length) > 0) {
+        // excludeRegex is a string that contains the strings to be excluded separated by !
+        // for instance if notMatch is ['*db*', '*ods*'], then excludeRegex will be '*db*|*ods*'
+        const excludeRegex = params.notMatch.join('|');
+        args.push(`--not-match-d=(${excludeRegex})`);
+        args.push(`--fullpath`);
     }
     const options = { cwd: params.folderPath };
     const cmd = config_1.CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';

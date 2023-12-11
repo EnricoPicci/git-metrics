@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
+exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.checkout$ = exports.commitAtDate$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -202,6 +202,59 @@ function newEmptyCommitCompact() {
     return commit;
 }
 exports.newEmptyCommitCompact = newEmptyCommitCompact;
+/**
+ * Fetches the commit SHA for a Git repository at a specific date and returns an Observable that emits the commit SHA.
+ * If a commit is not found, it throws an error. This is the case when there is no commit at the date or before it.
+ * @param repoPath The path to the Git repository.
+ * @param date The date to fetch the commit SHA at.
+ * @param branchName The branch to fetch the commit SHA from.
+ * @returns An Observable that emits the commit SHA for the repository at the specified date.
+ * @throws An error if the commit SHA could not be fetched.
+ */
+function commitAtDate$(repoPath, date, branchName) {
+    // convert date to YYYY-MM-DD format
+    const dateString = (0, date_functions_1.toYYYYMMDD)(date);
+    const gitCommand = `cd ${repoPath} && git rev-list -n 1  --before="${dateString}" ${branchName}`;
+    return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitSha => {
+        return commitSha.trim();
+    }), (0, rxjs_1.tap)((commitSha) => {
+        if (!commitSha) {
+            throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
+                    we expected to have a commit sha but we got an empty string.
+                    This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
+                    Command erroring: "${gitCommand}"`);
+        }
+        console.log(`Commit at date ${dateString} for branch ${branchName} is ${commitSha}`);
+    }));
+}
+exports.commitAtDate$ = commitAtDate$;
+/**
+ * Checks out a Git repository at a specific commit SHA and returns an Observable that emits when the operation is complete.
+ * If no error handler is provided, the function uses a default error handler that checks if the error message contains
+ * the string 'fatal: ambiguous argument' and if so, it returns an Error object with the error message otherwise it returns null,
+ * i.e. it ignores the error.
+ * @param repoPath The path to the Git repository.
+ * @param commitSha The commit SHA to check out the repository at.
+ * @param stdErrorHandler An optional error handler function that takes the standard error output of the git command and returns an Error object or null.
+ * @returns An Observable that emits when the operation is complete.
+ * @throws An error if the checkout operation fails.
+ */
+function checkout$(repoPath, commitSha, stdErrorHandler) {
+    const defaultStdErrorHandler = (stderr) => {
+        console.log(`Message on stadard error:\n${stderr}`);
+        let retVal = null;
+        if (stderr.includes('fatal: ambiguous argument')) {
+            retVal = new Error(stderr);
+            retVal.name = 'CheckoutError';
+            retVal.message = stderr;
+        }
+        return retVal;
+    };
+    const repoName = path_1.default.basename(repoPath);
+    const gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
+    return (0, execute_command_1.executeCommandObs)(`checkout ${repoName} at commit ${commitSha}`, gitCommand, stdErrorHandler || defaultStdErrorHandler).pipe((0, rxjs_1.tap)(() => `${repoName} checked out`));
+}
+exports.checkout$ = checkout$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */

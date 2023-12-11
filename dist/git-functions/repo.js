@@ -3,12 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
+exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const commit_1 = require("./commit");
 const repo_path_1 = require("./repo-path");
+const repo_errors_1 = require("./repo.errors");
+const branches_1 = require("./branches");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -50,19 +52,11 @@ function pullRepo$(repoPath) {
         console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-        const pullError = new PullError(err, repoPath);
-        return (0, rxjs_1.of)(pullError);
+        const _error = new repo_errors_1.PullError(err, repoPath);
+        return (0, rxjs_1.of)(_error);
     }));
 }
 exports.pullRepo$ = pullRepo$;
-class PullError {
-    constructor(error, repoPath) {
-        this.repoPath = '';
-        this.error = error;
-        this.repoPath = repoPath;
-    }
-}
-;
 /**
  * Pulls all the Git repositories in a given folder and returns an Observable that emits the paths of the pulled repositories.
  * @param folderPath The path to the folder containing the Git repositories.
@@ -82,7 +76,7 @@ function pullAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
         return pullRepo$(repoPath);
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
-            if (val instanceof PullError) {
+            if (val instanceof repo_errors_1.PullError) {
                 reposErroring.push(val.repoPath);
             }
             console.log(`Pulled ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
@@ -98,7 +92,123 @@ function pullAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
 }
 exports.pullAllRepos$ = pullAllRepos$;
 /**
+ * Fetches a Git repository from a given path and returns an Observable that emits the path of the fetched repository
+ * once the fetch is completed.
+ * @param repoPath The path to the Git repository folder.
+ * @returns An Observable that emits the path of the fetched repository once the fetch is completed.
+ * @throws An error if the repoPath parameter is not provided.
+ */
+function fetchRepo$(repoPath) {
+    if (!repoPath)
+        throw new Error(`Path is mandatory`);
+    const repoName = path_1.default.basename(repoPath);
+    const command = `cd ${repoPath} && git fetch --all`;
+    return (0, execute_command_1.executeCommandObs)(`Fetch ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} fetched`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+        console.error(`!!!!!!!!!!!!!!! Error: while fetching repo "${repoName}" - error code: ${err.code}`);
+        console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
+        console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
+        const _error = new repo_errors_1.FetchError(err, repoPath);
+        return (0, rxjs_1.of)(_error);
+    }));
+}
+exports.fetchRepo$ = fetchRepo$;
+/**
+ * Fetches all the Git repositories in a given folder and returns an Observable that emits the paths of the fetched repositories.
+ * @param folderPath The path to the folder containing the Git repositories.
+ * @param concurrency The maximum number of concurrent requests. Defaults to 1.
+ * @param excludeRepoPaths An array of repository names to exclude. Wildcards can be used. Defaults to an empty array.
+ * @returns An Observable that emits the paths of the fetched repositories.
+ */
+function fetchAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
+    const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    console.log(`Repos to be fetched: ${repoPaths.length}`);
+    let counter = 0;
+    const reposErroring = [];
+    repoPaths.forEach((repoPath) => {
+        console.log(`Repo to be fetched: ${repoPath}`);
+    });
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
+        return fetchRepo$(repoPath);
+    }, concurrency), (0, rxjs_1.tap)({
+        next: (val) => {
+            if (val instanceof repo_errors_1.FetchError) {
+                reposErroring.push(val.repoPath);
+            }
+            console.log(`Fetched ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
+        },
+        complete: () => {
+            console.log(`\nFetched ${counter} repos of ${repoPaths.length}`);
+            console.log(`\nNumber of erroring repos: ${reposErroring.length}`);
+            console.log(`Erroring repos:`);
+            reposErroring.forEach((repoPath) => {
+                console.log(`- ${repoPath} errored`);
+            });
+        }
+    }));
+}
+exports.fetchAllRepos$ = fetchAllRepos$;
+/**
+ * Checks out a Git repository at a specific date and returns an Observable that emits the path to the repository
+ * or a CheckoutError if an error occurs during the checkout process.
+ * @param repoPath The path to the Git repository.
+ * @param date The date to check out the repository at.
+ * @param branch The branch to check out. Defaults to 'master'.
+ * @returns An Observable that emits the path to the repository or a CheckoutError if an error occurs during the checkout process.
+ */
+function checkoutRepoAtDate$(repoPath, date, options) {
+    if (!repoPath)
+        throw new Error(`Path is mandatory`);
+    const { stdErrorHandler } = options;
+    return (0, branches_1.defaultBranchName$)(repoPath).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDate$)(repoPath, date, branch)), (0, rxjs_1.concatMap)(commitSha => (0, commit_1.checkout$)(repoPath, commitSha, stdErrorHandler)), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+        console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" - error code: ${err.code}`);
+        console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
+        const _error = new repo_errors_1.CheckoutError(err, repoPath);
+        return (0, rxjs_1.of)(_error);
+    }));
+}
+exports.checkoutRepoAtDate$ = checkoutRepoAtDate$;
+/**
+ * Checks out all repositories in a folder at a specific date and returns an Observable that emits the path to each repository.
+ * If an error occurs during the checkout process, the Observable emits a CheckoutError object.
+ * @param folderPath The path to the folder containing the repositories.
+ * @param date The date to check out the repositories at.
+ * @param concurrency The maximum number of concurrent checkouts. Defaults to 1.
+ * @param excludeRepoPaths An array of repository paths to exclude from the checkout. Defaults to an empty array.
+ * @returns An Observable that emits the path to each repository as it is checked out.
+ * @throws A CheckoutError if an error occurs during the checkout process.
+ */
+function checkoutAllReposAtDate$(folderPath, date, options) {
+    options.concurrency = options.concurrency || 1;
+    const { concurrency, excludeRepoPaths } = options;
+    const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    console.log(`Repos to be checkedout: ${repoPaths.length}`);
+    let counter = 0;
+    const reposErroring = [];
+    repoPaths.forEach((repoPath) => {
+        console.log(`Repo to be checked out: ${repoPath}`);
+    });
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
+        return checkoutRepoAtDate$(repoPath, date, options);
+    }, concurrency), (0, rxjs_1.tap)({
+        next: (val) => {
+            if (val instanceof repo_errors_1.CheckoutError) {
+                reposErroring.push(val.repoPath);
+            }
+            console.log(`Checked out ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
+        },
+        complete: () => {
+            console.log(`Checked out ${counter} repos of ${repoPaths.length}`);
+            console.log(`Errored repos: ${reposErroring.length}`);
+            reposErroring.forEach((repoPath) => {
+                console.log(`- ${repoPath} errored`);
+            });
+        }
+    }));
+}
+exports.checkoutAllReposAtDate$ = checkoutAllReposAtDate$;
+/**
  * Returns an Observable that notifies the list of RepoCompact objects representing all the repos in a given folder.
+ * Only commits between the fromDate and toDate parameters are included in the RepoCompact objects.
  * Repos whose name is in the excludeRepoPaths array are excluded. Wildcards can be used,
  * e.g. ['repo1', 'repo2', 'repo3*'] will exclude repo1, repo2 and all the repos that start with repo3.
  * @param folderPath The path to the folder containing the Git repositories.
@@ -124,6 +234,7 @@ function reposCompactInFolder$(folderPath, fromDate = new Date(0), toDate = new 
 exports.reposCompactInFolder$ = reposCompactInFolder$;
 /**
  * Returns an Observable that notifies a new RepoCompact filled with its commits sorted by date ascending.
+ * Only commits between the fromDate and toDate parameters are included.
  * @param repoPath The path to the Git repository folder.
  * @param fromDate The start date of the time range. Defaults to the beginning of time.
  * @param toDate The end date of the time range. Defaults to the current date and time.

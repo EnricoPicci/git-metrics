@@ -353,7 +353,7 @@ describe(`writeCommitWithFileNumstat$`, () => {
         });
     });
 });
-describe(`newCommitCompactFromGitlog$`, () => {
+describe(`newCommitCompactFromGitlog`, () => {
     it(`create a new CommitCompact from a line of the Git log and check that the comment does not contain csv separators`, () => {
         const gitLogLine = '../../repo-folder,2023-02,2/9/2023,2/8/2023,MY-APP-12, prepare folders, and app-demo,https://git/my-git/-/commit/123xyz,123xyz,added,java,code,0';
         const commit = (0, commit_1.newCommitCompactFromGitlog)(gitLogLine, 'a repo');
@@ -379,5 +379,51 @@ describe('readCommitCompactWithParentDate$', () => {
             done();
         });
     }).timeout(20000);
+});
+describe(`commitAtDate$`, () => {
+    it(`it should notify the sha of the only commit found at a specific date.
+    We use the repo of this project to find a specific commit at a specific date`, (done) => {
+        const thisRepoPath = './'; // the repo of this project
+        const date = new Date('2023-11-10');
+        const branchName = 'main';
+        (0, commit_1.commitAtDate$)(thisRepoPath, date, branchName).subscribe({
+            next: (commitSha) => {
+                (0, chai_1.expect)(commitSha).equal('109853555729d84e7920a96fde0c2c3257b21cb3');
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+    it(`it should notify the sha of the first commit found before a specific date, since at that date there are no commits.
+    We use the repo of this project to find a specific commit at a specific date`, (done) => {
+        const thisRepoPath = './'; // the repo of this project
+        const date = new Date('2023-11-12'); // there is no commit at this date
+        const branchName = 'main';
+        (0, commit_1.commitAtDate$)(thisRepoPath, date, branchName).subscribe({
+            next: (commitSha) => {
+                (0, chai_1.expect)(commitSha).equal('109853555729d84e7920a96fde0c2c3257b21cb3');
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+    it(`it should error since there are no commits at the date or before it.
+    We use the repo of this project to find a specific commit at a specific date`, (done) => {
+        const thisRepoPath = './'; // the repo of this project
+        const date = new Date('2012-11-12'); // there is no commit at this date
+        const branchName = 'main';
+        (0, commit_1.commitAtDate$)(thisRepoPath, date, branchName).subscribe({
+            next: (commitSha) => {
+                done(new Error(`should not notify a commit sha since there should not be commits at the date ${date} or before it
+                Instead it notifies ${commitSha}`));
+            },
+            error: (err) => {
+                // the error should be defined
+                (0, chai_1.expect)(!err).false;
+                done();
+            },
+            complete: () => done(new Error(`should not complete since it should error`)),
+        });
+    });
 });
 //# sourceMappingURL=commit.spec.js.map

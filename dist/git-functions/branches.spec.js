@@ -22,8 +22,6 @@ describe(`readBranchesGraph`, () => {
         (0, chai_1.expect)(cmd).equal(expected);
         (0, chai_1.expect)(out).equal(expectedOutfile);
     });
-});
-describe(`readBranchesGraph`, () => {
     it(`read the graphs log from a git repo using git log command and saves them in a file`, (done) => {
         const outDir = './temp';
         const outFile = 'io-backend-tags.log';
@@ -41,6 +39,19 @@ describe(`readBranchesGraph`, () => {
                 (0, chai_1.expect)(lines).not.undefined;
                 // just check that there are some tags since the nuber of tags is not stable, e.g. is incremented any time the package is published
                 (0, chai_1.expect)(lines.length).gt(0);
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+});
+describe(`defaultBranchName`, () => {
+    it(`read the branch name which is the default branch to which the repo is set when cloned 
+    this repos is used for the test`, (done) => {
+        const thisRepoPath = './';
+        (0, branches_1.defaultBranchName$)(thisRepoPath).subscribe({
+            next: (branchName) => {
+                (0, chai_1.expect)(branchName).equal('main');
             },
             error: (err) => done(err),
             complete: () => done(),
