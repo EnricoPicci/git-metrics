@@ -97,8 +97,8 @@ export function pullAllRepos$(folderPath: string, concurrency = 1, excludeRepoPa
                 console.log(`Pulled ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
             },
             complete: () => {
-                console.log(`Pulled ${counter} repos of ${repoPaths.length}`);
-                console.log(`Errored repos: ${reposErroring.length}`);
+                console.log(`\nPulled ${counter} repos of ${repoPaths.length}`);
+                console.log(`\nErrored repos: ${reposErroring.length}`);
                 reposErroring.forEach((repoPath) => {
                     console.log(`- ${repoPath} errored`);
                 });

@@ -8,7 +8,8 @@ const launch_cloc_byfile_multi_repos_1 = require("../apps/cloc-byfile-multi-repo
 const run_reports_on_repo_1 = require("../apps/reports-on-repo/2-pipelines/run-reports-on-repo");
 const run_reports_on_merged_repos_1 = require("../apps/reports-on-repo/2-pipelines/run-reports-on-merged-repos");
 const run_branches_report_1 = require("../apps/reports-on-repo/2-pipelines/run-branches-report");
-const launch_fetch_repos_1 = require("../apps/fetch-repos/launch-fetch-repos");
+const launch_fetch_repos_1 = require("../apps/repos-utils/fetch-repos/launch-fetch-repos");
+const launch_pull_repos_1 = require("../apps/repos-utils/pull-repos/launch-pull-repos");
 const command = process.argv[2];
 const commandsAvailable = {
     'read-repos-commits': launch_count_repos_commits_1.launchCountReposCommits,
@@ -19,6 +20,7 @@ const commandsAvailable = {
     'run-branches-report-on-repo': run_branches_report_1.launchBranchesReport,
     'cloc-byfile-multi-repos': launch_cloc_byfile_multi_repos_1.launchClocByfileMultiRepos,
     'fetch-repos': launch_fetch_repos_1.launchFetchRepos,
+    'pull-repos': launch_pull_repos_1.launchPullRepos,
 };
 const functionForCommand = commandsAvailable[command];
 if (functionForCommand) {

@@ -22,7 +22,8 @@ Executing `npx git-metrics <app-name> -h` prints on the console the help for the
 - **cloc-byfile-multi-repos**: calculates the lines of code/comments/blanks on all the files in all the repos contained in a certain folder using the [cloc](https://github.com/AlDanial/cloc) command which, by default, works on a single repo
 - **cloc-monthly-diff-repos**: calculates statistics about the changes that occurred on a codebase on a monthly basis, i.e. calculating the differences in the codebase between the last commit of a month and the last commit of the previous month
 - **reports**: there are different reports that can be run on repos to gather statistics about, for instance, the files that have changed most in a certain period of time, the authors that have contributed more and so on
-- [**fetch-repos**](./src/apps/fetch-repos/README.md): fetches the git repos contained in a folder and its subfolders
+- [**fetch-repos**](./src/apps/repos-utils/fetch-repos/README.md): fetches the git repos contained in a folder and its subfolders
+- [**pull-repos**](./src/apps/repos-utils/pull-repos/README.md): pulls the git repos contained in a folder and its subfolders
 
 ## libraries
 The apps use [git](https://git-scm.com/) and [cloc](https://github.com/AlDanial/cloc) commands to calculate their statistics.
