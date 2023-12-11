@@ -259,6 +259,7 @@ export type CheckoutAllReposAtDateOptions = {
 
 /**
  * Returns an Observable that notifies the list of RepoCompact objects representing all the repos in a given folder.
+ * Only commits between the fromDate and toDate parameters are included in the RepoCompact objects.
  * Repos whose name is in the excludeRepoPaths array are excluded. Wildcards can be used, 
  * e.g. ['repo1', 'repo2', 'repo3*'] will exclude repo1, repo2 and all the repos that start with repo3.
  * @param folderPath The path to the folder containing the Git repositories.
@@ -295,6 +296,7 @@ export function reposCompactInFolder$(
 
 /**
  * Returns an Observable that notifies a new RepoCompact filled with its commits sorted by date ascending.
+ * Only commits between the fromDate and toDate parameters are included.
  * @param repoPath The path to the Git repository folder.
  * @param fromDate The start date of the time range. Defaults to the beginning of time.
  * @param toDate The end date of the time range. Defaults to the current date and time.
