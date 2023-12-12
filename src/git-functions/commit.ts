@@ -326,6 +326,43 @@ export function checkout$(repoPath: string, commitSha: string, stdErrorHandler?:
         )
 }
 
+/**
+ * Fetches all commits from a set of repositories within a specified date range.
+ * @param repoPaths An array of paths to the repositories to fetch the commits from.
+ * @param fromDate The start date of the date range. Defaults to the Unix epoch (1970-01-01T00:00:00Z).
+ * @param toDate The end date of the date range. Defaults to the current date and time.
+ * @returns An Observable that emits each commit in the repositories within the date range.
+ */
+export function allCommits$(
+    repoPaths: string[],
+    fromDate = new Date(0),
+    toDate = new Date(Date.now()),
+) {
+    return from(repoPaths).pipe(
+        concatMap((repoPath) => {
+            return readCommitCompact$(repoPath, fromDate, toDate, true)
+        }),
+    )
+}
+
+/**
+ * Counts the number of commits in a set of repositories within a specified date range.
+ * @param repoPaths An array of paths to the repositories to count the commits from.
+ * @param fromDate The start date of the date range. Defaults to the Unix epoch (1970-01-01T00:00:00Z).
+ * @param toDate The end date of the date range. Defaults to the current date and time.
+ * @returns An Observable that emits the total number of commits in the repositories within the date range.
+ */
+export function countCommits$(
+    repoPaths: string[],
+    fromDate = new Date(0),
+    toDate = new Date(Date.now()),
+) {
+    return allCommits$(repoPaths, fromDate, toDate).pipe(
+        toArray(),
+        map(commits => commits.length),
+    )
+}
+
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */

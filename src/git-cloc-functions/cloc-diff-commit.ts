@@ -1,6 +1,6 @@
 import path from "path";
 
-import { catchError, concatMap, defaultIfEmpty, from, ignoreElements, map, tap, toArray } from "rxjs";
+import { catchError, concatMap, defaultIfEmpty, from, ignoreElements, map, tap } from "rxjs";
 
 import { appendFileObs } from "observable-fs";
 import { toCsvObs } from "@enrico.piccinin/csv-tools";
@@ -8,7 +8,7 @@ import { toCsvObs } from "@enrico.piccinin/csv-tools";
 import { clocFileDict$ } from "../cloc-functions/cloc-dictionary";
 import { clocDiffWithParentByfile$ } from "../cloc-functions/cloc-diff-byfile";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
-import { readCommitCompact$, readCommitCompactWithUrlAndParentDate$ } from "../git-functions/commit";
+import { countCommits$, readCommitCompactWithUrlAndParentDate$ } from "../git-functions/commit";
 import { gitRepoPaths } from "../git-functions/repo-path";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
 import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
@@ -179,7 +179,7 @@ export function clocDiffWithCommitForRepos$(
     options: ClocDiffWithCommitOptions = {}
 ) {
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
-    return countCommits(repoPaths, fromDate, toDate).pipe(
+    return countCommits$(repoPaths, fromDate, toDate).pipe(
         concatMap((totNumOfCommits) => {
             const progess = {
                 totNumOfCommits,
@@ -466,18 +466,4 @@ function formatClocDiffCommitEnrichedForCsv(csvRec: ClocDiffCommitEnriched, opti
     }
 
     return csvRecObj
-}
-
-function countCommits(
-    repoPaths: string[],
-    fromDate = new Date(0),
-    toDate = new Date(Date.now()),
-) {
-    return from(repoPaths).pipe(
-        concatMap((repoPath) => {
-            return readCommitCompact$(repoPath, fromDate, toDate, true)
-        }),
-        toArray(),
-        map(commits => commits.length),
-    )
 }
