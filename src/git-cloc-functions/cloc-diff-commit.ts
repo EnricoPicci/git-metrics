@@ -350,8 +350,7 @@ function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, op
 
     const massive_remove = isMassiveRemove(clocDiffCommitEnriched, options.commitMassiveRemoveThreshold || 0.9)
 
-    const _jiraId = options.jiraIdExtractor ? options.jiraIdExtractor(clocDiffCommitEnriched) : '-'
-    const jiraId = _jiraId ? _jiraId : '-'
+    const jiraId = extractJiraId(clocDiffCommitEnriched, options)
 
     const infoWithDerivedData: ClocDiffCommitEnrichedWithDerivedData = {
         ...clocDiffCommitEnriched,
@@ -417,6 +416,21 @@ function isMassiveRemove(csvRec: ClocDiffCommitEnriched, massiveRemovalThreshold
     return commitRemovedLines / commitCodeTurnover > massiveRemovalThreshold
 }
 
+// extract the Jira ID from the commit subject using the jiraIdExtractor function if it is specified
+// otherwise use the jiraIdRegexPattern to extract the Jira ID from the commit subject if it is specified
+// otherwise return '-'
+function extractJiraId(clocDiffCommitEnriched: ClocDiffCommitEnriched, options: ClocDiffWithCommitOptions) {
+    if (options.jiraIdExtractor) {
+        return options.jiraIdExtractor(clocDiffCommitEnriched) || '-'
+    }
+    if (options.jiraIdRegexPattern) {
+        // use a regular expression to extract the Jira ID from the commit subject
+        // const regex = new RegExp(options.jiraIdRegexPattern)
+        const jiraId = clocDiffCommitEnriched.subject.match(options.jiraIdRegexPattern)?.[0]
+        return jiraId || '-'
+    }
+    return '-'
+}
 
 function formatClocDiffCommitEnrichedForCsv(csvRec: ClocDiffCommitEnriched, options: WriteClocDiffWithCommitForReposOptions) {
     // define csvRecObj as of type any so that we can manipulate its properties without type checking

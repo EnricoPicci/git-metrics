@@ -25,4 +25,7 @@ export type ClocDiffWithCommitOptions = {
     commitMassiveRefactorThreshold?: number;
     commitMassiveRemoveThreshold?: number;
     jiraIdExtractor?: (commit: ClocDiffCommitEnriched) => string | undefined;
+    // a regex pattern to extract the Jira ID from the commit subject - it can be passed as a command line option
+    // if jiraIdExtractor is specified, then this option is ignored
+    jiraIdRegexPattern?: string;
 };

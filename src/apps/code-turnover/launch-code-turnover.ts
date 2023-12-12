@@ -1,8 +1,7 @@
 import { Command } from "commander";
 import { codeTurnover$, WriteClocDiffWithCommitForReposOptions } from "../../git-cloc-functions/cloc-diff-commit";
-import { ClocDiffCommitEnriched } from "../../git-cloc-functions/cloc-diff-commit.model";
 
-export function launchCodeTurnoverForRepos(jiraIdExtractor?: (commit: ClocDiffCommitEnriched) => string) {
+export function launchCodeTurnoverForRepos() {
     const start = Date.now();
 
     console.log('====>>>> Launching code-turnover For Repos')
@@ -22,7 +21,6 @@ export function launchCodeTurnoverForRepos(jiraIdExtractor?: (commit: ClocDiffCo
         fileMassiveRefactorThreshold,
         commitMassiveRefactorThreshold,
         commitMassiveRemoveThreshold,
-        jiraIdExtractor
     }
 
     codeTurnover$(folderPath, options).subscribe({
