@@ -53,9 +53,13 @@ export function pullRepo$(repoPath: string) {
     if (!repoPath) throw new Error(`Path is mandatory`);
 
     const repoName = path.basename(repoPath);
-    const command = `cd ${repoPath} && git pull`;
+    let command: string
 
-    return executeCommandObs(`Pull ${repoName}`, command).pipe(
+    return defaultBranchName$(repoPath).pipe(
+        concatMap((branch) => {
+            command = `cd ${repoPath} && git pull origin ${branch}`;
+            return executeCommandObs(`Pull ${repoName}`, command)
+        }),
         tap(() => `${repoName} pulled`),
         ignoreElements(),
         defaultIfEmpty(repoPath),
@@ -66,7 +70,7 @@ export function pullRepo$(repoPath: string) {
             const _error = new PullError(err, repoPath);
             return of(_error);
         }),
-    );
+    )
 }
 /**
  * Pulls all the Git repositories in a given folder and returns an Observable that emits the paths of the pulled repositories.
