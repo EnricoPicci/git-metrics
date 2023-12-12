@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchCodeTurnoverForRepos = void 0;
 const commander_1 = require("commander");
 const cloc_diff_commit_1 = require("../../git-cloc-functions/cloc-diff-commit");
-function launchCodeTurnoverForRepos(jiraIdExtractor) {
+function launchCodeTurnoverForRepos() {
     const start = Date.now();
     console.log('====>>>> Launching code-turnover For Repos');
-    const { folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages, removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold, commitMassiveRemoveThreshold } = readParams();
+    const { folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages, removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold, commitMassiveRemoveThreshold, jiraIdRegexPattern } = readParams();
     const options = {
         outdir,
         fromDate,
@@ -19,7 +19,7 @@ function launchCodeTurnoverForRepos(jiraIdExtractor) {
         fileMassiveRefactorThreshold,
         commitMassiveRefactorThreshold,
         commitMassiveRemoveThreshold,
-        jiraIdExtractor
+        jiraIdRegexPattern,
     };
     (0, cloc_diff_commit_1.codeTurnover$)(folderPath, options).subscribe({
         complete: () => {
@@ -54,7 +54,9 @@ function readParams() {
             (the logic being that a diff belonging to a commit whose code-turnover higher than the threshold is likely to be a massive refactoring)`)
         .option('--commitMassiveRemoveThreshold <number>', `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive removal will be calculated
             (the logic being that a diff belonging to a commit whose code-turnover is mainly a massive removal can be filtered out from the 
-            code turnover analysis)`);
+            code turnover analysis)`)
+        .option('--jiraIdRegexPattern <string>', `regex to extract the Jira ID from the commit subject (e.g. "[A-Za-z]+-\\d+|\\[[A-Za-z]+ \\d+\\]|[A-Za-z]+ +- \\d" 
+            will extract Jira IDs of the form "XXXX-1234" or "[XXXX 1234]" or "XXXX - 1234")`);
     const _options = program.parse(process.argv).opts();
     const outdir = _options.outdir || process.cwd();
     const fromDate = _options.from ? new Date(_options.from) : new Date(0);
@@ -67,10 +69,11 @@ function readParams() {
     const fileMassiveRefactorThreshold = _options.fileMassiveRefactorThreshold || 0;
     const commitMassiveRefactorThreshold = _options.commitMassiveRefactorThreshold || 0;
     const commitMassiveRemoveThreshold = _options.commitMassiveRemoveThreshold || 0.9;
+    const jiraIdRegexPattern = _options.jiraIdRegexPattern || '';
     return {
         folderPath: _options.folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages,
         removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold,
-        commitMassiveRemoveThreshold,
+        commitMassiveRemoveThreshold, jiraIdRegexPattern
     };
 }
 //# sourceMappingURL=launch-code-turnover.js.map

@@ -423,7 +423,7 @@ function extractJiraId(clocDiffCommitEnriched: ClocDiffCommitEnriched, options: 
     if (options.jiraIdExtractor) {
         return options.jiraIdExtractor(clocDiffCommitEnriched) || '-'
     }
-    if (options.jiraIdRegexPattern) {
+    if (options.jiraIdRegexPattern?.trim()) {
         // use a regular expression to extract the Jira ID from the commit subject
         // const regex = new RegExp(options.jiraIdRegexPattern)
         const jiraId = clocDiffCommitEnriched.subject.match(options.jiraIdRegexPattern)?.[0]

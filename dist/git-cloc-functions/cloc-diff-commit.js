@@ -144,7 +144,7 @@ exports.clocDiffWithCommit$ = clocDiffWithCommit$;
  */
 function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], languages = [], options = {}) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
-    return countCommits(repoPaths, fromDate, toDate).pipe((0, rxjs_1.concatMap)((totNumOfCommits) => {
+    return (0, commit_1.countCommits$)(repoPaths, fromDate, toDate).pipe((0, rxjs_1.concatMap)((totNumOfCommits) => {
         const progess = {
             totNumOfCommits,
             commitCounter: 0,
@@ -252,8 +252,7 @@ function calculateDerivedData(clocDiffCommitEnriched, options) {
     }
     const { maybe_generated, explain_generated } = isPossibleGenerated(clocDiffCommitEnriched);
     const massive_remove = isMassiveRemove(clocDiffCommitEnriched, options.commitMassiveRemoveThreshold || 0.9);
-    const _jiraId = options.jiraIdExtractor ? options.jiraIdExtractor(clocDiffCommitEnriched) : '-';
-    const jiraId = _jiraId ? _jiraId : '-';
+    const jiraId = extractJiraId(clocDiffCommitEnriched, options);
     const infoWithDerivedData = Object.assign(Object.assign({}, clocDiffCommitEnriched), { module, year_month: date_month, commit_code_turnover,
         file_code_turnover,
         commit_code_turnover_no_removed_lines,
@@ -301,6 +300,22 @@ function isMassiveRemove(csvRec, massiveRemovalThreshold) {
     const commitCodeTurnover = csvRec.commit_code_added + csvRec.commit_code_removed + csvRec.commit_code_modified;
     return commitRemovedLines / commitCodeTurnover > massiveRemovalThreshold;
 }
+// extract the Jira ID from the commit subject using the jiraIdExtractor function if it is specified
+// otherwise use the jiraIdRegexPattern to extract the Jira ID from the commit subject if it is specified
+// otherwise return '-'
+function extractJiraId(clocDiffCommitEnriched, options) {
+    var _a, _b;
+    if (options.jiraIdExtractor) {
+        return options.jiraIdExtractor(clocDiffCommitEnriched) || '-';
+    }
+    if ((_a = options.jiraIdRegexPattern) === null || _a === void 0 ? void 0 : _a.trim()) {
+        // use a regular expression to extract the Jira ID from the commit subject
+        // const regex = new RegExp(options.jiraIdRegexPattern)
+        const jiraId = (_b = clocDiffCommitEnriched.subject.match(options.jiraIdRegexPattern)) === null || _b === void 0 ? void 0 : _b[0];
+        return jiraId || '-';
+    }
+    return '-';
+}
 function formatClocDiffCommitEnrichedForCsv(csvRec, options) {
     // define csvRecObj as of type any so that we can manipulate its properties without type checking
     // while we keep the type checking for csvRec so that we know which are the properties available
@@ -333,10 +348,5 @@ function formatClocDiffCommitEnrichedForCsv(csvRec, options) {
         delete csvRecObj.code_same;
     }
     return csvRecObj;
-}
-function countCommits(repoPaths, fromDate = new Date(0), toDate = new Date(Date.now())) {
-    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
-        return (0, commit_1.readCommitCompact$)(repoPath, fromDate, toDate, true);
-    }), (0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => commits.length));
 }
 //# sourceMappingURL=cloc-diff-commit.js.map

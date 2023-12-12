@@ -8,7 +8,8 @@ export function launchCodeTurnoverForRepos() {
 
     const { folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages,
         removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold,
-        commitMassiveRemoveThreshold } = readParams();
+        commitMassiveRemoveThreshold, jiraIdRegexPattern } = readParams();
+
     const options: WriteClocDiffWithCommitForReposOptions = {
         outdir,
         fromDate,
@@ -21,6 +22,7 @@ export function launchCodeTurnoverForRepos() {
         fileMassiveRefactorThreshold,
         commitMassiveRefactorThreshold,
         commitMassiveRemoveThreshold,
+        jiraIdRegexPattern,
     }
 
     codeTurnover$(folderPath, options).subscribe({
@@ -90,6 +92,11 @@ function readParams() {
             `if this opion is specified, the flag to indicate whether a file diff is likely derived from a massive removal will be calculated
             (the logic being that a diff belonging to a commit whose code-turnover is mainly a massive removal can be filtered out from the 
             code turnover analysis)`,
+        )
+        .option(
+            '--jiraIdRegexPattern <string>',
+            `regex to extract the Jira ID from the commit subject (e.g. "[A-Za-z]+-\\d+|\\[[A-Za-z]+ \\d+\\]|[A-Za-z]+ +- \\d" 
+            will extract Jira IDs of the form "XXXX-1234" or "[XXXX 1234]" or "XXXX - 1234")`,
         );
 
     const _options = program.parse(process.argv).opts();
@@ -104,10 +111,11 @@ function readParams() {
     const fileMassiveRefactorThreshold = _options.fileMassiveRefactorThreshold || 0;
     const commitMassiveRefactorThreshold = _options.commitMassiveRefactorThreshold || 0;
     const commitMassiveRemoveThreshold = _options.commitMassiveRemoveThreshold || 0.9;
+    const jiraIdRegexPattern = _options.jiraIdRegexPattern || '';
 
     return {
         folderPath: _options.folderPath, outdir, fromDate, toDate, excludeRepoPaths, languages,
         removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold,
-        commitMassiveRemoveThreshold,
+        commitMassiveRemoveThreshold, jiraIdRegexPattern
     };
 }

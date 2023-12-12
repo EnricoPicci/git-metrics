@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.checkout$ = exports.commitAtDate$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
+exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.countCommits$ = exports.allCommits$ = exports.checkout$ = exports.commitAtDate$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -255,6 +255,30 @@ function checkout$(repoPath, commitSha, stdErrorHandler) {
     return (0, execute_command_1.executeCommandObs)(`checkout ${repoName} at commit ${commitSha}`, gitCommand, stdErrorHandler || defaultStdErrorHandler).pipe((0, rxjs_1.tap)(() => `${repoName} checked out`));
 }
 exports.checkout$ = checkout$;
+/**
+ * Fetches all commits from a set of repositories within a specified date range.
+ * @param repoPaths An array of paths to the repositories to fetch the commits from.
+ * @param fromDate The start date of the date range. Defaults to the Unix epoch (1970-01-01T00:00:00Z).
+ * @param toDate The end date of the date range. Defaults to the current date and time.
+ * @returns An Observable that emits each commit in the repositories within the date range.
+ */
+function allCommits$(repoPaths, fromDate = new Date(0), toDate = new Date(Date.now())) {
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
+        return readCommitCompact$(repoPath, fromDate, toDate, true);
+    }));
+}
+exports.allCommits$ = allCommits$;
+/**
+ * Counts the number of commits in a set of repositories within a specified date range.
+ * @param repoPaths An array of paths to the repositories to count the commits from.
+ * @param fromDate The start date of the date range. Defaults to the Unix epoch (1970-01-01T00:00:00Z).
+ * @param toDate The end date of the date range. Defaults to the current date and time.
+ * @returns An Observable that emits the total number of commits in the repositories within the date range.
+ */
+function countCommits$(repoPaths, fromDate = new Date(0), toDate = new Date(Date.now())) {
+    return allCommits$(repoPaths, fromDate, toDate).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => commits.length));
+}
+exports.countCommits$ = countCommits$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
