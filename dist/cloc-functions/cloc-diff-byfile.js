@@ -24,8 +24,8 @@ function clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath = '
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
-}) {
-    return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe((0, rxjs_1.tap)({
+}, notMatchDirectories = []) {
+    return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories).pipe((0, rxjs_1.tap)({
         next: (lines) => {
             // log progress
             if (lines[0] === 'Nothing to count.') {
@@ -113,8 +113,8 @@ function clocDiffByfileWithCommitData$(mostRecentCommit, leastRecentCommit, repo
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
-}) {
-    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress).pipe(
+}, notMatchDirectories = []) {
+    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress, notMatchDirectories).pipe(
     // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
     (0, rxjs_1.map)(clocDiffByfile => {
         return (0, cloc_diff_byfile_model_1.newClocDiffByfileWithCommitData)(clocDiffByfile);
@@ -134,8 +134,8 @@ function clocDiffWithParentByfile$(commit, repoFolderPath = './', languages = []
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
-}) {
-    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, progress);
+}, notMatchDirectories = []) {
+    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, progress, notMatchDirectories);
 }
 exports.clocDiffWithParentByfile$ = clocDiffWithParentByfile$;
 //********************************************************************************************************************** */
@@ -143,16 +143,23 @@ exports.clocDiffWithParentByfile$ = clocDiffWithParentByfile$;
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
 exports.CLOC_DIFF_BYFILE_HEADER = 'File, == blank, != blank, + blank, - blank, == comment, != comment, + comment, - comment, == code, != code, + code, - code,';
-function buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
+function buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, folderPath = './', notMatchDirectories) {
     const cdCommand = `cd ${folderPath}`;
-    let clocDiffAllCommand = `cloc --git-diff-rel --csv --by-file --timeout=${config_1.CLOC_CONFIG.TIMEOUT} --quiet`;
+    const clocDiffAllCommand = `cloc --git-diff-rel --csv --by-file --timeout=${config_1.CLOC_CONFIG.TIMEOUT} --quiet`;
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;
-    return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter}`;
+    let notMatchD = '';
+    if (notMatchDirectories && (notMatchDirectories === null || notMatchDirectories === void 0 ? void 0 : notMatchDirectories.length) > 0) {
+        // excludeRegex is a string that contains the strings to be excluded separated by !
+        // for instance if notMatch is ['*db*', '*ods*'], then excludeRegex will be '*db*|*ods*'
+        const excludeRegex = notMatchDirectories.join('|');
+        notMatchD = `--not-match-d=(${excludeRegex} --fullpath)`;
+    }
+    return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter} ${notMatchD}`;
 }
-function executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = []) {
-    const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
+function executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = [], notMatchDirectories) {
+    const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath, notMatchDirectories);
     return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-rel --by-file --quiet', cmd).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n');
     }), (0, rxjs_1.catchError)((err) => {
@@ -162,6 +169,13 @@ function executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderP
         // We do not want to stop the execution of the script, so we just log the error and return an empty array.
         if (err.code === 25) {
             console.warn(`Non fatal Error executing command ${cmd}`, err.message);
+            const emptyArray = [];
+            return (0, rxjs_1.of)(emptyArray);
+        }
+        // If there are too many files to analyze we can reach the max buffer size of the command and then an error is thrown.
+        // In this case we want to ignore the error and return an empty array, simply recording the error in the console.
+        if (err.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER') {
+            console.warn(`ERR_CHILD_PROCESS_STDIO_MAXBUFFER Error executing command ${cmd}`, err.message);
             const emptyArray = [];
             return (0, rxjs_1.of)(emptyArray);
         }

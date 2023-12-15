@@ -6,7 +6,7 @@ import { addConsideration, addConsiderationsHeader, Report, ReportParams, topChu
 import { REPORT_CONFIG } from './config/report-config';
 import { addProjectInfo } from './add-project-info';
 
-import { toCsvObs } from '../../../tools/csv/to-csv';
+import { toCsvObs } from '@enrico.piccinin/csv-tools';
 
 import { AuthorChurn } from '../1-C-aggregate-types/author-churn';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';

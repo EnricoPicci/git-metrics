@@ -7,7 +7,7 @@ const chai_1 = require("chai");
 const observable_fs_1 = require("observable-fs");
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
-const from_csv_1 = require("../../../tools/csv/from-csv");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const files_1 = require("../1-B-git-enriched-streams/files");
 const commits_1 = require("../1-B-git-enriched-streams/commits");
 const read_all_1 = require("../1-A-read/read-all");
@@ -210,7 +210,7 @@ describe(`projectAndFileChurnReport`, () => {
             // there are 3 lines related to the files plus one line as header
             (0, chai_1.expect)(csvLines.length).equal(4);
             // the first object represents the most churned file
-            const mostChurnedFile = (0, from_csv_1.fromCsv)(csvLines[0], [csvLines[1]])[0];
+            const mostChurnedFile = (0, csv_tools_1.fromCsv)(csvLines[0], [csvLines[1]])[0];
             (0, chai_1.expect)(mostChurnedFile.cumulativeChurnPercent).equal(`${(12 / 24) * 100}`);
             (0, chai_1.expect)(mostChurnedFile.cumulativeNumberOfFilesPercent).equal(`${(1 / 3) * 100}`);
             (0, chai_1.expect)(mostChurnedFile.churnRanking).equal(`1`);

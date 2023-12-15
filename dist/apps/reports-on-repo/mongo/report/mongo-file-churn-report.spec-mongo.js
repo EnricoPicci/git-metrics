@@ -7,7 +7,7 @@ const chai_1 = require("chai");
 const observable_fs_1 = require("observable-fs");
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
-const from_csv_1 = require("../../../../tools/csv/from-csv");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const load_commits_1 = require("../load/load-commits");
 const load_files_1 = require("../load/load-files");
 const mongo_file_churn_report_1 = require("./mongo-file-churn-report");
@@ -85,7 +85,7 @@ describe(`mongoFileChurnReport`, () => {
             // there are 3 lines related to the files plus one line as header
             (0, chai_1.expect)(csvLines.length).equal(4);
             // the second line represents the most churned file
-            const mostChurnedFile = (0, from_csv_1.fromCsv)(csvLines[0], [csvLines[1]])[0];
+            const mostChurnedFile = (0, csv_tools_1.fromCsv)(csvLines[0], [csvLines[1]])[0];
             (0, chai_1.expect)(mostChurnedFile.cumulativeChurnPercent).equal(((12 / 24) * 100).toString());
         }))
             .subscribe({

@@ -6,7 +6,7 @@ import { REPORT_CONFIG } from './config/report-config';
 import { addConsideration, addConsiderationsHeader, Report, ReportParams } from './report';
 import { addProjectInfo } from './add-project-info';
 
-import { toCsv } from '../../../tools/csv/to-csv';
+import { toCsv } from '@enrico.piccinin/csv-tools';
 import { splitPath } from '../../../tools/split-path/split-path';
 
 import { ModuleChurn } from '../1-C-aggregate-types/module-churn';

@@ -30,6 +30,10 @@ export function diff$(
                 console.warn(`Error in fetchOneCommit for repo "${repoFolderPath} and commit ${mostRecentCommit}"`)
                 return [];
             }
+            if (error.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER') {
+                console.warn(`ERR_CHILD_PROCESS_STDIO_MAXBUFFER Error executing command ${cmd}`, error.message);
+                return []
+            }
             const err = `Error in fetchOneCommit for repo "${repoFolderPath} and commit ${mostRecentCommit}"\nError: ${error}
 Command: ${cmd}`;
             // in case of error we return an error

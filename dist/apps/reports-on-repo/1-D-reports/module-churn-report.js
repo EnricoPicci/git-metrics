@@ -7,7 +7,7 @@ const observable_fs_1 = require("observable-fs");
 const report_config_1 = require("./config/report-config");
 const report_1 = require("./report");
 const add_project_info_1 = require("./add-project-info");
-const to_csv_1 = require("../../../tools/csv/to-csv");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const split_path_1 = require("../../../tools/split-path/split-path");
 exports.MODULE_CHURN_REPORT_NAME = 'ModuleChurnReport';
 class ModuleChurnReport extends report_1.Report {
@@ -67,7 +67,7 @@ function moduleChurnReportCore(moduleChurns, params, csvFilePath) {
             if (churnsEnriched.length === 0) {
                 console.log('!!!!!!!! no data on file churns to calculate module churns');
             }
-            const csvLines = (0, to_csv_1.toCsv)(churnsEnriched);
+            const csvLines = (0, csv_tools_1.toCsv)(churnsEnriched);
             report.csvFile.val = csvFilePath;
             return (0, observable_fs_1.writeFileObs)(csvFilePath, csvLines).pipe((0, operators_1.map)((csvFile) => [report, csvFile]));
         }), (0, operators_1.tap)({

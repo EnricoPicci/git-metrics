@@ -6,4 +6,5 @@ export type ClocParams = {
     clocDefsPath?: string;
     vcs: string;
     notMatch?: string[];
+    languages?: string[];
 };

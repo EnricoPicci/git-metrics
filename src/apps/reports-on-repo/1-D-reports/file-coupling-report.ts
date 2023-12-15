@@ -5,7 +5,7 @@ import { writeFileObs } from 'observable-fs';
 import { addProjectInfo } from './add-project-info';
 import { addConsideration, addConsiderationsHeader, Report, ReportParams } from './report';
 
-import { toCsv } from '../../../tools/csv/to-csv';
+import { toCsv } from '@enrico.piccinin/csv-tools';
 
 import { FileCoupling } from '../1-C-aggregate-types/file-coupling';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';

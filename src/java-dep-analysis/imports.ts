@@ -6,7 +6,7 @@ import { appendFileObs, readLineObs } from "observable-fs";
 
 import { allJavaFiles } from "./java-files";
 import { PackageMemberErrors, PackageMemberDict, allJavaPackageMembersDict$, javaPackage$ } from "./packages";
-import { toCsvObs } from "../tools/csv/to-csv";
+import { toCsvObs } from "@enrico.piccinin/csv-tools";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
 
 /**

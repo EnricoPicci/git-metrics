@@ -13,7 +13,7 @@ const project_info_aggregate_1 = require("../1-C-aggregate-in-memory/project-inf
 const file_churn_aggregate_1 = require("../1-C-aggregate-in-memory/file-churn-aggregate");
 const module_churn_aggregate_1 = require("../1-C-aggregate-in-memory/module-churn-aggregate");
 const observable_fs_1 = require("observable-fs");
-const from_csv_1 = require("../../../tools/csv/from-csv");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const read_all_1 = require("../1-A-read/read-all");
 const cloc_1 = require("../../../cloc-functions/cloc");
 describe(`projectAndModuleChurnReport`, () => {
@@ -124,7 +124,7 @@ describe(`projectAndModuleChurnReport`, () => {
             // there are 8 lines related to the modules plus one line as header
             (0, chai_1.expect)(csvLines.length).equal(9);
             //
-            const churnedModules = (0, from_csv_1.fromCsv)(csvLines[0], csvLines.slice(1));
+            const churnedModules = (0, csv_tools_1.fromCsv)(csvLines[0], csvLines.slice(1));
             // the first object represents the most churned module
             const mostChurnedModule = churnedModules[0];
             (0, chai_1.expect)(mostChurnedModule.level_0).equal('.');

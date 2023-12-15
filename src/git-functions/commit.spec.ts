@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SEP, commitAtDate$, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
+import { SEP, commitAtDate$, countCommits$, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
@@ -480,6 +480,66 @@ describe(`commitAtDate$`, () => {
                 done()
             },
             complete: () => done(new Error(`should not complete since it should error`)),
+        });
+    });
+});
+
+describe('countCommits$', () => {
+    it('should return the number of commits using the repo of this project', (done) => {
+        const repoPaths = ['./'];
+        const fromDate = new Date('2021-01-01');
+        const toDate = new Date('2021-12-31');
+
+        countCommits$(repoPaths, fromDate, toDate).subscribe((count) => {
+            expect(count).gt(0);
+            done();
+        });
+    });
+
+    it(`if a creationDate csv file is passed which does contain the url of the repo of this project, the creation date 
+    is used as start date`, (done) => {
+        const repoPaths = ['./'];
+        const fromDate = new Date('2021-01-01');
+        const toDate = new Date(Date.now());
+        const creationDateFilePath = './test-data/repo-creation-date/this-repo-creation-date.csv'
+
+        countCommits$(repoPaths, fromDate, toDate, creationDateFilePath).subscribe((count) => {
+            expect(count).gt(0);
+            done();
+        });
+    });
+
+    it(`if a creationDate csv file is passed which does NOT contain the url of the repo of this project, the fromDate parameter is used`, (done) => {
+        const repoPaths = ['./'];
+        const fromDate = new Date('2021-01-01');
+        const toDate = new Date(Date.now());
+        const thisRepoCreationDateCsvFile = './test-data/repo-creation-date/this-repo-creation-date.csv'
+        const anotherRepoCreationDateCsvFile = './test-data/repo-creation-date/test-repo-file.csv'  // this file does not contain the url of the repo of this project
+
+        const count_1$ = countCommits$(repoPaths, fromDate, toDate, thisRepoCreationDateCsvFile)
+        const count_2$ = countCommits$(repoPaths, fromDate, toDate, anotherRepoCreationDateCsvFile)
+
+        forkJoin([count_1$, count_2$]).subscribe(([count_1, count_2]) => {
+            expect(count_1).gt(0);
+            expect(count_2).gt(0);
+            // the count of commits using the creation date of this repo should be smaller than the count of commits using no creation date 
+            // if we use a creationDate csv file which does not contain the url of this repo, the creation date is ignored and the fromDate is used
+            // and in this example the fromDate is 2021-01-01 which is before the creation date of this repo
+            expect(count_1).lt(count_2);
+            done();
+        });
+    });
+
+    it(`if a creationDate csv file is passed which does contain the url of the repo of this project and a creation date which is 
+    before the toDate date, then no commit is read since the fromDate (i.e. the creation date) is after the toDate`, (done) => {
+        const repoPaths = ['./'];
+        const fromDate = new Date(0);
+        const toDate = new Date('2021-01-01'); // this date is before the creation date of this repo
+        const creationDateFilePath = './test-data/repo-creation-date/this-repo-creation-date.csv'
+
+        countCommits$(repoPaths, fromDate, toDate, creationDateFilePath).subscribe((count) => {
+            expect(count).equal(0);
+            done();
         });
     });
 });

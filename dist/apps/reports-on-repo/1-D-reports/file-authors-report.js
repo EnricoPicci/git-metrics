@@ -7,7 +7,7 @@ const observable_fs_1 = require("observable-fs");
 const add_project_info_1 = require("./add-project-info");
 const report_config_1 = require("./config/report-config");
 const report_1 = require("./report");
-const to_csv_1 = require("../../../tools/csv/to-csv");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 exports.FILE_AUTHORS_REPORT_NAME = 'FileAuthorsReport';
 class FileAuthorsReport extends report_1.Report {
     constructor(_params) {
@@ -100,7 +100,7 @@ function mapFileAuthorToCsv() {
             _fileAuthor.created = fileAuthor.created.toISOString();
             return _fileAuthor;
         });
-    }), (0, to_csv_1.toCsvObs)());
+    }), (0, csv_tools_1.toCsvObs)());
 }
 function addConsiderationsForFileAuthorsReport(r) {
     (0, report_1.addConsiderationsHeader)(r);

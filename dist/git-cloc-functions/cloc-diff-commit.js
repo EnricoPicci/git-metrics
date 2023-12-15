@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeClocDiffWithCommitForRepos$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithCommit$ = exports.codeTurnover$ = void 0;
+exports.writeClocDiffWithCommitForRepos$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithCommit$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -39,16 +39,6 @@ const date_functions_1 = require("../tools/dates/date-functions");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
-/**
- * Calculates the code turnover for a set of repositories and returns an Observable that emits when the operation is complete.
- * @param folderPath The path to the folder containing the repositories.
- * @param options An object containing options for the operation. Defaults to an empty object.
- * @returns An Observable that emits when the operation is complete.
- */
-function codeTurnover$(folderPath, options = {}) {
-    return writeClocDiffWithCommitForRepos$(folderPath, options);
-}
-exports.codeTurnover$ = codeTurnover$;
 /**
  * Calculates the differences between the commits in a given time range (the comparison is performed with the parent commit of each commit),
  * enriched with the data retrieved using cloc (like lines of code, comments and blanks) as well as the data of the commit itself
@@ -87,7 +77,7 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
     errorCounter: 0,
 }, options = {}) {
     // first calculate the cloc dictionary and pass it down the pipe
-    return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo).pipe((0, rxjs_1.catchError)((err) => {
+    return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo, languages).pipe((0, rxjs_1.catchError)((err) => {
         if (err.code === 'ENOENT') {
             console.log(`!!!!!!!! folder ${pathToRepo} not found`);
             process.exit(1);
@@ -103,7 +93,7 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
     // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
     // together with the cloc dictionary and the commit
     (0, rxjs_1.concatMap)(({ commit, clocFileDict }) => {
-        return (0, cloc_diff_byfile_1.clocDiffWithParentByfile$)(commit.sha, pathToRepo, languages, progress).pipe((0, rxjs_1.map)((clocDiffByfile) => {
+        return (0, cloc_diff_byfile_1.clocDiffWithParentByfile$)(commit.sha, pathToRepo, languages, progress, options.notMatchDirectories).pipe((0, rxjs_1.map)((clocDiffByfile) => {
             return { clocDiffByfile, clocFileDict, commit };
         }));
     }), 
@@ -124,7 +114,7 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
         clocDiffCommitEnriched.file = path_1.default.join(pathToRepo, clocDiffCommitEnriched.file);
         clocDiffCommitEnriched.file = path_1.default.relative(process.cwd(), clocDiffCommitEnriched.file);
         // calculate the derived data
-        const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options);
+        const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options, pathToRepo);
         return clocDiffCommitEnrichedWithDerivedData;
     }));
 }
@@ -144,14 +134,15 @@ exports.clocDiffWithCommit$ = clocDiffWithCommit$;
  */
 function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], languages = [], options = {}) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
-    return (0, commit_1.countCommits$)(repoPaths, fromDate, toDate).pipe((0, rxjs_1.concatMap)((totNumOfCommits) => {
+    const creationDateCsvFilePath = options.creationDateCsvFilePath;
+    return (0, commit_1.countCommits$)(repoPaths, fromDate, toDate, creationDateCsvFilePath).pipe((0, rxjs_1.concatMap)((totNumOfCommits) => {
         const progess = {
             totNumOfCommits,
             commitCounter: 0,
             errorCounter: 0,
         };
-        return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => {
-            return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, progess, options);
+        return (0, commit_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
+            return clocDiffWithCommit$(repoPath, _fromDate, toDate, languages, progess, options);
         }));
     }));
 }
@@ -215,10 +206,10 @@ function writeClocDiffWithCommitForRepos$(folderPath, options = {}) {
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
         next: (outFilePath) => {
             if (noCommitsFound) {
-                console.log(`====>>>> no commits found in the given time range, for the given languages, in the given repos`);
+                console.log(`\n====>>>> no commits found in the given time range, for the given languages, in the given repos`);
                 return;
             }
-            console.log(`====>>>> cloc-diff-commit-for-repos info saved on file ${outFilePath}`);
+            console.log(`\n====>>>> cloc-diff-commit-for-repos info saved on file ${outFilePath}`);
         },
     }));
 }
@@ -227,8 +218,10 @@ exports.writeClocDiffWithCommitForRepos$ = writeClocDiffWithCommitForRepos$;
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
-function calculateDerivedData(clocDiffCommitEnriched, options) {
-    const module = path_1.default.dirname(clocDiffCommitEnriched.file);
+function calculateDerivedData(clocDiffCommitEnriched, options, repoPath) {
+    const _module = path_1.default.dirname(clocDiffCommitEnriched.file);
+    // remove the starting repoPath from the _module path
+    const module = _module.substring(repoPath.length + 1);
     const date_month = clocDiffCommitEnriched.date.toISOString().slice(0, 7);
     const commit_code_turnover = clocDiffCommitEnriched.commit_code_added +
         clocDiffCommitEnriched.commit_code_removed +

@@ -9,7 +9,7 @@ const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
 const java_files_1 = require("./java-files");
 const packages_1 = require("./packages");
-const to_csv_1 = require("../tools/csv/to-csv");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 /**
  * Fetches all imported packages for all Java files from a directory and its subdirectories and returns an Observable
@@ -81,7 +81,7 @@ function writeAllImportsForFilesWithRepoInfo$(dirForFiles, dirForPackages, outdi
     const imports$ = allImportsForFiles$(dirForFiles, excludeRepoPaths);
     const dirForFilesName = path_1.default.basename(dirForFiles);
     const outFilePath = path_1.default.join(outdir, `${dirForFilesName}-all-imports.csv`);
-    const writeImportCsv$ = (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => allImportsForFilesWithRepoInfo$(packageMembersDict$, imports$)), (0, to_csv_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    const writeImportCsv$ = (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => allImportsForFilesWithRepoInfo$(packageMembersDict$, imports$)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
         next: (outFilePath) => {
@@ -89,7 +89,7 @@ function writeAllImportsForFilesWithRepoInfo$(dirForFiles, dirForPackages, outdi
         },
     }));
     const errorsFilePath = path_1.default.join(outdir, `${dirForFilesName}-all-imports-errors.csv`);
-    const writeErrors$ = (0, delete_file_ignore_if_missing_1.deleteFile$)(errorsFilePath).pipe((0, rxjs_1.concatMap)(() => packageMembersDict$), (0, rxjs_1.map)(({ packageMemberErrors }) => packageMemberErrors), (0, rxjs_1.concatMap)(errors => (0, rxjs_1.from)(errors)), (0, to_csv_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    const writeErrors$ = (0, delete_file_ignore_if_missing_1.deleteFile$)(errorsFilePath).pipe((0, rxjs_1.concatMap)(() => packageMembersDict$), (0, rxjs_1.map)(({ packageMemberErrors }) => packageMemberErrors), (0, rxjs_1.concatMap)(errors => (0, rxjs_1.from)(errors)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(errorsFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(errorsFilePath), (0, rxjs_1.tap)({
         next: (errorsFilePath) => {

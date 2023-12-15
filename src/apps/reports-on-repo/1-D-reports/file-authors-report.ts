@@ -6,7 +6,7 @@ import { addProjectInfo } from './add-project-info';
 import { REPORT_CONFIG } from './config/report-config';
 import { addConsideration, addConsiderationsHeader, Report, ReportParams } from './report';
 
-import { toCsvObs } from '../../../tools/csv/to-csv';
+import { toCsvObs } from '@enrico.piccinin/csv-tools';
 
 import { FileAuthors } from '../1-C-aggregate-types/file-authors';
 import { ProjectInfo } from '../1-C-aggregate-types/project-info';
@@ -159,8 +159,7 @@ export function addConsiderationsForFileAuthorsReport(r: FileAuthorsReport) {
     }, 0);
     addConsideration(
         r,
-        `${r.fewAutorsFiles.val.filter((f) => f.cloc).length} files (${fewAuthorsLoc} lines) have less than ${
-            (r.params.val as any)['minNumberOfAuthorsThreshold']
+        `${r.fewAutorsFiles.val.filter((f) => f.cloc).length} files (${fewAuthorsLoc} lines) have less than ${(r.params.val as any)['minNumberOfAuthorsThreshold']
         } authors in the period considered. This is equal to ${((fewAuthorsLoc / r.clocTot.val) * 100).toFixed(
             2,
         )}% of the total lines in the project files which have changed in the period (${r.clocTot.val})`,
@@ -171,8 +170,7 @@ export function addConsiderationsForFileAuthorsReport(r: FileAuthorsReport) {
     }, 0);
     addConsideration(
         r,
-        `${r.manyAutorsFiles.val.filter((f) => f.cloc).length} files (${manyAuthorsLoc} lines) have more than ${
-            (r.params.val as any)['maxNumberOfAuthorsThreshold']
+        `${r.manyAutorsFiles.val.filter((f) => f.cloc).length} files (${manyAuthorsLoc} lines) have more than ${(r.params.val as any)['maxNumberOfAuthorsThreshold']
         } authors in the period considered. This is equal to ${((manyAuthorsLoc / r.clocTot.val) * 100).toFixed(
             2,
         )}% of the total lines in the project files which have changed in the period (${r.clocTot.val})`,

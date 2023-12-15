@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { readLinesObs } from 'observable-fs';
 import path from 'path';
 import { tap, concatMap } from 'rxjs';
-import { fromCsv } from '../../../tools/csv/from-csv';
+import { fromCsv } from '@enrico.piccinin/csv-tools';
 import { filesStream } from '../1-B-git-enriched-streams/files';
 import { gitCommitStream } from '../1-B-git-enriched-streams/commits';
 import { readAll } from '../1-A-read/read-all';
@@ -248,7 +248,7 @@ describe(`projectAndFileChurnReport`, () => {
                     // there are 3 lines related to the files plus one line as header
                     expect(csvLines.length).equal(4);
                     // the first object represents the most churned file
-                    const mostChurnedFile = fromCsv(csvLines[0], [csvLines[1]])[0];
+                    const mostChurnedFile = fromCsv<any>(csvLines[0], [csvLines[1]])[0];
                     expect(mostChurnedFile.cumulativeChurnPercent).equal(`${(12 / 24) * 100}`);
                     expect(mostChurnedFile.cumulativeNumberOfFilesPercent).equal(`${(1 / 3) * 100}`);
                     expect(mostChurnedFile.churnRanking).equal(`1`);

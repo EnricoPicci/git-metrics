@@ -390,6 +390,10 @@ function clocByfileCommandWithArgs(params: ClocParams) {
         args.push(`--not-match-d=(${excludeRegex})`);
         args.push(`--fullpath`);
     }
+    if (params.languages && params.languages?.length > 0) {
+        const languagesString = params.languages.join(',');
+        args.push(`--include-lang=${languagesString}`);
+    }
     const options = { cwd: params.folderPath };
     const cmd = CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';
     return { cmd, args, options };

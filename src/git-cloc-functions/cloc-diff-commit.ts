@@ -1,6 +1,6 @@
 import path from "path";
 
-import { catchError, concatMap, defaultIfEmpty, from, ignoreElements, map, tap } from "rxjs";
+import { catchError, concatMap, defaultIfEmpty, ignoreElements, map, tap } from "rxjs";
 
 import { appendFileObs } from "observable-fs";
 import { toCsvObs } from "@enrico.piccinin/csv-tools";
@@ -8,7 +8,7 @@ import { toCsvObs } from "@enrico.piccinin/csv-tools";
 import { clocFileDict$ } from "../cloc-functions/cloc-dictionary";
 import { clocDiffWithParentByfile$ } from "../cloc-functions/cloc-diff-byfile";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
-import { countCommits$, readCommitCompactWithUrlAndParentDate$ } from "../git-functions/commit";
+import { countCommits$, readCommitCompactWithUrlAndParentDate$, repoPathAndFromDates$ } from "../git-functions/commit";
 import { gitRepoPaths } from "../git-functions/repo-path";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
 import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
@@ -91,7 +91,7 @@ export function clocDiffWithCommit$(
     options: ClocDiffWithCommitOptions = {}
 ) {
     // first calculate the cloc dictionary and pass it down the pipe
-    return clocFileDict$(pathToRepo).pipe(
+    return clocFileDict$(pathToRepo, languages).pipe(
         catchError((err) => {
             if (err.code === 'ENOENT') {
                 console.log(`!!!!!!!! folder ${pathToRepo} not found`);
@@ -110,7 +110,7 @@ export function clocDiffWithCommit$(
         // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
         // together with the cloc dictionary and the commit
         concatMap(({ commit, clocFileDict }) => {
-            return clocDiffWithParentByfile$(commit.sha, pathToRepo, languages, progress).pipe(
+            return clocDiffWithParentByfile$(commit.sha, pathToRepo, languages, progress, options.notMatchDirectories).pipe(
                 map((clocDiffByfile) => {
                     return { clocDiffByfile, clocFileDict, commit }
                 })
@@ -137,7 +137,7 @@ export function clocDiffWithCommit$(
             clocDiffCommitEnriched.file = path.join(pathToRepo, clocDiffCommitEnriched.file)
             clocDiffCommitEnriched.file = path.relative(process.cwd(), clocDiffCommitEnriched.file)
             // calculate the derived data
-            const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options)
+            const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options, pathToRepo)
 
             return clocDiffCommitEnrichedWithDerivedData
         }),
@@ -166,16 +166,18 @@ export function clocDiffWithCommitForRepos$(
     options: ClocDiffWithCommitOptions = {}
 ) {
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
-    return countCommits$(repoPaths, fromDate, toDate).pipe(
+    const creationDateCsvFilePath = options.creationDateCsvFilePath
+
+    return countCommits$(repoPaths, fromDate, toDate, creationDateCsvFilePath).pipe(
         concatMap((totNumOfCommits) => {
             const progess = {
                 totNumOfCommits,
                 commitCounter: 0,
                 errorCounter: 0,
             }
-            return from(repoPaths).pipe(
-                concatMap((repoPath) => {
-                    return clocDiffWithCommit$(repoPath, fromDate, toDate, languages, progess, options)
+            return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
+                concatMap(({ repoPath, _fromDate }) => {
+                    return clocDiffWithCommit$(repoPath, _fromDate, toDate, languages, progess, options)
                 })
             )
         })
@@ -269,10 +271,10 @@ export function writeClocDiffWithCommitForRepos$(
         tap({
             next: (outFilePath) => {
                 if (noCommitsFound) {
-                    console.log(`====>>>> no commits found in the given time range, for the given languages, in the given repos`);
+                    console.log(`\n====>>>> no commits found in the given time range, for the given languages, in the given repos`);
                     return;
                 }
-                console.log(`====>>>> cloc-diff-commit-for-repos info saved on file ${outFilePath}`);
+                console.log(`\n====>>>> cloc-diff-commit-for-repos info saved on file ${outFilePath}`);
             },
         }),
     )
@@ -294,8 +296,10 @@ export type WriteClocDiffWithCommitForReposOptions = {
 //********************************************************************************************************************** */
 // these functions may be exported for testing purposes
 
-function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, options: ClocDiffWithCommitOptions) {
-    const module = path.dirname(clocDiffCommitEnriched.file);
+function calculateDerivedData(clocDiffCommitEnriched: ClocDiffCommitEnriched, options: ClocDiffWithCommitOptions, repoPath: string) {
+    const _module = path.dirname(clocDiffCommitEnriched.file);
+    // remove the starting repoPath from the _module path
+    const module = _module.substring(repoPath.length + 1);
 
     const date_month = clocDiffCommitEnriched.date.toISOString().slice(0, 7);
 

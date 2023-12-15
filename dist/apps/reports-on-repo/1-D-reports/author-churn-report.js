@@ -7,7 +7,7 @@ const observable_fs_1 = require("observable-fs");
 const report_1 = require("./report");
 const report_config_1 = require("./config/report-config");
 const add_project_info_1 = require("./add-project-info");
-const to_csv_1 = require("../../../tools/csv/to-csv");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 exports.AUTHOR_CHURN_REPORT_NAME = 'AuthorChurnReport';
 class AuthorChurnReport extends report_1.Report {
     constructor(_params) {
@@ -95,7 +95,7 @@ function mapAuthorsChurnToCsv() {
             _author.lastCommit = _author.lastCommit.toISOString();
             return _author;
         });
-    }), (0, to_csv_1.toCsvObs)());
+    }), (0, csv_tools_1.toCsvObs)());
 }
 function addConsiderationsForAuthorChurnReport(r) {
     (0, report_1.addConsiderationsHeader)(r);

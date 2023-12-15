@@ -33,8 +33,9 @@ export function clocDiffByfile$(
             commitCounter: 0,
             errorCounter: 0,
         },
+    notMatchDirectories: string[] = []
 ) {
-    return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages).pipe(
+    return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories).pipe(
         tap({
             next: (lines) => {
                 // log progress
@@ -142,8 +143,9 @@ export function clocDiffByfileWithCommitData$(
             commitCounter: 0,
             errorCounter: 0,
         },
+    notMatchDirectories: string[] = []
 ) {
-    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress).pipe(
+    return clocDiffByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress, notMatchDirectories).pipe(
         // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
         map(clocDiffByfile => {
             return newClocDiffByfileWithCommitData(clocDiffByfile)
@@ -173,8 +175,9 @@ export function clocDiffWithParentByfile$(
             commitCounter: 0,
             errorCounter: 0,
         },
+    notMatchDirectories: string[] = []
 ) {
-    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, progress);
+    return clocDiffByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, progress, notMatchDirectories);
 }
 
 //********************************************************************************************************************** */
@@ -189,13 +192,21 @@ function buildClocDiffRelByFileCommand(
     leastRecentCommit: string,
     languages: string[],
     folderPath = './',
+    notMatchDirectories: string[]
 ) {
     const cdCommand = `cd ${folderPath}`;
-    let clocDiffAllCommand = `cloc --git-diff-rel --csv --by-file --timeout=${CLOC_CONFIG.TIMEOUT} --quiet`;
+    const clocDiffAllCommand = `cloc --git-diff-rel --csv --by-file --timeout=${CLOC_CONFIG.TIMEOUT} --quiet`;
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;
-    return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter}`;
+    let notMatchD = '';
+    if (notMatchDirectories && notMatchDirectories?.length > 0) {
+        // excludeRegex is a string that contains the strings to be excluded separated by !
+        // for instance if notMatch is ['*db*', '*ods*'], then excludeRegex will be '*db*|*ods*'
+        const excludeRegex = notMatchDirectories.join('|');
+        notMatchD = `--not-match-d=(${excludeRegex} --fullpath)`;
+    }
+    return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter} ${notMatchD}`;
 }
 
 function executeClocGitDiffRel$(
@@ -203,8 +214,9 @@ function executeClocGitDiffRel$(
     leastRecentCommit: string,
     repoFolderPath: string,
     languages: string[] = [],
+    notMatchDirectories: string[]
 ) {
-    const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
+    const cmd = buildClocDiffRelByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath, notMatchDirectories);
 
     return executeCommandObs('run cloc --git-diff-rel --by-file --quiet', cmd).pipe(
         map((output) => {
@@ -217,6 +229,13 @@ function executeClocGitDiffRel$(
             // We do not want to stop the execution of the script, so we just log the error and return an empty array.
             if (err.code === 25) {
                 console.warn(`Non fatal Error executing command ${cmd}`, err.message);
+                const emptyArray: string[] = [];
+                return of(emptyArray)
+            }
+            // If there are too many files to analyze we can reach the max buffer size of the command and then an error is thrown.
+            // In this case we want to ignore the error and return an empty array, simply recording the error in the console.
+            if (err.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER') {
+                console.warn(`ERR_CHILD_PROCESS_STDIO_MAXBUFFER Error executing command ${cmd}`, err.message);
                 const emptyArray: string[] = [];
                 return of(emptyArray)
             }

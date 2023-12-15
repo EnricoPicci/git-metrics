@@ -19,10 +19,11 @@ import { ClocFileInfo } from './cloc.model';
  * @param folderPath The path to the folder to search for files.
  * @returns An Observable that emits a dictionary of cloc info for all files in the given folder and its subfolders.
  */
-export function clocFileDict$(folderPath: string) {
+export function clocFileDict$(folderPath: string, languages: string[] = []) {
     const clocParams = {
         folderPath,
         vcs: 'git',
+        languages
     };
     return clocByfile$(clocParams, 'create cloc log stream', false).pipe(
         toArray(),

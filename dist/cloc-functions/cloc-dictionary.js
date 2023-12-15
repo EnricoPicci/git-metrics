@@ -15,10 +15,11 @@ const cloc_1 = require("./cloc");
  * @param folderPath The path to the folder to search for files.
  * @returns An Observable that emits a dictionary of cloc info for all files in the given folder and its subfolders.
  */
-function clocFileDict$(folderPath) {
+function clocFileDict$(folderPath, languages = []) {
     const clocParams = {
         folderPath,
         vcs: 'git',
+        languages
     };
     return (0, cloc_1.clocByfile$)(clocParams, 'create cloc log stream', false).pipe((0, rxjs_1.toArray)(), toClocFileDict(folderPath));
 }

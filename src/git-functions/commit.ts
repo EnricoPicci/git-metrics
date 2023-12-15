@@ -19,6 +19,8 @@ import { getGitlabCommitUrl } from './commit-url';
 import { toYYYYMMDD } from '../tools/dates/date-functions';
 import { isUnknownRevisionError } from './errors';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
+import { repoCreationDateDict$ } from './repo-creation-date';
+import { getRemoteOriginUrl$ } from './repo';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -331,16 +333,52 @@ export function checkout$(repoPath: string, commitSha: string, stdErrorHandler?:
  * @param repoPaths An array of paths to the repositories to fetch the commits from.
  * @param fromDate The start date of the date range. Defaults to the Unix epoch (1970-01-01T00:00:00Z).
  * @param toDate The end date of the date range. Defaults to the current date and time.
+ * @param creationDateCsvFilePath The path to a CSV file containing the creation date of the repositories and the url to the remote origin 
+ * (we need to use the url of the remote origin since that is supposed to be the server on which we have created the repo and which therefore
+ * contains the creation date - we probably have read the creation date from that server).
  * @returns An Observable that emits each commit in the repositories within the date range.
  */
 export function allCommits$(
     repoPaths: string[],
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
+    creationDateCsvFilePath?: string
 ) {
-    return from(repoPaths).pipe(
-        concatMap((repoPath) => {
-            return readCommitCompact$(repoPath, fromDate, toDate, true)
+    return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
+        concatMap(({ repoPath, _fromDate }) => {
+            return readCommitCompact$(repoPath, _fromDate, toDate, true)
+        }),
+    )
+}
+
+/**
+ * Creates an Observable that emits objects containing a repository path and a start date.
+ * The start date is either the creation date of the repository which is found in the creationDateCsvFile or a specified fallback date.
+ *
+ * @param repoPaths An array of paths to the repositories.
+ * @param fromDate A fallback date to use if the creation date of a repository is not available.
+ * @param creationDateCsvFilePath A path to a CSV file that maps repository URLs to creation dates. If the csv file is not provided or 
+ *          does not contain the url of a repository, the fallback date is used.
+ * @returns An Observable that emits objects of the form { repoPath: string, _fromDate: Date }.
+ *          Each emitted object represents a repository and the start date for fetching commits.
+ */
+export function repoPathAndFromDates$(repoPaths: string[], fromDate: Date, creationDateCsvFilePath: string | null) {
+    const _repoCreationDateDict$ = creationDateCsvFilePath ?
+        repoCreationDateDict$(creationDateCsvFilePath) : of({} as { [http_url_to_repo: string]: string })
+    return _repoCreationDateDict$.pipe(
+        concatMap((dict) => {
+            return from(repoPaths).pipe(
+                concatMap((repoPath) => getRemoteOriginUrl$(repoPath).pipe(
+                    map((remoteOriginUrl) => {
+                        return { repoPath, remoteOriginUrl }
+                    })
+                )),
+                map(({ repoPath, remoteOriginUrl }) => {
+                    const repoCreationDate = dict[remoteOriginUrl]
+                    const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate
+                    return { repoPath, _fromDate }
+                })
+            )
         }),
     )
 }
@@ -356,8 +394,9 @@ export function countCommits$(
     repoPaths: string[],
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
+    creationDateCsvFilePath?: string
 ) {
-    return allCommits$(repoPaths, fromDate, toDate).pipe(
+    return allCommits$(repoPaths, fromDate, toDate, creationDateCsvFilePath).pipe(
         toArray(),
         map(commits => commits.length),
     )

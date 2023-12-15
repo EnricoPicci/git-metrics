@@ -8,7 +8,7 @@ import { projectInfo } from '../1-C-aggregate-in-memory/project-info-aggregate';
 import { fileChurn } from '../1-C-aggregate-in-memory/file-churn-aggregate';
 import { moduleChurns } from '../1-C-aggregate-in-memory/module-churn-aggregate';
 import { readLinesObs } from 'observable-fs';
-import { fromCsv } from '../../../tools/csv/from-csv';
+import { fromCsv } from '@enrico.piccinin/csv-tools';
 import { readAll } from '../1-A-read/read-all';
 import { GitLogCommitParams } from '../../../git-functions/git-params';
 import { ClocParams } from '../../../cloc-functions/cloc-params';
@@ -144,7 +144,7 @@ describe(`projectAndModuleChurnReport`, () => {
                     // there are 8 lines related to the modules plus one line as header
                     expect(csvLines.length).equal(9);
                     //
-                    const churnedModules = fromCsv(csvLines[0], csvLines.slice(1));
+                    const churnedModules = fromCsv<any>(csvLines[0], csvLines.slice(1));
                     // the first object represents the most churned module
                     const mostChurnedModule = churnedModules[0];
                     expect(mostChurnedModule.level_0).equal('.');

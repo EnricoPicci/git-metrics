@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { readLinesObs } from 'observable-fs';
 import path from 'path';
 import { concatMap, tap } from 'rxjs';
-import { fromCsv } from '../../../../tools/csv/from-csv';
+import { fromCsv } from '@enrico.piccinin/csv-tools';
 import { loadAllCommits } from '../load/load-commits';
 import { addAllFilesWithCreationDate } from '../load/load-files';
 import { mongoFileChurnReportWithProjectInfo, _mongoFileChurnReport } from './mongo-file-churn-report';
@@ -95,7 +95,7 @@ describe(`mongoFileChurnReport`, () => {
                     // there are 3 lines related to the files plus one line as header
                     expect(csvLines.length).equal(4);
                     // the second line represents the most churned file
-                    const mostChurnedFile = fromCsv(csvLines[0], [csvLines[1]])[0];
+                    const mostChurnedFile = fromCsv<any>(csvLines[0], [csvLines[1]])[0];
                     expect(mostChurnedFile.cumulativeChurnPercent).equal(((12 / 24) * 100).toString());
                 }),
             )

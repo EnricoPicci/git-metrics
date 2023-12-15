@@ -320,7 +320,7 @@ function buildOutfileName(outFile = '', repoFolder = '', prefix, postfix) {
 }
 exports.buildOutfileName = buildOutfileName;
 function clocByfileCommandWithArgs(params) {
-    var _a;
+    var _a, _b;
     const args = ['cloc', '.', '--csv', `--timeout=${config_1.CLOC_CONFIG.TIMEOUT}`, '--by-file'];
     if (params.vcs) {
         args.push(`--vcs=${params.vcs}`);
@@ -331,6 +331,10 @@ function clocByfileCommandWithArgs(params) {
         const excludeRegex = params.notMatch.join('|');
         args.push(`--not-match-d=(${excludeRegex})`);
         args.push(`--fullpath`);
+    }
+    if (params.languages && ((_b = params.languages) === null || _b === void 0 ? void 0 : _b.length) > 0) {
+        const languagesString = params.languages.join(',');
+        args.push(`--include-lang=${languagesString}`);
     }
     const options = { cwd: params.folderPath };
     const cmd = config_1.CLOC_CONFIG.USE_NPX ? 'npx' : 'cloc';

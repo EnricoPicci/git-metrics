@@ -6,7 +6,7 @@ const operators_1 = require("rxjs/operators");
 const observable_fs_1 = require("observable-fs");
 const add_project_info_1 = require("./add-project-info");
 const report_1 = require("./report");
-const to_csv_1 = require("../../../tools/csv/to-csv");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 exports.FILES_COUPLING_NAME = 'FilesCouplingReport';
 class FilesCouplingReport extends report_1.Report {
     constructor(_params) {
@@ -51,7 +51,7 @@ function fileCouplingReportCore(fileCoupling, params, csvFilePath = '') {
             if (allFileCouplings.length === 0) {
                 console.log('!!!!!!!! no data on file couplings');
             }
-            const csvLines = (0, to_csv_1.toCsv)(allFileCouplings);
+            const csvLines = (0, csv_tools_1.toCsv)(allFileCouplings);
             return (0, observable_fs_1.writeFileObs)(csvFilePath, csvLines).pipe((0, operators_1.map)((csvFile) => [report, csvFile]));
         }), (0, operators_1.tap)({
             next: ([report, csvFile]) => {
