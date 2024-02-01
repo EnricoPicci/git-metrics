@@ -8,6 +8,7 @@ import { allJavaFiles } from "./java-files";
 import { PackageMemberErrors, PackageMemberDict, allJavaPackageMembersDict$, javaPackage$ } from "./packages";
 import { toCsvObs } from "@enrico.piccinin/csv-tools";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
+import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
 
 /**
  * Fetches all imported packages for all Java files from a directory and its subdirectories and returns an Observable 
@@ -131,6 +132,7 @@ export function writeAllImportsForFilesWithRepoInfo$(
     )
 
     const errorsFilePath = path.join(outdir, `${dirForFilesName}-all-imports-errors.csv`)
+    createDirIfNotExisting(outdir);
     const writeErrors$ = deleteFile$(errorsFilePath).pipe(
         concatMap(() => packageMembersDict$),
         map(({ packageMemberErrors }) => packageMemberErrors),

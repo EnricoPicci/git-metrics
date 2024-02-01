@@ -31,6 +31,7 @@ import { ClocParams } from './cloc-params';
 import { gitRepoPaths } from '../git-functions/repo-path';
 import { ignoreUpTo } from '../tools/rxjs-operators/ignore-up-to';
 import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
+import { createDirIfNotExisting } from '../tools/fs-utils/fs-utils';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -310,6 +311,7 @@ export function clocByFileForRepos$(folderPath: string, excludeRepoPaths = []) {
 export function writeClocByFileForRepos$(folderPath: string, outDir = './', excludeRepoPaths = []) {
     const outFile = buildOutfileName('', folderPath, 'cloc-', '-byfile.csv');
     const outFilePath = path.join(outDir, outFile);
+    createDirIfNotExisting(outDir);
     return deleteFile$(outFilePath).pipe(
         concatMap(() => clocByFileForRepos$(folderPath, excludeRepoPaths)),
         concatMap((line) => {

@@ -10,6 +10,7 @@ import { checkoutRepoAtDate$ } from "../git-functions/repo";
 import { CheckoutError } from "../git-functions/repo.errors";
 import { toYYYYMMDD } from "../tools/dates/date-functions";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
+import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
 
 /**
  * Calculates the lines of code (LOC) for each file in a set of repositories at a specific date and returns 
@@ -132,6 +133,7 @@ export function writeClocFromToDateByFileForRepos$(
     const outFile = `cloc-${folderName}-${toYYYYMMDD(from)}_${toYYYYMMDD(to)}`;
     const csvOutFilePath = path.join(outDir, outFile) + '.csv';
     const errorOutFilePath = path.join(outDir, outFile) + '.error.log';
+    createDirIfNotExisting(outDir);
     let atLeastOneCsv = false;
     let atLeastOneError = false;
     return deleteFile$(csvOutFilePath).pipe(

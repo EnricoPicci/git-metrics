@@ -12,6 +12,7 @@ const config_1 = require("./config");
 const repo_path_1 = require("../git-functions/repo-path");
 const ignore_up_to_1 = require("../tools/rxjs-operators/ignore-up-to");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
+const fs_utils_1 = require("../tools/fs-utils/fs-utils");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -261,6 +262,7 @@ exports.clocByFileForRepos$ = clocByFileForRepos$;
 function writeClocByFileForRepos$(folderPath, outDir = './', excludeRepoPaths = []) {
     const outFile = buildOutfileName('', folderPath, 'cloc-', '-byfile.csv');
     const outFilePath = path_1.default.join(outDir, outFile);
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocByFileForRepos$(folderPath, excludeRepoPaths)), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({

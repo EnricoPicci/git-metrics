@@ -206,6 +206,8 @@ export function writeClocDiffWithCommit$(
     const outFile = `${pathToRepoName}-cloc-diff-commit-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
     const outFilePath = path.join(outDir, outFile);
 
+    createDirIfNotExisting(outDir);
+
     return deleteFile$(outFilePath).pipe(
         concatMap(() => clocDiffWithCommit$(pathToRepo, fromDate, toDate, languages)),
         toCsvObs(),
