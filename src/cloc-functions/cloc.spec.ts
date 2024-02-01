@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { buildOutfileName, clocByFileForRepos$, clocByfile$, clocByfileHeader, clocSummary$, writeClocByFile$, writeClocByFileForRepos$, writeClocByfile, writeClocSummary } from './cloc';
+import { buildOutfileName, clocByFileForRepos$, clocByfile$, clocByfileHeader, clocByfileHeaderWithRepo, clocSummary$, writeClocByFile$, writeClocByFileForRepos$, writeClocByfile, writeClocSummary } from './cloc';
 import { ClocParams } from './cloc-params';
 import path from 'path';
 import { deleteFile } from '../tools/test-helpers/delete-file';
@@ -307,7 +307,7 @@ describe(`writeClocByfile`, () => {
 });
 
 describe(`clocByFileForRepos$`, () => {
-    it(`notifies the cloc info for the files contained in all the repos of the folder of this projext.
+    it(`notifies the cloc info for the files contained in all the repos of the folder of this project.
     Since this project contains just one repo, it notifies the cloc info for this repo.
     It starts with the cloc header`, (done) => {
         const repoFolder = './';
@@ -317,11 +317,18 @@ describe(`clocByFileForRepos$`, () => {
             tap({
                 next: (clocInfos) => {
                     expect(clocInfos.length).gt(1);
+                    // check that the first line starts with the cloc header and contains the repo name field
                     const clocHeader = clocInfos[0];
-                    expect(clocHeader).equal(clocByfileHeader);
+                    expect(clocHeader).equal(clocByfileHeaderWithRepo);
                     // check that the second line does not start with the cloc header repeated
                     const secondLine = clocInfos[1];
                     expect(secondLine.includes(clocByfileHeader)).false
+                    // check that the first record contains the number of expected fields and has the repo name field filled
+                    const firstRecord = clocInfos[1];
+                    const fields = firstRecord.split(',');
+                    expect(fields[5]).equal('');
+                    expect(fields[6]).equal(repoFolder);
+                    expect(fields[7].trim().length).greaterThan(0);
                     // find the last line which is not an empty string and check that it does not contain the sum
                     const lastLine = clocInfos.reverse().find((line) => line.length > 0);
                     expect(lastLine).not.undefined;
@@ -346,7 +353,7 @@ describe(`clocByFileForRepos$`, () => {
                 next: (clocInfos) => {
                     expect(clocInfos.length).equal(1);
                     const clocHeader = clocInfos[0];
-                    expect(clocHeader).equal(clocByfileHeader);
+                    expect(clocHeader).equal(clocByfileHeaderWithRepo);
                 },
                 error: (err) => done(err),
                 complete: () => done(),
@@ -377,7 +384,7 @@ describe(`writeClocByFileForRepos$`, () => {
             tap({
                 next: (lines) => {
                     numOfFiles = lines.length;
-                    expect(lines[0]).equal(clocByfileHeader);
+                    expect(lines[0]).equal(clocByfileHeaderWithRepo);
                     expect(lines.length).gt(1);
                 },
             }),

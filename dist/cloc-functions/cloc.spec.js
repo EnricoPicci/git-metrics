@@ -272,18 +272,25 @@ describe(`writeClocByfile`, () => {
     }).timeout(200000);
 });
 describe(`clocByFileForRepos$`, () => {
-    it(`notifies the cloc info for the files contained in all the repos of the folder of this projext.
+    it(`notifies the cloc info for the files contained in all the repos of the folder of this project.
     Since this project contains just one repo, it notifies the cloc info for this repo.
     It starts with the cloc header`, (done) => {
         const repoFolder = './';
         (0, cloc_1.clocByFileForRepos$)(repoFolder).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
             next: (clocInfos) => {
                 (0, chai_1.expect)(clocInfos.length).gt(1);
+                // check that the first line starts with the cloc header and contains the repo name field
                 const clocHeader = clocInfos[0];
-                (0, chai_1.expect)(clocHeader).equal(cloc_1.clocByfileHeader);
+                (0, chai_1.expect)(clocHeader).equal(cloc_1.clocByfileHeaderWithRepo);
                 // check that the second line does not start with the cloc header repeated
                 const secondLine = clocInfos[1];
                 (0, chai_1.expect)(secondLine.includes(cloc_1.clocByfileHeader)).false;
+                // check that the first record contains the number of expected fields and has the repo name field filled
+                const firstRecord = clocInfos[1];
+                const fields = firstRecord.split(',');
+                (0, chai_1.expect)(fields[5]).equal('');
+                (0, chai_1.expect)(fields[6]).equal(repoFolder);
+                (0, chai_1.expect)(fields[7].trim().length).greaterThan(0);
                 // find the last line which is not an empty string and check that it does not contain the sum
                 const lastLine = clocInfos.reverse().find((line) => line.length > 0);
                 (0, chai_1.expect)(lastLine).not.undefined;
@@ -303,7 +310,7 @@ describe(`clocByFileForRepos$`, () => {
             next: (clocInfos) => {
                 (0, chai_1.expect)(clocInfos.length).equal(1);
                 const clocHeader = clocInfos[0];
-                (0, chai_1.expect)(clocHeader).equal(cloc_1.clocByfileHeader);
+                (0, chai_1.expect)(clocHeader).equal(cloc_1.clocByfileHeaderWithRepo);
             },
             error: (err) => done(err),
             complete: () => done(),
@@ -328,7 +335,7 @@ describe(`writeClocByFileForRepos$`, () => {
         (0, rxjs_1.concatMap)((outFile) => (0, observable_fs_1.readLinesObs)(outFile)), (0, rxjs_1.tap)({
             next: (lines) => {
                 numOfFiles = lines.length;
-                (0, chai_1.expect)(lines[0]).equal(cloc_1.clocByfileHeader);
+                (0, chai_1.expect)(lines[0]).equal(cloc_1.clocByfileHeaderWithRepo);
                 (0, chai_1.expect)(lines.length).gt(1);
             },
         }), 

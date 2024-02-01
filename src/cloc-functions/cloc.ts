@@ -273,19 +273,29 @@ export function clocByFileForRepos$(folderPath: string, excludeRepoPaths = []) {
             const params: ClocParams = {
                 folderPath: repoPath,
                 vcs: 'git',
-            };
+            }
+            // remove the folderPath string from the repoPath string so that the repoPath string represents just the relevant repo info
+            // for instance, if folderPath is /home/enrico/code/git-metrics/repos and repoPath is /home/enrico/code/git-metrics/repos/dbm,
+            // then repoPath will be /dbm
+            const repo = repoPath.replace(folderPath, '')
             return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPath, false).pipe(
                 // remove the first line which contains the csv header form all the streams representing
                 // the output of the cloc command execution on each repo
                 skip(1),
                 // remove the last line which contains the total
-                filter((line) => line.slice(0, 3) !== 'SUM')
+                filter((line) => line.slice(0, 3) !== 'SUM'),
+                // add repo path at the end of each line
+                map((line) => {
+                    const file = line.split(',')[1];
+                    // isolate in the module variable the path the file
+                    const module = path.dirname(file);
+                    return `${line},${repo},${repoPath},${module}`;
+                }),
             );
         }),
     );
     // return a file which is a concatenation of the cloc header followed by the cloc info for each repo
-    const header = `${clocByfileHeader}`;
-    return concat(of(header), cloc$);
+    return concat(of(clocByfileHeaderWithRepo), cloc$);
 }
 
 /**
@@ -325,6 +335,10 @@ export function writeClocByFileForRepos$(folderPath: string, outDir = './', excl
  * Represents the header for the cloc command when the --by-file output format is specified.
  */
 export const clocByfileHeader = 'language,filename,blank,comment,code';
+/**
+ * Represents the header for the output stream produced by clocByFileForRepos$.
+ */
+export const clocByfileHeaderWithRepo = `${clocByfileHeader},repo,repoPath,module`;
 
 function clocCommand(params: ClocParams) {
     // npx cloc . --vcs=git --csv  --timeout=1000000
