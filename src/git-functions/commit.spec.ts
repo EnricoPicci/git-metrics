@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SEP, commitAtDate$, countCommits$, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
+import { SEP, commitAtDateOrAfter$, commitAtDateOrBefore$, commitClosestToDate$, countCommits$, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
@@ -432,16 +432,16 @@ describe('readCommitCompactWithParentDate$', () => {
     }).timeout(20000);
 });
 
-describe(`commitAtDate$`, () => {
+describe(`commitAtDateOrBefore$`, () => {
     it(`it should notify the sha of the only commit found at a specific date.
     We use the repo of this project to find a specific commit at a specific date`, (done) => {
         const thisRepoPath = './' // the repo of this project
         const date = new Date('2023-11-10')
         const branchName = 'main'
 
-        commitAtDate$(thisRepoPath, date, branchName).subscribe({
-            next: (commitSha) => {
-                expect(commitSha).equal('109853555729d84e7920a96fde0c2c3257b21cb3');
+        commitAtDateOrBefore$(thisRepoPath, date, branchName).subscribe({
+            next: ([sha]) => {
+                expect(sha).equal('109853555729d84e7920a96fde0c2c3257b21cb3');
             },
             error: (err) => done(err),
             complete: () => done(),
@@ -454,9 +454,9 @@ describe(`commitAtDate$`, () => {
         const date = new Date('2023-11-12')  // there is no commit at this date
         const branchName = 'main'
 
-        commitAtDate$(thisRepoPath, date, branchName).subscribe({
-            next: (commitSha) => {
-                expect(commitSha).equal('109853555729d84e7920a96fde0c2c3257b21cb3');
+        commitAtDateOrBefore$(thisRepoPath, date, branchName).subscribe({
+            next: ([sha]) => {
+                expect(sha).equal('109853555729d84e7920a96fde0c2c3257b21cb3');
             },
             error: (err) => done(err),
             complete: () => done(),
@@ -469,9 +469,53 @@ describe(`commitAtDate$`, () => {
         const date = new Date('2012-11-12')  // there is no commit at this date
         const branchName = 'main'
 
-        commitAtDate$(thisRepoPath, date, branchName).subscribe({
-            next: (commitSha) => {
+        commitAtDateOrBefore$(thisRepoPath, date, branchName).subscribe({
+            next: ([sha]) => {
                 done(new Error(`should not notify a commit sha since there should not be commits at the date ${date} or before it
+                Instead it notifies ${sha}`));
+            },
+            error: (err) => {
+                // the error should be defined
+                expect(!err).false
+                done()
+            },
+            complete: () => done(new Error(`should not complete since it should error`)),
+        });
+    });
+});
+
+describe('commitAtDateOrAfter$', () => {
+    it(`test the case when there is a commit at the date specified`, (done) => {
+        const repoPath = './';
+        const branch = 'main';
+        const date = new Date('2021-12-11');
+
+        commitAtDateOrAfter$(repoPath, date, branch).subscribe(([sha, commitDate]) => {
+            expect(sha).equal('9369eb39af383a2894362d0008b7380d8cf454dd');
+            expect(commitDate).equal('2021-12-13 18:18:05 +0100');
+            done();
+        });
+    });
+    it(`test the case when there is a commit after the date passed as parameter`, (done) => {
+        const repoPath = './';
+        const branch = 'main';
+        const date = new Date('2021-12-15');
+
+        commitAtDateOrAfter$(repoPath, date, branch).subscribe(([sha, commitDate]) => {
+            expect(sha).equal('64c4b3cd31532d8aa5954c3943cc320ade784ea9');
+            expect(commitDate).equal('2023-03-22 17:58:44 +0100');
+            done();
+        });
+    });
+    it(`it should error since there is no commit at the date and after it`, (done) => {
+        const repoPath = './';
+        const branch = 'main';
+        // tomorrow is a date in the future
+        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        commitAtDateOrAfter$(repoPath, tomorrow, branch).subscribe({
+            next: (commitSha) => {
+                done(new Error(`should not notify a commit sha since there should not be commits at the date ${tomorrow} or before it
                 Instead it notifies ${commitSha}`));
             },
             error: (err) => {
@@ -480,6 +524,44 @@ describe(`commitAtDate$`, () => {
                 done()
             },
             complete: () => done(new Error(`should not complete since it should error`)),
+        });
+    });
+});
+
+describe('commitClosestToDate$', () => {
+    it(`test the case when there is a commit at the date specified`, (done) => {
+        const repoPath = './';
+        const branch = 'main';
+        const date = new Date('2021-12-11');
+
+        commitClosestToDate$(repoPath, date, branch).subscribe(([sha, commitDate]) => {
+            expect(sha).equal('189adaa55ccb905a7b2f01797457d3caa16a5630');
+            expect(commitDate).equal('2021-12-11 12:01:52 +0100');
+            done();
+        });
+    });
+    it(`test the case when the closest commit is before the date passed as parameter`, (done) => {
+        const repoPath = './';
+        const branch = 'main';
+        const date = new Date('2021-12-15');
+        const beforeWhenEqual = false;
+
+        commitClosestToDate$(repoPath, date, branch, beforeWhenEqual).subscribe(([sha, commitDate]) => {
+            expect(sha).equal('f812f7b466442d1c83124ee0cecbaa315e372266');
+            expect(commitDate).equal('2021-12-13 18:24:33 +0100');
+            done();
+        });
+    });
+    it(`test the case when the closest commit is after the date passed as parameter`, (done) => {
+        const repoPath = './';
+        const branch = 'main';
+        const date = new Date('2023-03-01');
+        const beforeWhenEqual = false;
+
+        commitClosestToDate$(repoPath, date, branch, beforeWhenEqual).subscribe(([sha, commitDate]) => {
+            expect(sha).equal('64c4b3cd31532d8aa5954c3943cc320ade784ea9');
+            expect(commitDate).equal('2023-03-22 17:58:44 +0100');
+            done();
         });
     });
 });

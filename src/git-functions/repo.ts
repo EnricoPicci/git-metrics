@@ -5,7 +5,7 @@ import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignore
 import { executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
-import { checkout$, commitAtDate$, readCommitCompact$ } from './commit';
+import { checkout$, commitAtDateOrBefore$, readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
 import { CheckoutError, FetchError, PullError } from './repo.errors';
 import { defaultBranchName$ } from './branches';
@@ -196,8 +196,8 @@ export function checkoutRepoAtDate$(
     const { stdErrorHandler } = options;
 
     return defaultBranchName$(repoPath).pipe(
-        concatMap(branch => commitAtDate$(repoPath, date, branch)),
-        concatMap(commitSha => checkout$(repoPath, commitSha, stdErrorHandler)),
+        concatMap(branch => commitAtDateOrBefore$(repoPath, date, branch)),
+        concatMap(([sha]) => checkout$(repoPath, sha, stdErrorHandler)),
         ignoreElements(),
         defaultIfEmpty(repoPath),
         catchError((err) => {

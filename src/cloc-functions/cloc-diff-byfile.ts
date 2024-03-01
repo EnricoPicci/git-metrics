@@ -17,6 +17,9 @@ import { copyRenamesDict$ } from "../git-functions/diff-file";
  * @param leastRecentCommit The hash of the least recent commit.
  * @param repoFolderPath The path to the Git repository folder. Defaults to the current directory.
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
+ * @param progress An object to keep track of the progress of the calculation. Defaults to an object with all properties set to 0.
+ * @param notMatchDirectories An array of strings that are used to exclude directories from the calculation. 
+ * If a directory contains one of such strings it gets excluded from the calculation. Defaults to an empty array.
  * @returns An Observable stream of objects of type ClocDiffByfile.
  */
 export function clocDiffByfile$(
