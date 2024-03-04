@@ -34,7 +34,7 @@ exports.readBranchesGraph = readBranchesGraph;
 function defaultBranchName$(repoPath) {
     // build the command to fetch the default branch name
     // see https://stackoverflow.com/a/67170894
-    const gitCommand = `cd ${repoPath} && git fetch --all && git branch --remotes --list '*/HEAD'`;
+    const gitCommand = `cd ${repoPath} && git pull && git branch --remotes --list '*/HEAD'`;
     return (0, execute_command_1.executeCommandObs)(`fetch default branch name for ${repoPath}`, gitCommand).pipe((0, rxjs_1.map)((output) => {
         // the output is something like:
         // fetching origin

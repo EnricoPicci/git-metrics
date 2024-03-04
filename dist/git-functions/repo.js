@@ -48,10 +48,8 @@ function pullRepo$(repoPath) {
         throw new Error(`Path is mandatory`);
     const repoName = path_1.default.basename(repoPath);
     let command;
-    return (0, branches_1.defaultBranchName$)(repoPath).pipe((0, rxjs_1.concatMap)((branch) => {
-        command = `cd ${repoPath} && git pull origin ${branch}`;
-        return (0, execute_command_1.executeCommandObs)(`Pull ${repoName}`, command);
-    }), (0, rxjs_1.tap)(() => `${repoName} pulled`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+    command = `cd ${repoPath} && git pull`;
+    return (0, execute_command_1.executeCommandObs)(`Pull ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} pulled`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
         console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);

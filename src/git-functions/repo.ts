@@ -55,11 +55,8 @@ export function pullRepo$(repoPath: string) {
     const repoName = path.basename(repoPath);
     let command: string
 
-    return defaultBranchName$(repoPath).pipe(
-        concatMap((branch) => {
-            command = `cd ${repoPath} && git pull origin ${branch}`;
-            return executeCommandObs(`Pull ${repoName}`, command)
-        }),
+    command = `cd ${repoPath} && git pull`;
+    return executeCommandObs(`Pull ${repoName}`, command).pipe(
         tap(() => `${repoName} pulled`),
         ignoreElements(),
         defaultIfEmpty(repoPath),
@@ -226,7 +223,7 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, options:
     options.concurrency = options.concurrency || 1;
     const { concurrency, excludeRepoPaths } = options;
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
-    console.log(`Repos to be checkedout: ${repoPaths.length}`);
+    console.log(`Number of repos to be checkedout: ${repoPaths.length}`);
 
     let counter = 0;
     const reposErroring: string[] = [];
