@@ -110,7 +110,7 @@ export function clocDiffWithCommit$(
         // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
         // together with the cloc dictionary and the commit
         concatMap(({ commit, clocFileDict }) => {
-            return clocDiffWithParentByfile$(commit.sha, pathToRepo, languages, progress, options.notMatchDirectories).pipe(
+            return clocDiffWithParentByfile$(commit.sha, pathToRepo, languages, options.notMatchDirectories, progress).pipe(
                 map((clocDiffByfile) => {
                     return { clocDiffByfile, clocFileDict, commit }
                 })

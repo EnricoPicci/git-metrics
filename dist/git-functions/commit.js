@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.countCommits$ = exports.repoPathAndFromDates$ = exports.allCommits$ = exports.checkout$ = exports.commitAtDate$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
+exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.countCommits$ = exports.repoPathAndFromDates$ = exports.allCommits$ = exports.checkout$ = exports.commitClosestToDate$ = exports.commitAtDateOrAfter$ = exports.commitAtDateOrBefore$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -59,7 +59,7 @@ function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(
 exports.readCommitCompact$ = readCommitCompact$;
 /**
  * Reads the commits in a Git repository for a certain period and returns an Observable of CommitCompactWithUrlAndParentDate objects.
- * The function fills the usl for the commit and reads the parent commit of each commit and adds the parent date to the resulting object.
+ * The function fills the url for the commit and reads the parent commit of each commit and adds the parent date to the resulting object.
  * @param repoPath The path to the Git repository folder.
  * @param fromDate The start date of the time range. Defaults to the beginning of time.
  * @param toDate The end date of the time range. Defaults to the current date and time.
@@ -213,23 +213,100 @@ exports.newEmptyCommitCompact = newEmptyCommitCompact;
  * @returns An Observable that emits the commit SHA for the repository at the specified date.
  * @throws An error if the commit SHA could not be fetched.
  */
-function commitAtDate$(repoPath, date, branchName) {
+function commitAtDateOrBefore$(repoPath, date, branchName) {
     // convert date to YYYY-MM-DD format
     const dateString = (0, date_functions_1.toYYYYMMDD)(date);
-    const gitCommand = `cd ${repoPath} && git rev-list -n 1  --before="${dateString}" ${branchName}`;
+    const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}" --format=%H%ci ${branchName}`;
+    return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitInfoString => {
+        return commitInfoString.trim();
+    }), (0, rxjs_1.tap)((commitInfo) => {
+        if (!commitInfo) {
+            throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
+                    we expected to have a commit sha but we got an empty string.
+                    This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
+                    Command erroring: "${gitCommand}"`);
+        }
+    }), (0, rxjs_1.map)(commitInfo => {
+        // commitsInfo is a string containing the concatenation of all the commits in the format sha, date joined by a newline
+        // need to take just the first line
+        // remove the last newline character
+        const firstLine = commitInfo.split('\n')[0];
+        return splitShaDate(firstLine);
+    }));
+}
+exports.commitAtDateOrBefore$ = commitAtDateOrBefore$;
+/**
+ * This function fetches the commit SHA for a Git repository at a specified date or after and returns an Observable
+ * that emits the commit SHA and the date.
+ * If a commit is not found at the specified date, then the function fetches the first commit after the date.
+ * The function throws an error if no commit is found at or after the specified date.
+ *
+ * @param {string} repoPath - The path to the Git repository.
+ * @param {Date} date - The date for which to fetch the commit SHA.
+ * @param {string} branchName - The name of the branch for which to fetch the commit SHA.
+ * @returns {Observable} An Observable that emits the commit SHA and the date of the commit at or after the specified date.
+ */
+function commitAtDateOrAfter$(repoPath, date, branchName) {
+    // convert date to YYYY-MM-DD format
+    const dateString = (0, date_functions_1.toYYYYMMDD)(date);
+    // to find the first commit after a certain date we have to get the commits in reverse order and then take the first one
+    // the option -n 1 does not work since git first applies the -n 1 option and then the --reverse option, which means that
+    // it take the first commit in the normal order (which is the last one) and then reverses the order of the commits, with
+    // the result that we get the last commit and not the first commit after the date
+    // https://stackoverflow.com/a/5188990/5699993
+    const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}" --format=%H%ci ${branchName}`;
     return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitSha => {
         return commitSha.trim();
     }), (0, rxjs_1.tap)((commitSha) => {
         if (!commitSha) {
             throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
                     we expected to have a commit sha but we got an empty string.
-                    This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
+                    This probably means that there is no commit at date ${dateString} or after it for branch ${branchName} in repo "${repoPath}"
                     Command erroring: "${gitCommand}"`);
         }
-        console.log(`Commit at date ${dateString} for branch ${branchName} is ${commitSha}`);
+    }), (0, rxjs_1.map)(commitsInfo => {
+        // commitsInfo is a string containing the concatenation of all the commits in the format sha, date joined by a newline
+        // need to take just the first line
+        const firstLine = commitsInfo.split('\n')[0];
+        return splitShaDate(firstLine);
     }));
 }
-exports.commitAtDate$ = commitAtDate$;
+exports.commitAtDateOrAfter$ = commitAtDateOrAfter$;
+/**
+ * This function fetches the commit SHA for a Git repository at a specified date and returns an Observable that emits the commit SHA
+ * and the date of the commit.
+ * If a commit is not found at the specified date, then the function fetches the commit closest to the date and returns an Observable
+ * that emits the commit SHA and the date of the commit.
+ *
+ * @param {string} repoPath - The path to the Git repository.
+ * @param {Date} date - The date for which to fetch the commit SHA.
+ * @param {string} branchName - The name of the branch for which to fetch the commit SHA.
+ * @param {boolean} beforeWhenEqual - A flag indicating whether to fetch the commit before the date when the distances to the date are equal.
+ * @returns {Observable} An Observable that emits the commit SHA and the date of the commit closest to the specified date.
+ */
+function commitClosestToDate$(repoPath, date, branchName, beforeWhenEqual = true) {
+    const commitBeforeDate$ = commitAtDateOrBefore$(repoPath, date, branchName);
+    const commitAfterDate$ = commitAtDateOrAfter$(repoPath, date, branchName);
+    return (0, rxjs_1.forkJoin)([commitBeforeDate$, commitAfterDate$]).pipe((0, rxjs_1.map)(([[beforeSha, beforeDate], [afterSha, afterDate]]) => {
+        // calculate the distance between the date and the dates of the commits
+        const beforeDateDistance = Math.abs(new Date(beforeDate).getTime() - date.getTime());
+        const afterDateDistance = Math.abs(new Date(afterDate).getTime() - date.getTime());
+        // return the commit sha of the commit closest to the date - if the distance is equal, return the date
+        // before if beforeWhenEqual is true, otherwise return the date after
+        if (beforeDateDistance === afterDateDistance) {
+            return beforeWhenEqual ? [beforeSha, beforeDate] : [afterSha, afterDate];
+        }
+        return beforeDateDistance < afterDateDistance ? [beforeSha, beforeDate] : [afterSha, afterDate];
+    }));
+}
+exports.commitClosestToDate$ = commitClosestToDate$;
+const splitShaDate = (commitInfoString) => {
+    // sha is the first 40 characters of the string
+    const sha = commitInfoString.slice(0, 40);
+    // date is the rest of the string
+    const date = commitInfoString.slice(40);
+    return [sha, date];
+};
 /**
  * Checks out a Git repository at a specific commit SHA and returns an Observable that emits when the operation is complete.
  * If no error handler is provided, the function uses a default error handler that checks if the error message contains
@@ -280,7 +357,9 @@ exports.allCommits$ = allCommits$;
  * @param repoPaths An array of paths to the repositories.
  * @param fromDate A fallback date to use if the creation date of a repository is not available.
  * @param creationDateCsvFilePath A path to a CSV file that maps repository URLs to creation dates. If the csv file is not provided or
- *          does not contain the url of a repository, the fallback date is used.
+ *          does not contain the url of a repository, the fallback date is used. The reason to use the creation data is to be able to
+ *          fetch the commits from the beginning of the repository. If a repos has been forked, using the creation date
+ *          allows to fetch the commits from the beginning of the fork and exclude the one of the original repository.
  * @returns An Observable that emits objects of the form { repoPath: string, _fromDate: Date }.
  *          Each emitted object represents a repository and the start date for fetching commits.
  */

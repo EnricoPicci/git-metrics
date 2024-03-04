@@ -10,6 +10,7 @@ const run_reports_on_merged_repos_1 = require("../apps/reports-on-repo/2-pipelin
 const run_branches_report_1 = require("../apps/reports-on-repo/2-pipelines/run-branches-report");
 const launch_fetch_repos_1 = require("../apps/repos-utils/fetch-repos/launch-fetch-repos");
 const launch_pull_repos_1 = require("../apps/repos-utils/pull-repos/launch-pull-repos");
+const cloc_diff_between_dates_1 = require("../apps/cloc-diff-between-dates/cloc-diff-between-dates");
 const command = process.argv[2];
 const commandsAvailable = {
     'read-repos-commits': launch_count_repos_commits_1.launchCountReposCommits,
@@ -21,6 +22,7 @@ const commandsAvailable = {
     'cloc-byfile-multi-repos': launch_cloc_byfile_multi_repos_1.launchClocByfileMultiRepos,
     'fetch-repos': launch_fetch_repos_1.launchFetchRepos,
     'pull-repos': launch_pull_repos_1.launchPullRepos,
+    'cloc-diff-between-dates': cloc_diff_between_dates_1.launchDiffBetweenDatesMultiRepos
 };
 const functionForCommand = commandsAvailable[command];
 if (functionForCommand) {

@@ -11,6 +11,7 @@ const java_files_1 = require("./java-files");
 const packages_1 = require("./packages");
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
+const fs_utils_1 = require("../tools/fs-utils/fs-utils");
 /**
  * Fetches all imported packages for all Java files from a directory and its subdirectories and returns an Observable
  * that emits an object containing each imported package name along with the repository path, directory name, Java file path,
@@ -89,6 +90,7 @@ function writeAllImportsForFilesWithRepoInfo$(dirForFiles, dirForPackages, outdi
         },
     }));
     const errorsFilePath = path_1.default.join(outdir, `${dirForFilesName}-all-imports-errors.csv`);
+    (0, fs_utils_1.createDirIfNotExisting)(outdir);
     const writeErrors$ = (0, delete_file_ignore_if_missing_1.deleteFile$)(errorsFilePath).pipe((0, rxjs_1.concatMap)(() => packageMembersDict$), (0, rxjs_1.map)(({ packageMemberErrors }) => packageMemberErrors), (0, rxjs_1.concatMap)(errors => (0, rxjs_1.from)(errors)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(errorsFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(errorsFilePath), (0, rxjs_1.tap)({

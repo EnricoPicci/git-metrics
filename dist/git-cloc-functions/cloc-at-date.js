@@ -13,6 +13,7 @@ const repo_1 = require("../git-functions/repo");
 const repo_errors_1 = require("../git-functions/repo.errors");
 const date_functions_1 = require("../tools/dates/date-functions");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
+const fs_utils_1 = require("../tools/fs-utils/fs-utils");
 /**
  * Calculates the lines of code (LOC) for each file in a set of repositories at a specific date and returns
  * an Observable that emits the LOC data.
@@ -109,6 +110,7 @@ function writeClocFromToDateByFileForRepos$(folderPath, from, to, options = {
     const outFile = `cloc-${folderName}-${(0, date_functions_1.toYYYYMMDD)(from)}_${(0, date_functions_1.toYYYYMMDD)(to)}`;
     const csvOutFilePath = path_1.default.join(outDir, outFile) + '.csv';
     const errorOutFilePath = path_1.default.join(outDir, outFile) + '.error.log';
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     let atLeastOneCsv = false;
     let atLeastOneError = false;
     return (0, delete_file_ignore_if_missing_1.deleteFile$)(csvOutFilePath).pipe((0, rxjs_1.concatMap)(() => (0, delete_file_ignore_if_missing_1.deleteFile$)(errorOutFilePath)), (0, rxjs_1.concatMap)(() => clocFromToDateByFileForRepos$(folderPath, from, to, options)), (0, rxjs_1.concatMap)((line) => {

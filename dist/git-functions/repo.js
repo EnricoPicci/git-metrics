@@ -162,7 +162,7 @@ function checkoutRepoAtDate$(repoPath, date, options) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const { stdErrorHandler } = options;
-    return (0, branches_1.defaultBranchName$)(repoPath).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDate$)(repoPath, date, branch)), (0, rxjs_1.concatMap)(commitSha => (0, commit_1.checkout$)(repoPath, commitSha, stdErrorHandler)), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+    return (0, branches_1.defaultBranchName$)(repoPath).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDateOrBefore$)(repoPath, date, branch)), (0, rxjs_1.concatMap)(([sha]) => (0, commit_1.checkout$)(repoPath, sha, stdErrorHandler)), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
         console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         const _error = new repo_errors_1.CheckoutError(err, repoPath);

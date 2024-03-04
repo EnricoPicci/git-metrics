@@ -12,7 +12,7 @@ describe('clocDiffByfile$', () => {
         const leastRecentCommit = `${thirdCommitSha}^1`;
         const folderPath = './';
         const languages = ['TypeScript'];
-        (0, cloc_diff_byfile_1.clocDiffByfile$)(mostRecentCommit, leastRecentCommit, folderPath, languages).pipe((0, rxjs_1.toArray)()).subscribe({
+        (0, cloc_diff_byfile_1.clocDiffRelByfile$)(mostRecentCommit, leastRecentCommit, folderPath, languages).pipe((0, rxjs_1.toArray)()).subscribe({
             next: (clocDiffs) => {
                 (0, chai_1.expect)(clocDiffs).to.be.an('Array');
                 (0, chai_1.expect)(clocDiffs.length).eq(10);
@@ -53,7 +53,7 @@ describe('clocDiffByfile$', () => {
         const mostRecentCommit = commit;
         const leastRecentCommit = `${commit}^1`;
         const folderPath = './';
-        (0, cloc_diff_byfile_1.clocDiffByfile$)(mostRecentCommit, leastRecentCommit, folderPath).pipe((0, rxjs_1.toArray)()).subscribe({
+        (0, cloc_diff_byfile_1.clocDiffRelByfile$)(mostRecentCommit, leastRecentCommit, folderPath).pipe((0, rxjs_1.toArray)()).subscribe({
             next: (clocDiffs) => {
                 const clocDiffsCopyRename = clocDiffs.filter(clocDiff => clocDiff.isCopy);
                 (0, chai_1.expect)(clocDiffsCopyRename.length).eq(1);
@@ -78,7 +78,7 @@ describe('clocDiffByfileWithCommitDiffs$', () => {
         const leastRecentCommit = `${thirdCommitSha}^1`;
         const folderPath = './';
         const languages = ['TypeScript'];
-        (0, cloc_diff_byfile_1.clocDiffByfileWithCommitData$)(mostRecentCommit, leastRecentCommit, folderPath, languages).pipe((0, rxjs_1.toArray)()).subscribe({
+        (0, cloc_diff_byfile_1.clocDiffRelByfileWithCommitData$)(mostRecentCommit, leastRecentCommit, folderPath, languages).pipe((0, rxjs_1.toArray)()).subscribe({
             next: (clocDiffs) => {
                 (0, chai_1.expect)(clocDiffs).to.be.an('Array');
                 (0, chai_1.expect)(clocDiffs.length).eq(10);

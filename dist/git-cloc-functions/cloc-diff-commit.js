@@ -93,7 +93,7 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
     // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
     // together with the cloc dictionary and the commit
     (0, rxjs_1.concatMap)(({ commit, clocFileDict }) => {
-        return (0, cloc_diff_byfile_1.clocDiffWithParentByfile$)(commit.sha, pathToRepo, languages, progress, options.notMatchDirectories).pipe((0, rxjs_1.map)((clocDiffByfile) => {
+        return (0, cloc_diff_byfile_1.clocDiffWithParentByfile$)(commit.sha, pathToRepo, languages, options.notMatchDirectories, progress).pipe((0, rxjs_1.map)((clocDiffByfile) => {
             return { clocDiffByfile, clocFileDict, commit };
         }));
     }), 
@@ -162,6 +162,7 @@ function writeClocDiffWithCommit$(pathToRepo, outDir = './', fromDate = new Date
     const pathToRepoName = path_1.default.basename(pathToRepo);
     const outFile = `${pathToRepoName}-cloc-diff-commit-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
+    (0, fs_utils_1.createDirIfNotExisting)(outDir);
     return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommit$(pathToRepo, fromDate, toDate, languages)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
