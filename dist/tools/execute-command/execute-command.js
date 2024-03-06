@@ -26,27 +26,31 @@ exports.executeCommand = executeCommand;
  * @returns An Observable that emits the standard output of the command.
  * @throws An error if the command execution fails or if the stdErrorHandler function returns an Error object.
  */
-function executeCommandObs(action, command, stdErrorHandler) {
+function executeCommandObs(action, command, options) {
     return new rxjs_1.Observable((subscriber) => {
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);
         console.log(`====>>>> ${command}`);
         (0, child_process_1.exec)(command, (error, stdout, stderr) => {
+            var _a, _b, _c, _d;
             if (error) {
+                (_a = options === null || options === void 0 ? void 0 : options.cmdErroredLog) === null || _a === void 0 ? void 0 : _a.push({ command, message: error.message });
                 subscriber.error(error);
                 return;
             }
             if (stderr.length > 0) {
-                stdErrorHandler = stdErrorHandler !== null && stdErrorHandler !== void 0 ? stdErrorHandler : ((stderr) => {
+                const stdErrorHandler = (_b = options === null || options === void 0 ? void 0 : options.stdErrorHandler) !== null && _b !== void 0 ? _b : ((stderr) => {
                     console.log(`!!!!!!!! Message on stadard error:\n${stderr}`);
                     return null;
                 });
                 const notifyError = stdErrorHandler(stderr);
                 if (notifyError) {
+                    (_c = options === null || options === void 0 ? void 0 : options.cmdErroredLog) === null || _c === void 0 ? void 0 : _c.push({ command, message: notifyError.message });
                     subscriber.error(notifyError);
                     return;
                 }
             }
             console.log(`====>>>>$$$ Command "${command}" executed successfully`);
+            (_d = options === null || options === void 0 ? void 0 : options.cmdExecutedLog) === null || _d === void 0 ? void 0 : _d.push({ command });
             subscriber.next(stdout);
             subscriber.complete();
         });

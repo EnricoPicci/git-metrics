@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { clocDiffBetweenDates$ } from "./cloc-diff-between-dates";
 import { toArray } from "rxjs";
 
-describe.only('clocDiffBetweenDates$', () => {
+describe('clocDiffBetweenDates$', () => {
     it(`should generate an Observable that emits a stream of ClocDiffByfileWithCommitDiffs objects which represent the differences
     between 2 commits of this repo at specific dates`, (done) => {
         const from = '2021-12-12'

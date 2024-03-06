@@ -53,7 +53,7 @@ function pullRepo$(repoPath) {
         console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-        const _error = new repo_errors_1.PullError(err, repoPath);
+        const _error = new repo_errors_1.PullError(err, repoPath, command);
         return (0, rxjs_1.of)(_error);
     }));
 }
@@ -108,7 +108,7 @@ function fetchRepo$(repoPath) {
         console.error(`!!!!!!!!!!!!!!! Error: while fetching repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-        const _error = new repo_errors_1.FetchError(err, repoPath);
+        const _error = new repo_errors_1.FetchError(err, repoPath, command);
         return (0, rxjs_1.of)(_error);
     }));
 }
@@ -159,12 +159,18 @@ exports.fetchAllRepos$ = fetchAllRepos$;
 function checkoutRepoAtDate$(repoPath, date, options) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
-    const { stdErrorHandler } = options;
-    return (0, branches_1.defaultBranchName$)(repoPath).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDateOrBefore$)(repoPath, date, branch)), (0, rxjs_1.concatMap)(([sha]) => (0, commit_1.checkout$)(repoPath, sha, stdErrorHandler)), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
-        console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" - error code: ${err.code}`);
-        console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
-        const _error = new repo_errors_1.CheckoutError(err, repoPath);
-        return (0, rxjs_1.of)(_error);
+    let _sha;
+    return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDateOrBefore$)(repoPath, date, branch, options)), (0, rxjs_1.concatMap)(([sha]) => {
+        _sha = sha;
+        return (0, commit_1.checkout$)(repoPath, sha, options);
+    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+        if (err instanceof repo_errors_1.GitError) {
+            console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+            console.error(err.message);
+            const _error = new repo_errors_1.CheckoutError(err.message, repoPath, err.command, _sha);
+            return (0, rxjs_1.of)(_error);
+        }
+        throw err;
     }));
 }
 exports.checkoutRepoAtDate$ = checkoutRepoAtDate$;
@@ -179,31 +185,26 @@ exports.checkoutRepoAtDate$ = checkoutRepoAtDate$;
  * @throws A CheckoutError if an error occurs during the checkout process.
  */
 function checkoutAllReposAtDate$(folderPath, date, options) {
+    const { concurrency, excludeRepoPaths, } = options;
     options.concurrency = options.concurrency || 1;
-    const { concurrency, excludeRepoPaths } = options;
+    const checkedOutRepos = [];
+    const erroredRepos = [];
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
-    console.log(`Repos to be checkedout: ${repoPaths.length}`);
-    let counter = 0;
-    const reposErroring = [];
-    repoPaths.forEach((repoPath) => {
-        console.log(`Repo to be checked out: ${repoPath}`);
-    });
+    console.log(`Number of repos to be checkedout: ${repoPaths.length}`);
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
         return checkoutRepoAtDate$(repoPath, date, options);
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
             if (val instanceof repo_errors_1.CheckoutError) {
-                reposErroring.push(val.repoPath);
+                erroredRepos.push({ repo: val.repoPath, sha: val.sha, command: val.command, message: val.message });
+                return;
             }
-            console.log(`Checked out ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
+            checkedOutRepos.push({ repo: val, sha: '', command: `checkout ${val}` });
         },
-        complete: () => {
-            console.log(`Checked out ${counter} repos of ${repoPaths.length}`);
-            console.log(`Errored repos: ${reposErroring.length}`);
-            reposErroring.forEach((repoPath) => {
-                console.log(`- ${repoPath} errored`);
-            });
-        }
+    }), (0, rxjs_1.last)(), (0, rxjs_1.map)(() => {
+        console.log(`Checked out ${repoPaths.length - erroredRepos.length} repos of ${repoPaths.length}`);
+        console.log(`Errored repos: ${erroredRepos.length}`);
+        return { checkedOutRepos, erroredRepos };
     }));
 }
 exports.checkoutAllReposAtDate$ = checkoutAllReposAtDate$;

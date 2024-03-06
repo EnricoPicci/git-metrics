@@ -1,13 +1,13 @@
 import path from 'path';
 
-import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignoreElements, defaultIfEmpty, of } from 'rxjs';
+import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignoreElements, defaultIfEmpty, of, last, } from 'rxjs';
 
-import { executeCommandObs } from '../tools/execute-command/execute-command';
+import { CmdErrored, CmdExecuted, ExecuteCommandObsOptions, executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
 import { checkout$, commitAtDateOrBefore$, readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
-import { CheckoutError, FetchError, PullError } from './repo.errors';
+import { CheckoutError, FetchError, GitError, PullError } from './repo.errors';
 import { defaultBranchName$ } from './branches';
 
 //********************************************************************************************************************** */
@@ -64,7 +64,7 @@ export function pullRepo$(repoPath: string) {
             console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
             console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
             console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-            const _error = new PullError(err, repoPath);
+            const _error = new PullError(err, repoPath, command);
             return of(_error);
         }),
     )
@@ -129,7 +129,7 @@ export function fetchRepo$(repoPath: string) {
             console.error(`!!!!!!!!!!!!!!! Error: while fetching repo "${repoName}" - error code: ${err.code}`);
             console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
             console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-            const _error = new FetchError(err, repoPath);
+            const _error = new FetchError(err, repoPath, command);
             return of(_error);
         }),
     );
@@ -186,27 +186,29 @@ export function fetchAllRepos$(folderPath: string, concurrency = 1, excludeRepoP
 export function checkoutRepoAtDate$(
     repoPath: string,
     date: Date,
-    options: CheckoutRepoOptions
+    options: ExecuteCommandObsOptions
 ) {
     if (!repoPath) throw new Error(`Path is mandatory`);
 
-    const { stdErrorHandler } = options;
-
-    return defaultBranchName$(repoPath).pipe(
-        concatMap(branch => commitAtDateOrBefore$(repoPath, date, branch)),
-        concatMap(([sha]) => checkout$(repoPath, sha, stdErrorHandler)),
+    let _sha: string
+    return defaultBranchName$(repoPath, options).pipe(
+        concatMap(branch => commitAtDateOrBefore$(repoPath, date, branch, options)),
+        concatMap(([sha]) => {
+            _sha = sha;
+            return checkout$(repoPath, sha, options)
+        }),
         ignoreElements(),
         defaultIfEmpty(repoPath),
         catchError((err) => {
-            console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" - error code: ${err.code}`);
-            console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
-            const _error = new CheckoutError(err, repoPath);
-            return of(_error);
+            if (err instanceof GitError) {
+                console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+                console.error(err.message)
+                const _error = new CheckoutError(err.message, repoPath, err.command, _sha);
+                return of(_error);
+            }
+            throw err;
         }),
     );
-}
-export type CheckoutRepoOptions = {
-    stdErrorHandler?: (stdError: string) => Error | null
 }
 
 /**
@@ -220,17 +222,16 @@ export type CheckoutRepoOptions = {
  * @throws A CheckoutError if an error occurs during the checkout process.
  */
 export function checkoutAllReposAtDate$(folderPath: string, date: Date, options: CheckoutAllReposAtDateOptions) {
+    const { concurrency, excludeRepoPaths, } = options;
     options.concurrency = options.concurrency || 1;
-    const { concurrency, excludeRepoPaths } = options;
+    type CheckedOutRepo = { repo: string, sha: string } & CmdExecuted;
+    type ErroredRepo = { repo: string, sha: string } & CmdErrored;
+    const checkedOutRepos: CheckedOutRepo[] = [];
+    const erroredRepos: ErroredRepo[] = [];
+
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
     console.log(`Number of repos to be checkedout: ${repoPaths.length}`);
 
-    let counter = 0;
-    const reposErroring: string[] = [];
-
-    repoPaths.forEach((repoPath) => {
-        console.log(`Repo to be checked out: ${repoPath}`);
-    });
     return from(repoPaths).pipe(
         mergeMap((repoPath) => {
             return checkoutRepoAtDate$(repoPath, date, options);
@@ -238,26 +239,25 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, options:
         tap({
             next: (val) => {
                 if (val instanceof CheckoutError) {
-                    reposErroring.push(val.repoPath);
+                    erroredRepos.push({ repo: val.repoPath, sha: val.sha, command: val.command, message: val.message });
+                    return
                 }
-                console.log(`Checked out ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
+                checkedOutRepos.push({ repo: val, sha: '', command: `checkout ${val}` });
             },
-            complete: () => {
-                console.log(`Checked out ${counter} repos of ${repoPaths.length}`);
-                console.log(`Errored repos: ${reposErroring.length}`);
-                reposErroring.forEach((repoPath) => {
-                    console.log(`- ${repoPath} errored`);
-                });
-            }
-        })
+        }),
+        last(),
+        map(() => {
+            console.log(`Checked out ${repoPaths.length - erroredRepos.length} repos of ${repoPaths.length}`);
+            console.log(`Errored repos: ${erroredRepos.length}`);
+            return { checkedOutRepos, erroredRepos }
+        }),
     );
 }
 export type CheckoutAllReposAtDateOptions = {
     concurrency?: number,
     excludeRepoPaths?: string[],
-    stdErrorHandler?: (stdError: string) => Error | null
-    branch: string
-}
+    outDir?: string,
+} & ExecuteCommandObsOptions
 
 /**
  * Returns an Observable that notifies the list of RepoCompact objects representing all the repos in a given folder.

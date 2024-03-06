@@ -25,32 +25,42 @@ export function executeCommand(action: string, command: string) {
  * @returns An Observable that emits the standard output of the command.
  * @throws An error if the command execution fails or if the stdErrorHandler function returns an Error object.
  */
-export function executeCommandObs(action: string, command: string, stdErrorHandler?: (stderr: string) => Error | null) {
+export function executeCommandObs(action: string, command: string, options?: ExecuteCommandObsOptions) {
     return new Observable((subscriber: Subscriber<string>) => {
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);
         console.log(`====>>>> ${command}`);
         exec(command, (error, stdout, stderr) => {
             if (error) {
+                options?.cmdErroredLog?.push({ command, message: error.message });
                 subscriber.error(error);
                 return
             }
             if (stderr.length > 0) {
-                stdErrorHandler = stdErrorHandler ?? ((stderr) => {
+                const stdErrorHandler = options?.stdErrorHandler ?? ((stderr) => {
                     console.log(`!!!!!!!! Message on stadard error:\n${stderr}`)
                     return null
                 });
                 const notifyError = stdErrorHandler(stderr);
                 if (notifyError) {
+                    options?.cmdErroredLog?.push({ command, message: notifyError.message });
                     subscriber.error(notifyError);
                     return
                 }
             }
             console.log(`====>>>>$$$ Command "${command}" executed successfully`);
+            options?.cmdExecutedLog?.push({ command });
             subscriber.next(stdout);
             subscriber.complete();
         });
     });
 }
+export type ExecuteCommandObsOptions = {
+    stdErrorHandler?: (stderr: string) => Error | null;
+    cmdExecutedLog?: CmdExecuted[]
+    cmdErroredLog?: CmdErrored[]
+}
+export type CmdExecuted = { command: string }
+export type CmdErrored = { command: string, message: string }
 
 export function executeCommandNewProcessObs(
     action: string,

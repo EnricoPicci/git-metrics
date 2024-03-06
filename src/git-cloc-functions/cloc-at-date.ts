@@ -142,7 +142,7 @@ export function writeClocFromToDateByFileForRepos$(
         concatMap((line) => {
             if (line instanceof CheckoutError) {
                 atLeastOneError = true;
-                const erroringRepo = `Error checking out ${line.repoPath}\n` + `${line.error.message}\n`;
+                const erroringRepo = `Error checking out ${line.repoPath}\n` + `${line.message}\n`;
                 return appendFileObs(errorOutFilePath, erroringRepo);
             }
             atLeastOneCsv = true;

@@ -12,6 +12,7 @@ import { launchBranchesReport } from '../apps/reports-on-repo/2-pipelines/run-br
 import { launchFetchRepos } from '../apps/repos-utils/fetch-repos/launch-fetch-repos';
 import { launchPullRepos } from '../apps/repos-utils/pull-repos/launch-pull-repos';
 import { launchDiffBetweenDatesMultiRepos } from '../apps/cloc-diff-between-dates/cloc-diff-between-dates';
+import { checkoutAllReposAtDate } from '../apps/checkout-repos-at-date/checkout-repos-at-date';
 
 const command = process.argv[2];
 
@@ -25,7 +26,8 @@ const commandsAvailable: { [command: string]: () => void } = {
     'cloc-byfile-multi-repos': launchClocByfileMultiRepos,
     'fetch-repos': launchFetchRepos,
     'pull-repos': launchPullRepos,
-    'cloc-diff-between-dates': launchDiffBetweenDatesMultiRepos
+    'cloc-diff-between-dates': launchDiffBetweenDatesMultiRepos,
+    'checkout-at-date': checkoutAllReposAtDate
 }
 
 const functionForCommand = commandsAvailable[command];

@@ -8,6 +8,7 @@ const path_1 = __importDefault(require("path"));
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const file_name_utils_1 = require("./utils/file-name-utils");
 const rxjs_1 = require("rxjs");
+const repo_errors_1 = require("./repo.errors");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -31,27 +32,34 @@ exports.readBranchesGraph = readBranchesGraph;
  * @returns An Observable that emits the default branch name for the repository.
  * @throws An error if the output of the git command does not match the expected format.
  */
-function defaultBranchName$(repoPath) {
+function defaultBranchName$(repoPath, options) {
     // build the command to fetch the default branch name
     // see https://stackoverflow.com/a/67170894
-    const gitCommand = `cd ${repoPath} && git pull && git branch --remotes --list '*/HEAD'`;
-    return (0, execute_command_1.executeCommandObs)(`fetch default branch name for ${repoPath}`, gitCommand).pipe((0, rxjs_1.map)((output) => {
-        // the output is something like:
-        // fetching origin
-        // origin/HEAD -> origin/master
-        // hence we split the second line with / and take the third element
-        const lines = output.split('\n');
-        if (lines.length < 2) {
-            throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
-                we expected to have at least 2 lines with the first one being something like "fetching origin" but we got "${output}"
-                Command erroring: "${gitCommand}"`);
+    const gitCommand = `cd ${repoPath} && git branch --remotes --list '*/HEAD'`;
+    return (0, execute_command_1.executeCommandObs)(`fetch default branch name for ${repoPath}`, gitCommand, options).pipe((0, rxjs_1.map)((output) => {
+        // if the output is the empty string, then it means that the repository is empty
+        if (output === '') {
+            const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
+                the output of the command "${gitCommand}" was empty, which means that the repository is empty`;
+            throw new repo_errors_1.GitError(errMsg, repoPath, gitCommand);
         }
-        // we take the second line which we expect to be something like "origin/HEAD -> origin/master"
-        const parts = output.split('\n')[1].split('/');
+        // the output is something like:
+        // "origin/HEAD -> origin/master\n"
+        // hence we split by \n and take the first line
+        const lines = output.split('\n');
+        if (lines.length != 2) {
+            const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
+                we expected to have 2 lines but we got "${output}"
+                Command erroring: "${gitCommand}"`;
+            throw new repo_errors_1.GitError(errMsg, repoPath, gitCommand);
+        }
+        // we take the first line which we expect to be something like "origin/HEAD -> origin/master"
+        const parts = lines[0].split('/');
         if (parts.length !== 3) {
-            throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
-                we expected a string with format "origin/HEAD -> origin/master" but we got "${output}"
-                Command erroring: "${gitCommand}"`);
+            const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
+                we expected to have 3 parts but we got "${output}"
+                Command erroring: "${gitCommand}"`;
+            throw new repo_errors_1.GitError(errMsg, repoPath, gitCommand);
         }
         const branchName = parts[2];
         return branchName;

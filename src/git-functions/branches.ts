@@ -1,10 +1,11 @@
 import path from "path";
 
-import { executeCommand, executeCommandObs } from "../tools/execute-command/execute-command";
+import { ExecuteCommandObsOptions, executeCommand, executeCommandObs } from "../tools/execute-command/execute-command";
 
 import { GitCommandParams } from "./git-params";
 import { buildOutfileName } from "./utils/file-name-utils";
 import { map } from "rxjs";
+import { GitError } from "./repo.errors";
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -32,28 +33,35 @@ export function readBranchesGraph(config: GitCommandParams) {
  * @returns An Observable that emits the default branch name for the repository.
  * @throws An error if the output of the git command does not match the expected format.
  */
-export function defaultBranchName$(repoPath: string) {
+export function defaultBranchName$(repoPath: string, options?: ExecuteCommandObsOptions) {
     // build the command to fetch the default branch name
     // see https://stackoverflow.com/a/67170894
-    const gitCommand = `cd ${repoPath} && git pull && git branch --remotes --list '*/HEAD'`;
-    return executeCommandObs(`fetch default branch name for ${repoPath}`, gitCommand).pipe(
+    const gitCommand = `cd ${repoPath} && git branch --remotes --list '*/HEAD'`;
+    return executeCommandObs(`fetch default branch name for ${repoPath}`, gitCommand, options).pipe(
         map((output) => {
-            // the output is something like:
-            // fetching origin
-            // origin/HEAD -> origin/master
-            // hence we split the second line with / and take the third element
-            const lines = output.split('\n');
-            if (lines.length < 2) {
-                throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
-                we expected to have at least 2 lines with the first one being something like "fetching origin" but we got "${output}"
-                Command erroring: "${gitCommand}"`);
+            // if the output is the empty string, then it means that the repository is empty
+            if (output === '') {
+                const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
+                the output of the command "${gitCommand}" was empty, which means that the repository is empty`
+                throw new GitError(errMsg, repoPath, gitCommand);
             }
-            // we take the second line which we expect to be something like "origin/HEAD -> origin/master"
-            const parts = output.split('\n')[1].split('/');
+            // the output is something like:
+            // "origin/HEAD -> origin/master\n"
+            // hence we split by \n and take the first line
+            const lines = output.split('\n');
+            if (lines.length != 2) {
+                const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
+                we expected to have 2 lines but we got "${output}"
+                Command erroring: "${gitCommand}"`;
+                throw new GitError(errMsg, repoPath, gitCommand);
+            }
+            // we take the first line which we expect to be something like "origin/HEAD -> origin/master"
+            const parts = lines[0].split('/');
             if (parts.length !== 3) {
-                throw new Error(`Error: while fetching default branch name for repo "${repoPath}"
-                we expected a string with format "origin/HEAD -> origin/master" but we got "${output}"
-                Command erroring: "${gitCommand}"`);
+                const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
+                we expected to have 3 parts but we got "${output}"
+                Command erroring: "${gitCommand}"`;
+                throw new GitError(errMsg, repoPath, gitCommand);
             }
             const branchName = parts[2];
             return branchName;

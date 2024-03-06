@@ -19,6 +19,7 @@ const errors_1 = require("./errors");
 const errors_2 = require("./errors");
 const repo_creation_date_1 = require("./repo-creation-date");
 const repo_1 = require("./repo");
+const repo_errors_1 = require("./repo.errors");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -213,18 +214,19 @@ exports.newEmptyCommitCompact = newEmptyCommitCompact;
  * @returns An Observable that emits the commit SHA for the repository at the specified date.
  * @throws An error if the commit SHA could not be fetched.
  */
-function commitAtDateOrBefore$(repoPath, date, branchName) {
+function commitAtDateOrBefore$(repoPath, date, branchName, options) {
     // convert date to YYYY-MM-DD format
     const dateString = (0, date_functions_1.toYYYYMMDD)(date);
     const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}" --format=%H%ci ${branchName}`;
-    return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitInfoString => {
+    return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe((0, rxjs_1.map)(commitInfoString => {
         return commitInfoString.trim();
     }), (0, rxjs_1.tap)((commitInfo) => {
         if (!commitInfo) {
-            throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
-                    we expected to have a commit sha but we got an empty string.
-                    This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
-                    Command erroring: "${gitCommand}"`);
+            const errMsg = `Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
+                we expected to have a commit sha but we got an empty string.
+                This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
+                Command erroring: "${gitCommand}"`;
+            throw new repo_errors_1.GitError(errMsg, repoPath, gitCommand);
         }
     }), (0, rxjs_1.map)(commitInfo => {
         // commitsInfo is a string containing the concatenation of all the commits in the format sha, date joined by a newline
@@ -318,20 +320,21 @@ const splitShaDate = (commitInfoString) => {
  * @returns An Observable that emits when the operation is complete.
  * @throws An error if the checkout operation fails.
  */
-function checkout$(repoPath, commitSha, stdErrorHandler) {
+function checkout$(repoPath, commitSha, executeCommandOptions) {
     const defaultStdErrorHandler = (stderr) => {
         console.log(`Message on stadard error:\n${stderr}`);
         let retVal = null;
         if (stderr.includes('fatal: ambiguous argument')) {
-            retVal = new Error(stderr);
-            retVal.name = 'CheckoutError';
-            retVal.message = stderr;
+            const message = `Error: while checking out commit ${commitSha} in repo "${repoPath}"`;
+            throw new repo_errors_1.GitError(message, repoPath, gitCommand);
         }
         return retVal;
     };
     const repoName = path_1.default.basename(repoPath);
     const gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
-    return (0, execute_command_1.executeCommandObs)(`checkout ${repoName} at commit ${commitSha}`, gitCommand, stdErrorHandler || defaultStdErrorHandler).pipe((0, rxjs_1.tap)(() => `${repoName} checked out`));
+    executeCommandOptions = executeCommandOptions || {};
+    executeCommandOptions.stdErrorHandler = executeCommandOptions.stdErrorHandler || defaultStdErrorHandler;
+    return (0, execute_command_1.executeCommandObs)(`checkout ${repoName} at commit ${commitSha}`, gitCommand, executeCommandOptions);
 }
 exports.checkout$ = checkout$;
 /**

@@ -7,7 +7,7 @@ import {
 
 import { appendFileObs } from 'observable-fs';
 
-import { executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
+import { ExecuteCommandObsOptions, executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 
 import { CommitCompact, CommitCompactWithUrlAndParentDate, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
@@ -21,6 +21,7 @@ import { isUnknownRevisionError } from './errors';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { repoCreationDateDict$ } from './repo-creation-date';
 import { getRemoteOriginUrl$ } from './repo';
+import { GitError } from './repo.errors';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -275,20 +276,21 @@ export function newEmptyCommitCompact() {
  * @returns An Observable that emits the commit SHA for the repository at the specified date.
  * @throws An error if the commit SHA could not be fetched.
  */
-export function commitAtDateOrBefore$(repoPath: string, date: Date, branchName: string) {
+export function commitAtDateOrBefore$(repoPath: string, date: Date, branchName: string, options?: ExecuteCommandObsOptions) {
     // convert date to YYYY-MM-DD format
     const dateString = toYYYYMMDD(date);
     const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}" --format=%H%ci ${branchName}`
-    return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe(
+    return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe(
         map(commitInfoString => {
             return commitInfoString.trim()
         }),
         tap((commitInfo) => {
             if (!commitInfo) {
-                throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
-                    we expected to have a commit sha but we got an empty string.
-                    This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
-                    Command erroring: "${gitCommand}"`);
+                const errMsg = `Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
+                we expected to have a commit sha but we got an empty string.
+                This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
+                Command erroring: "${gitCommand}"`;
+                throw new GitError(errMsg, repoPath, gitCommand);
             }
         }),
         map(commitInfo => {
@@ -396,26 +398,26 @@ const splitShaDate = (commitInfoString: string): [sha: string, date: string] => 
  * @returns An Observable that emits when the operation is complete.
  * @throws An error if the checkout operation fails.
  */
-export function checkout$(repoPath: string, commitSha: string, stdErrorHandler?: ((stdError: string) => Error | null)) {
+export function checkout$(repoPath: string, commitSha: string, executeCommandOptions?: ExecuteCommandObsOptions) {
     const defaultStdErrorHandler = (stderr: string) => {
         console.log(`Message on stadard error:\n${stderr}`)
         let retVal: Error | null = null
         if (stderr.includes('fatal: ambiguous argument')) {
-            retVal = new Error(stderr)
-            retVal.name = 'CheckoutError'
-            retVal.message = stderr
+            const message = `Error: while checking out commit ${commitSha} in repo "${repoPath}"`
+            throw new GitError(message, repoPath, gitCommand);
         }
         return retVal
     }
 
     const repoName = path.basename(repoPath);
     const gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
+    executeCommandOptions = executeCommandOptions || {} as ExecuteCommandObsOptions
+    executeCommandOptions.stdErrorHandler = executeCommandOptions.stdErrorHandler || defaultStdErrorHandler
     return executeCommandObs(
         `checkout ${repoName} at commit ${commitSha}`,
         gitCommand,
-        stdErrorHandler || defaultStdErrorHandler).pipe(
-            tap(() => `${repoName} checked out`),
-        )
+        executeCommandOptions
+    )
 }
 
 /**

@@ -116,7 +116,7 @@ function writeClocFromToDateByFileForRepos$(folderPath, from, to, options = {
     return (0, delete_file_ignore_if_missing_1.deleteFile$)(csvOutFilePath).pipe((0, rxjs_1.concatMap)(() => (0, delete_file_ignore_if_missing_1.deleteFile$)(errorOutFilePath)), (0, rxjs_1.concatMap)(() => clocFromToDateByFileForRepos$(folderPath, from, to, options)), (0, rxjs_1.concatMap)((line) => {
         if (line instanceof repo_errors_1.CheckoutError) {
             atLeastOneError = true;
-            const erroringRepo = `Error checking out ${line.repoPath}\n` + `${line.error.message}\n`;
+            const erroringRepo = `Error checking out ${line.repoPath}\n` + `${line.message}\n`;
             return (0, observable_fs_1.appendFileObs)(errorOutFilePath, erroringRepo);
         }
         atLeastOneCsv = true;
