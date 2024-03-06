@@ -21,7 +21,7 @@ import { isUnknownRevisionError } from './errors';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { repoCreationDateDict$ } from './repo-creation-date';
 import { getRemoteOriginUrl$ } from './repo';
-import { GitError } from './repo.errors';
+import { GitError } from './git-errors';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */

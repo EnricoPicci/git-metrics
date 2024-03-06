@@ -5,7 +5,7 @@ import { ExecuteCommandObsOptions, executeCommand, executeCommandObs } from "../
 import { GitCommandParams } from "./git-params";
 import { buildOutfileName } from "./utils/file-name-utils";
 import { map } from "rxjs";
-import { GitError } from "./repo.errors";
+import { GitError } from "./git-errors";
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */

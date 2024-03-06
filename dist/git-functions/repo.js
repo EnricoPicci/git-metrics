@@ -9,7 +9,7 @@ const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const commit_1 = require("./commit");
 const repo_path_1 = require("./repo-path");
-const repo_errors_1 = require("./repo.errors");
+const git_errors_1 = require("./git-errors");
 const branches_1 = require("./branches");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -53,7 +53,7 @@ function pullRepo$(repoPath) {
         console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-        const _error = new repo_errors_1.PullError(err, repoPath, command);
+        const _error = new git_errors_1.PullError(err, repoPath, command);
         return (0, rxjs_1.of)(_error);
     }));
 }
@@ -77,7 +77,7 @@ function pullAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
         return pullRepo$(repoPath);
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
-            if (val instanceof repo_errors_1.PullError) {
+            if (val instanceof git_errors_1.PullError) {
                 reposErroring.push(val.repoPath);
             }
             console.log(`Pulled ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
@@ -108,7 +108,7 @@ function fetchRepo$(repoPath) {
         console.error(`!!!!!!!!!!!!!!! Error: while fetching repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-        const _error = new repo_errors_1.FetchError(err, repoPath, command);
+        const _error = new git_errors_1.FetchError(err, repoPath, command);
         return (0, rxjs_1.of)(_error);
     }));
 }
@@ -132,7 +132,7 @@ function fetchAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
         return fetchRepo$(repoPath);
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
-            if (val instanceof repo_errors_1.FetchError) {
+            if (val instanceof git_errors_1.FetchError) {
                 reposErroring.push(val.repoPath);
             }
             console.log(`Fetched ${++counter} repos of ${repoPaths.length} (erroring: ${reposErroring.length})`);
@@ -164,10 +164,10 @@ function checkoutRepoAtDate$(repoPath, date, options) {
         _sha = sha;
         return (0, commit_1.checkout$)(repoPath, sha, options);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
-        if (err instanceof repo_errors_1.GitError) {
+        if (err instanceof git_errors_1.GitError) {
             console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
             console.error(err.message);
-            const _error = new repo_errors_1.CheckoutError(err.message, repoPath, err.command, _sha);
+            const _error = new git_errors_1.CheckoutError(err.message, repoPath, err.command, _sha);
             return (0, rxjs_1.of)(_error);
         }
         throw err;
@@ -195,7 +195,7 @@ function checkoutAllReposAtDate$(folderPath, date, options) {
         return checkoutRepoAtDate$(repoPath, date, options);
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
-            if (val instanceof repo_errors_1.CheckoutError) {
+            if (val instanceof git_errors_1.CheckoutError) {
                 erroredRepos.push({ repo: val.repoPath, sha: val.sha, command: val.command, message: val.message });
                 return;
             }

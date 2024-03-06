@@ -19,7 +19,7 @@ const errors_1 = require("./errors");
 const errors_2 = require("./errors");
 const repo_creation_date_1 = require("./repo-creation-date");
 const repo_1 = require("./repo");
-const repo_errors_1 = require("./repo.errors");
+const git_errors_1 = require("./git-errors");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -226,7 +226,7 @@ function commitAtDateOrBefore$(repoPath, date, branchName, options) {
                 we expected to have a commit sha but we got an empty string.
                 This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
                 Command erroring: "${gitCommand}"`;
-            throw new repo_errors_1.GitError(errMsg, repoPath, gitCommand);
+            throw new git_errors_1.GitError(errMsg, repoPath, gitCommand);
         }
     }), (0, rxjs_1.map)(commitInfo => {
         // commitsInfo is a string containing the concatenation of all the commits in the format sha, date joined by a newline
@@ -326,7 +326,7 @@ function checkout$(repoPath, commitSha, executeCommandOptions) {
         let retVal = null;
         if (stderr.includes('fatal: ambiguous argument')) {
             const message = `Error: while checking out commit ${commitSha} in repo "${repoPath}"`;
-            throw new repo_errors_1.GitError(message, repoPath, gitCommand);
+            throw new git_errors_1.GitError(message, repoPath, gitCommand);
         }
         return retVal;
     };

@@ -10,7 +10,7 @@ const observable_fs_1 = require("observable-fs");
 const cloc_1 = require("../cloc-functions/cloc");
 const repo_path_1 = require("../git-functions/repo-path");
 const repo_1 = require("../git-functions/repo");
-const repo_errors_1 = require("../git-functions/repo.errors");
+const git_errors_1 = require("../git-functions/git-errors");
 const date_functions_1 = require("../tools/dates/date-functions");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 const fs_utils_1 = require("../tools/fs-utils/fs-utils");
@@ -37,7 +37,7 @@ function clocAtDateByFileForRepos$(folderPath, date, options) {
         // which is correct since the cloc calculation is the slowest part of the process, but could be more diffucult to 
         // to follow looking simply at the logs.
         return (0, repo_1.checkoutRepoAtDate$)(repoPath, date, options).pipe((0, rxjs_1.concatMap)((repoPathOrError) => {
-            if (repoPathOrError instanceof repo_errors_1.CheckoutError) {
+            if (repoPathOrError instanceof git_errors_1.CheckoutError) {
                 console.warn('checkoutRepoAtDate$ error', repoPathOrError);
                 return (0, rxjs_1.of)(repoPathOrError);
             }
@@ -114,7 +114,7 @@ function writeClocFromToDateByFileForRepos$(folderPath, from, to, options = {
     let atLeastOneCsv = false;
     let atLeastOneError = false;
     return (0, delete_file_ignore_if_missing_1.deleteFile$)(csvOutFilePath).pipe((0, rxjs_1.concatMap)(() => (0, delete_file_ignore_if_missing_1.deleteFile$)(errorOutFilePath)), (0, rxjs_1.concatMap)(() => clocFromToDateByFileForRepos$(folderPath, from, to, options)), (0, rxjs_1.concatMap)((line) => {
-        if (line instanceof repo_errors_1.CheckoutError) {
+        if (line instanceof git_errors_1.CheckoutError) {
             atLeastOneError = true;
             const erroringRepo = `Error checking out ${line.repoPath}\n` + `${line.message}\n`;
             return (0, observable_fs_1.appendFileObs)(errorOutFilePath, erroringRepo);

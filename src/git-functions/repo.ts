@@ -7,7 +7,7 @@ import { CmdErrored, CmdExecuted, ExecuteCommandObsOptions, executeCommandObs } 
 import { RepoCompact } from './repo.model';
 import { checkout$, commitAtDateOrBefore$, readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
-import { CheckoutError, FetchError, GitError, PullError } from './repo.errors';
+import { CheckoutError, FetchError, GitError, PullError } from './git-errors';
 import { defaultBranchName$ } from './branches';
 
 //********************************************************************************************************************** */

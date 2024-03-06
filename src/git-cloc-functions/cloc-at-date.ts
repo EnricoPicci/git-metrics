@@ -7,7 +7,7 @@ import { clocByfile$, clocByfileHeader } from "../cloc-functions/cloc";
 import { ClocParams } from "../cloc-functions/cloc-params";
 import { gitRepoPaths } from "../git-functions/repo-path";
 import { checkoutRepoAtDate$ } from "../git-functions/repo";
-import { CheckoutError } from "../git-functions/repo.errors";
+import { CheckoutError } from "../git-functions/git-errors";
 import { toYYYYMMDD } from "../tools/dates/date-functions";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
 import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";

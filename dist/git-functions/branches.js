@@ -8,7 +8,7 @@ const path_1 = __importDefault(require("path"));
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const file_name_utils_1 = require("./utils/file-name-utils");
 const rxjs_1 = require("rxjs");
-const repo_errors_1 = require("./repo.errors");
+const git_errors_1 = require("./git-errors");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -41,7 +41,7 @@ function defaultBranchName$(repoPath, options) {
         if (output === '') {
             const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
                 the output of the command "${gitCommand}" was empty, which means that the repository is empty`;
-            throw new repo_errors_1.GitError(errMsg, repoPath, gitCommand);
+            throw new git_errors_1.GitError(errMsg, repoPath, gitCommand);
         }
         // the output is something like:
         // "origin/HEAD -> origin/master\n"
@@ -51,7 +51,7 @@ function defaultBranchName$(repoPath, options) {
             const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
                 we expected to have 2 lines but we got "${output}"
                 Command erroring: "${gitCommand}"`;
-            throw new repo_errors_1.GitError(errMsg, repoPath, gitCommand);
+            throw new git_errors_1.GitError(errMsg, repoPath, gitCommand);
         }
         // we take the first line which we expect to be something like "origin/HEAD -> origin/master"
         const parts = lines[0].split('/');
@@ -59,7 +59,7 @@ function defaultBranchName$(repoPath, options) {
             const errMsg = `Error: while fetching default branch name for repo "${repoPath}"
                 we expected to have 3 parts but we got "${output}"
                 Command erroring: "${gitCommand}"`;
-            throw new repo_errors_1.GitError(errMsg, repoPath, gitCommand);
+            throw new git_errors_1.GitError(errMsg, repoPath, gitCommand);
         }
         const branchName = parts[2];
         return branchName;

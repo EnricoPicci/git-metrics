@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const cloc_diff_between_dates_1 = require("./cloc-diff-between-dates");
 const rxjs_1 = require("rxjs");
-describe.only('clocDiffBetweenDates$', () => {
+describe('clocDiffBetweenDates$', () => {
     it(`should generate an Observable that emits a stream of ClocDiffByfileWithCommitDiffs objects which represent the differences
     between 2 commits of this repo at specific dates`, (done) => {
         const from = '2021-12-12';
