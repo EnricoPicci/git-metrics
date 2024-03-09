@@ -1,5 +1,5 @@
 import { tap, toArray } from "rxjs";
-import { clocDiffWithCommit$, writeClocDiffWithCommit$ } from "./cloc-diff-commit";
+import { clocDiffWithAllCommits$, writeClocDiffWithCommit$ } from "./cloc-diff-commit";
 import { expect } from "chai";
 
 describe(`clocDiffWithCommit$`, () => {
@@ -8,7 +8,7 @@ describe(`clocDiffWithCommit$`, () => {
         const fromDate = new Date('2023-10-11')
         const toDate = new Date('2023-10-12')
 
-        clocDiffWithCommit$(pathToRepo, fromDate, toDate)
+        clocDiffWithAllCommits$(pathToRepo, fromDate, toDate)
             .pipe(
                 toArray(),
                 tap({
@@ -79,7 +79,7 @@ describe(`clocDiffWithCommit$`, () => {
         const fromDate = new Date('2023-10-23')
         const toDate = new Date('2023-10-25')
 
-        clocDiffWithCommit$(pathToRepo, fromDate, toDate)
+        clocDiffWithAllCommits$(pathToRepo, fromDate, toDate)
             .pipe(
                 toArray(),
                 tap({

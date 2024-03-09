@@ -1,18 +1,17 @@
 import { Command } from "commander";
-import { writeClocDiffBetweenDatesForRepos$ } from "../../git-cloc-functions/cloc-diff-between-dates";
+import { WriteClocDiffBetweenDatesOptions, writeClocDiffBetweenDatesForRepos$ } from "../../git-cloc-functions/cloc-diff-between-dates";
 
 export function launchDiffBetweenDatesMultiRepos() {
     console.log('====>>>> Launching Diff Between Dates For Repos')
 
     const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths } = readParams();
+    const options: WriteClocDiffBetweenDatesOptions = { excludeRepoPaths, languages, creationDateCsvFilePath };
     writeClocDiffBetweenDatesForRepos$(
         folderPath,
         fromDate,
         toDate,
         outDir,
-        excludeRepoPaths,
-        languages,
-        creationDateCsvFilePath,
+        options,
     ).subscribe()
 }
 

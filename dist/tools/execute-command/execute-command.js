@@ -1,8 +1,14 @@
 "use strict";
 // https://gist.github.com/wosephjeber/212f0ca7fea740c3a8b03fc2283678d3
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.executeCommandInShellNewProcessObs = exports.executeCommandNewProcessToLinesObs = exports.executeCommandNewProcessObs = exports.executeCommandObs = exports.executeCommand = void 0;
+exports.executeCommandInShellNewProcessObs = exports.executeCommandNewProcessToLinesObs = exports.executeCommandNewProcessObs = exports.writeCmdLogs$ = exports.executeCommandObs = exports.executeCommand = void 0;
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const child_process_1 = require("child_process");
+const observable_fs_1 = require("observable-fs");
+const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function executeCommand(action, command) {
@@ -57,13 +63,39 @@ function executeCommandObs(action, command, options) {
     });
 }
 exports.executeCommandObs = executeCommandObs;
-function executeCommandNewProcessObs(action, command, args, options) {
+function writeCmdLogs$(options, outDir) {
+    const cmdExecutedLog = options.cmdExecutedLog;
+    const cmdErroredLog = options.cmdErroredLog;
+    // if the caller provided the cmdExecutedLog and cmdErroredLog arrays, we transform the
+    // entries in the arrays to csv strings and write them to files
+    let writeCmdExecutedLog$ = (0, rxjs_1.of)('');
+    if (cmdExecutedLog && cmdExecutedLog.length > 0) {
+        const cmdExecutedCsv = (0, csv_tools_1.toCsv)(cmdExecutedLog);
+        writeCmdExecutedLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, 'cmd-executed.log'), cmdExecutedCsv);
+    }
+    let writeCmdErroredLog$ = (0, rxjs_1.of)('');
+    if (cmdErroredLog && cmdErroredLog.length > 0) {
+        const cmdErroredCsv = (0, csv_tools_1.toCsv)(cmdErroredLog);
+        writeCmdErroredLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, 'cmd-errored.log'), cmdErroredCsv);
+    }
+    return (0, rxjs_1.forkJoin)([writeCmdExecutedLog$, writeCmdErroredLog$]).pipe((0, rxjs_1.map)((resp) => {
+        const [cmdExecutedFile, cmdErroredFile] = resp;
+        console.log(`====>>>> cmdExecutedLog written in file: ${cmdExecutedFile}`);
+        console.log(`====>>>> cmdErroredLog written in file: ${cmdErroredFile}`);
+        return resp;
+    }));
+}
+exports.writeCmdLogs$ = writeCmdLogs$;
+function executeCommandNewProcessObs(action, command, args, options, _options) {
     return new rxjs_1.Observable((subscriber) => {
         console.log(`====>>>> Action: ${action} -- Executing command in new process`);
         console.log(`====>>>> Command: ${command}`);
         console.log(`====>>>> Arguments: ${args.join(' ')}`);
         if (options) {
             console.log(`====>>>> Options: ${JSON.stringify(options)}`);
+        }
+        if (_options === null || _options === void 0 ? void 0 : _options.cmdExecutedLog) {
+            _options.cmdExecutedLog.push({ command: `${command} ${args.join(' ')}` });
         }
         const cmd = (0, child_process_1.spawn)(command, args.filter((a) => a.length > 0), options);
         cmd.stdout.on('data', (data) => {
@@ -73,6 +105,9 @@ function executeCommandNewProcessObs(action, command, args, options) {
             console.log(`msg on stderr for command ${command}`, data.toString());
         });
         cmd.on('error', (error) => {
+            if (_options === null || _options === void 0 ? void 0 : _options.cmdErroredLog) {
+                _options.cmdErroredLog.push({ command: `${command} ${args.join(' ')}`, message: error.message });
+            }
             subscriber.error(error);
         });
         cmd.on('close', (code) => {
@@ -83,8 +118,8 @@ function executeCommandNewProcessObs(action, command, args, options) {
 }
 exports.executeCommandNewProcessObs = executeCommandNewProcessObs;
 // executes a command in a separate process and returns an Observable which is the stream of lines output of the command execution
-function executeCommandNewProcessToLinesObs(action, command, args, options) {
-    return executeCommandNewProcessObs(action, command, args, options).pipe(bufferToLines());
+function executeCommandNewProcessToLinesObs(action, command, args, options, _options) {
+    return executeCommandNewProcessObs(action, command, args, options, _options).pipe(bufferToLines());
 }
 exports.executeCommandNewProcessToLinesObs = executeCommandNewProcessToLinesObs;
 // custom operator that converts a buffer to lines, i.e. splits on \n to emit each line

@@ -14,6 +14,7 @@ const git_errors_1 = require("../git-functions/git-errors");
 const date_functions_1 = require("../tools/dates/date-functions");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 const fs_utils_1 = require("../tools/fs-utils/fs-utils");
+const execute_command_1 = require("../tools/execute-command/execute-command");
 /**
  * Calculates the lines of code (LOC) for each file in a set of repositories at a specific date and returns
  * an Observable that emits the LOC data.
@@ -25,9 +26,10 @@ const fs_utils_1 = require("../tools/fs-utils/fs-utils");
  * @returns An Observable that emits the LOC data for each file in the repositories or an error.
  */
 function clocAtDateByFileForRepos$(folderPath, date, options) {
-    const { outDir, excludeRepoPaths, notMatch } = options;
+    const { excludeRepoPaths, notMatch } = options;
     const repos = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
-    return (0, rxjs_1.from)(repos).pipe((0, rxjs_1.concatMap)((repoPath) => {
+    return (0, rxjs_1.from)(repos).pipe((0, rxjs_1.concatMap)((repoPath, i) => {
+        console.log(`clocAtDateByFileForRepos$ processing repo ${i + 1} of ${repos.length}`);
         // piping the cloc calculation into the Observable returned by checkoutRepoAtDate$ makes sure that the 
         // cloc calculation is done on the repo just after the checkout is done
         // Otherwise, if we move the cloc calculation up one level, i.e. in the same pipe were the checkout is done,
@@ -44,8 +46,8 @@ function clocAtDateByFileForRepos$(folderPath, date, options) {
             const params = {
                 folderPath: repoPathOrError,
                 vcs: 'git',
-                outDir,
                 notMatch,
+                languages: options.languages,
             };
             return (0, cloc_1.clocByfile$)(params, 'clocByFileForRepos$ running on ' + repoPathOrError, false).pipe(
             // remove the first line which contains the csv header form all the streams representing
@@ -99,7 +101,6 @@ function writeClocFromToDateByFileForRepos$(folderPath, from, to, options = {
     outDir: './',
     excludeRepoPaths: [],
     notMatch: [],
-    branch: 'master'
 }) {
     const start = new Date();
     const { outDir } = options;
@@ -121,7 +122,7 @@ function writeClocFromToDateByFileForRepos$(folderPath, from, to, options = {
         }
         atLeastOneCsv = true;
         return (0, observable_fs_1.appendFileObs)(csvOutFilePath, `${line}\n`);
-    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.tap)({
+    }), (0, rxjs_1.last)(), (0, rxjs_1.concatMap)(() => (0, execute_command_1.writeCmdLogs$)(options, outDir)), (0, rxjs_1.tap)({
         complete: () => {
             if (atLeastOneCsv) {
                 console.log(`====>>>> cloc info at dates ${(0, date_functions_1.toYYYYMMDD)(from)} and ${(0, date_functions_1.toYYYYMMDD)(to)} saved on file ${csvOutFilePath}`);

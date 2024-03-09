@@ -1,7 +1,10 @@
 // https://gist.github.com/wosephjeber/212f0ca7fea740c3a8b03fc2283678d3
 
+import { toCsv } from '@enrico.piccinin/csv-tools';
 import { execSync, exec, spawn, SpawnOptionsWithoutStdio } from 'child_process';
-import { Observable, Subscriber } from 'rxjs';
+import { writeFileObs } from 'observable-fs';
+import path from 'path';
+import { Observable, Subscriber, forkJoin, map, of } from 'rxjs';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function executeCommand(action: string, command: string) {
@@ -61,12 +64,37 @@ export type ExecuteCommandObsOptions = {
 }
 export type CmdExecuted = { command: string }
 export type CmdErrored = { command: string, message: string }
+export function writeCmdLogs$(options: ExecuteCommandObsOptions, outDir: string) {
+    const cmdExecutedLog = options.cmdExecutedLog;
+    const cmdErroredLog = options.cmdErroredLog;
+    // if the caller provided the cmdExecutedLog and cmdErroredLog arrays, we transform the
+    // entries in the arrays to csv strings and write them to files
+    let writeCmdExecutedLog$ = of('');
+    if (cmdExecutedLog && cmdExecutedLog.length > 0) {
+        const cmdExecutedCsv = toCsv(cmdExecutedLog);
+        writeCmdExecutedLog$ = writeFileObs(path.join(outDir, 'cmd-executed.log'), cmdExecutedCsv)
+    }
+    let writeCmdErroredLog$ = of('');
+    if (cmdErroredLog && cmdErroredLog.length > 0) {
+        const cmdErroredCsv = toCsv(cmdErroredLog);
+        writeCmdErroredLog$ = writeFileObs(path.join(outDir, 'cmd-errored.log'), cmdErroredCsv)
+    }
+    return forkJoin([writeCmdExecutedLog$, writeCmdErroredLog$]).pipe(
+        map((resp: [cmdExecutedFile: string, cmdErroredFile: string]) => {
+            const [cmdExecutedFile, cmdErroredFile] = resp;
+            console.log(`====>>>> cmdExecutedLog written in file: ${cmdExecutedFile}`);
+            console.log(`====>>>> cmdErroredLog written in file: ${cmdErroredFile}`);
+            return resp
+        })
+    );
+}
 
 export function executeCommandNewProcessObs(
     action: string,
     command: string,
     args: string[],
     options?: SpawnOptionsWithoutStdio,
+    _options?: ExecuteCommandObsOptions,
 ) {
     return new Observable((subscriber: Subscriber<Buffer>) => {
         console.log(`====>>>> Action: ${action} -- Executing command in new process`);
@@ -76,6 +104,9 @@ export function executeCommandNewProcessObs(
             console.log(`====>>>> Options: ${JSON.stringify(options)}`);
         }
 
+        if (_options?.cmdExecutedLog) {
+            _options.cmdExecutedLog.push({ command: `${command} ${args.join(' ')}` });
+        }
         const cmd = spawn(
             command,
             args.filter((a) => a.length > 0),
@@ -88,6 +119,9 @@ export function executeCommandNewProcessObs(
             console.log(`msg on stderr for command ${command}`, data.toString());
         });
         cmd.on('error', (error) => {
+            if (_options?.cmdErroredLog) {
+                _options.cmdErroredLog.push({ command: `${command} ${args.join(' ')}`, message: error.message });
+            }
             subscriber.error(error);
         });
         cmd.on('close', (code) => {
@@ -103,8 +137,9 @@ export function executeCommandNewProcessToLinesObs(
     command: string,
     args: string[],
     options?: SpawnOptionsWithoutStdio,
+    _options?: ExecuteCommandObsOptions,
 ) {
-    return executeCommandNewProcessObs(action, command, args, options).pipe(bufferToLines());
+    return executeCommandNewProcessObs(action, command, args, options, _options).pipe(bufferToLines());
 }
 
 // custom operator that converts a buffer to lines, i.e. splits on \n to emit each line

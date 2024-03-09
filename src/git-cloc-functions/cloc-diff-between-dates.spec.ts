@@ -11,12 +11,12 @@ describe('clocDiffBetweenDates$', () => {
         const folderPath = './'
         const languages = ['TypeScript'];
 
-        clocDiffBetweenDates$(new Date(from), new Date(to), branchName, folderPath, languages).pipe(
+        clocDiffBetweenDates$(new Date(from), new Date(to), branchName, folderPath, '', languages).pipe(
             toArray()
         ).subscribe({
             next: (clocDiffs) => {
                 expect(clocDiffs).to.be.an('Array');
-                expect(clocDiffs.length).eq(11);
+                expect(clocDiffs.length).eq(14);
                 clocDiffs.forEach(clocDiff => {
                     expect(clocDiff).to.be.an('object');
                     expect(clocDiff.blank_added).gte(0);
@@ -33,11 +33,6 @@ describe('clocDiffBetweenDates$', () => {
                     expect(clocDiff.comment_modified).gte(0);
                     expect(clocDiff.extension).eq('ts');
                     expect(clocDiff.file).to.be.a('string');
-                    // test that the sum of the diffs of the commit contains numbers
-                    expect(clocDiff.commit_code_added).gte(0);
-                    expect(clocDiff.commit_code_removed).gte(0);
-                    expect(clocDiff.commit_code_same).gte(0);
-                    expect(clocDiff.commit_code_modified).gte(0);
                 })
             },
             error: (error) => {

@@ -41,7 +41,8 @@ export function readCommitCompact$(
     repoPath: string,
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
-    noMerges = true
+    noMerges = true,
+    _options?: ExecuteCommandObsOptions
 ) {
     if (!repoPath) throw new Error(`Path is mandatory`);
 
@@ -59,6 +60,7 @@ export function readCommitCompact$(
         'git',
         options,
         { cwd: repoPath },
+        _options
     ).pipe(
         map((commits: string) => {
             return commits.split('\n')
@@ -92,11 +94,12 @@ export function readCommitCompactWithUrlAndParentDate$(
     repoPath: string,
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
-    noMerges = true
+    noMerges = true,
+    options?: ExecuteCommandObsOptions
 ) {
-    return readCommitCompact$(repoPath, fromDate, toDate, noMerges).pipe(
+    return readCommitCompact$(repoPath, fromDate, toDate, noMerges, options).pipe(
         concatMap((commit) => {
-            return getGitlabCommitUrl(repoPath, commit.sha).pipe(
+            return getGitlabCommitUrl(repoPath, commit.sha, options).pipe(
                 map((commitUrl) => {
                     return { commit, commitUrl };
                 })
@@ -104,7 +107,7 @@ export function readCommitCompactWithUrlAndParentDate$(
         }),
         concatMap(({ commit, commitUrl }) => {
             const parentCommitSha = `${commit.sha}^1`;
-            return readOneCommitCompact$(parentCommitSha, repoPath).pipe(
+            return readOneCommitCompact$(parentCommitSha, repoPath, options).pipe(
                 catchError(err => {
                     // if the error is because the commit has no parent, then we set the parent date to the beginning of time
                     if (err === ERROR_UNKNOWN_REVISION_OR_PATH) {
@@ -143,13 +146,13 @@ export function readCommitCompactWithUrlAndParentDate$(
  * @returns An Observable of a CommitCompact object representing the fetched commit.
  * @throws An error if `commitSha` or `repoPath` is not provided.
  */
-export function readOneCommitCompact$(commitSha: string, repoPath: string, verbose = true) {
+export function readOneCommitCompact$(commitSha: string, repoPath: string, options?: ExecuteCommandObsOptions, verbose = true) {
     if (!commitSha.trim()) throw new Error(`Path is mandatory`);
     if (!repoPath.trim()) throw new Error(`Repo path is mandatory`);
 
     // the -n 1 option limits the number of commits to 1
     const cmd = `cd ${repoPath} && git log --pretty=%H,%ad,%an ${commitSha} -n 1`;
-    return executeCommandObs('read one commit from log', cmd).pipe(
+    return executeCommandObs('read one commit from log', cmd, options).pipe(
         toArray(),
         map((output) => {
             const commitCompact = newCommitCompactFromGitlog(output[0], repoPath);

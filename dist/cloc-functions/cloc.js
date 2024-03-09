@@ -146,10 +146,10 @@ exports.writeClocSummary$ = writeClocSummary$;
  * @param writeFile Whether or not to write the output of the cloc command to a file (the file name is derived from the params).
  * @returns An Observable that emits the lines output of the cloc command execution.
  */
-function clocByfile$(params, action = 'calculate cloc', writeFile = true) {
+function clocByfile$(params, action = 'calculate cloc', writeFile = true, _options) {
     // execute the cloc command in a new process and return the stream of lines output of the cloc command execution
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
-    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options).pipe((0, rxjs_1.map)((line) => {
+    const _cloc = (0, execute_command_1.executeCommandNewProcessToLinesObs)(action, cmd, args, options, _options).pipe((0, rxjs_1.map)((line) => {
         return line.trim();
     }), (0, ignore_up_to_1.ignoreUpTo)(exports.clocByfileHeader), (0, rxjs_1.share)());
     // if writeFile is true, then calculate the name of the output file

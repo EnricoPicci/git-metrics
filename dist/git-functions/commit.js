@@ -33,7 +33,7 @@ const git_errors_1 = require("./git-errors");
  * @returns An Observable of CommitCompact objects representing the commits within the specified date range.
  * @throws An error if `repoPath` is not provided.
  */
-function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true) {
+function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, _options) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const _noMerges = noMerges ? '--no-merges' : '';
@@ -44,7 +44,7 @@ function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(
     ];
     if (noMerges)
         options.push('--no-merges');
-    return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', options, { cwd: repoPath }).pipe((0, rxjs_1.map)((commits) => {
+    return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', options, { cwd: repoPath }, _options).pipe((0, rxjs_1.map)((commits) => {
         return commits.split('\n');
     }), (0, rxjs_1.concatMap)((commits) => {
         return (0, rxjs_1.from)(commits);
@@ -67,14 +67,14 @@ exports.readCommitCompact$ = readCommitCompact$;
  * @param noMerges A boolean indicating whether to exclude merge commits. Defaults to true.
  * @returns An Observable of CommitCompactWithUrlAndParentDate objects.
  */
-function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true) {
-    return readCommitCompact$(repoPath, fromDate, toDate, noMerges).pipe((0, rxjs_1.concatMap)((commit) => {
-        return (0, commit_url_1.getGitlabCommitUrl)(repoPath, commit.sha).pipe((0, rxjs_1.map)((commitUrl) => {
+function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, options) {
+    return readCommitCompact$(repoPath, fromDate, toDate, noMerges, options).pipe((0, rxjs_1.concatMap)((commit) => {
+        return (0, commit_url_1.getGitlabCommitUrl)(repoPath, commit.sha, options).pipe((0, rxjs_1.map)((commitUrl) => {
             return { commit, commitUrl };
         }));
     }), (0, rxjs_1.concatMap)(({ commit, commitUrl }) => {
         const parentCommitSha = `${commit.sha}^1`;
-        return readOneCommitCompact$(parentCommitSha, repoPath).pipe((0, rxjs_1.catchError)(err => {
+        return readOneCommitCompact$(parentCommitSha, repoPath, options).pipe((0, rxjs_1.catchError)(err => {
             // if the error is because the commit has no parent, then we set the parent date to the beginning of time
             if (err === errors_2.ERROR_UNKNOWN_REVISION_OR_PATH) {
                 const commitWithParentDate = Object.assign(Object.assign({}, commit), { parentDate: new Date(0), commitUrl });
@@ -101,14 +101,14 @@ exports.readCommitCompactWithUrlAndParentDate$ = readCommitCompactWithUrlAndPare
  * @returns An Observable of a CommitCompact object representing the fetched commit.
  * @throws An error if `commitSha` or `repoPath` is not provided.
  */
-function readOneCommitCompact$(commitSha, repoPath, verbose = true) {
+function readOneCommitCompact$(commitSha, repoPath, options, verbose = true) {
     if (!commitSha.trim())
         throw new Error(`Path is mandatory`);
     if (!repoPath.trim())
         throw new Error(`Repo path is mandatory`);
     // the -n 1 option limits the number of commits to 1
     const cmd = `cd ${repoPath} && git log --pretty=%H,%ad,%an ${commitSha} -n 1`;
-    return (0, execute_command_1.executeCommandObs)('read one commit from log', cmd).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs)('read one commit from log', cmd, options).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((output) => {
         const commitCompact = newCommitCompactFromGitlog(output[0], repoPath);
         return commitCompact;
     }), (0, rxjs_1.catchError)((error) => {

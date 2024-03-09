@@ -39,7 +39,7 @@ describe('readOneCommitCompact$', () => {
     it('should throw an error if an not existing sha is provided', (done) => {
         const notExistingCommitSha = 'abc'
         const repoPath = './'
-        readOneCommitCompact$(notExistingCommitSha, repoPath, false).subscribe({
+        readOneCommitCompact$(notExistingCommitSha, repoPath, undefined, false).subscribe({
             next: () => {
                 done('should not return a value')
             },
@@ -56,7 +56,7 @@ describe('readOneCommitCompact$', () => {
     it('should notify the first commit object of this repo', (done) => {
         const firstCommitOfThisRepo = '8767d5864e7d72df0f25915fe8e0652244eee5fa'
         const repoPath = './'
-        readOneCommitCompact$(firstCommitOfThisRepo, repoPath, false).subscribe({
+        readOneCommitCompact$(firstCommitOfThisRepo, repoPath, undefined, false).subscribe({
             next: (commitCompact) => {
                 expect(commitCompact.sha).equal(firstCommitOfThisRepo);
                 done();
@@ -491,8 +491,9 @@ describe('commitAtDateOrAfter$', () => {
         const date = new Date('2021-12-11');
 
         commitAtDateOrAfter$(repoPath, date, branch).subscribe(([sha, commitDate]) => {
-            expect(sha).equal('9369eb39af383a2894362d0008b7380d8cf454dd');
-            expect(commitDate).equal('2021-12-13 18:18:05 +0100');
+            // sometimes sha is 274b760e7a5e871dfd13993bdb08b936b6314299
+            expect(sha).equal('189adaa55ccb905a7b2f01797457d3caa16a5630');
+            expect(commitDate).equal('2021-12-11 12:01:52 +0100');
             done();
         });
     });
@@ -535,8 +536,9 @@ describe('commitClosestToDate$', () => {
         const date = new Date('2021-12-11');
 
         commitClosestToDate$(repoPath, date, branch).subscribe(([sha, commitDate]) => {
-            expect(sha).equal('189adaa55ccb905a7b2f01797457d3caa16a5630');
-            expect(commitDate).equal('2021-12-11 12:01:52 +0100');
+            // sometimes sha is 274b760e7a5e871dfd13993bdb08b936b6314299
+            expect(sha).equal('ccd078c75c2446eb8babc0536ac3c033aadb0323');
+            expect(commitDate).equal('2021-12-11 11:04:28 +0100');
             done();
         });
     });

@@ -15,13 +15,12 @@ const fs_utils_1 = require("../tools/fs-utils/fs-utils");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 const repo_path_1 = require("../git-functions/repo-path");
 const branches_1 = require("../git-functions/branches");
+const execute_command_1 = require("../tools/execute-command/execute-command");
 /**
  * This function calculates the difference in lines of code (cloc) between two dates for each file in a Git repository
  * and returns an Observable that emits the cloc difference.
- * The function fetches the commit at or after the 'fromDate' and the commit at or before the 'toDate' and calculates
+ * The function fetches the commit at or before the 'fromDate' and the commit at or before the 'toDate' and calculates
  * the cloc difference between these two commits for each file.
- * If no commit is found at the 'fromDate' or 'toDate', the function fetches the closest commit to the respective date.
- * The function also allows filtering by programming languages and excluding certain directories.
  *
  * @param {Date} fromDate - The start date for which to calculate the cloc difference.
  * @param {Date} toDate - The end date for which to calculate the cloc difference.
@@ -33,7 +32,14 @@ const branches_1 = require("../git-functions/branches");
  * @returns {Observable} An Observable that emits the cloc difference between the two dates for each file.
  */
 function clocDiffBetweenDates$(fromDate, toDate, branchName = 'master', repoFolderPath = './', languages = [], notMatchDirectories = []) {
-    const fromCommit = (0, commit_1.commitAtDateOrAfter$)(repoFolderPath, fromDate, branchName);
+    // if fromDate is after toDate, swap the two dates
+    if (fromDate > toDate) {
+        const temp = fromDate;
+        fromDate = toDate;
+        toDate = temp;
+        console.log(`====>>>> fromDate is after toDate, swapping the two dates`);
+    }
+    const fromCommit = (0, commit_1.commitAtDateOrBefore$)(repoFolderPath, fromDate, branchName);
     const toCommit = (0, commit_1.commitAtDateOrBefore$)(repoFolderPath, toDate, branchName);
     return (0, rxjs_1.forkJoin)([fromCommit, toCommit]).pipe((0, rxjs_1.concatMap)(([[fromSha], [toSha]]) => {
         return (0, cloc_diff_byfile_1.clocDiffRelByfileWithCommitData$)(toSha, fromSha, repoFolderPath, languages, notMatchDirectories);
@@ -64,8 +70,6 @@ exports.clocDiffBetweenDatesForRepos$ = clocDiffBetweenDatesForRepos$;
  * and writes the results to a CSV file.
  * The function fetches the commit at or after the 'fromDate' and the commit at or before the 'toDate' and calculates
  * the cloc difference between these two commits for each file.
- * If no commit is found at the 'fromDate' or 'toDate', the function fetches the closest commit to the respective date.
- * The function also allows filtering by programming languages.
  *
  * @param {string} pathToRepo - The path to the Git repository.
  * @param {string} branchName - The name of the branch for which to calculate the cloc difference.
@@ -89,7 +93,11 @@ function writeClocDiffBetweenDates$(pathToRepo, branchName, fromDate = new Date(
     }));
 }
 exports.writeClocDiffBetweenDates$ = writeClocDiffBetweenDates$;
-function writeClocDiffBetweenDatesForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), outDir = './', excludeRepoPaths = [], languages = [], creationDateCsvFilePath = null) {
+function writeClocDiffBetweenDatesForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), outDir = './', options = {
+    excludeRepoPaths: [],
+    notMatch: [],
+}) {
+    const { excludeRepoPaths, languages, creationDateCsvFilePath } = options || {};
     const folderName = path_1.default.basename(folderPath);
     const outFile = `${folderName}-cloc-diff-commit-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
@@ -98,7 +106,7 @@ function writeClocDiffBetweenDatesForRepos$(folderPath, fromDate = new Date(0), 
     return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages, creationDateCsvFilePath)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         noCommitsFound = false;
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
-    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
+    }), (0, rxjs_1.last)(), (0, rxjs_1.tap)({
         next: (outFilePath) => {
             if (noCommitsFound) {
                 console.log(`\n====>>>> no commits found in the given time range, for the given languages, in the given repos`);
@@ -106,7 +114,7 @@ function writeClocDiffBetweenDatesForRepos$(folderPath, fromDate = new Date(0), 
             }
             console.log(`\n====>>>> cloc-diff-commit-for-repos info saved on file ${outFilePath}`);
         },
-    }));
+    }), (0, rxjs_1.concatMap)(() => (0, execute_command_1.writeCmdLogs$)(options, outDir)));
 }
 exports.writeClocDiffBetweenDatesForRepos$ = writeClocDiffBetweenDatesForRepos$;
 //# sourceMappingURL=cloc-diff-between-dates.js.map

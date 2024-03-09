@@ -1,5 +1,5 @@
 import path from "path";
-import { from, concatMap, skip, filter, startWith, map, concat, ignoreElements, tap, of } from "rxjs";
+import { from, concatMap, skip, filter, startWith, map, concat, tap, of, last } from "rxjs";
 
 import { appendFileObs } from "observable-fs";
 
@@ -11,6 +11,7 @@ import { CheckoutError } from "../git-functions/git-errors";
 import { toYYYYMMDD } from "../tools/dates/date-functions";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
 import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
+import { ExecuteCommandObsOptions, writeCmdLogs$ } from "../tools/execute-command/execute-command";
 
 /**
  * Calculates the lines of code (LOC) for each file in a set of repositories at a specific date and returns 
@@ -25,12 +26,14 @@ import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
 export function clocAtDateByFileForRepos$(
     folderPath: string,
     date: Date,
+    reposFolderPath: string,
     options: WriteClocAtDateOptions
 ) {
-    const { outDir, excludeRepoPaths, notMatch } = options;
+    const { excludeRepoPaths, notMatch } = options;
     const repos = gitRepoPaths(folderPath, excludeRepoPaths)
     return from(repos).pipe(
-        concatMap((repoPath) => {
+        concatMap((repoPath, i) => {
+            console.log(`clocAtDateByFileForRepos$ processing repo ${i + 1} of ${repos.length}`)
             // piping the cloc calculation into the Observable returned by checkoutRepoAtDate$ makes sure that the 
             // cloc calculation is done on the repo just after the checkout is done
             // Otherwise, if we move the cloc calculation up one level, i.e. in the same pipe were the checkout is done,
@@ -46,35 +49,38 @@ export function clocAtDateByFileForRepos$(
                         return of(repoPathOrError);
                     }
                     const params: ClocParams = {
-                        folderPath: repoPathOrError,
+                        folderPath: repoPathOrError.repoPath,
                         vcs: 'git',
-                        outDir,
                         notMatch,
+                        languages: options.languages,
                     };
-                    return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPathOrError, false).pipe(
+                    return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPathOrError.repoPath, false).pipe(
                         // remove the first line which contains the csv header form all the streams representing
                         // the output of the cloc command execution on each repo
                         skip(1),
                         // remove the last line which contains the total
                         filter((line) => line.slice(0, 3) !== 'SUM'),
                         map((line) => {
+                            // area is the first folder in the repo path after removing reposFolderPath
+                            const area = repoPath.split(reposFolderPath)[1].split(path.sep)[1];
+
                             const fields = line.split(',');
                             const filePath = fields[1];
                             const module = path.dirname(filePath);
 
-                            const repoPathParts = repoPathOrError.split(path.sep);
+                            const repoPathParts = repoPathOrError.repoPath.split(path.sep);
                             const numberOfRepoPathParts = repoPathParts.length;
                             const repoName = repoPathParts[numberOfRepoPathParts - 1];
                             const repoDirName = numberOfRepoPathParts > 1 ?
                                 repoPathParts[numberOfRepoPathParts - 2] : '-';
                             // add the repopath and the date in YYYY-MM-DD format at the end of each line
-                            return `${line},${repoPathOrError},${toYYYYMMDD(date)},${module}, ${repoName}, ${repoDirName}`;
+                            return `${line},${repoPathOrError.repoPath},${toYYYYMMDD(date)},${module},${repoName},${repoDirName},${repoPathOrError.sha},${area}`;
                         })
                     );
                 }),
             )
         }),
-        startWith(`${clocByfileHeader},repo,date,module,repoName,repoDirName`)
+        startWith(`${clocByfileHeader},repo,date,module,repoName,repoDirName,sha, area`),
     );
 }
 
@@ -93,11 +99,15 @@ export function clocFromToDateByFileForRepos$(
     folderPath: string,
     from: Date,
     to: Date,
+    reposFolderPath: string,
     options: WriteClocAtDateOptions
 ) {
     return concat(
-        clocAtDateByFileForRepos$(folderPath, from, options),
-        clocAtDateByFileForRepos$(folderPath, to, options)
+        clocAtDateByFileForRepos$(folderPath, from, reposFolderPath, options),
+        clocAtDateByFileForRepos$(folderPath, to, reposFolderPath, options).pipe(
+            // skip the first line which contains the csv header
+            skip(1),
+        )
     )
 }
 
@@ -105,7 +115,7 @@ export function clocFromToDateByFileForRepos$(
  * Calculates the lines of code (LOC) for each file in a set of repositories at two specific dates, 
  * writes the LOC data to a CSV file, and returns an Observable that emits when the operation is complete.
  * If errors are encountered they will be written to a separate file.
- * @param folderPath The path to the folder containing the repositories.
+ * @param reposFolderPath The path to the folder containing the repositories.
  * @param from The start date to calculate the LOC at.
  * @param to The end date to calculate the LOC at.
  * @param options An object containing options for the operation. Defaults to an object with the outDir property set to './', 
@@ -114,14 +124,13 @@ export function clocFromToDateByFileForRepos$(
  * @throws An error if the outDir property in the options parameter is not provided.
  */
 export function writeClocFromToDateByFileForRepos$(
-    folderPath: string,
+    reposFolderPath: string,
     from: Date,
     to: Date,
     options: WriteClocAtDateOptions = {
         outDir: './',
         excludeRepoPaths: [],
         notMatch: [],
-        branch: 'master'
     },
 ) {
     const start = new Date();
@@ -129,7 +138,7 @@ export function writeClocFromToDateByFileForRepos$(
     if (!outDir) {
         throw new Error('outDir is required');
     }
-    const folderName = path.basename(folderPath);
+    const folderName = path.basename(reposFolderPath);
     const outFile = `cloc-${folderName}-${toYYYYMMDD(from)}_${toYYYYMMDD(to)}`;
     const csvOutFilePath = path.join(outDir, outFile) + '.csv';
     const errorOutFilePath = path.join(outDir, outFile) + '.error.log';
@@ -138,7 +147,7 @@ export function writeClocFromToDateByFileForRepos$(
     let atLeastOneError = false;
     return deleteFile$(csvOutFilePath).pipe(
         concatMap(() => deleteFile$(errorOutFilePath)),
-        concatMap(() => clocFromToDateByFileForRepos$(folderPath, from, to, options)),
+        concatMap(() => clocFromToDateByFileForRepos$(reposFolderPath, from, to, reposFolderPath, options)),
         concatMap((line) => {
             if (line instanceof CheckoutError) {
                 atLeastOneError = true;
@@ -148,7 +157,8 @@ export function writeClocFromToDateByFileForRepos$(
             atLeastOneCsv = true;
             return appendFileObs(csvOutFilePath, `${line}\n`);
         }),
-        ignoreElements(),
+        last(),
+        concatMap(() => writeCmdLogs$(options, outDir)),
         tap({
             complete: () => {
                 if (atLeastOneCsv) {
@@ -171,5 +181,6 @@ export type WriteClocAtDateOptions = {
     excludeRepoPaths?: string[],
     notMatch?: string[],
     stdErrorHandler?: (stderr: string) => Error | null
-    branch: string
-}
+    branch?: string,
+    languages?: string[],
+} & ExecuteCommandObsOptions

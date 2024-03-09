@@ -6,7 +6,8 @@ const cloc_diff_between_dates_1 = require("../../git-cloc-functions/cloc-diff-be
 function launchDiffBetweenDatesMultiRepos() {
     console.log('====>>>> Launching Diff Between Dates For Repos');
     const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths } = readParams();
-    (0, cloc_diff_between_dates_1.writeClocDiffBetweenDatesForRepos$)(folderPath, fromDate, toDate, outDir, excludeRepoPaths, languages, creationDateCsvFilePath).subscribe();
+    const options = { excludeRepoPaths, languages, creationDateCsvFilePath };
+    (0, cloc_diff_between_dates_1.writeClocDiffBetweenDatesForRepos$)(folderPath, fromDate, toDate, outDir, options).subscribe();
 }
 exports.launchDiffBetweenDatesMultiRepos = launchDiffBetweenDatesMultiRepos;
 function readParams() {

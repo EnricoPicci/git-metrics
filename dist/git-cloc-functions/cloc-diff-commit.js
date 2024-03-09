@@ -71,13 +71,14 @@ const date_functions_1 = require("../tools/dates/date-functions");
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable of ClocDiffCommitEnriched objects.
  */
-function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), languages = [], progress = {
+function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), options = {}, progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
-}, options = {}) {
+}) {
+    const languages = options.languages || [];
     // first calculate the cloc dictionary and pass it down the pipe
-    return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo, languages).pipe((0, rxjs_1.catchError)((err) => {
+    return (0, cloc_dictionary_1.clocFileDict$)(pathToRepo, languages, options).pipe((0, rxjs_1.catchError)((err) => {
         if (err.code === 'ENOENT') {
             console.log(`!!!!!!!! folder ${pathToRepo} not found`);
             process.exit(1);
@@ -86,14 +87,14 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
     }), 
     // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
     (0, rxjs_1.concatMap)((clocFileDict) => {
-        return (0, commit_1.readCommitCompactWithUrlAndParentDate$)(pathToRepo, fromDate, toDate).pipe((0, rxjs_1.map)((commit) => {
+        return (0, commit_1.readCommitCompactWithUrlAndParentDate$)(pathToRepo, fromDate, toDate, false, options).pipe((0, rxjs_1.map)((commit) => {
             return { commit, clocFileDict };
         }));
     }), 
     // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
     // together with the cloc dictionary and the commit
     (0, rxjs_1.concatMap)(({ commit, clocFileDict }) => {
-        return (0, cloc_diff_byfile_1.clocDiffWithParentByfile$)(commit.sha, pathToRepo, languages, options.notMatchDirectories, progress).pipe((0, rxjs_1.map)((clocDiffByfile) => {
+        return (0, cloc_diff_byfile_1.clocDiffWithParentByfile$)(commit.sha, pathToRepo, languages, options.notMatchDirectories, options, progress).pipe((0, rxjs_1.map)((clocDiffByfile) => {
             return { clocDiffByfile, clocFileDict, commit };
         }));
     }), 
@@ -132,7 +133,7 @@ exports.clocDiffWithCommit$ = clocDiffWithCommit$;
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable stream of objects of type ClocDiffCommitEnriched.
  */
-function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], languages = [], options = {}) {
+function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate = new Date(Date.now()), excludeRepoPaths = [], options = {}) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     const creationDateCsvFilePath = options.creationDateCsvFilePath;
     return (0, commit_1.countCommits$)(repoPaths, fromDate, toDate, creationDateCsvFilePath).pipe((0, rxjs_1.concatMap)((totNumOfCommits) => {
@@ -142,7 +143,7 @@ function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate 
             errorCounter: 0,
         };
         return (0, commit_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
-            return clocDiffWithCommit$(repoPath, _fromDate, toDate, languages, progess, options);
+            return clocDiffWithCommit$(repoPath, _fromDate, toDate, options, progess);
         }));
     }));
 }
@@ -163,7 +164,7 @@ function writeClocDiffWithCommit$(pathToRepo, outDir = './', fromDate = new Date
     const outFile = `${pathToRepoName}-cloc-diff-commit-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommit$(pathToRepo, fromDate, toDate, languages)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommit$(pathToRepo, fromDate, toDate, { languages })), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
         next: (outFilePath) => {
@@ -192,13 +193,12 @@ function writeClocDiffWithCommitForRepos$(folderPath, options = {}) {
     const fromDate = options.fromDate || new Date(0);
     const toDate = options.toDate || new Date(Date.now());
     const excludeRepoPaths = options.excludeRepoPaths || [];
-    const languages = options.languages || [];
     const folderName = path_1.default.basename(folderPath);
     const outFile = `${folderName}-cloc-diff-commit-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
     let noCommitsFound = true;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages, options)), (0, rxjs_1.map)(clocDiffCommitEnriched => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, options)), (0, rxjs_1.map)(clocDiffCommitEnriched => {
         const csvRec = formatClocDiffCommitEnrichedForCsv(clocDiffCommitEnriched, options);
         return csvRec;
     }), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {

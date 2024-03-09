@@ -9,8 +9,8 @@ const repo_1 = require("./repo");
  * @param commitSha The SHA of the commit.
  * @returns An Observable that emits the GitLab commit URL for the given Git repository and commit SHA.
  */
-function getGitlabCommitUrl(repoPath, commitSha) {
-    return (0, repo_1.getRemoteOriginUrl$)(repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
+function getGitlabCommitUrl(repoPath, commitSha, options) {
+    return (0, repo_1.getRemoteOriginUrl$)(repoPath, options).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
         remoteOriginUrl = (0, repo_1.gitHttpsUrlFromGitUrl)(remoteOriginUrl);
         const remoteOriginUrlWithuotFinalDotGit = remoteOriginUrl.endsWith('.git')
             ? remoteOriginUrl.slice(0, -4)

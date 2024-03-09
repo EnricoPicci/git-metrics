@@ -1,8 +1,17 @@
-import { ClocDiffByfileWithCommitData } from "../cloc-functions/cloc-diff-byfile.model";
+import { ClocDiffByfileWithCommitData, ClocDiffByfileWithIsCopy } from "../cloc-functions/cloc-diff-byfile.model";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
 import { CommitCompactWithUrlAndParentDate } from "../git-functions/commit.model";
+import { ExecuteCommandObsOptions } from "../tools/execute-command/execute-command";
 
 export type ClocDiffCommitEnriched = ClocDiffByfileWithCommitData & ClocFileInfo & CommitCompactWithUrlAndParentDate
+
+export type ClocDiffCommitBetweenDatesEnriched = ClocDiffByfileWithIsCopy & ClocFileInfo & {
+    fromSha: string;
+    toSha: string;
+    repo: string;
+    module: string;
+    area: string;
+}
 
 export type ClocDiffCommitEnrichedWithDerivedData = ClocDiffCommitEnriched & {
     module: string;
@@ -37,4 +46,5 @@ export type ClocDiffWithCommitOptions = {
     // - created_at: the date of creation of the repo`
     creationDateCsvFilePath?: string;
     notMatchDirectories?: string[];
-};
+    languages?: string[],
+} & ExecuteCommandObsOptions;

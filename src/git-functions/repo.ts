@@ -190,7 +190,7 @@ export function checkoutRepoAtDate$(
 ) {
     if (!repoPath) throw new Error(`Path is mandatory`);
 
-    let _sha: string
+    let _sha: string = '';
     return defaultBranchName$(repoPath, options).pipe(
         concatMap(branch => commitAtDateOrBefore$(repoPath, date, branch, options)),
         concatMap(([sha]) => {
@@ -198,7 +198,10 @@ export function checkoutRepoAtDate$(
             return checkout$(repoPath, sha, options)
         }),
         ignoreElements(),
-        defaultIfEmpty(repoPath),
+        defaultIfEmpty({ repoPath, sha: _sha }),
+        map(() => {
+            return { repoPath, sha: _sha };
+        }),
         catchError((err) => {
             if (err instanceof GitError) {
                 console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
@@ -242,7 +245,7 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, options:
                     erroredRepos.push({ repo: val.repoPath, sha: val.sha, command: val.command, message: val.message });
                     return
                 }
-                checkedOutRepos.push({ repo: val, sha: '', command: `checkout ${val}` });
+                checkedOutRepos.push({ repo: val.repoPath, sha: val.sha, command: `checkout ${val.sha}` });
             },
         }),
         last(),
@@ -347,9 +350,9 @@ export function gitHttpsUrlFromGitUrl(gitUrl: string) {
  * @param repoPath The path to the Git repository folder.
  * @returns An Observable that emits the remote origin url of the Git repository.
  */
-export function getRemoteOriginUrl$(repoPath: string) {
+export function getRemoteOriginUrl$(repoPath: string, options?: ExecuteCommandObsOptions) {
     const cmd = `cd ${repoPath} && git config --get remote.origin.url`;
-    return executeCommandObs('run git  config --get remote.origin.url', cmd).pipe(
+    return executeCommandObs('run git  config --get remote.origin.url', cmd, options).pipe(
         map((output) => {
             return output.split('\n')[0];
         }),

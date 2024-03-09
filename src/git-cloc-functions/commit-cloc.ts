@@ -52,13 +52,19 @@ function newGitFileNumstatEnrichedWithCloc(
     file: GitFileNumstat,
     clocDictionary: ClocDictionary,
 ) {
+    // normalize the file path so that it starts always with a './'.
+    // This is necessary because the clocDictionary is created with the cloc command which returns
+    // the names of the files starting with a './' while the file names in the commit are returned by the git log command
+    // without the './' at the beginning.
+    const filePath = file.path.startsWith('./') ? file.path : `./${file.path}`;
     // if the file is not in the cloc dictionary, it may mean different things, 
     // e.g. that it is a binary file, so we return a file with 0 lines of code, comments and blanks
     // or that it is a file that is present in an old commit but has been subsequently deleted, 
     // so we return a file with 0 lines of code, comments and blanks
-    if (!clocDictionary[file.path]) {
+    const clocData = clocDictionary[filePath]
+    if (!clocData) {
         return { ...file, code: 0, comment: 0, blank: 0 };
     }
-    const { code, comment, blank } = clocDictionary[file.path];
+    const { code, comment, blank } = clocData;
     return { ...file, code, comment, blank };
 }

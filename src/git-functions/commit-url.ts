@@ -1,5 +1,6 @@
 import { map } from "rxjs";
 import { getRemoteOriginUrl$, gitHttpsUrlFromGitUrl } from "./repo";
+import { ExecuteCommandObsOptions } from "../tools/execute-command/execute-command";
 
 /**
  * Returns an Observable that emits the GitLab commit URL for a given Git repository and commit SHA.
@@ -7,8 +8,8 @@ import { getRemoteOriginUrl$, gitHttpsUrlFromGitUrl } from "./repo";
  * @param commitSha The SHA of the commit.
  * @returns An Observable that emits the GitLab commit URL for the given Git repository and commit SHA.
  */
-export function getGitlabCommitUrl(repoPath: string, commitSha: string) {
-    return getRemoteOriginUrl$(repoPath).pipe(
+export function getGitlabCommitUrl(repoPath: string, commitSha: string, options?: ExecuteCommandObsOptions) {
+    return getRemoteOriginUrl$(repoPath, options).pipe(
         map((remoteOriginUrl) => {
             remoteOriginUrl = gitHttpsUrlFromGitUrl(remoteOriginUrl);
             const remoteOriginUrlWithuotFinalDotGit = remoteOriginUrl.endsWith('.git')

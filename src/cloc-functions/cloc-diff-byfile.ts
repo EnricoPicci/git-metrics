@@ -1,5 +1,5 @@
 import { catchError, concatMap, filter, from, map, of, skip, tap, toArray } from "rxjs";
-import { executeCommandObs } from "../tools/execute-command/execute-command";
+import { ExecuteCommandObsOptions, executeCommandObs } from "../tools/execute-command/execute-command";
 import { ignoreUpTo } from "../tools/rxjs-operators/ignore-up-to";
 import { CLOC_CONFIG } from "./config";
 import { ClocDiffByfileWithSumAndIsCopy, newClocDiffByfile, newClocDiffByfileWithCommitData, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
@@ -37,9 +37,10 @@ export function clocDiffRelByfile$(
             commitCounter: 0,
             errorCounter: 0,
         },
-    notMatchDirectories: string[] = []
+    notMatchDirectories: string[] = [],
+    options?: ExecuteCommandObsOptions
 ) {
-    return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories).pipe(
+    return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories, options).pipe(
         tap({
             next: (lines) => {
                 // log progress
@@ -152,9 +153,10 @@ export function clocDiffAllByfile$(
             commitCounter: 0,
             errorCounter: 0,
         },
-    notMatchDirectories: string[] = []
+    notMatchDirectories: string[] = [],
+    options?: ExecuteCommandObsOptions
 ) {
-    return executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories).pipe(
+    return executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories, options).pipe(
         tap({
             next: (lines) => {
                 // log progress
@@ -256,6 +258,7 @@ export function clocDiffRelByfileWithCommitData$(
     repoFolderPath = './',
     languages: string[] = [],
     notMatchDirectories: string[] = [],
+    options?: ExecuteCommandObsOptions,
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
@@ -266,7 +269,7 @@ export function clocDiffRelByfileWithCommitData$(
             errorCounter: 0,
         }
 ) {
-    return clocDiffRelByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress, notMatchDirectories).pipe(
+    return clocDiffRelByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress, notMatchDirectories, options).pipe(
         // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
         map(clocDiffByfile => {
             return newClocDiffByfileWithCommitData(clocDiffByfile)
@@ -292,6 +295,7 @@ export function clocDiffAllByfileWithCommitData$(
     repoFolderPath = './',
     languages: string[] = [],
     notMatchDirectories: string[] = [],
+    options?: ExecuteCommandObsOptions,
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
@@ -302,7 +306,7 @@ export function clocDiffAllByfileWithCommitData$(
             errorCounter: 0,
         }
 ) {
-    return clocDiffRelByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress, notMatchDirectories).pipe(
+    return clocDiffAllByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress, notMatchDirectories, options).pipe(
         // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
         map(clocDiffByfile => {
             return newClocDiffByfileWithCommitData(clocDiffByfile)
@@ -324,6 +328,7 @@ export function clocDiffWithParentByfile$(
     repoFolderPath = './',
     languages: string[] = [],
     notMatchDirectories: string[] = [],
+    options?: ExecuteCommandObsOptions,
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
@@ -334,7 +339,7 @@ export function clocDiffWithParentByfile$(
             errorCounter: 0,
         },
 ) {
-    return clocDiffRelByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, notMatchDirectories, progress);
+    return clocDiffRelByfileWithCommitData$(commit, `${commit}^1`, repoFolderPath, languages, notMatchDirectories, options, progress);
 }
 
 
@@ -377,10 +382,11 @@ function executeClocGitDiff$(
     repoFolderPath: string,
     languages: string[] = [],
     notMatchDirectories: string[],
+    options?: ExecuteCommandObsOptions
 ) {
     const cmd = buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath, notMatchDirectories, strategy);
 
-    return executeCommandObs('run cloc --git-diff-rel --by-file --quiet', cmd).pipe(
+    return executeCommandObs(`run cloc --git-diff-${strategy} --by-file --quiet`, cmd, options).pipe(
         map((output) => {
             return output.split('\n');
         }),
@@ -412,9 +418,10 @@ function executeClocGitDiffRel$(
     repoFolderPath: string,
     languages: string[] = [],
     notMatchDirectories: string[],
+    options?: ExecuteCommandObsOptions
 ) {
     const strategy: ClocDiffStrategy = 'rel';
-    return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories);
+    return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories, options);
 }
 
 function executeClocGitDiffAll$(
@@ -423,7 +430,8 @@ function executeClocGitDiffAll$(
     repoFolderPath: string,
     languages: string[] = [],
     notMatchDirectories: string[],
+    options?: ExecuteCommandObsOptions
 ) {
     const strategy: ClocDiffStrategy = 'all';
-    return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories);
+    return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories, options);
 }

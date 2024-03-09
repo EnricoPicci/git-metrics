@@ -280,9 +280,9 @@ exports.gitHttpsUrlFromGitUrl = gitHttpsUrlFromGitUrl;
  * @param repoPath The path to the Git repository folder.
  * @returns An Observable that emits the remote origin url of the Git repository.
  */
-function getRemoteOriginUrl$(repoPath) {
+function getRemoteOriginUrl$(repoPath, options) {
     const cmd = `cd ${repoPath} && git config --get remote.origin.url`;
-    return (0, execute_command_1.executeCommandObs)('run git  config --get remote.origin.url', cmd).pipe((0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs)('run git  config --get remote.origin.url', cmd, options).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n')[0];
     }));
 }

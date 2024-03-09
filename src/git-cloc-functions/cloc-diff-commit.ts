@@ -74,11 +74,11 @@ import { ClocDiffCommitEnriched, ClocDiffCommitEnrichedWithDerivedData, ClocDiff
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable of ClocDiffCommitEnriched objects.
  */
-export function clocDiffWithCommit$(
+export function clocDiffWithAllCommits$(
     pathToRepo: string,
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
-    languages: string[] = [],
+    options: ClocDiffWithCommitOptions = {},
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
@@ -87,11 +87,11 @@ export function clocDiffWithCommit$(
             totNumOfCommits: 0,
             commitCounter: 0,
             errorCounter: 0,
-        },
-    options: ClocDiffWithCommitOptions = {}
+        }
 ) {
+    const languages = options.languages || []
     // first calculate the cloc dictionary and pass it down the pipe
-    return clocFileDict$(pathToRepo, languages).pipe(
+    return clocFileDict$(pathToRepo, languages, options).pipe(
         catchError((err) => {
             if (err.code === 'ENOENT') {
                 console.log(`!!!!!!!! folder ${pathToRepo} not found`);
@@ -101,7 +101,7 @@ export function clocDiffWithCommit$(
         }),
         // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
         concatMap((clocFileDict) => {
-            return readCommitCompactWithUrlAndParentDate$(pathToRepo, fromDate, toDate).pipe(
+            return readCommitCompactWithUrlAndParentDate$(pathToRepo, fromDate, toDate, false, options).pipe(
                 map((commit) => {
                     return { commit, clocFileDict }
                 })
@@ -110,7 +110,7 @@ export function clocDiffWithCommit$(
         // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
         // together with the cloc dictionary and the commit
         concatMap(({ commit, clocFileDict }) => {
-            return clocDiffWithParentByfile$(commit.sha, pathToRepo, languages, options.notMatchDirectories, progress).pipe(
+            return clocDiffWithParentByfile$(commit.sha, pathToRepo, languages, options.notMatchDirectories, options, progress).pipe(
                 map((clocDiffByfile) => {
                     return { clocDiffByfile, clocFileDict, commit }
                 })
@@ -134,7 +134,6 @@ export function clocDiffWithCommit$(
                 ...commit
             }
             // set the file path relative to the current working directory to make it easier to read and possibly to link
-            clocDiffCommitEnriched.file = path.join(pathToRepo, clocDiffCommitEnriched.file)
             clocDiffCommitEnriched.file = path.relative(process.cwd(), clocDiffCommitEnriched.file)
             // calculate the derived data
             const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options, pathToRepo)
@@ -162,7 +161,6 @@ export function clocDiffWithCommitForRepos$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     excludeRepoPaths: string[] = [],
-    languages: string[] = [],
     options: ClocDiffWithCommitOptions = {}
 ) {
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
@@ -177,7 +175,7 @@ export function clocDiffWithCommitForRepos$(
             }
             return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
                 concatMap(({ repoPath, _fromDate }) => {
-                    return clocDiffWithCommit$(repoPath, _fromDate, toDate, languages, progess, options)
+                    return clocDiffWithAllCommits$(repoPath, _fromDate, toDate, options, progess)
                 })
             )
         })
@@ -209,7 +207,7 @@ export function writeClocDiffWithCommit$(
     createDirIfNotExisting(outDir);
 
     return deleteFile$(outFilePath).pipe(
-        concatMap(() => clocDiffWithCommit$(pathToRepo, fromDate, toDate, languages)),
+        concatMap(() => clocDiffWithAllCommits$(pathToRepo, fromDate, toDate, { languages })),
         toCsvObs(),
         concatMap((line) => {
             return appendFileObs(outFilePath, `${line}\n`);
@@ -247,7 +245,6 @@ export function writeClocDiffWithCommitForRepos$(
     const fromDate = options.fromDate || new Date(0)
     const toDate = options.toDate || new Date(Date.now())
     const excludeRepoPaths: string[] = options.excludeRepoPaths || []
-    const languages: string[] = options.languages || []
 
     const folderName = path.basename(folderPath);
     const outFile = `${folderName}-cloc-diff-commit-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
@@ -258,7 +255,7 @@ export function writeClocDiffWithCommitForRepos$(
     createDirIfNotExisting(outDir);
 
     return deleteFile$(outFilePath).pipe(
-        concatMap(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, languages, options)),
+        concatMap(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, options)),
         map(clocDiffCommitEnriched => {
             const csvRec = formatClocDiffCommitEnrichedForCsv(clocDiffCommitEnriched, options)
             return csvRec

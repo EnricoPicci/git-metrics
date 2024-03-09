@@ -36,7 +36,7 @@ describe('readOneCommitCompact$', () => {
     it('should throw an error if an not existing sha is provided', (done) => {
         const notExistingCommitSha = 'abc';
         const repoPath = './';
-        (0, commit_1.readOneCommitCompact$)(notExistingCommitSha, repoPath, false).subscribe({
+        (0, commit_1.readOneCommitCompact$)(notExistingCommitSha, repoPath, undefined, false).subscribe({
             next: () => {
                 done('should not return a value');
             },
@@ -52,7 +52,7 @@ describe('readOneCommitCompact$', () => {
     it('should notify the first commit object of this repo', (done) => {
         const firstCommitOfThisRepo = '8767d5864e7d72df0f25915fe8e0652244eee5fa';
         const repoPath = './';
-        (0, commit_1.readOneCommitCompact$)(firstCommitOfThisRepo, repoPath, false).subscribe({
+        (0, commit_1.readOneCommitCompact$)(firstCommitOfThisRepo, repoPath, undefined, false).subscribe({
             next: (commitCompact) => {
                 (0, chai_1.expect)(commitCompact.sha).equal(firstCommitOfThisRepo);
                 done();
