@@ -79,7 +79,11 @@ export function clocDiffBetweenDates$(
             // area is the first folder in the repo path after removing reposFolderPath
             const area = repoPath.split(reposFolderPath)[1].split(path.sep)[1];
 
-            let clocInfo: ClocFileInfo = clocDict[clocDiff.file]
+            // normalize the file path so that it starts always with a './'. The reason is that the clocDict
+            // is built with the cloc command which returns file names starting with './' while the file path
+            // in the clocDiff is built using the git log --numstat command which returns file names without './'
+            const filePath = clocDiff.file.startsWith('./') ? clocDiff.file : `./${clocDiff.file}`
+            let clocInfo: ClocFileInfo = clocDict[filePath]
             if (!clocInfo) {
                 clocInfo = {
                     code: 0,
