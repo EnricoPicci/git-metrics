@@ -8,7 +8,7 @@ describe(`clocDiffWithCommit$`, () => {
         const pathToRepo = './';
         const fromDate = new Date('2023-10-11');
         const toDate = new Date('2023-10-12');
-        (0, cloc_diff_commit_1.clocDiffWithCommit$)(pathToRepo, fromDate, toDate)
+        (0, cloc_diff_commit_1.clocDiffWithAllCommits$)(pathToRepo, fromDate, toDate)
             .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
             next: (arrayOfClocDiffCommitEnriched) => {
                 (0, chai_1.expect)(arrayOfClocDiffCommitEnriched.length).gt(0);
@@ -69,7 +69,7 @@ describe(`clocDiffWithCommit$`, () => {
         const pathToRepo = './';
         const fromDate = new Date('2023-10-23');
         const toDate = new Date('2023-10-25');
-        (0, cloc_diff_commit_1.clocDiffWithCommit$)(pathToRepo, fromDate, toDate)
+        (0, cloc_diff_commit_1.clocDiffWithAllCommits$)(pathToRepo, fromDate, toDate)
             .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
             next: (arrayOfClocDiffCommitEnriched) => {
                 // this file was removed in the period considered in the commit 97cf7ebcecc0de1e321b62b89783360b8c586054

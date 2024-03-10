@@ -11,10 +11,10 @@ describe('clocDiffBetweenDates$', () => {
         const branchName = 'main';
         const folderPath = './';
         const languages = ['TypeScript'];
-        (0, cloc_diff_between_dates_1.clocDiffBetweenDates$)(new Date(from), new Date(to), branchName, folderPath, languages).pipe((0, rxjs_1.toArray)()).subscribe({
+        (0, cloc_diff_between_dates_1.clocDiffBetweenDates$)(new Date(from), new Date(to), branchName, folderPath, '', languages).pipe((0, rxjs_1.toArray)()).subscribe({
             next: (clocDiffs) => {
                 (0, chai_1.expect)(clocDiffs).to.be.an('Array');
-                (0, chai_1.expect)(clocDiffs.length).eq(11);
+                (0, chai_1.expect)(clocDiffs.length).eq(14);
                 clocDiffs.forEach(clocDiff => {
                     (0, chai_1.expect)(clocDiff).to.be.an('object');
                     (0, chai_1.expect)(clocDiff.blank_added).gte(0);
@@ -31,11 +31,6 @@ describe('clocDiffBetweenDates$', () => {
                     (0, chai_1.expect)(clocDiff.comment_modified).gte(0);
                     (0, chai_1.expect)(clocDiff.extension).eq('ts');
                     (0, chai_1.expect)(clocDiff.file).to.be.a('string');
-                    // test that the sum of the diffs of the commit contains numbers
-                    (0, chai_1.expect)(clocDiff.commit_code_added).gte(0);
-                    (0, chai_1.expect)(clocDiff.commit_code_removed).gte(0);
-                    (0, chai_1.expect)(clocDiff.commit_code_same).gte(0);
-                    (0, chai_1.expect)(clocDiff.commit_code_modified).gte(0);
                 });
             },
             error: (error) => {

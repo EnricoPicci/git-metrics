@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeClocDiffWithCommitForRepos$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithCommit$ = void 0;
+exports.writeClocDiffWithCommitForRepos$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithAllCommits$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -71,7 +71,7 @@ const date_functions_1 = require("../tools/dates/date-functions");
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable of ClocDiffCommitEnriched objects.
  */
-function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), options = {}, progress = {
+function clocDiffWithAllCommits$(pathToRepo, fromDate = new Date(0), toDate = new Date(Date.now()), options = {}, progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
@@ -112,14 +112,13 @@ function clocDiffWithCommit$(pathToRepo, fromDate = new Date(0), toDate = new Da
         }
         const clocDiffCommitEnriched = Object.assign(Object.assign(Object.assign({}, clocDiffByfile), clocInfo), commit);
         // set the file path relative to the current working directory to make it easier to read and possibly to link
-        clocDiffCommitEnriched.file = path_1.default.join(pathToRepo, clocDiffCommitEnriched.file);
         clocDiffCommitEnriched.file = path_1.default.relative(process.cwd(), clocDiffCommitEnriched.file);
         // calculate the derived data
         const clocDiffCommitEnrichedWithDerivedData = calculateDerivedData(clocDiffCommitEnriched, options, pathToRepo);
         return clocDiffCommitEnrichedWithDerivedData;
     }));
 }
-exports.clocDiffWithCommit$ = clocDiffWithCommit$;
+exports.clocDiffWithAllCommits$ = clocDiffWithAllCommits$;
 /**
  * Calculates the cloc diff for each commit in each Git repository in a given folder between two dates,
  * considering only the files of languages that are in the array of languages provided.
@@ -143,7 +142,7 @@ function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate 
             errorCounter: 0,
         };
         return (0, commit_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
-            return clocDiffWithCommit$(repoPath, _fromDate, toDate, options, progess);
+            return clocDiffWithAllCommits$(repoPath, _fromDate, toDate, options, progess);
         }));
     }));
 }
@@ -164,7 +163,7 @@ function writeClocDiffWithCommit$(pathToRepo, outDir = './', fromDate = new Date
     const outFile = `${pathToRepoName}-cloc-diff-commit-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommit$(pathToRepo, fromDate, toDate, { languages })), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithAllCommits$(pathToRepo, fromDate, toDate, { languages })), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
         next: (outFilePath) => {

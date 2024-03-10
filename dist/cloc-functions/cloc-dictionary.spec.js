@@ -14,8 +14,10 @@ describe(`clocFileDict$`, () => {
             .pipe((0, rxjs_1.tap)((dict) => {
             (0, chai_1.expect)(Object.keys(dict).length).gt(0);
             // read the dict entry of this file
-            const thisFolderPathLegth = process.cwd().length;
-            const thisFilePath = __filename.substring(thisFolderPathLegth + 1);
+            const processCwd = process.cwd();
+            const thisFolderPathLegth = processCwd.length;
+            const _thisFilePath = __filename.substring(thisFolderPathLegth + 1);
+            const thisFilePath = folderPath + _thisFilePath;
             const thisFileClocInfo = dict[thisFilePath];
             (0, chai_1.expect)(thisFileClocInfo.language).equal('TypeScript');
             (0, chai_1.expect)(thisFileClocInfo.file).equal(thisFilePath);

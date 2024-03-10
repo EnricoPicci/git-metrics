@@ -121,8 +121,8 @@ function clocDiffAllByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath 
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
-}, notMatchDirectories = []) {
-    return executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories).pipe((0, rxjs_1.tap)({
+}, notMatchDirectories = [], options) {
+    return executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories, options).pipe((0, rxjs_1.tap)({
         next: (lines) => {
             // log progress
             if (lines[0] === 'Nothing to count.') {
@@ -232,12 +232,12 @@ exports.clocDiffRelByfileWithCommitData$ = clocDiffRelByfileWithCommitData$;
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
  */
-function clocDiffAllByfileWithCommitData$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], notMatchDirectories = [], progress = {
+function clocDiffAllByfileWithCommitData$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], notMatchDirectories = [], options, progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
 }) {
-    return clocDiffRelByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress, notMatchDirectories).pipe(
+    return clocDiffAllByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, progress, notMatchDirectories, options).pipe(
     // and then map each ClocDiffByfile object to a ClocDiffByfileWithCommitDiffs object
     (0, rxjs_1.map)(clocDiffByfile => {
         return (0, cloc_diff_byfile_model_1.newClocDiffByfileWithCommitData)(clocDiffByfile);
@@ -284,7 +284,7 @@ function buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languag
 }
 function executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages = [], notMatchDirectories, options) {
     const cmd = buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath, notMatchDirectories, strategy);
-    return (0, execute_command_1.executeCommandObs)('run cloc --git-diff-rel --by-file --quiet', cmd, options).pipe((0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs)(`run cloc --git-diff-${strategy} --by-file --quiet`, cmd, options).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n');
     }), (0, rxjs_1.catchError)((err) => {
         // we have encountered situations where cloc returns an error with a message containing text like this:
@@ -310,8 +310,8 @@ function executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderP
     const strategy = 'rel';
     return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories, options);
 }
-function executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = [], notMatchDirectories) {
+function executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = [], notMatchDirectories, options) {
     const strategy = 'all';
-    return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories);
+    return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories, options);
 }
 //# sourceMappingURL=cloc-diff-byfile.js.map

@@ -207,7 +207,7 @@ export function checkoutRepoAtDate$(
                 console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
                 console.error(err.message)
                 const _error = new CheckoutError(err.message, repoPath, err.command, _sha);
-                return of(_error);
+                throw _error;
             }
             throw err;
         }),
@@ -237,14 +237,18 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, options:
 
     return from(repoPaths).pipe(
         mergeMap((repoPath) => {
-            return checkoutRepoAtDate$(repoPath, date, options);
+            return checkoutRepoAtDate$(repoPath, date, options).pipe(
+                catchError((err) => {
+                    if (err instanceof CheckoutError) {
+                        erroredRepos.push({ repo: err.repoPath, sha: err.sha, command: err.command, message: err.message });
+                        return EMPTY;
+                    }
+                    throw err;
+                }),
+            );
         }, concurrency),
         tap({
             next: (val) => {
-                if (val instanceof CheckoutError) {
-                    erroredRepos.push({ repo: val.repoPath, sha: val.sha, command: val.command, message: val.message });
-                    return
-                }
                 checkedOutRepos.push({ repo: val.repoPath, sha: val.sha, command: `checkout ${val.sha}` });
             },
         }),

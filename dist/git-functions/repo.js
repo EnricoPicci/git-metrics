@@ -159,11 +159,13 @@ exports.fetchAllRepos$ = fetchAllRepos$;
 function checkoutRepoAtDate$(repoPath, date, options) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
-    let _sha;
+    let _sha = '';
     return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDateOrBefore$)(repoPath, date, branch, options)), (0, rxjs_1.concatMap)(([sha]) => {
         _sha = sha;
         return (0, commit_1.checkout$)(repoPath, sha, options);
-    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)({ repoPath, sha: _sha }), (0, rxjs_1.map)(() => {
+        return { repoPath, sha: _sha };
+    }), (0, rxjs_1.catchError)((err) => {
         if (err instanceof git_errors_1.GitError) {
             console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
             console.error(err.message);
@@ -199,7 +201,7 @@ function checkoutAllReposAtDate$(folderPath, date, options) {
                 erroredRepos.push({ repo: val.repoPath, sha: val.sha, command: val.command, message: val.message });
                 return;
             }
-            checkedOutRepos.push({ repo: val, sha: '', command: `checkout ${val}` });
+            checkedOutRepos.push({ repo: val.repoPath, sha: val.sha, command: `checkout ${val.sha}` });
         },
     }), (0, rxjs_1.last)(), (0, rxjs_1.map)(() => {
         console.log(`Checked out ${repoPaths.length - erroredRepos.length} repos of ${repoPaths.length}`);
