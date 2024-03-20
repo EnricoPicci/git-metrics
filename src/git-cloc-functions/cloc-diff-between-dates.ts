@@ -79,6 +79,7 @@ export function clocDiffBetweenDates$(
         catchError((err) => {
             console.error(`!!!!!!!!!!!!!!!>> Error: while calculating cloc diff between dates for repo "${repoPath}"`);
             console.error(`!!!!!!!!!!!!!!!>> error message: ${err.message}`);
+            console.error(`!!!!!!!!!!!!!!!>> stack: ${err.stack}`);
             return EMPTY;
         })
     )
@@ -126,7 +127,7 @@ function calcDiffBetweenTwoCommits$(
             let _fromDateClocInfo: ClocFileInfo = fromDateClocDict[filePath]
             let _toDateClocInfo: ClocFileInfo = toDateClocDict[filePath]
 
-            const language = _fromDateClocInfo?.language || _toDateClocInfo.language
+            const language = _fromDateClocInfo?.language || _toDateClocInfo?.language || ''
 
             const fromDateClocInfo = {
                 from_code: _fromDateClocInfo ? _fromDateClocInfo.code : 0,
