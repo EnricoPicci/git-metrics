@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { WriteClocDiffWithCommitForReposOptions } from "../../git-cloc-functions/cloc-diff-commit";
+import { WriteCodeTurnoverOptions } from "../../git-cloc-functions/cloc-diff-commit";
 import { codeTurnover$ } from "../../git-cloc-functions/code-turnover";
 
 export function launchCodeTurnoverForRepos() {
@@ -11,7 +11,7 @@ export function launchCodeTurnoverForRepos() {
         removeBlanks, removeComments, removeSame, fileMassiveRefactorThreshold, commitMassiveRefactorThreshold,
         commitMassiveRemoveThreshold, jiraIdRegexPattern, creationDateCsvFilePath, notMatchDirectories } = readParams();
 
-    const options: WriteClocDiffWithCommitForReposOptions = {
+    const options: WriteCodeTurnoverOptions = {
         outdir,
         fromDate,
         toDate,

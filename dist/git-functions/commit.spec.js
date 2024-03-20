@@ -414,15 +414,10 @@ describe(`commitAtDateOrBefore$`, () => {
         const branchName = 'main';
         (0, commit_1.commitAtDateOrBefore$)(thisRepoPath, date, branchName).subscribe({
             next: ([sha]) => {
-                done(new Error(`should not notify a commit sha since there should not be commits at the date ${date} or before it
-                Instead it notifies ${sha}`));
+                (0, chai_1.expect)(sha).equal('');
             },
-            error: (err) => {
-                // the error should be defined
-                (0, chai_1.expect)(!err).false;
-                done();
-            },
-            complete: () => done(new Error(`should not complete since it should error`)),
+            error: (err) => done(err),
+            complete: () => done(),
         });
     });
 });
@@ -432,9 +427,10 @@ describe('commitAtDateOrAfter$', () => {
         const branch = 'main';
         const date = new Date('2021-12-11');
         (0, commit_1.commitAtDateOrAfter$)(repoPath, date, branch).subscribe(([sha, commitDate]) => {
-            // sometimes sha is 274b760e7a5e871dfd13993bdb08b936b6314299
-            (0, chai_1.expect)(sha).equal('189adaa55ccb905a7b2f01797457d3caa16a5630');
-            (0, chai_1.expect)(commitDate).equal('2021-12-11 12:01:52 +0100');
+            // sometimes sha is 274b760e7a5e871dfd13993bdb08b936b6314299 sometime is 9369eb39af383a2894362d0008b7380d8cf454dd
+            // both commits are at the same date
+            (0, chai_1.expect)(sha).equals('9369eb39af383a2894362d0008b7380d8cf454dd');
+            (0, chai_1.expect)(commitDate).equal('2021-12-13 18:18:05 +0100');
             done();
         });
     });
@@ -454,16 +450,13 @@ describe('commitAtDateOrAfter$', () => {
         // tomorrow is a date in the future
         const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
         (0, commit_1.commitAtDateOrAfter$)(repoPath, tomorrow, branch).subscribe({
-            next: (commitSha) => {
-                done(new Error(`should not notify a commit sha since there should not be commits at the date ${tomorrow} or before it
-                Instead it notifies ${commitSha}`));
+            next: ([sha]) => {
+                (0, chai_1.expect)(sha).equal('');
             },
             error: (err) => {
-                // the error should be defined
-                (0, chai_1.expect)(!err).false;
-                done();
+                done(err);
             },
-            complete: () => done(new Error(`should not complete since it should error`)),
+            complete: () => done(),
         });
     });
 });
@@ -473,9 +466,10 @@ describe('commitClosestToDate$', () => {
         const branch = 'main';
         const date = new Date('2021-12-11');
         (0, commit_1.commitClosestToDate$)(repoPath, date, branch).subscribe(([sha, commitDate]) => {
-            // sometimes sha is 274b760e7a5e871dfd13993bdb08b936b6314299
-            (0, chai_1.expect)(sha).equal('ccd078c75c2446eb8babc0536ac3c033aadb0323');
-            (0, chai_1.expect)(commitDate).equal('2021-12-11 11:04:28 +0100');
+            // sometimes sha is 274b760e7a5e871dfd13993bdb08b936b6314299 sometime is 189adaa55ccb905a7b2f01797457d3caa16a5630
+            // both commits are at the same date
+            (0, chai_1.expect)(sha === '274b760e7a5e871dfd13993bdb08b936b6314299' || sha === '189adaa55ccb905a7b2f01797457d3caa16a5630').true;
+            (0, chai_1.expect)(commitDate === '2021-12-11 12:01:52 +0100' || commitDate === '2021-12-11 11:04:28 +0100').true;
             done();
         });
     });

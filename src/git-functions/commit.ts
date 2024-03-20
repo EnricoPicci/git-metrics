@@ -293,7 +293,8 @@ export function commitAtDateOrBefore$(repoPath: string, date: Date, branchName: 
                 we expected to have a commit sha but we got an empty string.
                 This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
                 Command erroring: "${gitCommand}"`;
-                throw new GitError(errMsg, repoPath, gitCommand);
+                console.log(errMsg)
+                // throw new GitError(errMsg, repoPath, gitCommand);
             }
         }),
         map(commitInfo => {
@@ -330,12 +331,13 @@ export function commitAtDateOrAfter$(repoPath: string, date: Date, branchName: s
         map(commitSha => {
             return commitSha.trim()
         }),
-        tap((commitSha) => {
-            if (!commitSha) {
-                throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
+        tap((commitsInfo) => {
+            if (!commitsInfo) {
+                const err = `Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
                     we expected to have a commit sha but we got an empty string.
                     This probably means that there is no commit at date ${dateString} or after it for branch ${branchName} in repo "${repoPath}"
-                    Command erroring: "${gitCommand}"`);
+                    Command erroring: "${gitCommand}"`;
+                console.error(err)
             }
         }),
         map(commitsInfo => {
@@ -383,6 +385,9 @@ export function commitClosestToDate$(
     )
 }
 const splitShaDate = (commitInfoString: string): [sha: string, date: string] => {
+    if (!commitInfoString) {
+        return ['', '']
+    }
     // sha is the first 40 characters of the string
     const sha = commitInfoString.slice(0, 40)
     // date is the rest of the string

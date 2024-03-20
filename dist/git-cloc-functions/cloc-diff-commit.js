@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeClocDiffWithCommitForRepos$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithAllCommits$ = void 0;
+exports.writeCodeTurnover$ = exports.writeClocDiffWithCommit$ = exports.clocDiffWithCommitForRepos$ = exports.clocDiffWithAllCommits$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -187,18 +187,18 @@ exports.writeClocDiffWithCommit$ = writeClocDiffWithCommit$;
  *   - `languages`: An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable that emits the path of the resulting CSV file.
  */
-function writeClocDiffWithCommitForRepos$(folderPath, options = {}) {
+function writeCodeTurnover$(folderPath, options = {}) {
     const outDir = options.outdir || './';
     const fromDate = options.fromDate || new Date(0);
     const toDate = options.toDate || new Date(Date.now());
     const excludeRepoPaths = options.excludeRepoPaths || [];
     const folderName = path_1.default.basename(folderPath);
-    const outFile = `${folderName}-cloc-diff-commit-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
+    const outFile = `${folderName}-code-turnover-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
     let noCommitsFound = true;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
     return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, options)), (0, rxjs_1.map)(clocDiffCommitEnriched => {
-        const csvRec = formatClocDiffCommitEnrichedForCsv(clocDiffCommitEnriched, options);
+        const csvRec = formatCodeTurnoverForCsv(clocDiffCommitEnriched, options);
         return csvRec;
     }), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         noCommitsFound = false;
@@ -209,11 +209,11 @@ function writeClocDiffWithCommitForRepos$(folderPath, options = {}) {
                 console.log(`\n====>>>> no commits found in the given time range, for the given languages, in the given repos`);
                 return;
             }
-            console.log(`\n====>>>> cloc-diff-commit-for-repos info saved on file ${outFilePath}`);
+            console.log(`\n====>>>> code-turnover info saved on file ${outFilePath}`);
         },
     }));
 }
-exports.writeClocDiffWithCommitForRepos$ = writeClocDiffWithCommitForRepos$;
+exports.writeCodeTurnover$ = writeCodeTurnover$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
@@ -309,7 +309,7 @@ function extractJiraId(clocDiffCommitEnriched, options) {
     }
     return '-';
 }
-function formatClocDiffCommitEnrichedForCsv(csvRec, options) {
+function formatCodeTurnoverForCsv(csvRec, options) {
     // define csvRecObj as of type any so that we can manipulate its properties without type checking
     // while we keep the type checking for csvRec so that we know which are the properties available
     const csvRecObj = csvRec;

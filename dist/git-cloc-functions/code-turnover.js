@@ -12,7 +12,7 @@ const cloc_diff_commit_1 = require("./cloc-diff-commit");
  * @returns An Observable that emits when the operation is complete.
  */
 function codeTurnover$(folderPath, options = {}) {
-    return (0, cloc_diff_commit_1.writeClocDiffWithCommitForRepos$)(folderPath, options);
+    return (0, cloc_diff_commit_1.writeCodeTurnover$)(folderPath, options);
 }
 exports.codeTurnover$ = codeTurnover$;
 //# sourceMappingURL=code-turnover.js.map

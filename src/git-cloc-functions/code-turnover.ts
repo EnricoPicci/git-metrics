@@ -3,7 +3,7 @@
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
 
-import { WriteClocDiffWithCommitForReposOptions, writeClocDiffWithCommitForRepos$ } from "./cloc-diff-commit";
+import { WriteCodeTurnoverOptions, writeCodeTurnover$ } from "./cloc-diff-commit";
 
 /**
  * Calculates the code turnover for a set of repositories and returns an Observable that emits when the operation is complete.
@@ -13,7 +13,7 @@ import { WriteClocDiffWithCommitForReposOptions, writeClocDiffWithCommitForRepos
  */
 export function codeTurnover$(
     folderPath: string,
-    options: WriteClocDiffWithCommitForReposOptions = {}
+    options: WriteCodeTurnoverOptions = {}
 ) {
-    return writeClocDiffWithCommitForRepos$(folderPath, options)
+    return writeCodeTurnover$(folderPath, options)
 }

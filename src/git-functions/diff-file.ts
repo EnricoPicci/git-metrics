@@ -126,6 +126,18 @@ export function splitDiffs(tokens: string[]) {
         // the token[i+2] represents the postImage file path.
         // If token[i] cannot be split in 3 parts, then we have an error
         const thisToken = tokens[i];
+        if (!thisToken) {
+            console.log(`Error parsing git diff output for token: ${thisToken}
+            we expect 3 values containing lines added, lines deleted, and file path (in case on no rename/copy)
+            or an empty string (in case of rename/copy)
+            as per documentation https://git-scm.com/docs/git-diff#_other_diff_formats`);
+            continue;
+        }
+        try {
+            thisToken.split('\t');
+        } catch (err) {
+            console.log(err)
+        }
         const thisTokenParts = thisToken.split('\t');
         if (thisTokenParts.length !== 3) {
             throw new Error(`Error parsing git diff output for token: ${thisToken}

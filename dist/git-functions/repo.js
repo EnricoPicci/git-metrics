@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
+exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -149,33 +149,53 @@ function fetchAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
 }
 exports.fetchAllRepos$ = fetchAllRepos$;
 /**
- * Checks out a Git repository at a specific date and returns an Observable that emits the path to the repository
+ * Checks out a Git repository at a commit at the date passed in as parameter or, in case there is no commit at that date,
+ * takes the commit before that date. Returns an Observable that emits the path to the repository
  * or a CheckoutError if an error occurs during the checkout process.
- * @param repoPath The path to the Git repository.
+ * @param repoPath The path to the Git repository and the sha of the commit used to check out.
  * @param date The date to check out the repository at.
- * @param branch The branch to check out. Defaults to 'master'.
  * @returns An Observable that emits the path to the repository or a CheckoutError if an error occurs during the checkout process.
  */
 function checkoutRepoAtDate$(repoPath, date, options) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
-    let _sha = '';
-    return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDateOrBefore$)(repoPath, date, branch, options)), (0, rxjs_1.concatMap)(([sha]) => {
-        _sha = sha;
-        return (0, commit_1.checkout$)(repoPath, sha, options);
-    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)({ repoPath, sha: _sha }), (0, rxjs_1.map)(() => {
-        return { repoPath, sha: _sha };
-    }), (0, rxjs_1.catchError)((err) => {
+    return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDateOrBefore$)(repoPath, date, branch, options)), (0, rxjs_1.concatMap)(([sha, commitDate]) => {
+        if (!sha) {
+            console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+            console.error(`!!!!!!!!!!!!!!! No commit found at date: ${date}`);
+            const _error = new git_errors_1.CheckoutError(`No commit found at date: ${date}`, repoPath, `git checkout`, sha);
+            throw _error;
+        }
+        return (0, commit_1.checkout$)(repoPath, sha, options).pipe((0, rxjs_1.map)(() => {
+            return { repoPath, sha, commitDate };
+        }), (0, rxjs_1.catchError)((err) => {
+            if (err instanceof git_errors_1.GitError) {
+                console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+                console.error(err.message);
+                const _error = new git_errors_1.CheckoutError(err.message, repoPath, err.command, sha);
+                throw _error;
+            }
+            throw err;
+        }));
+    }), (0, rxjs_1.last)(), (0, rxjs_1.map)(({ repoPath, sha, commitDate }) => {
+        return { repoPath, sha, commitDate };
+    }));
+}
+exports.checkoutRepoAtDate$ = checkoutRepoAtDate$;
+function checkoutRepoAtCommit$(repoPath, sha, options) {
+    if (!repoPath)
+        throw new Error(`Path is mandatory`);
+    return (0, commit_1.checkout$)(repoPath, sha, options).pipe((0, rxjs_1.catchError)((err) => {
         if (err instanceof git_errors_1.GitError) {
             console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
             console.error(err.message);
-            const _error = new git_errors_1.CheckoutError(err.message, repoPath, err.command, _sha);
-            return (0, rxjs_1.of)(_error);
+            const _error = new git_errors_1.CheckoutError(err.message, repoPath, err.command, sha);
+            throw _error;
         }
         throw err;
     }));
 }
-exports.checkoutRepoAtDate$ = checkoutRepoAtDate$;
+exports.checkoutRepoAtCommit$ = checkoutRepoAtCommit$;
 /**
  * Checks out all repositories in a folder at a specific date and returns an Observable that emits the path to each repository.
  * If an error occurs during the checkout process, the Observable emits a CheckoutError object.
@@ -194,13 +214,15 @@ function checkoutAllReposAtDate$(folderPath, date, options) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     console.log(`Number of repos to be checkedout: ${repoPaths.length}`);
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
-        return checkoutRepoAtDate$(repoPath, date, options);
+        return checkoutRepoAtDate$(repoPath, date, options).pipe((0, rxjs_1.catchError)((err) => {
+            if (err instanceof git_errors_1.CheckoutError) {
+                erroredRepos.push({ repo: err.repoPath, sha: err.sha, command: err.command, message: err.message });
+                return rxjs_1.EMPTY;
+            }
+            throw err;
+        }));
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
-            if (val instanceof git_errors_1.CheckoutError) {
-                erroredRepos.push({ repo: val.repoPath, sha: val.sha, command: val.command, message: val.message });
-                return;
-            }
             checkedOutRepos.push({ repo: val.repoPath, sha: val.sha, command: `checkout ${val.sha}` });
         },
     }), (0, rxjs_1.last)(), (0, rxjs_1.map)(() => {

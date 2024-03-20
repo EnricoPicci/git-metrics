@@ -226,7 +226,8 @@ function commitAtDateOrBefore$(repoPath, date, branchName, options) {
                 we expected to have a commit sha but we got an empty string.
                 This probably means that there is no commit at date ${dateString} or before it for branch ${branchName} in repo "${repoPath}"
                 Command erroring: "${gitCommand}"`;
-            throw new git_errors_1.GitError(errMsg, repoPath, gitCommand);
+            console.log(errMsg);
+            // throw new GitError(errMsg, repoPath, gitCommand);
         }
     }), (0, rxjs_1.map)(commitInfo => {
         // commitsInfo is a string containing the concatenation of all the commits in the format sha, date joined by a newline
@@ -259,12 +260,13 @@ function commitAtDateOrAfter$(repoPath, date, branchName) {
     const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}" --format=%H%ci ${branchName}`;
     return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitSha => {
         return commitSha.trim();
-    }), (0, rxjs_1.tap)((commitSha) => {
-        if (!commitSha) {
-            throw new Error(`Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
+    }), (0, rxjs_1.tap)((commitsInfo) => {
+        if (!commitsInfo) {
+            const err = `Error: while reading the commit sha at date ${dateString} for branch ${branchName} in repo "${repoPath}"
                     we expected to have a commit sha but we got an empty string.
                     This probably means that there is no commit at date ${dateString} or after it for branch ${branchName} in repo "${repoPath}"
-                    Command erroring: "${gitCommand}"`);
+                    Command erroring: "${gitCommand}"`;
+            console.error(err);
         }
     }), (0, rxjs_1.map)(commitsInfo => {
         // commitsInfo is a string containing the concatenation of all the commits in the format sha, date joined by a newline
@@ -303,6 +305,9 @@ function commitClosestToDate$(repoPath, date, branchName, beforeWhenEqual = true
 }
 exports.commitClosestToDate$ = commitClosestToDate$;
 const splitShaDate = (commitInfoString) => {
+    if (!commitInfoString) {
+        return ['', ''];
+    }
     // sha is the first 40 characters of the string
     const sha = commitInfoString.slice(0, 40);
     // date is the rest of the string

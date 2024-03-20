@@ -471,15 +471,10 @@ describe(`commitAtDateOrBefore$`, () => {
 
         commitAtDateOrBefore$(thisRepoPath, date, branchName).subscribe({
             next: ([sha]) => {
-                done(new Error(`should not notify a commit sha since there should not be commits at the date ${date} or before it
-                Instead it notifies ${sha}`));
+                expect(sha).equal('')
             },
-            error: (err) => {
-                // the error should be defined
-                expect(!err).false
-                done()
-            },
-            complete: () => done(new Error(`should not complete since it should error`)),
+            error: (err) => done(err),
+            complete: () => done(),
         });
     });
 });
@@ -516,16 +511,13 @@ describe('commitAtDateOrAfter$', () => {
         const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         commitAtDateOrAfter$(repoPath, tomorrow, branch).subscribe({
-            next: (commitSha) => {
-                done(new Error(`should not notify a commit sha since there should not be commits at the date ${tomorrow} or before it
-                Instead it notifies ${commitSha}`));
+            next: ([sha]) => {
+                expect(sha).equal('')
             },
             error: (err) => {
-                // the error should be defined
-                expect(!err).false
-                done()
+                done(err)
             },
-            complete: () => done(new Error(`should not complete since it should error`)),
+            complete: () => done(),
         });
     });
 });

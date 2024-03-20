@@ -5,9 +5,19 @@ import { ExecuteCommandObsOptions } from "../tools/execute-command/execute-comma
 
 export type ClocDiffCommitEnriched = ClocDiffByfileWithCommitData & ClocFileInfo & CommitCompactWithUrlAndParentDate
 
-export type ClocDiffCommitBetweenDatesEnriched = ClocDiffByfileWithIsCopy & ClocFileInfo & {
-    fromSha: string;
-    toSha: string;
+export type ClocDiffCommitBetweenDatesEnriched = ClocDiffByfileWithIsCopy & {
+    language: string;
+    file: string;
+    from_blank: number;
+    from_comment: number;
+    from_code: number
+    from_sha: string;
+    from_sha_date: string;
+    to_blank: number;
+    to_comment: number;
+    to_code: number
+    to_sha: string;
+    to_sha_date: string;
     repo: string;
     module: string;
     area: string;

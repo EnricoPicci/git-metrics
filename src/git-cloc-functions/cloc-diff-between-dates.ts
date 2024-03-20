@@ -1,5 +1,5 @@
 import path from "path"
-import { forkJoin, concatMap, defaultIfEmpty, ignoreElements, tap, map, catchError, EMPTY, last } from "rxjs"
+import { forkJoin, concatMap, defaultIfEmpty, ignoreElements, tap, map, catchError, EMPTY, last, toArray, share, } from "rxjs"
 
 import { toCsvObs } from "@enrico.piccinin/csv-tools"
 import { appendFileObs } from "observable-fs"
@@ -11,10 +11,12 @@ import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils"
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing"
 import { gitRepoPaths } from "../git-functions/repo-path"
 import { defaultBranchName$ } from "../git-functions/branches"
-import { ExecuteCommandObsOptions, writeCmdLogs$ } from "../tools/execute-command/execute-command"
-import { clocFileDict$ } from "../cloc-functions/cloc-dictionary"
 import { ClocFileInfo } from "../cloc-functions/cloc.model"
 import { ClocDiffCommitBetweenDatesEnriched } from "./cloc-diff-commit.model"
+import { ClocOptions, clocFileDictAtCommits$, } from "./cloc-at-date-commit"
+import { writeCmdLogs$ } from "../tools/execute-command/execute-command"
+import { newClocDiffByfile } from "../cloc-functions/cloc-diff-byfile.model"
+import { calcArea } from "./derived-fields"
 
 
 /**
@@ -40,7 +42,7 @@ export function clocDiffBetweenDates$(
     reposFolderPath = './',
     languages: string[] = [],
     notMatchDirectories: string[] = [],
-    options?: ExecuteCommandObsOptions
+    options?: ClocOptions
 ) {
     // if fromDate is after toDate, swap the two dates
     if (fromDate > toDate) {
@@ -52,52 +54,99 @@ export function clocDiffBetweenDates$(
     const fromCommit = commitAtDateOrBefore$(repoPath, fromDate, branchName, options)
     const toCommit = commitAtDateOrBefore$(repoPath, toDate, branchName, options)
 
-    const _clocFileDict$ = clocFileDict$(repoPath, languages, options).pipe(
-        catchError((err) => {
-            if (err.code === 'ENOENT') {
-                console.log(`!!!!!!!! folder ${repoPath} not found`);
-                process.exit(1);
-            }
-            throw err;
-        }),
-    )
+    const fromToCommits$ = forkJoin([fromCommit, toCommit]).pipe(share())
 
-    return forkJoin([fromCommit, toCommit, _clocFileDict$]).pipe(
-        concatMap(([[fromSha], [toSha], clocDict]) => {
+    return fromToCommits$.pipe(
+        concatMap(([fromShaDate, toShaDate]) => {
+            const [fromSha, _fromDate] = fromShaDate
+            const [toSha, _toDate] = toShaDate
+            // if both fromSha and toSha are not empty, then we have found the commits at the two dates
+            // and therefore we can calculate the cloc diff between the two commits
+            if (fromSha && toSha) {
+                const _fromShaDate = [fromSha, new Date(_fromDate)] as [string, Date]
+                const _toShaDate = [toSha, new Date(_toDate)] as [string, Date]
+                return calcDiffBetweenTwoCommits$(repoPath, reposFolderPath, _fromShaDate, _toShaDate, languages, notMatchDirectories, options)
+            }
+            // if fromSha is empty, then we have not found a commit at or before the fromDate and therefore
+            // we calculate only the cloc for the toDate commit with all the values set to 0 for the fromDate
+            else if (!fromSha) {
+                return calcDiffWithOneCommit$(repoPath, reposFolderPath, toDate, toSha, options)
+            }
+            else {
+                return EMPTY
+            }
+        }),
+        catchError((err) => {
+            console.error(`!!!!!!!!!!!!!!!>> Error: while calculating cloc diff between dates for repo "${repoPath}"`);
+            console.error(`!!!!!!!!!!!!!!!>> error message: ${err.message}`);
+            return EMPTY;
+        })
+    )
+}
+function calcDiffBetweenTwoCommits$(
+    repoPath: string,
+    reposFolderPath: string,
+    fromShaDate: [string, Date],
+    toShaDate: [string, Date],
+    languages: string[] = [],
+    notMatchDirectories: string[] = [],
+    options?: ClocOptions
+) {
+    const [fromSha] = fromShaDate
+    const [toSha] = toShaDate
+    return clocFileDictAtCommits$(repoPath, [fromSha, toSha], options).pipe(
+        toArray(),
+        map((clocDicts) => {
+            return { fromShaDate, toShaDate, fromDateClocDict: clocDicts[0], toDateClocDict: clocDicts[1] }
+        }),
+        concatMap(({ fromShaDate, toShaDate, fromDateClocDict, toDateClocDict }) => {
+            const fromSha = fromShaDate[0]
+            const toSha = toShaDate[0]
             return clocDiffRelByfileWithCommitData$(toSha, fromSha, repoPath, languages, notMatchDirectories, options).pipe(
                 map((clocDiff) => {
-                    return { clocDiff, clocDict, toSha, fromSha }
+                    return { clocDiff, fromDateClocDict, toDateClocDict, fromShaDate, toShaDate }
                 })
             )
         }),
         // now enrich the cloc diff with the cloc dictionary and the commit data
-        map(({ clocDiff, clocDict, toSha, fromSha }) => {
+        map(({ clocDiff, fromDateClocDict, toDateClocDict, fromShaDate, toShaDate }) => {
+            const [fromSha, _fromDate] = fromShaDate
+            const [toSha, _toDate] = toShaDate
+
             const module = path.dirname(clocDiff.file);
-            // // remove the starting repoPath from the _module path
-            // const module = _module.substring(repoPath.length + 1);
 
             // area is the first folder in the repo path after removing reposFolderPath
-            const area = repoPath.split(reposFolderPath)[1].split(path.sep)[1];
+            const area = calcArea(repoPath, reposFolderPath);
 
             // normalize the file path so that it starts always with a './'. The reason is that the clocDict
             // is built with the cloc command which returns file names starting with './' while the file path
             // in the clocDiff is built using the git log --numstat command which returns file names without './'
             const filePath = clocDiff.file.startsWith('./') ? clocDiff.file : `./${clocDiff.file}`
-            let clocInfo: ClocFileInfo = clocDict[filePath]
-            if (!clocInfo) {
-                clocInfo = {
-                    code: 0,
-                    comment: 0,
-                    blank: 0,
-                    language: '',
-                    file: clocDiff.file
-                }
+
+            let _fromDateClocInfo: ClocFileInfo = fromDateClocDict[filePath]
+            let _toDateClocInfo: ClocFileInfo = toDateClocDict[filePath]
+
+            const language = _fromDateClocInfo?.language || _toDateClocInfo.language
+
+            const fromDateClocInfo = {
+                from_code: _fromDateClocInfo ? _fromDateClocInfo.code : 0,
+                from_comment: _fromDateClocInfo ? _fromDateClocInfo.comment : 0,
+                from_blank: _fromDateClocInfo ? _fromDateClocInfo.blank : 0,
+            }
+            const toDateClocInfo = {
+                to_code: _toDateClocInfo ? _toDateClocInfo.code : 0,
+                to_comment: _toDateClocInfo ? _toDateClocInfo.comment : 0,
+                to_blank: _toDateClocInfo ? _toDateClocInfo.blank : 0,
             }
             const clocDiffCommitEnriched: ClocDiffCommitBetweenDatesEnriched = {
+                language,
                 ...clocDiff,
-                ...clocInfo,
-                fromSha,
-                toSha,
+                ...fromDateClocInfo,
+                ...toDateClocInfo,
+                from_sha: fromSha,
+                from_sha_date: toYYYYMMDD(_fromDate),
+                to_sha: toSha,
+                to_sha_date: toYYYYMMDD(_toDate),
                 repo: repoPath,
                 module,
                 area
@@ -109,13 +158,65 @@ export function clocDiffBetweenDates$(
             delete (clocDiffCommitEnriched as any).commit_code_removed
             delete (clocDiffCommitEnriched as any).commit_code_modified
             delete (clocDiffCommitEnriched as any).commit_code_same
+            delete (clocDiffCommitEnriched as any).sumOfDiffs
 
             return clocDiffCommitEnriched
         }),
-        catchError((err) => {
-            console.error(`!!!!!!!!!!!!!!! Error: while calculating differences for repo "${repoPath}"`);
-            console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
-            return EMPTY;
+    )
+}
+function calcDiffWithOneCommit$(
+    repoPath: string,
+    reposFolderPath: string,
+    toDate: Date,
+    sha: string,
+    options?: ClocOptions
+) {
+    return clocFileDictAtCommits$(repoPath, [sha], options).pipe(
+        toArray(),
+        map((clocDicts) => {
+            return { sha, toDateClocDict: clocDicts[0] }
+        }),
+        // map the clocDictionary into an array of ClocDiffCommitBetweenDatesEnriched objects
+        map(({ sha, toDateClocDict }) => {
+            return Object.keys(toDateClocDict).map((file) => {
+                const toDateClocInfo = toDateClocDict[file]
+
+                const module = path.dirname(toDateClocInfo.file);
+
+                // area is the first folder in the repo path after removing reposFolderPath
+                const area = calcArea(repoPath, reposFolderPath);
+
+                const language = toDateClocInfo.language
+                const clocDiffByFile = newClocDiffByfile(file)
+                clocDiffByFile.blank_added = toDateClocInfo.blank
+                clocDiffByFile.comment_added = toDateClocInfo.comment
+                clocDiffByFile.code_added = toDateClocInfo.code
+                const clocDiffCommitEnriched: ClocDiffCommitBetweenDatesEnriched = {
+                    language,
+                    ...clocDiffByFile,
+                    isCopy: false,
+                    from_code: 0,
+                    from_comment: 0,
+                    from_blank: 0,
+                    to_code: toDateClocInfo.code,
+                    to_comment: toDateClocInfo.comment,
+                    to_blank: toDateClocInfo.blank,
+                    from_sha: '',
+                    from_sha_date: '',
+                    to_sha: sha,
+                    to_sha_date: toYYYYMMDD(toDate),
+                    repo: repoPath,
+                    module,
+                    area
+                }
+                // set the file path relative to the current working directory to make it easier to read and possibly to link
+                clocDiffCommitEnriched.file = path.relative(process.cwd(), clocDiffCommitEnriched.file)
+
+                return clocDiffCommitEnriched
+            })
+        }),
+        concatMap((clocDiffCommitEnriched) => {
+            return clocDiffCommitEnriched
         }),
     )
 }
@@ -124,20 +225,17 @@ export function clocDiffBetweenDatesForRepos$(
     reposFolderPath: string,
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
-    options: WriteClocDiffBetweenDatesOptions
+    options: ClocOptions
 ) {
     const { excludeRepoPaths, creationDateCsvFilePath, notMatch } = options;
     const repoPaths = gitRepoPaths(reposFolderPath, excludeRepoPaths);
 
-    let _repoPath = ''
-
     return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
         concatMap(({ repoPath, _fromDate }) => {
-            _repoPath = repoPath
             return defaultBranchName$(repoPath, options).pipe(
                 map((branchName) => ({ repoPath, _fromDate, branchName })),
                 catchError((err) => {
-                    console.error(`!!!!!!!!!!!!!!! Error: while calculating differences for repo "${_repoPath}"`);
+                    console.error(`!!!!!!!!!!!!!!! Error: while calculating default banch name for repo "${repoPath}"`);
                     console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
                     return EMPTY;
                 })
@@ -201,13 +299,13 @@ export function writeClocDiffBetweenDatesForRepos$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     outDir = './',
-    options: WriteClocDiffBetweenDatesOptions = {
+    options: ClocOptions = {
         excludeRepoPaths: [],
         notMatch: [],
     }
 ) {
     const folderName = path.basename(folderPath);
-    const outFile = `${folderName}-cloc-diff-commit-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
+    const outFile = `${folderName}-cloc-diff-between-dates-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
     const outFilePath = path.join(outDir, outFile);
 
     let noCommitsFound = true;
@@ -234,9 +332,3 @@ export function writeClocDiffBetweenDatesForRepos$(
         concatMap(() => writeCmdLogs$(options, outDir)),
     )
 }
-export type WriteClocDiffBetweenDatesOptions = {
-    excludeRepoPaths?: string[],
-    notMatch?: string[],
-    languages?: string[],
-    creationDateCsvFilePath?: string
-} & ExecuteCommandObsOptions

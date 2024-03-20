@@ -176,37 +176,65 @@ export function fetchAllRepos$(folderPath: string, concurrency = 1, excludeRepoP
 }
 
 /**
- * Checks out a Git repository at a specific date and returns an Observable that emits the path to the repository
+ * Checks out a Git repository at a commit at the date passed in as parameter or, in case there is no commit at that date,
+ * takes the commit before that date. Returns an Observable that emits the path to the repository
  * or a CheckoutError if an error occurs during the checkout process.
- * @param repoPath The path to the Git repository.
+ * @param repoPath The path to the Git repository and the sha of the commit used to check out.
  * @param date The date to check out the repository at.
- * @param branch The branch to check out. Defaults to 'master'.
  * @returns An Observable that emits the path to the repository or a CheckoutError if an error occurs during the checkout process.
  */
 export function checkoutRepoAtDate$(
     repoPath: string,
     date: Date,
-    options: ExecuteCommandObsOptions
+    options?: ExecuteCommandObsOptions
 ) {
     if (!repoPath) throw new Error(`Path is mandatory`);
 
-    let _sha: string = '';
     return defaultBranchName$(repoPath, options).pipe(
         concatMap(branch => commitAtDateOrBefore$(repoPath, date, branch, options)),
-        concatMap(([sha]) => {
-            _sha = sha;
-            return checkout$(repoPath, sha, options)
+        concatMap(([sha, commitDate]) => {
+            if (!sha) {
+                console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+                console.error(`!!!!!!!!!!!!!!! No commit found at date: ${date}`);
+                const _error = new CheckoutError(`No commit found at date: ${date}`, repoPath, `git checkout`, sha);
+                throw _error;
+            }
+            return checkout$(repoPath, sha, options).pipe(
+                map(() => {
+                    return { repoPath, sha, commitDate };
+                }),
+                catchError((err) => {
+                    if (err instanceof GitError) {
+                        console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+                        console.error(err.message)
+                        const _error = new CheckoutError(err.message, repoPath, err.command, sha);
+                        throw _error;
+                    }
+                    throw err;
+                }),
+            )
         }),
-        ignoreElements(),
-        defaultIfEmpty({ repoPath, sha: _sha }),
-        map(() => {
-            return { repoPath, sha: _sha };
+        last(),
+        map(({ repoPath, sha, commitDate }) => {
+            return { repoPath, sha, commitDate };
         }),
+    );
+}
+
+
+export function checkoutRepoAtCommit$(
+    repoPath: string,
+    sha: string,
+    options?: ExecuteCommandObsOptions
+) {
+    if (!repoPath) throw new Error(`Path is mandatory`);
+
+    return checkout$(repoPath, sha, options).pipe(
         catchError((err) => {
             if (err instanceof GitError) {
                 console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
                 console.error(err.message)
-                const _error = new CheckoutError(err.message, repoPath, err.command, _sha);
+                const _error = new CheckoutError(err.message, repoPath, err.command, sha);
                 throw _error;
             }
             throw err;
