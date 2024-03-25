@@ -9,6 +9,7 @@ import { checkout$, commitAtDateOrBefore$, readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
 import { CheckoutError, FetchError, GitError, PullError } from './git-errors';
 import { defaultBranchName$ } from './branches';
+import { repoCreationDateDict$ } from './repo-creation-date';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -390,3 +391,38 @@ export function getRemoteOriginUrl$(repoPath: string, options?: ExecuteCommandOb
         }),
     );
 }
+/**
+ * Creates an Observable that emits objects containing a repository path and a start date.
+ * The start date is either the creation date of the repository which is found in the creationDateCsvFile or a specified fallback date.
+ *
+ * @param repoPaths An array of paths to the repositories.
+ * @param fromDate A fallback date to use if the creation date of a repository is not available.
+ * @param creationDateCsvFilePath A path to a CSV file that maps repository URLs to creation dates. If the csv file is not provided or
+ *          does not contain the url of a repository, the fallback date is used. The reason to use the creation data is to be able to
+ *          fetch the commits from the beginning of the repository. If a repos has been forked, using the creation date
+ *          allows to fetch the commits from the beginning of the fork and exclude the one of the original repository.
+ * @returns An Observable that emits objects of the form { repoPath: string, _fromDate: Date }.
+ *          Each emitted object represents a repository and the start date for fetching commits.
+ */
+
+export function repoPathAndFromDates$(repoPaths: string[], fromDate: Date, creationDateCsvFilePath: string | null) {
+    const _repoCreationDateDict$ = creationDateCsvFilePath ?
+        repoCreationDateDict$(creationDateCsvFilePath) : of({} as { [http_url_to_repo: string]: string; });
+    return _repoCreationDateDict$.pipe(
+        concatMap((dict) => {
+            return from(repoPaths).pipe(
+                concatMap((repoPath) => getRemoteOriginUrl$(repoPath).pipe(
+                    map((remoteOriginUrl) => {
+                        return { repoPath, remoteOriginUrl };
+                    })
+                )),
+                map(({ repoPath, remoteOriginUrl }) => {
+                    const repoCreationDate = dict[remoteOriginUrl];
+                    const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
+                    return { repoPath, _fromDate };
+                })
+            );
+        })
+    );
+}
+

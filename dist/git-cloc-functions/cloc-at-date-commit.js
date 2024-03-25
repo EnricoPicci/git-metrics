@@ -35,7 +35,7 @@ function clocAtDateByFile$(repoPath, date, options) {
             notMatch: options === null || options === void 0 ? void 0 : options.notMatch,
             languages: options === null || options === void 0 ? void 0 : options.languages,
         };
-        return (0, cloc_1.clocByfile$)(params, 'clocByFileForRepos$ running on ' + repoPathSha.repoPath, false).pipe((0, rxjs_1.map)((line) => {
+        return (0, cloc_1.clocByfile$)(params, 'clocByFileForRepos$ running on ' + repoPathSha.repoPath, false, options).pipe((0, rxjs_1.map)((line) => {
             return {
                 line,
                 sha: repoPathSha.sha,
@@ -237,7 +237,9 @@ function writeClocFromToDateByFileForRepos$(reposFolderPath, from, to, options =
     outDir: './',
     excludeRepoPaths: [],
     notMatch: [],
+    filePrefix: 'cloc-from-to-date',
 }) {
+    var _a, _b, _c;
     const start = new Date();
     const { outDir } = options;
     if (!outDir) {
@@ -247,6 +249,19 @@ function writeClocFromToDateByFileForRepos$(reposFolderPath, from, to, options =
     const outFile = `cloc-${folderName}-${(0, date_functions_1.toYYYYMMDD)(from)}_${(0, date_functions_1.toYYYYMMDD)(to)}`;
     const csvOutFilePath = path_1.default.join(outDir, outFile) + '.csv';
     const errorOutFilePath = path_1.default.join(outDir, outFile) + '.error.log';
+    options.cmdErroredLog = (_a = options.cmdErroredLog) !== null && _a !== void 0 ? _a : [];
+    options.cmdExecutedLog = (_b = options.cmdExecutedLog) !== null && _b !== void 0 ? _b : [];
+    const _stdErrorHandler = (stderr) => {
+        console.log(`!!!!!!!! Message on stadard error:\n${stderr}`);
+        let retVal = null;
+        if (stderr.includes('fatal: ambiguous argument')) {
+            retVal = new Error(stderr);
+            retVal.name = 'CheckoutError';
+            retVal.message = stderr;
+        }
+        return retVal;
+    };
+    options.stdErrorHandler = (_c = options.stdErrorHandler) !== null && _c !== void 0 ? _c : _stdErrorHandler;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
     let atLeastOneCsv = false;
     let atLeastOneError = false;

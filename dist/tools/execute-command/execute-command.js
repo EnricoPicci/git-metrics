@@ -34,10 +34,12 @@ exports.executeCommand = executeCommand;
  */
 function executeCommandObs(action, command, options) {
     return new rxjs_1.Observable((subscriber) => {
+        var _a;
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);
         console.log(`====>>>> ${command}`);
+        (_a = options === null || options === void 0 ? void 0 : options.cmdExecutedLog) === null || _a === void 0 ? void 0 : _a.push({ command });
         (0, child_process_1.exec)(command, (error, stdout, stderr) => {
-            var _a, _b, _c, _d;
+            var _a, _b, _c;
             if (error) {
                 (_a = options === null || options === void 0 ? void 0 : options.cmdErroredLog) === null || _a === void 0 ? void 0 : _a.push({ command, message: error.message });
                 subscriber.error(error);
@@ -56,7 +58,6 @@ function executeCommandObs(action, command, options) {
                 }
             }
             console.log(`====>>>>$$$ Command "${command}" executed successfully`);
-            (_d = options === null || options === void 0 ? void 0 : options.cmdExecutedLog) === null || _d === void 0 ? void 0 : _d.push({ command });
             subscriber.next(stdout);
             subscriber.complete();
         });
@@ -64,24 +65,40 @@ function executeCommandObs(action, command, options) {
 }
 exports.executeCommandObs = executeCommandObs;
 function writeCmdLogs$(options, outDir) {
+    var _a;
     const cmdExecutedLog = options.cmdExecutedLog;
     const cmdErroredLog = options.cmdErroredLog;
+    let prefix = (_a = options.filePrefix) !== null && _a !== void 0 ? _a : '';
+    // if prefix does not end with a dash, we add it
+    if (!prefix.endsWith('-')) {
+        prefix = `${prefix}-`;
+    }
     // if the caller provided the cmdExecutedLog and cmdErroredLog arrays, we transform the
     // entries in the arrays to csv strings and write them to files
     let writeCmdExecutedLog$ = (0, rxjs_1.of)('');
     if (cmdExecutedLog && cmdExecutedLog.length > 0) {
-        const cmdExecutedCsv = (0, csv_tools_1.toCsv)(cmdExecutedLog);
-        writeCmdExecutedLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, 'cmd-executed.log'), cmdExecutedCsv);
+        const cmdExecutedCsv = cmdExecutedLog.map(c => c.command);
+        writeCmdExecutedLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, `${prefix}cmd-executed.log`), cmdExecutedCsv);
     }
     let writeCmdErroredLog$ = (0, rxjs_1.of)('');
     if (cmdErroredLog && cmdErroredLog.length > 0) {
         const cmdErroredCsv = (0, csv_tools_1.toCsv)(cmdErroredLog);
-        writeCmdErroredLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, 'cmd-errored.log'), cmdErroredCsv);
+        writeCmdErroredLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, `${prefix}cmd-errored.log`), cmdErroredCsv);
     }
     return (0, rxjs_1.forkJoin)([writeCmdExecutedLog$, writeCmdErroredLog$]).pipe((0, rxjs_1.map)((resp) => {
         const [cmdExecutedFile, cmdErroredFile] = resp;
-        console.log(`====>>>> cmdExecutedLog written in file: ${cmdExecutedFile}`);
-        console.log(`====>>>> cmdErroredLog written in file: ${cmdErroredFile}`);
+        if (cmdExecutedFile) {
+            console.log(`====>>>> cmdExecutedLog written in file: ${cmdExecutedFile}`);
+        }
+        else {
+            console.log('====>>>> No cmdExecutedLog file written');
+        }
+        if (cmdErroredFile) {
+            console.log(`====>>>> cmdErroredLog written in file: ${cmdErroredFile}`);
+        }
+        else {
+            console.log('====>>>> No cmdErroredLog file written');
+        }
         return resp;
     }));
 }
@@ -95,7 +112,8 @@ function executeCommandNewProcessObs(action, command, args, options, _options) {
             console.log(`====>>>> Options: ${JSON.stringify(options)}`);
         }
         if (_options === null || _options === void 0 ? void 0 : _options.cmdExecutedLog) {
-            _options.cmdExecutedLog.push({ command: `${command} ${args.join(' ')}` });
+            const _args = args.join(' ');
+            _options.cmdExecutedLog.push({ command: `${command} ${_args}` });
         }
         const cmd = (0, child_process_1.spawn)(command, args.filter((a) => a.length > 0), options);
         cmd.stdout.on('data', (data) => {
@@ -152,9 +170,9 @@ function bufferToLines() {
         });
     };
 }
-function executeCommandInShellNewProcessObs(action, command, options) {
-    const _options = Object.assign(Object.assign({}, options), { shell: true });
-    return executeCommandNewProcessObs(action, command, [], _options);
+function executeCommandInShellNewProcessObs(action, command, options, _options) {
+    const _opt = Object.assign(Object.assign({}, options), { shell: true });
+    return executeCommandNewProcessObs(action, command, [], _opt, _options);
 }
 exports.executeCommandInShellNewProcessObs = executeCommandInShellNewProcessObs;
 //# sourceMappingURL=execute-command.js.map

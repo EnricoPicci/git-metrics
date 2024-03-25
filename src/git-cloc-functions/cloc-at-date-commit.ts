@@ -34,7 +34,7 @@ export function clocAtDateByFile$(repoPath: string, date: Date, options?: ClocOp
                 notMatch: options?.notMatch,
                 languages: options?.languages,
             };
-            return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPathSha.repoPath, false).pipe(
+            return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPathSha.repoPath, false, options).pipe(
                 map((line) => {
                     return {
                         line,
@@ -276,6 +276,7 @@ export function writeClocFromToDateByFileForRepos$(
         outDir: './',
         excludeRepoPaths: [],
         notMatch: [],
+        filePrefix: 'cloc-from-to-date',
     },
 ) {
     const start = new Date();
@@ -286,7 +287,24 @@ export function writeClocFromToDateByFileForRepos$(
     const folderName = path.basename(reposFolderPath);
     const outFile = `cloc-${folderName}-${toYYYYMMDD(from)}_${toYYYYMMDD(to)}`;
     const csvOutFilePath = path.join(outDir, outFile) + '.csv';
+
     const errorOutFilePath = path.join(outDir, outFile) + '.error.log';
+    options.cmdErroredLog = options.cmdErroredLog ?? [];
+    options.cmdExecutedLog = options.cmdExecutedLog ?? [];
+
+    const _stdErrorHandler = (stderr: string) => {
+        console.log(`!!!!!!!! Message on stadard error:\n${stderr}`)
+        let retVal: Error | null = null
+        if (stderr.includes('fatal: ambiguous argument')) {
+            retVal = new Error(stderr)
+            retVal.name = 'CheckoutError'
+            retVal.message = stderr
+        }
+        return retVal
+    }
+
+    options.stdErrorHandler = options.stdErrorHandler ?? _stdErrorHandler;
+
     createDirIfNotExisting(outDir);
     let atLeastOneCsv = false;
     let atLeastOneError = false;

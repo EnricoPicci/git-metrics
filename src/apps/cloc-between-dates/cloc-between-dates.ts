@@ -1,17 +1,15 @@
 import { Command } from "commander";
-import { writeClocDiffBetweenDatesForRepos$ } from "../../git-cloc-functions/cloc-diff-between-dates";
-import { ClocOptions } from "../../git-cloc-functions/cloc-at-date-commit";
+import { WriteClocAtDateOptions, writeClocFromToDateByFileForRepos$ } from "../../git-cloc-functions/cloc-at-date-commit";
 
-export function launchDiffBetweenDatesMultiRepos() {
-    console.log('====>>>> Launching Diff Between Dates For Repos')
+export function launchClocBetweenDatesMultiRepos() {
+    console.log('====>>>> Launching Cloc Between Dates For Repos')
 
     const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths } = readParams();
-    const options: ClocOptions = { excludeRepoPaths, languages, creationDateCsvFilePath, filePrefix: 'cloc-diff-between-dates' };
-    writeClocDiffBetweenDatesForRepos$(
+    const options: WriteClocAtDateOptions = { outDir, excludeRepoPaths, languages, creationDateCsvFilePath, filePrefix: 'cloc-between-dates' };
+    writeClocFromToDateByFileForRepos$(
         folderPath,
         fromDate,
         toDate,
-        outDir,
         options,
     ).subscribe()
 }
@@ -20,7 +18,7 @@ function readParams() {
     const program = new Command();
 
     program
-        .description('A command to calculate the differences in a set of repos between 2 dates')
+        .description('A command to calculate cloc at 2 dates in a set of repos')
         .requiredOption(
             '--folderPath <string>',
             `folder containing the repos to analyze (e.g. ./repos)`,

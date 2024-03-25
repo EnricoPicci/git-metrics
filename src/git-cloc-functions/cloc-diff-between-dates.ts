@@ -1,11 +1,12 @@
 import path from "path"
-import { forkJoin, concatMap, defaultIfEmpty, ignoreElements, tap, map, catchError, EMPTY, last, toArray, share, } from "rxjs"
+import { forkJoin, concatMap, defaultIfEmpty, ignoreElements, tap, map, catchError, EMPTY, last, toArray, share, of, } from "rxjs"
 
 import { toCsvObs } from "@enrico.piccinin/csv-tools"
 import { appendFileObs } from "observable-fs"
 
 import { clocDiffRelByfileWithCommitData$, } from "../cloc-functions/cloc-diff-byfile"
-import { commitAtDateOrBefore$, repoPathAndFromDates$ } from "../git-functions/commit"
+import { commitAtDateOrBefore$ } from "../git-functions/commit"
+import { repoPathAndFromDates$ } from '../git-functions/repo'
 import { toYYYYMMDD } from "../tools/dates/date-functions"
 import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils"
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing"
@@ -72,6 +73,7 @@ export function clocDiffBetweenDates$(
             else if (!fromSha) {
                 return calcDiffWithOneCommit$(repoPath, reposFolderPath, toDate, toSha, options)
             }
+            // if we arrive here it is because both fromSha and toSha are empty, which means that we have not found any commit
             else {
                 return EMPTY
             }
@@ -127,7 +129,7 @@ function calcDiffBetweenTwoCommits$(
             let _fromDateClocInfo: ClocFileInfo = fromDateClocDict[filePath]
             let _toDateClocInfo: ClocFileInfo = toDateClocDict[filePath]
 
-            const language = _fromDateClocInfo?.language || _toDateClocInfo?.language || ''
+            const language = _fromDateClocInfo?.language || _toDateClocInfo?.language
 
             const fromDateClocInfo = {
                 from_code: _fromDateClocInfo ? _fromDateClocInfo.code : 0,
@@ -303,11 +305,15 @@ export function writeClocDiffBetweenDatesForRepos$(
     options: ClocOptions = {
         excludeRepoPaths: [],
         notMatch: [],
+        filePrefix: 'cloc-diff-between-dates',
     }
 ) {
     const folderName = path.basename(folderPath);
     const outFile = `${folderName}-cloc-diff-between-dates-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
     const outFilePath = path.join(outDir, outFile);
+
+    options.cmdErroredLog = options.cmdErroredLog ?? [];
+    options.cmdExecutedLog = options.cmdExecutedLog ?? [];
 
     let noCommitsFound = true;
 
@@ -321,6 +327,15 @@ export function writeClocDiffBetweenDatesForRepos$(
             return appendFileObs(outFilePath, `${line}\n`);
         }),
         last(),
+        catchError((err) => {
+            if (err.name === 'EmptyError') {
+                console.log(`\n====>>>> no diffs found in the given time range, for the given languages, in the given repos`);
+                // we must return something (hence we can not return EMPTY) since we want the stream to continue with just one more element
+                // so that we can execture the writeCmdLogs$ function and write the cmd logs to file
+                return of(null);
+            }
+            throw err;
+        }),
         tap({
             next: () => {
                 if (noCommitsFound) {

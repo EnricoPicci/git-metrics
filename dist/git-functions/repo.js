@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
+exports.repoPathAndFromDates$ = exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -11,6 +11,7 @@ const commit_1 = require("./commit");
 const repo_path_1 = require("./repo-path");
 const git_errors_1 = require("./git-errors");
 const branches_1 = require("./branches");
+const repo_creation_date_1 = require("./repo-creation-date");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -311,4 +312,31 @@ function getRemoteOriginUrl$(repoPath, options) {
     }));
 }
 exports.getRemoteOriginUrl$ = getRemoteOriginUrl$;
+/**
+ * Creates an Observable that emits objects containing a repository path and a start date.
+ * The start date is either the creation date of the repository which is found in the creationDateCsvFile or a specified fallback date.
+ *
+ * @param repoPaths An array of paths to the repositories.
+ * @param fromDate A fallback date to use if the creation date of a repository is not available.
+ * @param creationDateCsvFilePath A path to a CSV file that maps repository URLs to creation dates. If the csv file is not provided or
+ *          does not contain the url of a repository, the fallback date is used. The reason to use the creation data is to be able to
+ *          fetch the commits from the beginning of the repository. If a repos has been forked, using the creation date
+ *          allows to fetch the commits from the beginning of the fork and exclude the one of the original repository.
+ * @returns An Observable that emits objects of the form { repoPath: string, _fromDate: Date }.
+ *          Each emitted object represents a repository and the start date for fetching commits.
+ */
+function repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath) {
+    const _repoCreationDateDict$ = creationDateCsvFilePath ?
+        (0, repo_creation_date_1.repoCreationDateDict$)(creationDateCsvFilePath) : (0, rxjs_1.of)({});
+    return _repoCreationDateDict$.pipe((0, rxjs_1.concatMap)((dict) => {
+        return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => getRemoteOriginUrl$(repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
+            return { repoPath, remoteOriginUrl };
+        }))), (0, rxjs_1.map)(({ repoPath, remoteOriginUrl }) => {
+            const repoCreationDate = dict[remoteOriginUrl];
+            const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
+            return { repoPath, _fromDate };
+        }));
+    }));
+}
+exports.repoPathAndFromDates$ = repoPathAndFromDates$;
 //# sourceMappingURL=repo.js.map

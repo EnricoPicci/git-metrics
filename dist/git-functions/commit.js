@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.countCommits$ = exports.repoPathAndFromDates$ = exports.allCommits$ = exports.checkout$ = exports.commitClosestToDate$ = exports.commitAtDateOrAfter$ = exports.commitAtDateOrBefore$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
+exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.countCommits$ = exports.allCommits$ = exports.checkout$ = exports.commitClosestToDate$ = exports.commitAtDateOrAfter$ = exports.commitAtDateOrBefore$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -17,9 +17,8 @@ const commit_url_1 = require("./commit-url");
 const date_functions_1 = require("../tools/dates/date-functions");
 const errors_1 = require("./errors");
 const errors_2 = require("./errors");
-const repo_creation_date_1 = require("./repo-creation-date");
-const repo_1 = require("./repo");
 const git_errors_1 = require("./git-errors");
+const repo_1 = require("./repo");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -217,7 +216,7 @@ exports.newEmptyCommitCompact = newEmptyCommitCompact;
 function commitAtDateOrBefore$(repoPath, date, branchName, options) {
     // convert date to YYYY-MM-DD format
     const dateString = (0, date_functions_1.toYYYYMMDD)(date);
-    const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}" --format=%H%ci ${branchName}`;
+    const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}-23:59:59" --format=%H%ci ${branchName}`;
     return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe((0, rxjs_1.map)(commitInfoString => {
         return commitInfoString.trim();
     }), (0, rxjs_1.tap)((commitInfo) => {
@@ -257,7 +256,7 @@ function commitAtDateOrAfter$(repoPath, date, branchName) {
     // it take the first commit in the normal order (which is the last one) and then reverses the order of the commits, with
     // the result that we get the last commit and not the first commit after the date
     // https://stackoverflow.com/a/5188990/5699993
-    const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}" --format=%H%ci ${branchName}`;
+    const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}-00:00:00" --format=%H%ci ${branchName}`;
     return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitSha => {
         return commitSha.trim();
     }), (0, rxjs_1.tap)((commitsInfo) => {
@@ -353,38 +352,11 @@ exports.checkout$ = checkout$;
  * @returns An Observable that emits each commit in the repositories within the date range.
  */
 function allCommits$(repoPaths, fromDate = new Date(0), toDate = new Date(Date.now()), creationDateCsvFilePath) {
-    return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
+    return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
         return readCommitCompact$(repoPath, _fromDate, toDate, true);
     }));
 }
 exports.allCommits$ = allCommits$;
-/**
- * Creates an Observable that emits objects containing a repository path and a start date.
- * The start date is either the creation date of the repository which is found in the creationDateCsvFile or a specified fallback date.
- *
- * @param repoPaths An array of paths to the repositories.
- * @param fromDate A fallback date to use if the creation date of a repository is not available.
- * @param creationDateCsvFilePath A path to a CSV file that maps repository URLs to creation dates. If the csv file is not provided or
- *          does not contain the url of a repository, the fallback date is used. The reason to use the creation data is to be able to
- *          fetch the commits from the beginning of the repository. If a repos has been forked, using the creation date
- *          allows to fetch the commits from the beginning of the fork and exclude the one of the original repository.
- * @returns An Observable that emits objects of the form { repoPath: string, _fromDate: Date }.
- *          Each emitted object represents a repository and the start date for fetching commits.
- */
-function repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath) {
-    const _repoCreationDateDict$ = creationDateCsvFilePath ?
-        (0, repo_creation_date_1.repoCreationDateDict$)(creationDateCsvFilePath) : (0, rxjs_1.of)({});
-    return _repoCreationDateDict$.pipe((0, rxjs_1.concatMap)((dict) => {
-        return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => (0, repo_1.getRemoteOriginUrl$)(repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
-            return { repoPath, remoteOriginUrl };
-        }))), (0, rxjs_1.map)(({ repoPath, remoteOriginUrl }) => {
-            const repoCreationDate = dict[remoteOriginUrl];
-            const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
-            return { repoPath, _fromDate };
-        }));
-    }));
-}
-exports.repoPathAndFromDates$ = repoPathAndFromDates$;
 /**
  * Counts the number of commits in a set of repositories within a specified date range.
  * @param repoPaths An array of paths to the repositories to count the commits from.

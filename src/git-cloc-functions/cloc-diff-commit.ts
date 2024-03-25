@@ -8,7 +8,8 @@ import { toCsvObs } from "@enrico.piccinin/csv-tools";
 import { clocFileDict$ } from "../cloc-functions/cloc-dictionary";
 import { clocDiffWithParentByfile$ } from "../cloc-functions/cloc-diff-byfile";
 import { ClocFileInfo } from "../cloc-functions/cloc.model";
-import { countCommits$, readCommitCompactWithUrlAndParentDate$, repoPathAndFromDates$ } from "../git-functions/commit";
+import { countCommits$, readCommitCompactWithUrlAndParentDate$ } from "../git-functions/commit";
+import { repoPathAndFromDates$ } from '../git-functions/repo';
 import { gitRepoPaths } from "../git-functions/repo-path";
 import { deleteFile$ } from "../tools/observable-fs-extensions/delete-file-ignore-if-missing";
 import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
@@ -78,7 +79,7 @@ export function clocDiffWithAllCommits$(
     pathToRepo: string,
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
-    options: ClocDiffWithCommitOptions = {},
+    options: ClocDiffWithCommitOptions = { filePrefix: 'cloc-diff-all-commits' },
     progress: {
         totNumOfCommits: number,
         commitCounter: number,
@@ -161,7 +162,7 @@ export function clocDiffWithCommitForRepos$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     excludeRepoPaths: string[] = [],
-    options: ClocDiffWithCommitOptions = {}
+    options: ClocDiffWithCommitOptions = { 'filePrefix': 'cloc-diff-commit-for-repos' }
 ) {
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
     const creationDateCsvFilePath = options.creationDateCsvFilePath
@@ -207,7 +208,7 @@ export function writeClocDiffWithCommit$(
     createDirIfNotExisting(outDir);
 
     return deleteFile$(outFilePath).pipe(
-        concatMap(() => clocDiffWithAllCommits$(pathToRepo, fromDate, toDate, { languages })),
+        concatMap(() => clocDiffWithAllCommits$(pathToRepo, fromDate, toDate, { languages, filePrefix: 'cloc-diff-commit' })),
         toCsvObs(),
         concatMap((line) => {
             return appendFileObs(outFilePath, `${line}\n`);
@@ -239,7 +240,7 @@ export function writeClocDiffWithCommit$(
  */
 export function writeCodeTurnover$(
     folderPath: string,
-    options: WriteCodeTurnoverOptions = {}
+    options: WriteCodeTurnoverOptions = { filePrefix: 'code-turnover' }
 ) {
     const outDir = options.outdir || './'
     const fromDate = options.fromDate || new Date(0)

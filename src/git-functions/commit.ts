@@ -19,9 +19,8 @@ import { getGitlabCommitUrl } from './commit-url';
 import { toYYYYMMDD } from '../tools/dates/date-functions';
 import { isUnknownRevisionError } from './errors';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
-import { repoCreationDateDict$ } from './repo-creation-date';
-import { getRemoteOriginUrl$ } from './repo';
 import { GitError } from './git-errors';
+import { repoPathAndFromDates$ } from './repo';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -282,7 +281,7 @@ export function newEmptyCommitCompact() {
 export function commitAtDateOrBefore$(repoPath: string, date: Date, branchName: string, options?: ExecuteCommandObsOptions) {
     // convert date to YYYY-MM-DD format
     const dateString = toYYYYMMDD(date);
-    const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}" --format=%H%ci ${branchName}`
+    const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}-23:59:59" --format=%H%ci ${branchName}`
     return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe(
         map(commitInfoString => {
             return commitInfoString.trim()
@@ -326,7 +325,7 @@ export function commitAtDateOrAfter$(repoPath: string, date: Date, branchName: s
     // it take the first commit in the normal order (which is the last one) and then reverses the order of the commits, with
     // the result that we get the last commit and not the first commit after the date
     // https://stackoverflow.com/a/5188990/5699993
-    const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}" --format=%H%ci ${branchName}`
+    const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}-00:00:00" --format=%H%ci ${branchName}`
     return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe(
         map(commitSha => {
             return commitSha.trim()
@@ -447,40 +446,6 @@ export function allCommits$(
     return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
         concatMap(({ repoPath, _fromDate }) => {
             return readCommitCompact$(repoPath, _fromDate, toDate, true)
-        }),
-    )
-}
-
-/**
- * Creates an Observable that emits objects containing a repository path and a start date.
- * The start date is either the creation date of the repository which is found in the creationDateCsvFile or a specified fallback date.
- *
- * @param repoPaths An array of paths to the repositories.
- * @param fromDate A fallback date to use if the creation date of a repository is not available.
- * @param creationDateCsvFilePath A path to a CSV file that maps repository URLs to creation dates. If the csv file is not provided or 
- *          does not contain the url of a repository, the fallback date is used. The reason to use the creation data is to be able to 
- *          fetch the commits from the beginning of the repository. If a repos has been forked, using the creation date
- *          allows to fetch the commits from the beginning of the fork and exclude the one of the original repository.
- * @returns An Observable that emits objects of the form { repoPath: string, _fromDate: Date }.
- *          Each emitted object represents a repository and the start date for fetching commits.
- */
-export function repoPathAndFromDates$(repoPaths: string[], fromDate: Date, creationDateCsvFilePath: string | null) {
-    const _repoCreationDateDict$ = creationDateCsvFilePath ?
-        repoCreationDateDict$(creationDateCsvFilePath) : of({} as { [http_url_to_repo: string]: string })
-    return _repoCreationDateDict$.pipe(
-        concatMap((dict) => {
-            return from(repoPaths).pipe(
-                concatMap((repoPath) => getRemoteOriginUrl$(repoPath).pipe(
-                    map((remoteOriginUrl) => {
-                        return { repoPath, remoteOriginUrl }
-                    })
-                )),
-                map(({ repoPath, remoteOriginUrl }) => {
-                    const repoCreationDate = dict[remoteOriginUrl]
-                    const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate
-                    return { repoPath, _fromDate }
-                })
-            )
         }),
     )
 }

@@ -2,13 +2,13 @@ import { Command } from "commander";
 import { CheckoutAllReposAtDateOptions, checkoutAllReposAtDate$ } from "../../git-functions/repo";
 import { CmdErrored, CmdExecuted } from "../../tools/execute-command/execute-command";
 
-export function checkoutAllReposAtDate() {
+export function launchCheckoutAllReposAtDate() {
     console.log('====>>>> Launching Checkout Repos At Date')
 
     const { folderPath, outDir, date } = readParams();
     const cmdExecutedLog: CmdExecuted[] = [];
     const cmdErroredLog: CmdErrored[] = [];
-    const options: CheckoutAllReposAtDateOptions = { outDir, cmdExecutedLog, cmdErroredLog };
+    const options: CheckoutAllReposAtDateOptions = { outDir, cmdExecutedLog, cmdErroredLog, filePrefix: 'checkout-repos-at-date' };
     checkoutAllReposAtDate$(
         folderPath,
         date,

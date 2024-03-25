@@ -1,19 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.launchDiffBetweenDatesMultiRepos = void 0;
+exports.launchClocBetweenDatesMultiRepos = void 0;
 const commander_1 = require("commander");
-const cloc_diff_between_dates_1 = require("../../git-cloc-functions/cloc-diff-between-dates");
-function launchDiffBetweenDatesMultiRepos() {
-    console.log('====>>>> Launching Diff Between Dates For Repos');
+const cloc_at_date_commit_1 = require("../../git-cloc-functions/cloc-at-date-commit");
+function launchClocBetweenDatesMultiRepos() {
+    console.log('====>>>> Launching Cloc Between Dates For Repos');
     const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths } = readParams();
-    const options = { excludeRepoPaths, languages, creationDateCsvFilePath, filePrefix: 'cloc-diff-between-dates' };
-    (0, cloc_diff_between_dates_1.writeClocDiffBetweenDatesForRepos$)(folderPath, fromDate, toDate, outDir, options).subscribe();
+    const options = { outDir, excludeRepoPaths, languages, creationDateCsvFilePath, filePrefix: 'cloc-between-dates' };
+    (0, cloc_at_date_commit_1.writeClocFromToDateByFileForRepos$)(folderPath, fromDate, toDate, options).subscribe();
 }
-exports.launchDiffBetweenDatesMultiRepos = launchDiffBetweenDatesMultiRepos;
+exports.launchClocBetweenDatesMultiRepos = launchClocBetweenDatesMultiRepos;
 function readParams() {
     const program = new commander_1.Command();
     program
-        .description('A command to calculate the differences in a set of repos between 2 dates')
+        .description('A command to calculate cloc at 2 dates in a set of repos')
         .requiredOption('--folderPath <string>', `folder containing the repos to analyze (e.g. ./repos)`)
         .option('--fromDate <string>', `the date of the first commit to consider (e.g. 2021-01-01) - default is the beginning of time`)
         .option('--toDate <string>', `the date of the last commit to consider (e.g. 2021-12-31) - default is the current date`)
@@ -37,4 +37,4 @@ function readParams() {
         excludeRepoPaths: _options.excludeRepoPaths
     };
 }
-//# sourceMappingURL=cloc-diff-between-dates.js.map
+//# sourceMappingURL=cloc-between-dates.js.map

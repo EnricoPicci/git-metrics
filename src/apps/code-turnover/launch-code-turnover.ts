@@ -25,7 +25,8 @@ export function launchCodeTurnoverForRepos() {
         commitMassiveRemoveThreshold,
         jiraIdRegexPattern,
         creationDateCsvFilePath,
-        notMatchDirectories
+        notMatchDirectories,
+        filePrefix: 'code-turnover'
     }
 
     codeTurnover$(folderPath, options).subscribe({

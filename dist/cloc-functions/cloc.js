@@ -380,7 +380,8 @@ function toClocFileDict(clocLogPath) {
             }
         }
         if (sumLineIndex === undefined) {
-            throw new Error(`No line with SUM found`);
+            console.warn(`No line with SUM found - it looks like there are no files for which to calculate cloc`);
+            return [];
         }
         return lines.slice(0, sumLineIndex);
     }), (0, rxjs_1.map)((lines) => {

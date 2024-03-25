@@ -1,17 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkoutAllReposAtDate = void 0;
+exports.launchCheckoutAllReposAtDate = void 0;
 const commander_1 = require("commander");
 const repo_1 = require("../../git-functions/repo");
-function checkoutAllReposAtDate() {
+function launchCheckoutAllReposAtDate() {
     console.log('====>>>> Launching Checkout Repos At Date');
     const { folderPath, outDir, date } = readParams();
     const cmdExecutedLog = [];
     const cmdErroredLog = [];
-    const options = { outDir, cmdExecutedLog, cmdErroredLog };
+    const options = { outDir, cmdExecutedLog, cmdErroredLog, filePrefix: 'checkout-repos-at-date' };
     (0, repo_1.checkoutAllReposAtDate$)(folderPath, date, options).subscribe();
 }
-exports.checkoutAllReposAtDate = checkoutAllReposAtDate;
+exports.launchCheckoutAllReposAtDate = launchCheckoutAllReposAtDate;
 function readParams() {
     const program = new commander_1.Command();
     program

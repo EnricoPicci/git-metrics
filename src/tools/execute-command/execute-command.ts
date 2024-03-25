@@ -32,6 +32,7 @@ export function executeCommandObs(action: string, command: string, options?: Exe
     return new Observable((subscriber: Subscriber<string>) => {
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);
         console.log(`====>>>> ${command}`);
+        options?.cmdExecutedLog?.push({ command });
         exec(command, (error, stdout, stderr) => {
             if (error) {
                 options?.cmdErroredLog?.push({ command, message: error.message });
@@ -51,39 +52,54 @@ export function executeCommandObs(action: string, command: string, options?: Exe
                 }
             }
             console.log(`====>>>>$$$ Command "${command}" executed successfully`);
-            options?.cmdExecutedLog?.push({ command });
             subscriber.next(stdout);
             subscriber.complete();
         });
     });
 }
+
 export type ExecuteCommandObsOptions = {
     stdErrorHandler?: (stderr: string) => Error | null;
-    cmdExecutedLog?: CmdExecuted[]
-    cmdErroredLog?: CmdErrored[]
+    cmdExecutedLog?: CmdExecuted[];
+    cmdErroredLog?: CmdErrored[];
+    filePrefix: string;
 }
+
 export type CmdExecuted = { command: string }
 export type CmdErrored = { command: string, message: string }
 export function writeCmdLogs$(options: ExecuteCommandObsOptions, outDir: string) {
     const cmdExecutedLog = options.cmdExecutedLog;
     const cmdErroredLog = options.cmdErroredLog;
+    let prefix = options.filePrefix ?? '';
+    // if prefix does not end with a dash, we add it
+    if (!prefix.endsWith('-')) {
+        prefix = `${prefix}-`;
+    }
     // if the caller provided the cmdExecutedLog and cmdErroredLog arrays, we transform the
     // entries in the arrays to csv strings and write them to files
     let writeCmdExecutedLog$ = of('');
     if (cmdExecutedLog && cmdExecutedLog.length > 0) {
-        const cmdExecutedCsv = toCsv(cmdExecutedLog);
-        writeCmdExecutedLog$ = writeFileObs(path.join(outDir, 'cmd-executed.log'), cmdExecutedCsv)
+        const cmdExecutedCsv = cmdExecutedLog.map(c => c.command);
+        writeCmdExecutedLog$ = writeFileObs(path.join(outDir, `${prefix}cmd-executed.log`), cmdExecutedCsv)
     }
     let writeCmdErroredLog$ = of('');
     if (cmdErroredLog && cmdErroredLog.length > 0) {
         const cmdErroredCsv = toCsv(cmdErroredLog);
-        writeCmdErroredLog$ = writeFileObs(path.join(outDir, 'cmd-errored.log'), cmdErroredCsv)
+        writeCmdErroredLog$ = writeFileObs(path.join(outDir, `${prefix}cmd-errored.log`), cmdErroredCsv)
     }
     return forkJoin([writeCmdExecutedLog$, writeCmdErroredLog$]).pipe(
         map((resp: [cmdExecutedFile: string, cmdErroredFile: string]) => {
             const [cmdExecutedFile, cmdErroredFile] = resp;
-            console.log(`====>>>> cmdExecutedLog written in file: ${cmdExecutedFile}`);
-            console.log(`====>>>> cmdErroredLog written in file: ${cmdErroredFile}`);
+            if (cmdExecutedFile) {
+                console.log(`====>>>> cmdExecutedLog written in file: ${cmdExecutedFile}`);
+            } else {
+                console.log('====>>>> No cmdExecutedLog file written');
+            }
+            if (cmdErroredFile) {
+                console.log(`====>>>> cmdErroredLog written in file: ${cmdErroredFile}`);
+            } else {
+                console.log('====>>>> No cmdErroredLog file written');
+            }
             return resp
         })
     );
@@ -105,7 +121,8 @@ export function executeCommandNewProcessObs(
         }
 
         if (_options?.cmdExecutedLog) {
-            _options.cmdExecutedLog.push({ command: `${command} ${args.join(' ')}` });
+            const _args = args.join(' ')
+            _options.cmdExecutedLog.push({ command: `${command} ${_args}` });
         }
         const cmd = spawn(
             command,
@@ -177,7 +194,8 @@ export function executeCommandInShellNewProcessObs(
     action: string,
     command: string,
     options?: SpawnOptionsWithoutStdio,
+    _options?: ExecuteCommandObsOptions,
 ) {
-    const _options = { ...options, shell: true };
-    return executeCommandNewProcessObs(action, command, [], _options);
+    const _opt = { ...options, shell: true };
+    return executeCommandNewProcessObs(action, command, [], _opt, _options);
 }

@@ -11,7 +11,7 @@ const cloc_diff_commit_1 = require("./cloc-diff-commit");
  * @param options An object containing options for the operation. Defaults to an empty object.
  * @returns An Observable that emits when the operation is complete.
  */
-function codeTurnover$(folderPath, options = {}) {
+function codeTurnover$(folderPath, options = { filePrefix: 'code-turnover' }) {
     return (0, cloc_diff_commit_1.writeCodeTurnover$)(folderPath, options);
 }
 exports.codeTurnover$ = codeTurnover$;

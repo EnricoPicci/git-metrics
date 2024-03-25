@@ -13,7 +13,7 @@ import { WriteCodeTurnoverOptions, writeCodeTurnover$ } from "./cloc-diff-commit
  */
 export function codeTurnover$(
     folderPath: string,
-    options: WriteCodeTurnoverOptions = {}
+    options: WriteCodeTurnoverOptions = { filePrefix: 'code-turnover' }
 ) {
     return writeCodeTurnover$(folderPath, options)
 }
