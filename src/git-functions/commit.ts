@@ -15,12 +15,12 @@ import { GitLogCommitParams } from './git-params';
 import { buildOutfileName } from './utils/file-name-utils';
 import { CONFIG } from '../config';
 import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
-import { getGitlabCommitCompareUrl, getGitlabCommitUrl } from './commit-url';
+import { getGitlabCommitCompareUrl, getGitlabCommitUrl, getGitlabCommitUrl$ } from './commit-url';
 import { toYYYYMMDD } from '../tools/dates/date-functions';
 import { isUnknownRevisionError } from './errors';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { GitError } from './git-errors';
-import { repoPathAndFromDates$ } from './repo';
+import { getRemoteOriginUrl$, repoPathAndFromDates$ } from './repo';
 import { toCsvObs } from '@enrico.piccinin/csv-tools';
 
 //********************************************************************************************************************** */
@@ -99,7 +99,7 @@ export function readCommitCompactWithUrlAndParentDate$(
 ) {
     return readCommitCompact$(repoPath, fromDate, toDate, noMerges, options).pipe(
         concatMap((commit) => {
-            return getGitlabCommitUrl(repoPath, commit.sha, options).pipe(
+            return getGitlabCommitUrl$(repoPath, commit.sha, options).pipe(
                 map((commitUrl) => {
                     return { commit, commitUrl };
                 })
@@ -490,7 +490,18 @@ export function diffBetweenCommits$(
 ) {
     const command = `cd ${repoFolderPath} && git log --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p` +
         ` --numstat --date=short ${leastRecentCommit}...${mostRecentCommit}`;
-    return executeCommandObs(`diff between ${mostRecentCommit} and ${leastRecentCommit}`, command, options).pipe(
+    const diffCmd$ = executeCommandObs(`diff between ${mostRecentCommit} and ${leastRecentCommit}`, command, options).pipe(
+        catchError(err => {
+            console.error(`Error: "diffBetweenCommits" while executing command "${command}"`);
+            console.error(`error message ${err.message}`);
+            const errMsg = err.message;
+            if (errMsg.includes('unknown revision')) {
+                console.error(`Probably "${mostRecentCommit}" or "${leastRecentCommit}" are not valid commit hashes/branches/tags in the repo "${repoFolderPath}`);
+            } else {
+                console.error(`error stack ${err.stack}`);
+            }
+            return EMPTY;
+        }),
         map((commitsData) => {
             return commitsData.split('\n')
         }),
@@ -503,15 +514,14 @@ export function diffBetweenCommits$(
                 return { ...file, ...(commitWithNoFiles as Commit) }
             })
         }),
-        concatMap(fileChangesRec => {
-            return forkJoin([
-                getGitlabCommitUrl(repoFolderPath, fileChangesRec.hashShort, options),
-                getGitlabCommitCompareUrl(repoFolderPath, mostRecentCommit, leastRecentCommit, options)
-            ]).pipe(
-                map(([commitUrl, compareUrl]) => {
-                    return { ...fileChangesRec, commitUrl, compareUrl }
-                })
-            )
+    )
+    const remoteOrigin$ = getRemoteOriginUrl$(repoFolderPath, options)
+
+    return forkJoin([diffCmd$, remoteOrigin$]).pipe(
+        map(([fileDiff, remoteOrigin]) => {
+            const commitUrl = getGitlabCommitUrl(remoteOrigin, mostRecentCommit)
+            const compareUrl = getGitlabCommitCompareUrl(remoteOrigin, mostRecentCommit, leastRecentCommit)
+            return { ...fileDiff, commitUrl, compareUrl }
         })
     )
 }

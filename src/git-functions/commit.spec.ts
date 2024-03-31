@@ -622,7 +622,7 @@ describe('countCommits$', () => {
     });
 });
 
-describe(`diffBetweenCommits$`, () => {
+describe.only(`diffBetweenCommits$`, () => {
     it(`returns diffs between 2 commits`, (done) => {
         const mostRecentCommit = 'v3.1.1';
         const leastRecentCommit = 'v2.1.1';
@@ -634,6 +634,42 @@ describe(`diffBetweenCommits$`, () => {
                 expect(ret.length).gt(0);
             }),
         ).subscribe({
+            error: (err) => done(err),
+            complete: () => done()
+        });
+    }).timeout(20000);
+
+    it(`returns diffs between 2 commits but the first commit does not exist`, (done) => {
+        const mostRecentCommit = 'v-not-existing';
+        const leastRecentCommit = 'v2.1.1';
+        diffBetweenCommits$(mostRecentCommit, leastRecentCommit).subscribe({
+            next: (_v) => {
+                throw new Error('should not return a value')
+            },
+            error: (err) => done(err),
+            complete: () => done()
+        });
+    }).timeout(20000);
+
+    it(`returns diffs between 2 commits but the second commit does not exist`, (done) => {
+        const mostRecentCommit = 'v3.1.1';
+        const leastRecentCommit = 'v-not-existing';
+        diffBetweenCommits$(mostRecentCommit, leastRecentCommit).subscribe({
+            next: (_v) => {
+                throw new Error('should not return a value')
+            },
+            error: (err) => done(err),
+            complete: () => done()
+        });
+    }).timeout(20000);
+
+    it(`returns diffs between 2 commits but both commits do not exist`, (done) => {
+        const mostRecentCommit = 'v-not-existing-1';
+        const leastRecentCommit = 'v-not-existing-2';
+        diffBetweenCommits$(mostRecentCommit, leastRecentCommit).subscribe({
+            next: (_v) => {
+                throw new Error('should not return a value')
+            },
             error: (err) => done(err),
             complete: () => done()
         });
