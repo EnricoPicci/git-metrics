@@ -15,7 +15,7 @@ import { GitLogCommitParams } from './git-params';
 import { buildOutfileName } from './utils/file-name-utils';
 import { CONFIG } from '../config';
 import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
-import { getGitlabCommitUrl } from './commit-url';
+import { getGitlabCommitCompareUrl, getGitlabCommitUrl } from './commit-url';
 import { toYYYYMMDD } from '../tools/dates/date-functions';
 import { isUnknownRevisionError } from './errors';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
@@ -502,6 +502,16 @@ export function diffBetweenCommits$(
                 delete commitWithNoFiles.files
                 return { ...file, ...(commitWithNoFiles as Commit) }
             })
+        }),
+        concatMap(fileChangesRec => {
+            return forkJoin([
+                getGitlabCommitUrl(repoFolderPath, fileChangesRec.hashShort, options),
+                getGitlabCommitCompareUrl(repoFolderPath, mostRecentCommit, leastRecentCommit, options)
+            ]).pipe(
+                map(([commitUrl, compareUrl]) => {
+                    return { ...fileChangesRec, commitUrl, compareUrl }
+                })
+            )
         })
     )
 }
@@ -535,7 +545,6 @@ export function writeDiffBetweenCommitsCsv$(
         })
     )
 }
-'https://git.ad.rgigroup.com/iiab/ch/iiab-ch-pass-platform/-/compare/161ea30fffe0e8b5739d0928cc0049828e9f676e...663a353b9bf9428304a4877e96fe41c1a5d10436?#61dc53e22cc09fd0e0cc3ac0f3b6e0acd7924f74'
 export type WriteBetweenCommitsOptions = {
     outDir?: string,
     outFile?: string,
