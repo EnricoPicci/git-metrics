@@ -2,14 +2,14 @@ import path from 'path';
 
 import {
     map, catchError, EMPTY, concatMap, from, filter, toArray, tap,
-    share, of, ignoreElements, merge, Observable, Subscriber, pipe, forkJoin
+    share, of, ignoreElements, merge, Observable, Subscriber, pipe, forkJoin, mergeMap
 } from 'rxjs';
 
-import { appendFileObs } from 'observable-fs';
+import { appendFileObs, writeFileObs } from 'observable-fs';
 
 import { ExecuteCommandObsOptions, executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
 
-import { CommitCompact, CommitCompactWithUrlAndParentDate, newCommitWithFileNumstats } from './commit.model';
+import { Commit, CommitCompact, CommitCompactWithUrlAndParentDate, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
 import { GitLogCommitParams } from './git-params';
 import { buildOutfileName } from './utils/file-name-utils';
@@ -21,6 +21,7 @@ import { isUnknownRevisionError } from './errors';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { GitError } from './git-errors';
 import { repoPathAndFromDates$ } from './repo';
+import { toCsvObs } from '@enrico.piccinin/csv-tools';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -208,7 +209,6 @@ export function readCommitWithFileNumstat$(params: GitLogCommitParams, outFile =
     // _readCommitWithFileNumstat$ is a stream that derives from the upstream of lines notified by _readCommitsData$
     // and transform it into a stream of CommitWithFileNumstat objects
     const _readCommitWithFileNumstat$ = _readCommitsData$.pipe(
-        filter((line) => line.length > 0),
         toCommitsWithFileNumstatdata(),
     )
 
@@ -469,6 +469,79 @@ export function countCommits$(
     )
 }
 
+/**
+ * This function generates an Observable stream of records representing the the files that have changes in each 
+ * commit between two commits.
+ * Each record has info about the changes (i.e. lines added and lines removes) as well as info about the commit where the changes were made
+ * including the commit sha, author, date, and subject.
+ * It uses the git log command to fetch the commit data and then processes it to return an Observable stream of records.
+ *
+ * @param mostRecentCommit - The hash of the most recent commit in the range.
+ * @param leastRecentCommit - The hash of the least recent commit in the range.
+ * @param repoFolderPath - The path to the git repository. Defaults to the current directory.
+ * @param options - Optional parameters for the executeCommandObs function.
+ * @returns An Observable stream of commit objects. Each commit object includes the commit data and an array of files that were changed in that commit.
+ */
+export function diffBetweenCommits$(
+    mostRecentCommit: string,
+    leastRecentCommit: string,
+    repoFolderPath = './',
+    options?: ExecuteCommandObsOptions
+) {
+    const command = `cd ${repoFolderPath} && git log --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p` +
+        ` --numstat --date=short ${leastRecentCommit}...${mostRecentCommit}`;
+    return executeCommandObs(`diff between ${mostRecentCommit} and ${leastRecentCommit}`, command, options).pipe(
+        map((commitsData) => {
+            return commitsData.split('\n')
+        }),
+        mergeMap(lines => lines),
+        toCommitsWithFileNumstatdata(),
+        mergeMap(commit => {
+            return commit.files.map(file => {
+                const commitWithNoFiles: any = { ...commit }
+                delete commitWithNoFiles.files
+                return { ...file, ...(commitWithNoFiles as Commit) }
+            })
+        })
+    )
+}
+
+/**
+ * This function generates a CSV file containing the differences between two commits.
+ * It uses the diffBetweenCommits$ function to get an Observable stream of records representing the file changes and the related commit data.
+ * The data is then converted to CSV format and written to a file.
+ *
+ * @param mostRecentCommit - The hash of the most recent commit in the range.
+ * @param leastRecentCommit - The hash of the least recent commit in the range.
+ * @param repoFolderPath - The path to the git repository. Defaults to the current directory.
+ * @param options - Optional parameters for the write operation, including the output directory and output file name.
+ * @returns An Observable that completes when the CSV file has been written.
+ */
+export function writeDiffBetweenCommitsCsv$(
+    mostRecentCommit: string,
+    leastRecentCommit: string,
+    repoFolderPath = './',
+    options?: WriteBetweenCommitsOptions
+) {
+    const repoName = path.basename(repoFolderPath);
+    const outDir = options?.outDir || './';
+    const outFile = options?.outFile || `${repoName}-${mostRecentCommit}-${leastRecentCommit}-diff.csv`;
+    const outFilePath = path.join(outDir, outFile);
+    return diffBetweenCommits$(mostRecentCommit, leastRecentCommit, repoFolderPath, options).pipe(
+        toCsvObs(),
+        toArray(),
+        concatMap(lines => {
+            return writeFileObs(outFilePath, lines)
+        })
+    )
+}
+'https://git.ad.rgigroup.com/iiab/ch/iiab-ch-pass-platform/-/compare/161ea30fffe0e8b5739d0928cc0049828e9f676e...663a353b9bf9428304a4877e96fe41c1a5d10436?#61dc53e22cc09fd0e0cc3ac0f3b6e0acd7924f74'
+export type WriteBetweenCommitsOptions = {
+    outDir?: string,
+    outFile?: string,
+} & ExecuteCommandObsOptions
+
+
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
@@ -568,7 +641,9 @@ function buildGitOutfile(params: GitLogCommitParams) {
 
 function toCommitsWithFileNumstatdata(logFilePath?: string) {
     return pipe(
+        filter((line: string) => line.length > 0),
         commitLines(logFilePath),
+        filter((line) => line.length > 0),
         map((lines) => {
             const commit = newCommitWithFileNumstats(lines);
             return commit;

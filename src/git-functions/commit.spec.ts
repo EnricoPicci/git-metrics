@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SEP, commitAtDateOrAfter$, commitAtDateOrBefore$, commitClosestToDate$, countCommits$, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
+import { SEP, commitAtDateOrAfter$, commitAtDateOrBefore$, commitClosestToDate$, diffBetweenCommits$, countCommits$, newCommitCompactFromGitlog, readCommitCompact$, readCommitCompactWithUrlAndParentDate$, readCommitWithFileNumstat$, readOneCommitCompact$, writeCommitWithFileNumstat, writeCommitWithFileNumstat$, writeCommitWithFileNumstatCommand } from './commit';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { EMPTY, catchError, concat, concatMap, forkJoin, last, tap, toArray } from 'rxjs';
 import { GitLogCommitParams } from './git-params';
@@ -621,3 +621,22 @@ describe('countCommits$', () => {
         });
     });
 });
+
+describe(`diffBetweenCommits$`, () => {
+    it(`returns diffs between 2 commits`, (done) => {
+        const mostRecentCommit = 'v3.1.1';
+        const leastRecentCommit = 'v2.1.1';
+        diffBetweenCommits$(mostRecentCommit, leastRecentCommit).pipe(
+            toArray(),
+            tap((ret) => {
+                expect(ret).not.undefined;
+                expect(ret instanceof Array).true;
+                expect(ret.length).gt(0);
+            }),
+        ).subscribe({
+            error: (err) => done(err),
+            complete: () => done()
+        });
+    }).timeout(20000);
+});
+
