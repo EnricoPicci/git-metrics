@@ -22,6 +22,7 @@ import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
 import { GitError } from './git-errors';
 import { getRemoteOriginUrl$, repoPathAndFromDates$ } from './repo';
 import { toCsvObs } from '@enrico.piccinin/csv-tools';
+import { gitRepoPaths } from './repo-path';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -511,11 +512,23 @@ export function diffBetweenCommits$(
             return commit.files.map(file => {
                 const commitWithNoFiles: any = { ...commit }
                 delete commitWithNoFiles.files
-                return { ...file, ...(commitWithNoFiles as Commit) }
+                return { ...file, repoPath: repoFolderPath, ...(commitWithNoFiles as Commit) }
             })
         }),
     )
     const remoteOrigin$ = getRemoteOriginUrl$(repoFolderPath, options)
+
+    return remoteOrigin$.pipe(
+        concatMap(remoteOrigin => {
+            return diffCmd$.pipe(
+                map(fileDiff => {
+                    const commitUrl = getGitlabCommitUrl(remoteOrigin, mostRecentCommit)
+                    const compareUrl = getGitlabCommitCompareUrl(remoteOrigin, mostRecentCommit, leastRecentCommit)
+                    return { ...fileDiff, commitUrl, compareUrl }
+                })
+            )
+        }),
+    )
 
     return forkJoin([diffCmd$, remoteOrigin$]).pipe(
         map(([fileDiff, remoteOrigin]) => {
@@ -558,7 +571,50 @@ export function writeDiffBetweenCommitsCsv$(
 export type WriteBetweenCommitsOptions = {
     outDir?: string,
     outFile?: string,
+    outFilePrefix?: string,
 } & ExecuteCommandObsOptions
+
+export function diffBetweenReleasesForRepos$(
+    mostRecentRelease: string,
+    leastRecentRelease: string,
+    reposRootFolderPath = './',
+    options?: DiffCommitForReposOptions
+) {
+    const excludeRepoPaths = options?.excludeRepoPaths || [];
+    const repoPaths = gitRepoPaths(reposRootFolderPath, excludeRepoPaths);
+    return from(repoPaths).pipe(
+        concatMap(repoPath => {
+            const folderName = path.basename(repoPath);
+            const mostRecentTag = `${folderName}-${mostRecentRelease}`;
+            const leastRecentTag = `${folderName}-${leastRecentRelease}`;
+            return diffBetweenCommits$(mostRecentTag, leastRecentTag, repoPath, options)
+        }),
+    )
+}
+export type DiffCommitForReposOptions = {
+    outDir?: string,
+    outFilePrefix?: string,
+    excludeRepoPaths?: string[],
+} & ExecuteCommandObsOptions
+
+export function writeDiffBetweenReleasesForReposCsv$(
+    mostRecentCommit: string,
+    leastRecentCommit: string,
+    reposRootFolderPath = './',
+    options?: DiffCommitForReposOptions
+) {
+    const outDir = options?.outDir || './';
+    const outFilePrefix = options?.outFilePrefix || '';
+    const outFile = `${outFilePrefix}-${mostRecentCommit}-${leastRecentCommit}-diff.csv`;
+    const outFilePath = path.join(outDir, outFile);
+    return diffBetweenReleasesForRepos$(mostRecentCommit, leastRecentCommit, reposRootFolderPath, options).pipe(
+        toCsvObs(),
+        toArray(),
+        concatMap(lines => {
+            return writeFileObs(outFilePath, lines)
+        })
+    )
+}
 
 
 //********************************************************************************************************************** */
