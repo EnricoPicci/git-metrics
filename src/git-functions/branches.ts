@@ -1,6 +1,6 @@
 import path from "path";
 
-import { ExecuteCommandObsOptions, executeCommand, executeCommandObs } from "../tools/execute-command/execute-command";
+import { ExecuteCommandObsOptions, executeCommand, executeCommandObs$ } from "../tools/execute-command/execute-command";
 
 import { GitCommandParams } from "./git-params";
 import { buildOutfileName } from "./utils/file-name-utils";
@@ -37,7 +37,7 @@ export function defaultBranchName$(repoPath: string, options?: ExecuteCommandObs
     // build the command to fetch the default branch name
     // see https://stackoverflow.com/a/67170894
     const gitCommand = `cd ${repoPath} && git branch --remotes --list '*/HEAD'`;
-    return executeCommandObs(`fetch default branch name for ${repoPath}`, gitCommand, options).pipe(
+    return executeCommandObs$(`fetch default branch name for ${repoPath}`, gitCommand, options).pipe(
         map((output) => {
             // if the output is the empty string, then it means that the repository is empty
             if (output === '') {

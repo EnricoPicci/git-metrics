@@ -23,7 +23,7 @@ import {
     executeCommand,
     executeCommandInShellNewProcessObs,
     executeCommandNewProcessToLinesObs,
-    executeCommandObs,
+    executeCommandObs$,
 } from '../tools/execute-command/execute-command';
 
 import { ClocDictionary, ClocFileInfo, ClocLanguageStats } from './cloc.model';
@@ -102,7 +102,7 @@ export function clocSummaryCsvRaw$(path = './', vcs?: string) {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
 
     const executable = CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
-    return executeCommandObs(
+    return executeCommandObs$(
         'run cloc summary',
         `${executable} --csv ${_vcs} --timeout=${CLOC_CONFIG.TIMEOUT} ${path}`,
     ).pipe(

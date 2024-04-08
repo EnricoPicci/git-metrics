@@ -1,5 +1,5 @@
 import { catchError, concatMap, filter, from, map, of, skip, tap, toArray } from "rxjs";
-import { ExecuteCommandObsOptions, executeCommandObs } from "../tools/execute-command/execute-command";
+import { ExecuteCommandObsOptions, executeCommandObs$ } from "../tools/execute-command/execute-command";
 import { ignoreUpTo } from "../tools/rxjs-operators/ignore-up-to";
 import { CLOC_CONFIG } from "./config";
 import { ClocDiffByfileWithSumAndIsCopy, newClocDiffByfile, newClocDiffByfileWithCommitData, newClocDiffByfileWithSum } from "./cloc-diff-byfile.model";
@@ -386,7 +386,7 @@ function executeClocGitDiff$(
 ) {
     const cmd = buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath, notMatchDirectories, strategy);
 
-    return executeCommandObs(`run cloc --git-diff-${strategy} --by-file --quiet`, cmd, options).pipe(
+    return executeCommandObs$(`run cloc --git-diff-${strategy} --by-file --quiet`, cmd, options).pipe(
         map((output) => {
             return output.split('\n');
         }),

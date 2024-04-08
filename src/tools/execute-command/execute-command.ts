@@ -28,7 +28,7 @@ export function executeCommand(action: string, command: string) {
  * @returns An Observable that emits the standard output of the command.
  * @throws An error if the command execution fails or if the stdErrorHandler function returns an Error object.
  */
-export function executeCommandObs(action: string, command: string, options?: ExecuteCommandObsOptions) {
+export function executeCommandObs$(action: string, command: string, options?: ExecuteCommandObsOptions) {
     return new Observable((subscriber: Subscriber<string>) => {
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);
         console.log(`====>>>> ${command}`);

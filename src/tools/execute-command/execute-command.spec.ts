@@ -6,7 +6,7 @@ import {
     executeCommandInShellNewProcessObs,
     executeCommandNewProcessObs,
     executeCommandNewProcessToLinesObs,
-    executeCommandObs,
+    executeCommandObs$,
 } from './execute-command';
 
 describe(`When executing a command`, () => {
@@ -32,7 +32,7 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
     it(`the data notified by the observable contains something`, (done) => {
         let dataReceived: string;
         const cmd = process.platform === 'win32' ? 'dir' : 'ls';
-        executeCommandObs('Test-1', cmd).subscribe({
+        executeCommandObs$('Test-1', cmd).subscribe({
             next: (data) => {
                 dataReceived = data;
                 expect(data.length).gt(0);
@@ -47,7 +47,7 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
         });
     });
     it(`the Observable errors if the command is wrong`, (done) => {
-        executeCommandObs('Test-12', 'NotACommand').subscribe({
+        executeCommandObs$('Test-12', 'NotACommand').subscribe({
             next: (data) => {
                 done(`should not arrive here with data: ${data}`);
             },

@@ -1,5 +1,5 @@
 import { catchError, map, } from "rxjs";
-import { executeCommandObs } from "../tools/execute-command/execute-command";
+import { executeCommandObs$ } from "../tools/execute-command/execute-command";
 import { GitDiffFileDict } from "./diff-file.model";
 import { isUnknownRevisionError } from "./errors";
 
@@ -24,7 +24,7 @@ export function diff$(
     similarityIndex = 50,
 ) {
     const cmd = buildDiffCommand(mostRecentCommit, leastRecentCommit, repoFolderPath, similarityIndex);
-    return executeCommandObs('run git diff', cmd).pipe(
+    return executeCommandObs$('run git diff', cmd).pipe(
         catchError((error) => {
             if (isUnknownRevisionError(error)) {
                 console.warn(`Error in fetchOneCommit for repo "${repoFolderPath} and commit ${mostRecentCommit}"`)

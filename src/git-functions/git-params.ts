@@ -1,6 +1,6 @@
 export type GitCommandParams = {
     repoFolderPath: string;
-    outDir: string;
+    outDir?: string;
     outFile?: string;
 };
 

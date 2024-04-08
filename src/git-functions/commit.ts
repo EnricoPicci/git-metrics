@@ -7,7 +7,7 @@ import {
 
 import { appendFileObs, writeFileObs } from 'observable-fs';
 
-import { ExecuteCommandObsOptions, executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs } from '../tools/execute-command/execute-command';
+import { ExecuteCommandObsOptions, executeCommand, executeCommandNewProcessToLinesObs, executeCommandObs$ } from '../tools/execute-command/execute-command';
 
 import { Commit, CommitCompact, CommitCompactWithUrlAndParentDate, newCommitWithFileNumstats } from './commit.model';
 import { GIT_CONFIG } from './config';
@@ -15,7 +15,7 @@ import { GitLogCommitParams } from './git-params';
 import { buildOutfileName } from './utils/file-name-utils';
 import { CONFIG } from '../config';
 import { deleteFile$ } from '../tools/observable-fs-extensions/delete-file-ignore-if-missing';
-import { getGitlabCommitCompareUrl, getGitlabCommitUrl, getGitlabCommitUrl$ } from './commit-url';
+import { getGitlabCommitCompareUrl, getGitlabCommitUrl$ } from './commit-url';
 import { toYYYYMMDD } from '../tools/dates/date-functions';
 import { isUnknownRevisionError } from './errors';
 import { ERROR_UNKNOWN_REVISION_OR_PATH } from './errors';
@@ -153,7 +153,7 @@ export function readOneCommitCompact$(commitSha: string, repoPath: string, optio
 
     // the -n 1 option limits the number of commits to 1
     const cmd = `cd ${repoPath} && git log --pretty=%H,%ad,%an ${commitSha} -n 1`;
-    return executeCommandObs('read one commit from log', cmd, options).pipe(
+    return executeCommandObs$('read one commit from log', cmd, options).pipe(
         toArray(),
         map((output) => {
             const commitCompact = newCommitCompactFromGitlog(output[0], repoPath);
@@ -240,7 +240,7 @@ export function readCommitWithFileNumstat$(params: GitLogCommitParams, outFile =
  */
 export function writeCommitWithFileNumstat$(params: GitLogCommitParams) {
     const [cmd, out] = writeCommitWithFileNumstatCommand(params);
-    return executeCommandObs('write commit enriched log', cmd).pipe(
+    return executeCommandObs$('write commit enriched log', cmd).pipe(
         tap({
             complete: () => {
                 console.log(
@@ -283,7 +283,7 @@ export function commitAtDateOrBefore$(repoPath: string, date: Date, branchName: 
     // convert date to YYYY-MM-DD format
     const dateString = toYYYYMMDD(date);
     const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}-23:59:59" --format=%H%ci ${branchName}`
-    return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe(
+    return executeCommandObs$(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe(
         map(commitInfoString => {
             return commitInfoString.trim()
         }),
@@ -327,7 +327,7 @@ export function commitAtDateOrAfter$(repoPath: string, date: Date, branchName: s
     // the result that we get the last commit and not the first commit after the date
     // https://stackoverflow.com/a/5188990/5699993
     const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}-00:00:00" --format=%H%ci ${branchName}`
-    return executeCommandObs(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe(
+    return executeCommandObs$(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe(
         map(commitSha => {
             return commitSha.trim()
         }),
@@ -421,7 +421,7 @@ export function checkout$(repoPath: string, commitSha: string, executeCommandOpt
     const gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
     executeCommandOptions = executeCommandOptions || {} as ExecuteCommandObsOptions
     executeCommandOptions.stdErrorHandler = executeCommandOptions.stdErrorHandler || defaultStdErrorHandler
-    return executeCommandObs(
+    return executeCommandObs$(
         `checkout ${repoName} at commit ${commitSha}`,
         gitCommand,
         executeCommandOptions
@@ -491,7 +491,7 @@ export function diffBetweenCommits$(
 ) {
     const command = `cd ${repoFolderPath} && git log --pretty=format:${SEP}%h${SEP}%ad${SEP}%aN${SEP}%cN${SEP}%cd${SEP}%f${SEP}%p` +
         ` --numstat --date=short ${leastRecentCommit}...${mostRecentCommit}`;
-    const diffCmd$ = executeCommandObs(`diff between ${mostRecentCommit} and ${leastRecentCommit}`, command, options).pipe(
+    const diffCmd$ = executeCommandObs$(`diff between ${mostRecentCommit} and ${leastRecentCommit}`, command, options).pipe(
         catchError(err => {
             console.error(`Error: "diffBetweenCommits" while executing command "${command}"`);
             console.error(`error message ${err.message}`);
@@ -522,20 +522,11 @@ export function diffBetweenCommits$(
         concatMap(remoteOrigin => {
             return diffCmd$.pipe(
                 map(fileDiff => {
-                    const commitUrl = getGitlabCommitUrl(remoteOrigin, mostRecentCommit)
                     const compareUrl = getGitlabCommitCompareUrl(remoteOrigin, mostRecentCommit, leastRecentCommit)
-                    return { ...fileDiff, commitUrl, compareUrl }
+                    return { ...fileDiff, compareUrl }
                 })
             )
         }),
-    )
-
-    return forkJoin([diffCmd$, remoteOrigin$]).pipe(
-        map(([fileDiff, remoteOrigin]) => {
-            const commitUrl = getGitlabCommitUrl(remoteOrigin, mostRecentCommit)
-            const compareUrl = getGitlabCommitCompareUrl(remoteOrigin, mostRecentCommit, leastRecentCommit)
-            return { ...fileDiff, commitUrl, compareUrl }
-        })
     )
 }
 

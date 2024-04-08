@@ -2,7 +2,7 @@ import path from 'path';
 
 import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignoreElements, defaultIfEmpty, of, last, } from 'rxjs';
 
-import { CmdErrored, CmdExecuted, ExecuteCommandObsOptions, executeCommandObs } from '../tools/execute-command/execute-command';
+import { CmdErrored, CmdExecuted, ExecuteCommandObsOptions, executeCommandObs$ } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
 import { checkout$, commitAtDateOrBefore$, readCommitCompact$ } from './commit';
@@ -31,7 +31,7 @@ export function cloneRepo$(url: string, repoPath: string) {
     const repoName = path.basename(repoPath);
     const command = `git clone ${url} ${repoPath.replaceAll(' ', '_')}`;
 
-    return executeCommandObs(`Clone ${repoName}`, command).pipe(
+    return executeCommandObs$(`Clone ${repoName}`, command).pipe(
         tap(() => `${repoName} cloned`),
         ignoreElements(),
         defaultIfEmpty(repoPath),
@@ -57,7 +57,7 @@ export function pullRepo$(repoPath: string) {
     let command: string
 
     command = `cd ${repoPath} && git pull`;
-    return executeCommandObs(`Pull ${repoName}`, command).pipe(
+    return executeCommandObs$(`Pull ${repoName}`, command).pipe(
         tap(() => `${repoName} pulled`),
         ignoreElements(),
         defaultIfEmpty(repoPath),
@@ -122,7 +122,7 @@ export function fetchRepo$(repoPath: string) {
     const repoName = path.basename(repoPath);
     const command = `cd ${repoPath} && git fetch --all`;
 
-    return executeCommandObs(`Fetch ${repoName}`, command).pipe(
+    return executeCommandObs$(`Fetch ${repoName}`, command).pipe(
         tap(() => `${repoName} fetched`),
         ignoreElements(),
         defaultIfEmpty(repoPath),
@@ -385,7 +385,7 @@ export function gitHttpsUrlFromGitUrl(gitUrl: string) {
  */
 export function getRemoteOriginUrl$(repoPath: string, options?: ExecuteCommandObsOptions) {
     const cmd = `cd ${repoPath} && git config --get remote.origin.url`;
-    return executeCommandObs('run git  config --get remote.origin.url', cmd, options).pipe(
+    return executeCommandObs$('run git  config --get remote.origin.url', cmd, options).pipe(
         map((output) => {
             return output.split('\n')[0];
         }),
