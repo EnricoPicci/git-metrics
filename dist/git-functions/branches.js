@@ -36,7 +36,7 @@ function defaultBranchName$(repoPath, options) {
     // build the command to fetch the default branch name
     // see https://stackoverflow.com/a/67170894
     const gitCommand = `cd ${repoPath} && git branch --remotes --list '*/HEAD'`;
-    return (0, execute_command_1.executeCommandObs)(`fetch default branch name for ${repoPath}`, gitCommand, options).pipe((0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs$)(`fetch default branch name for ${repoPath}`, gitCommand, options).pipe((0, rxjs_1.map)((output) => {
         // if the output is the empty string, then it means that the repository is empty
         if (output === '') {
             const errMsg = `Error: while fetching default branch name for repo "${repoPath}"

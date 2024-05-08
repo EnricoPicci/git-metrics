@@ -76,7 +76,7 @@ exports.clocSummary$ = clocSummary$;
 function clocSummaryCsvRaw$(path = './', vcs) {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
     const executable = config_1.CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
-    return (0, execute_command_1.executeCommandObs)('run cloc summary', `${executable} --csv ${_vcs} --timeout=${config_1.CLOC_CONFIG.TIMEOUT} ${path}`).pipe((0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs$)('run cloc summary', `${executable} --csv ${_vcs} --timeout=${config_1.CLOC_CONFIG.TIMEOUT} ${path}`).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n').filter((l) => l.trim().length > 0);
     }));
 }

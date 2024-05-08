@@ -19,7 +19,7 @@ const errors_1 = require("./errors");
  */
 function diff$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', similarityIndex = 50) {
     const cmd = buildDiffCommand(mostRecentCommit, leastRecentCommit, repoFolderPath, similarityIndex);
-    return (0, execute_command_1.executeCommandObs)('run git diff', cmd).pipe((0, rxjs_1.catchError)((error) => {
+    return (0, execute_command_1.executeCommandObs$)('run git diff', cmd).pipe((0, rxjs_1.catchError)((error) => {
         if ((0, errors_1.isUnknownRevisionError)(error)) {
             console.warn(`Error in fetchOneCommit for repo "${repoFolderPath} and commit ${mostRecentCommit}"`);
             return [];

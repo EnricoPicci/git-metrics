@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.countCommits$ = exports.allCommits$ = exports.checkout$ = exports.commitClosestToDate$ = exports.commitAtDateOrAfter$ = exports.commitAtDateOrBefore$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
+exports.commitLines = exports.COMMITS_FILE_REVERSE_POSTFIX = exports.COMMITS_FILE_POSTFIX = exports.writeCommitWithFileNumstatCommand = exports.newCommitCompactFromGitlog = exports.SEP = exports.writeDiffBetweenReleasesForReposCsv$ = exports.diffBetweenReleasesForRepos$ = exports.writeDiffBetweenCommitsCsv$ = exports.diffBetweenCommits$ = exports.countCommits$ = exports.allCommits$ = exports.checkout$ = exports.commitClosestToDate$ = exports.commitAtDateOrAfter$ = exports.commitAtDateOrBefore$ = exports.newEmptyCommitCompact = exports.writeCommitWithFileNumstat$ = exports.readCommitWithFileNumstat$ = exports.writeCommitWithFileNumstat = exports.readOneCommitCompact$ = exports.readCommitCompactWithUrlAndParentDate$ = exports.readCommitCompact$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -19,6 +19,8 @@ const errors_1 = require("./errors");
 const errors_2 = require("./errors");
 const git_errors_1 = require("./git-errors");
 const repo_1 = require("./repo");
+const csv_tools_1 = require("@enrico.piccinin/csv-tools");
+const repo_path_1 = require("./repo-path");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -68,7 +70,7 @@ exports.readCommitCompact$ = readCommitCompact$;
  */
 function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, options) {
     return readCommitCompact$(repoPath, fromDate, toDate, noMerges, options).pipe((0, rxjs_1.concatMap)((commit) => {
-        return (0, commit_url_1.getGitlabCommitUrl)(repoPath, commit.sha, options).pipe((0, rxjs_1.map)((commitUrl) => {
+        return (0, commit_url_1.getGitlabCommitUrl$)(repoPath, commit.sha, options).pipe((0, rxjs_1.map)((commitUrl) => {
             return { commit, commitUrl };
         }));
     }), (0, rxjs_1.concatMap)(({ commit, commitUrl }) => {
@@ -107,7 +109,7 @@ function readOneCommitCompact$(commitSha, repoPath, options, verbose = true) {
         throw new Error(`Repo path is mandatory`);
     // the -n 1 option limits the number of commits to 1
     const cmd = `cd ${repoPath} && git log --pretty=%H,%ad,%an ${commitSha} -n 1`;
-    return (0, execute_command_1.executeCommandObs)('read one commit from log', cmd, options).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs$)('read one commit from log', cmd, options).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)((output) => {
         const commitCompact = newCommitCompactFromGitlog(output[0], repoPath);
         return commitCompact;
     }), (0, rxjs_1.catchError)((error) => {
@@ -156,7 +158,7 @@ function readCommitWithFileNumstat$(params, outFile = '') {
     const _readCommitsData$ = (0, execute_command_1.executeCommandNewProcessToLinesObs)('readCommits', 'git', args).pipe((0, rxjs_1.share)());
     // _readCommitWithFileNumstat$ is a stream that derives from the upstream of lines notified by _readCommitsData$
     // and transform it into a stream of CommitWithFileNumstat objects
-    const _readCommitWithFileNumstat$ = _readCommitsData$.pipe((0, rxjs_1.filter)((line) => line.length > 0), toCommitsWithFileNumstatdata());
+    const _readCommitWithFileNumstat$ = _readCommitsData$.pipe(toCommitsWithFileNumstatdata());
     // _writeCommitLog$ is a stream which writes the commits to a file if an outFile is provided
     // if an outFile is provided, _writeCommitLog is a stream that writes the commits to the outFile silently
     // (silently means that it does not emit anything and completes when the writing is completed)
@@ -180,7 +182,7 @@ exports.readCommitWithFileNumstat$ = readCommitWithFileNumstat$;
  */
 function writeCommitWithFileNumstat$(params) {
     const [cmd, out] = writeCommitWithFileNumstatCommand(params);
-    return (0, execute_command_1.executeCommandObs)('write commit enriched log', cmd).pipe((0, rxjs_1.tap)({
+    return (0, execute_command_1.executeCommandObs$)('write commit enriched log', cmd).pipe((0, rxjs_1.tap)({
         complete: () => {
             console.log(`====>>>> Commits read from repo in folder ${params.repoFolderPath ? params.repoFolderPath : path_1.default.parse(process.cwd()).name}`);
             console.log(`====>>>> Output saved on file ${out}`);
@@ -217,7 +219,7 @@ function commitAtDateOrBefore$(repoPath, date, branchName, options) {
     // convert date to YYYY-MM-DD format
     const dateString = (0, date_functions_1.toYYYYMMDD)(date);
     const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}-23:59:59" --format=%H%ci ${branchName}`;
-    return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe((0, rxjs_1.map)(commitInfoString => {
+    return (0, execute_command_1.executeCommandObs$)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe((0, rxjs_1.map)(commitInfoString => {
         return commitInfoString.trim();
     }), (0, rxjs_1.tap)((commitInfo) => {
         if (!commitInfo) {
@@ -257,7 +259,7 @@ function commitAtDateOrAfter$(repoPath, date, branchName) {
     // the result that we get the last commit and not the first commit after the date
     // https://stackoverflow.com/a/5188990/5699993
     const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}-00:00:00" --format=%H%ci ${branchName}`;
-    return (0, execute_command_1.executeCommandObs)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitSha => {
+    return (0, execute_command_1.executeCommandObs$)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitSha => {
         return commitSha.trim();
     }), (0, rxjs_1.tap)((commitsInfo) => {
         if (!commitsInfo) {
@@ -338,7 +340,7 @@ function checkout$(repoPath, commitSha, executeCommandOptions) {
     const gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
     executeCommandOptions = executeCommandOptions || {};
     executeCommandOptions.stdErrorHandler = executeCommandOptions.stdErrorHandler || defaultStdErrorHandler;
-    return (0, execute_command_1.executeCommandObs)(`checkout ${repoName} at commit ${commitSha}`, gitCommand, executeCommandOptions);
+    return (0, execute_command_1.executeCommandObs$)(`checkout ${repoName} at commit ${commitSha}`, gitCommand, executeCommandOptions);
 }
 exports.checkout$ = checkout$;
 /**
@@ -368,6 +370,93 @@ function countCommits$(repoPaths, fromDate = new Date(0), toDate = new Date(Date
     return allCommits$(repoPaths, fromDate, toDate, creationDateCsvFilePath).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.map)(commits => commits.length));
 }
 exports.countCommits$ = countCommits$;
+/**
+ * This function generates an Observable stream of records representing the the files that have changes in each
+ * commit between two commits.
+ * Each record has info about the changes (i.e. lines added and lines removes) as well as info about the commit where the changes were made
+ * including the commit sha, author, date, and subject.
+ * It uses the git log command to fetch the commit data and then processes it to return an Observable stream of records.
+ *
+ * @param mostRecentCommit - The hash of the most recent commit in the range.
+ * @param leastRecentCommit - The hash of the least recent commit in the range.
+ * @param repoFolderPath - The path to the git repository. Defaults to the current directory.
+ * @param options - Optional parameters for the executeCommandObs function.
+ * @returns An Observable stream of commit objects. Each commit object includes the commit data and an array of files that were changed in that commit.
+ */
+function diffBetweenCommits$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', options) {
+    const command = `cd ${repoFolderPath} && git log --pretty=format:${exports.SEP}%h${exports.SEP}%ad${exports.SEP}%aN${exports.SEP}%cN${exports.SEP}%cd${exports.SEP}%f${exports.SEP}%p` +
+        ` --numstat --date=short ${leastRecentCommit}...${mostRecentCommit}`;
+    const diffCmd$ = (0, execute_command_1.executeCommandObs$)(`diff between ${mostRecentCommit} and ${leastRecentCommit}`, command, options).pipe((0, rxjs_1.catchError)(err => {
+        console.error(`Error: "diffBetweenCommits" while executing command "${command}"`);
+        console.error(`error message ${err.message}`);
+        const errMsg = err.message;
+        if (errMsg.includes('unknown revision')) {
+            console.error(`Probably "${mostRecentCommit}" or "${leastRecentCommit}" are not valid commit hashes/branches/tags in the repo "${repoFolderPath}`);
+        }
+        else {
+            console.error(`error stack ${err.stack}`);
+        }
+        return rxjs_1.EMPTY;
+    }), (0, rxjs_1.map)((commitsData) => {
+        return commitsData.split('\n');
+    }), (0, rxjs_1.mergeMap)(lines => lines), toCommitsWithFileNumstatdata(), (0, rxjs_1.mergeMap)(commit => {
+        return commit.files.map(file => {
+            const commitWithNoFiles = Object.assign({}, commit);
+            delete commitWithNoFiles.files;
+            return Object.assign(Object.assign(Object.assign({}, file), { repoPath: repoFolderPath }), commitWithNoFiles);
+        });
+    }));
+    const remoteOrigin$ = (0, repo_1.getRemoteOriginUrl$)(repoFolderPath, options);
+    return remoteOrigin$.pipe((0, rxjs_1.concatMap)(remoteOrigin => {
+        return diffCmd$.pipe((0, rxjs_1.map)(fileDiff => {
+            const compareUrl = (0, commit_url_1.getGitlabCommitCompareUrl)(remoteOrigin, mostRecentCommit, leastRecentCommit);
+            return Object.assign(Object.assign({}, fileDiff), { compareUrl });
+        }));
+    }));
+}
+exports.diffBetweenCommits$ = diffBetweenCommits$;
+/**
+ * This function generates a CSV file containing the differences between two commits.
+ * It uses the diffBetweenCommits$ function to get an Observable stream of records representing the file changes and the related commit data.
+ * The data is then converted to CSV format and written to a file.
+ *
+ * @param mostRecentCommit - The hash of the most recent commit in the range.
+ * @param leastRecentCommit - The hash of the least recent commit in the range.
+ * @param repoFolderPath - The path to the git repository. Defaults to the current directory.
+ * @param options - Optional parameters for the write operation, including the output directory and output file name.
+ * @returns An Observable that completes when the CSV file has been written.
+ */
+function writeDiffBetweenCommitsCsv$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', options) {
+    const repoName = path_1.default.basename(repoFolderPath);
+    const outDir = (options === null || options === void 0 ? void 0 : options.outDir) || './';
+    const outFile = (options === null || options === void 0 ? void 0 : options.outFile) || `${repoName}-${mostRecentCommit}-${leastRecentCommit}-diff.csv`;
+    const outFilePath = path_1.default.join(outDir, outFile);
+    return diffBetweenCommits$(mostRecentCommit, leastRecentCommit, repoFolderPath, options).pipe((0, csv_tools_1.toCsvObs)(), (0, rxjs_1.toArray)(), (0, rxjs_1.concatMap)(lines => {
+        return (0, observable_fs_1.writeFileObs)(outFilePath, lines);
+    }));
+}
+exports.writeDiffBetweenCommitsCsv$ = writeDiffBetweenCommitsCsv$;
+function diffBetweenReleasesForRepos$(mostRecentRelease, leastRecentRelease, reposRootFolderPath = './', options) {
+    const excludeRepoPaths = (options === null || options === void 0 ? void 0 : options.excludeRepoPaths) || [];
+    const repoPaths = (0, repo_path_1.gitRepoPaths)(reposRootFolderPath, excludeRepoPaths);
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)(repoPath => {
+        const folderName = path_1.default.basename(repoPath);
+        const mostRecentTag = `${folderName}-${mostRecentRelease}`;
+        const leastRecentTag = `${folderName}-${leastRecentRelease}`;
+        return diffBetweenCommits$(mostRecentTag, leastRecentTag, repoPath, options);
+    }));
+}
+exports.diffBetweenReleasesForRepos$ = diffBetweenReleasesForRepos$;
+function writeDiffBetweenReleasesForReposCsv$(mostRecentCommit, leastRecentCommit, reposRootFolderPath = './', options) {
+    const outDir = (options === null || options === void 0 ? void 0 : options.outDir) || './';
+    const outFilePrefix = (options === null || options === void 0 ? void 0 : options.outFilePrefix) || '';
+    const outFile = `${outFilePrefix}-${mostRecentCommit}-${leastRecentCommit}-diff.csv`;
+    const outFilePath = path_1.default.join(outDir, outFile);
+    return diffBetweenReleasesForRepos$(mostRecentCommit, leastRecentCommit, reposRootFolderPath, options).pipe((0, csv_tools_1.toCsvObs)(), (0, rxjs_1.toArray)(), (0, rxjs_1.concatMap)(lines => {
+        return (0, observable_fs_1.writeFileObs)(outFilePath, lines);
+    }));
+}
+exports.writeDiffBetweenReleasesForReposCsv$ = writeDiffBetweenReleasesForReposCsv$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */
@@ -461,7 +550,7 @@ function buildGitOutfile(params) {
     return out;
 }
 function toCommitsWithFileNumstatdata(logFilePath) {
-    return (0, rxjs_1.pipe)(commitLines(logFilePath), (0, rxjs_1.map)((lines) => {
+    return (0, rxjs_1.pipe)((0, rxjs_1.filter)((line) => line.length > 0), commitLines(logFilePath), (0, rxjs_1.filter)((line) => line.length > 0), (0, rxjs_1.map)((lines) => {
         const commit = (0, commit_model_1.newCommitWithFileNumstats)(lines);
         return commit;
     }));

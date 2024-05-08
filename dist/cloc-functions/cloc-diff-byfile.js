@@ -284,7 +284,7 @@ function buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languag
 }
 function executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages = [], notMatchDirectories, options) {
     const cmd = buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath, notMatchDirectories, strategy);
-    return (0, execute_command_1.executeCommandObs)(`run cloc --git-diff-${strategy} --by-file --quiet`, cmd, options).pipe((0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs$)(`run cloc --git-diff-${strategy} --by-file --quiet`, cmd, options).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n');
     }), (0, rxjs_1.catchError)((err) => {
         // we have encountered situations where cloc returns an error with a message containing text like this:

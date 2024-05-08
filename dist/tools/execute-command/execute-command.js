@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.executeCommandInShellNewProcessObs = exports.executeCommandNewProcessToLinesObs = exports.executeCommandNewProcessObs = exports.writeCmdLogs$ = exports.executeCommandObs = exports.executeCommand = void 0;
+exports.executeCommandInShellNewProcessObs = exports.executeCommandNewProcessToLinesObs = exports.executeCommandNewProcessObs = exports.writeCmdLogs$ = exports.executeCommandObs$ = exports.executeCommand = void 0;
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const child_process_1 = require("child_process");
 const observable_fs_1 = require("observable-fs");
@@ -32,7 +32,7 @@ exports.executeCommand = executeCommand;
  * @returns An Observable that emits the standard output of the command.
  * @throws An error if the command execution fails or if the stdErrorHandler function returns an Error object.
  */
-function executeCommandObs(action, command, options) {
+function executeCommandObs$(action, command, options) {
     return new rxjs_1.Observable((subscriber) => {
         var _a;
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);
@@ -63,7 +63,7 @@ function executeCommandObs(action, command, options) {
         });
     });
 }
-exports.executeCommandObs = executeCommandObs;
+exports.executeCommandObs$ = executeCommandObs$;
 function writeCmdLogs$(options, outDir) {
     var _a;
     const cmdExecutedLog = options.cmdExecutedLog;

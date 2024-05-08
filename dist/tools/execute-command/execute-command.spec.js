@@ -28,7 +28,7 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
     it(`the data notified by the observable contains something`, (done) => {
         let dataReceived;
         const cmd = process.platform === 'win32' ? 'dir' : 'ls';
-        (0, execute_command_1.executeCommandObs)('Test-1', cmd).subscribe({
+        (0, execute_command_1.executeCommandObs$)('Test-1', cmd).subscribe({
             next: (data) => {
                 dataReceived = data;
                 (0, chai_1.expect)(data.length).gt(0);
@@ -43,7 +43,7 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
         });
     });
     it(`the Observable errors if the command is wrong`, (done) => {
-        (0, execute_command_1.executeCommandObs)('Test-12', 'NotACommand').subscribe({
+        (0, execute_command_1.executeCommandObs$)('Test-12', 'NotACommand').subscribe({
             next: (data) => {
                 done(`should not arrive here with data: ${data}`);
             },

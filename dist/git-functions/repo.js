@@ -30,7 +30,7 @@ function cloneRepo$(url, repoPath) {
         throw new Error(`Path is mandatory`);
     const repoName = path_1.default.basename(repoPath);
     const command = `git clone ${url} ${repoPath.replaceAll(' ', '_')}`;
-    return (0, execute_command_1.executeCommandObs)(`Clone ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} cloned`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+    return (0, execute_command_1.executeCommandObs$)(`Clone ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} cloned`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
         console.error(`!!!!!!!!!!!!!!! Error: while cloning repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
         return rxjs_1.EMPTY;
@@ -50,7 +50,7 @@ function pullRepo$(repoPath) {
     const repoName = path_1.default.basename(repoPath);
     let command;
     command = `cd ${repoPath} && git pull`;
-    return (0, execute_command_1.executeCommandObs)(`Pull ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} pulled`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+    return (0, execute_command_1.executeCommandObs$)(`Pull ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} pulled`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
         console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
@@ -105,7 +105,7 @@ function fetchRepo$(repoPath) {
         throw new Error(`Path is mandatory`);
     const repoName = path_1.default.basename(repoPath);
     const command = `cd ${repoPath} && git fetch --all`;
-    return (0, execute_command_1.executeCommandObs)(`Fetch ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} fetched`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+    return (0, execute_command_1.executeCommandObs$)(`Fetch ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} fetched`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
         console.error(`!!!!!!!!!!!!!!! Error: while fetching repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
@@ -307,7 +307,7 @@ exports.gitHttpsUrlFromGitUrl = gitHttpsUrlFromGitUrl;
  */
 function getRemoteOriginUrl$(repoPath, options) {
     const cmd = `cd ${repoPath} && git config --get remote.origin.url`;
-    return (0, execute_command_1.executeCommandObs)('run git  config --get remote.origin.url', cmd, options).pipe((0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs$)('run git  config --get remote.origin.url', cmd, options).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n')[0];
     }));
 }
