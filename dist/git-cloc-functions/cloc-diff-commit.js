@@ -16,6 +16,7 @@ const repo_path_1 = require("../git-functions/repo-path");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 const fs_utils_1 = require("../tools/fs-utils/fs-utils");
 const date_functions_1 = require("../tools/dates/date-functions");
+const branches_1 = require("../git-functions/branches");
 //********************************************************************************************************************** */
 //****************************   Module objectives                               *************************************** */
 //********************************************************************************************************************** */
@@ -88,8 +89,14 @@ function clocDiffWithAllCommits$(pathToRepo, fromDate = new Date(0), toDate = ne
     }), 
     // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
     (0, rxjs_1.concatMap)((clocFileDict) => {
-        return (0, commit_1.readCommitCompactWithUrlAndParentDate$)(pathToRepo, fromDate, toDate, false, options).pipe((0, rxjs_1.map)((commit) => {
+        return (0, branches_1.defaultBranchName$)(pathToRepo, options).pipe((0, rxjs_1.concatMap)(branchName => {
+            return (0, commit_1.readCommitCompactWithUrlAndParentDate$)(pathToRepo, fromDate, toDate, true, branchName, options);
+        }), (0, rxjs_1.map)((commit) => {
             return { commit, clocFileDict };
+        }), (0, rxjs_1.catchError)(err => {
+            console.error(`Error: "clocDiffWithAllCommits$" while reading commits from repo "${pathToRepo}"`);
+            console.error(`error message ${err.message}`);
+            return rxjs_1.EMPTY;
         }));
     }), 
     // then calculate the cloc diff for each commit (against its parent) and pass it down the pipe 
@@ -163,8 +170,9 @@ function writeClocDiffWithCommit$(pathToRepo, outDir = './', fromDate = new Date
     const pathToRepoName = path_1.default.basename(pathToRepo);
     const outFile = `${pathToRepoName}-cloc-diff-commit-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
+    const options = { languages, filePrefix: 'cloc-diff-commit' };
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithAllCommits$(pathToRepo, fromDate, toDate, { languages, filePrefix: 'cloc-diff-commit' })), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithAllCommits$(pathToRepo, fromDate, toDate, options)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
         next: (outFilePath) => {
@@ -198,7 +206,9 @@ function writeCodeTurnover$(folderPath, options = { filePrefix: 'code-turnover' 
     const outFilePath = path_1.default.join(outDir, outFile);
     let noCommitsFound = true;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, options)), (0, rxjs_1.map)(clocDiffCommitEnriched => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => {
+        return clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, options);
+    }), (0, rxjs_1.map)(clocDiffCommitEnriched => {
         const csvRec = formatCodeTurnoverForCsv(clocDiffCommitEnriched, options);
         return csvRec;
     }), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {

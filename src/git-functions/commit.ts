@@ -23,6 +23,7 @@ import { GitError } from './git-errors';
 import { getRemoteOriginUrl$, repoPathAndFromDates$ } from './repo';
 import { toCsvObs } from '@enrico.piccinin/csv-tools';
 import { gitRepoPaths } from './repo-path';
+import { defaultBranchName$ } from './branches';
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -43,6 +44,7 @@ export function readCommitCompact$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     noMerges = true,
+    branchName = '',
     _options?: ExecuteCommandObsOptions
 ) {
     if (!repoPath) throw new Error(`Path is mandatory`);
@@ -51,10 +53,12 @@ export function readCommitCompact$(
     const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%s" ${_noMerges}`;
 
     const options = [
-        'log', '--pretty=format:%H,%ad,%an,%s',
+        'log',
+        '--pretty=format:%H,%ad,%an,%s',
         '--after=' + toYYYYMMDD(fromDate), '--before=' + toYYYYMMDD(toDate)
     ]
     if (noMerges) options.push('--no-merges')
+    options.push(branchName)
 
     return executeCommandNewProcessToLinesObs(
         `Read commits`,
@@ -96,9 +100,10 @@ export function readCommitCompactWithUrlAndParentDate$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     noMerges = true,
+    branchName = '',
     options?: ExecuteCommandObsOptions
 ) {
-    return readCommitCompact$(repoPath, fromDate, toDate, noMerges, options).pipe(
+    return readCommitCompact$(repoPath, fromDate, toDate, noMerges, branchName, options).pipe(
         concatMap((commit) => {
             return getGitlabCommitUrl$(repoPath, commit.sha, options).pipe(
                 map((commitUrl) => {
@@ -446,7 +451,16 @@ export function allCommits$(
 ) {
     return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
         concatMap(({ repoPath, _fromDate }) => {
-            return readCommitCompact$(repoPath, _fromDate, toDate, true)
+            return defaultBranchName$(repoPath).pipe(
+                concatMap(branchName => {
+                    return readCommitCompact$(repoPath, _fromDate, toDate, true, branchName)
+                }),
+                catchError(err => {
+                    console.error(`Error: "allCommits" while reading commits from repo "${repoPath}"`)
+                    console.error(`error message ${err.message}`)
+                    return EMPTY
+                }),
+            )
         }),
     )
 }

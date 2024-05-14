@@ -1,10 +1,11 @@
 import path from "path";
 
+import { map } from "rxjs";
+
 import { ExecuteCommandObsOptions, executeCommand, executeCommandObs$ } from "../tools/execute-command/execute-command";
 
 import { GitCommandParams } from "./git-params";
 import { buildOutfileName } from "./utils/file-name-utils";
-import { map } from "rxjs";
 import { GitError } from "./git-errors";
 
 //********************************************************************************************************************** */

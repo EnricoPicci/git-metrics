@@ -1,6 +1,6 @@
 import path from "path";
 
-import { catchError, concatMap, defaultIfEmpty, ignoreElements, map, tap } from "rxjs";
+import { EMPTY, catchError, concatMap, defaultIfEmpty, ignoreElements, map, tap } from "rxjs";
 
 import { appendFileObs } from "observable-fs";
 import { toCsvObs } from "@enrico.piccinin/csv-tools";
@@ -16,6 +16,7 @@ import { createDirIfNotExisting } from "../tools/fs-utils/fs-utils";
 import { toYYYYMMDD } from "../tools/dates/date-functions";
 
 import { ClocDiffCommitEnriched, ClocDiffCommitEnrichedWithDerivedData, ClocDiffWithCommitOptions } from "./cloc-diff-commit.model";
+import { defaultBranchName$ } from "../git-functions/branches";
 
 //********************************************************************************************************************** */
 //****************************   Module objectives                               *************************************** */
@@ -102,9 +103,17 @@ export function clocDiffWithAllCommits$(
         }),
         // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
         concatMap((clocFileDict) => {
-            return readCommitCompactWithUrlAndParentDate$(pathToRepo, fromDate, toDate, false, options).pipe(
+            return defaultBranchName$(pathToRepo, options).pipe(
+                concatMap(branchName => {
+                    return readCommitCompactWithUrlAndParentDate$(pathToRepo, fromDate, toDate, true, branchName, options)
+                }),
                 map((commit) => {
                     return { commit, clocFileDict }
+                }),
+                catchError(err => {
+                    console.error(`Error: "clocDiffWithAllCommits$" while reading commits from repo "${pathToRepo}"`)
+                    console.error(`error message ${err.message}`)
+                    return EMPTY
                 })
             )
         }),
@@ -205,10 +214,12 @@ export function writeClocDiffWithCommit$(
     const outFile = `${pathToRepoName}-cloc-diff-commit-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
     const outFilePath = path.join(outDir, outFile);
 
+    const options = { languages, filePrefix: 'cloc-diff-commit' }
+
     createDirIfNotExisting(outDir);
 
     return deleteFile$(outFilePath).pipe(
-        concatMap(() => clocDiffWithAllCommits$(pathToRepo, fromDate, toDate, { languages, filePrefix: 'cloc-diff-commit' })),
+        concatMap(() => clocDiffWithAllCommits$(pathToRepo, fromDate, toDate, options)),
         toCsvObs(),
         concatMap((line) => {
             return appendFileObs(outFilePath, `${line}\n`);
@@ -256,7 +267,9 @@ export function writeCodeTurnover$(
     createDirIfNotExisting(outDir);
 
     return deleteFile$(outFilePath).pipe(
-        concatMap(() => clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, options)),
+        concatMap(() => {
+            return clocDiffWithCommitForRepos$(folderPath, fromDate, toDate, excludeRepoPaths, options)
+        }),
         map(clocDiffCommitEnriched => {
             const csvRec = formatCodeTurnoverForCsv(clocDiffCommitEnriched, options)
             return csvRec

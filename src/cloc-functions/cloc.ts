@@ -268,13 +268,14 @@ export function writeClocByFile$(params: ClocParams, action = 'cloc') {
  * @param excludeRepoPaths An optional array of paths to exclude from the search.
  * @returns An Observable that emits the cloc info for all the Git repositories in the given folder.
  */
-export function clocByFileForRepos$(folderPath: string, excludeRepoPaths = []) {
+export function clocByFileForRepos$(folderPath: string, languages: string[] = [], excludeRepoPaths: string[] = []) {
     const repos = gitRepoPaths(folderPath, excludeRepoPaths)
     const cloc$ = from(repos).pipe(
         concatMap((repoPath) => {
             const params: ClocParams = {
                 folderPath: repoPath,
                 vcs: 'git',
+                languages
             }
             // remove the folderPath string from the repoPath string so that the repoPath string represents just the relevant repo info
             // for instance, if folderPath is /home/enrico/code/git-metrics/repos and repoPath is /home/enrico/code/git-metrics/repos/dbm,
@@ -309,12 +310,12 @@ export function clocByFileForRepos$(folderPath: string, excludeRepoPaths = []) {
  * @param excludeRepoPaths An array of repository paths to exclude from the calculation.
  * @returns An Observable that emits the name of the file where the cloc info is saved.
  */
-export function writeClocByFileForRepos$(folderPath: string, outDir = './', excludeRepoPaths = []) {
+export function writeClocByFileForRepos$(folderPath: string, outDir = './', languages: string[] = [], excludeRepoPaths: string[] = []) {
     const outFile = buildOutfileName('', folderPath, 'cloc-', '-byfile.csv');
     const outFilePath = path.join(outDir, outFile);
     createDirIfNotExisting(outDir);
     return deleteFile$(outFilePath).pipe(
-        concatMap(() => clocByFileForRepos$(folderPath, excludeRepoPaths)),
+        concatMap(() => clocByFileForRepos$(folderPath, languages, excludeRepoPaths)),
         concatMap((line) => {
             return appendFileObs(outFilePath, `${line}\n`);
         }),

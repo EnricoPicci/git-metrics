@@ -21,6 +21,7 @@ const git_errors_1 = require("./git-errors");
 const repo_1 = require("./repo");
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const repo_path_1 = require("./repo-path");
+const branches_1 = require("./branches");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -34,17 +35,19 @@ const repo_path_1 = require("./repo-path");
  * @returns An Observable of CommitCompact objects representing the commits within the specified date range.
  * @throws An error if `repoPath` is not provided.
  */
-function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, _options) {
+function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, branchName = '', _options) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const _noMerges = noMerges ? '--no-merges' : '';
     const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%s" ${_noMerges}`;
     const options = [
-        'log', '--pretty=format:%H,%ad,%an,%s',
+        'log',
+        '--pretty=format:%H,%ad,%an,%s',
         '--after=' + (0, date_functions_1.toYYYYMMDD)(fromDate), '--before=' + (0, date_functions_1.toYYYYMMDD)(toDate)
     ];
     if (noMerges)
         options.push('--no-merges');
+    options.push(branchName);
     return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', options, { cwd: repoPath }, _options).pipe((0, rxjs_1.map)((commits) => {
         return commits.split('\n');
     }), (0, rxjs_1.concatMap)((commits) => {
@@ -68,8 +71,8 @@ exports.readCommitCompact$ = readCommitCompact$;
  * @param noMerges A boolean indicating whether to exclude merge commits. Defaults to true.
  * @returns An Observable of CommitCompactWithUrlAndParentDate objects.
  */
-function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, options) {
-    return readCommitCompact$(repoPath, fromDate, toDate, noMerges, options).pipe((0, rxjs_1.concatMap)((commit) => {
+function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, branchName = '', options) {
+    return readCommitCompact$(repoPath, fromDate, toDate, noMerges, branchName, options).pipe((0, rxjs_1.concatMap)((commit) => {
         return (0, commit_url_1.getGitlabCommitUrl$)(repoPath, commit.sha, options).pipe((0, rxjs_1.map)((commitUrl) => {
             return { commit, commitUrl };
         }));
@@ -355,7 +358,13 @@ exports.checkout$ = checkout$;
  */
 function allCommits$(repoPaths, fromDate = new Date(0), toDate = new Date(Date.now()), creationDateCsvFilePath) {
     return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
-        return readCommitCompact$(repoPath, _fromDate, toDate, true);
+        return (0, branches_1.defaultBranchName$)(repoPath).pipe((0, rxjs_1.concatMap)(branchName => {
+            return readCommitCompact$(repoPath, _fromDate, toDate, true, branchName);
+        }), (0, rxjs_1.catchError)(err => {
+            console.error(`Error: "allCommits" while reading commits from repo "${repoPath}"`);
+            console.error(`error message ${err.message}`);
+            return rxjs_1.EMPTY;
+        }));
     }));
 }
 exports.allCommits$ = allCommits$;

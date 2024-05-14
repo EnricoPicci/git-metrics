@@ -268,11 +268,8 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, options:
         mergeMap((repoPath) => {
             return checkoutRepoAtDate$(repoPath, date, options).pipe(
                 catchError((err) => {
-                    if (err instanceof CheckoutError) {
-                        erroredRepos.push({ repo: err.repoPath, sha: err.sha, command: err.command, message: err.message });
-                        return EMPTY;
-                    }
-                    throw err;
+                    erroredRepos.push({ repo: err.repoPath, sha: err.sha, command: err.command, message: err.message });
+                    return EMPTY;;
                 }),
             );
         }, concurrency),

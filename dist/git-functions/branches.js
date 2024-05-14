@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.readBranchesGraphCommand = exports.defaultBranchName$ = exports.readBranchesGraph = void 0;
 const path_1 = __importDefault(require("path"));
+const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const file_name_utils_1 = require("./utils/file-name-utils");
-const rxjs_1 = require("rxjs");
 const git_errors_1 = require("./git-errors");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
