@@ -277,12 +277,12 @@ export function newEmptyCommitCompact() {
 
 /**
  * Fetches the commit SHA for a Git repository at a specific date and returns an Observable that emits the commit SHA.
- * If a commit is not found, it throws an error. This is the case when there is no commit at the date or before it.
+ * If a commit is not found, it emits a tuple with an empty string instead of commit sha. 
+ * This is the case when there is no commit at the date or before it.
  * @param repoPath The path to the Git repository.
  * @param date The date to fetch the commit SHA at.
  * @param branchName The branch to fetch the commit SHA from.
- * @returns An Observable that emits the commit SHA for the repository at the specified date.
- * @throws An error if the commit SHA could not be fetched.
+ * @returns An Observable that emits the commit SHA for the repository at the specified date..
  */
 export function commitAtDateOrBefore$(repoPath: string, date: Date, branchName: string, options?: ExecuteCommandObsOptions) {
     // convert date to YYYY-MM-DD format

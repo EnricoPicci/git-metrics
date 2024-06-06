@@ -89,7 +89,10 @@ function clocDiffWithAllCommits$(pathToRepo, fromDate = new Date(0), toDate = ne
     }), 
     // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
     (0, rxjs_1.concatMap)((clocFileDict) => {
-        return (0, branches_1.defaultBranchName$)(pathToRepo, options).pipe((0, rxjs_1.concatMap)(branchName => {
+        // if the option useDefaultBranch is true, then we read the commits from the default branch
+        // otherwise we read the commits from all the branches including those from origin
+        const _branchName$ = options.useDefaultBranch ? (0, branches_1.defaultBranchName$)(pathToRepo, options) : (0, rxjs_1.of)('');
+        return _branchName$.pipe((0, rxjs_1.concatMap)(branchName => {
             return (0, commit_1.readCommitCompactWithUrlAndParentDate$)(pathToRepo, fromDate, toDate, true, branchName, options);
         }), (0, rxjs_1.map)((commit) => {
             return { commit, clocFileDict };

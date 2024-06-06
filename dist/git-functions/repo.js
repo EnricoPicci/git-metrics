@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.repoPathAndFromDates$ = exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
+exports.resetHard$ = exports.resetHardRepo$ = exports.resetHardAllRepos$ = exports.repoPathAndFromDates$ = exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -44,18 +44,25 @@ exports.cloneRepo$ = cloneRepo$;
  * @returns An Observable that emits the path of the pulled repository once the pull is completed.
  * @throws An error if the repoPath parameter is not provided.
  */
-function pullRepo$(repoPath) {
+function pullRepo$(repoPath, options) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const repoName = path_1.default.basename(repoPath);
     let command;
     command = `cd ${repoPath} && git pull`;
-    return (0, execute_command_1.executeCommandObs$)(`Pull ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} pulled`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
-        console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
+    return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.catchError)((err) => {
+        console.error(`!!!!!!!!!!!!!!! Error: while fetching default branch name for repo "${repoPath}"`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
-        console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-        const _error = new git_errors_1.PullError(err, repoPath, command);
-        return (0, rxjs_1.of)(_error);
+        return rxjs_1.EMPTY;
+    }), (0, rxjs_1.concatMap)(branch => {
+        command = `cd ${repoPath} && git pull origin ${branch}`;
+        return (0, execute_command_1.executeCommandObs$)(`Pull ${repoName}`, command, options).pipe((0, rxjs_1.tap)(() => `${repoName} pulled`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+            console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
+            console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
+            console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
+            const _error = new git_errors_1.PullError(err, repoPath, command);
+            return (0, rxjs_1.of)(_error);
+        }));
     }));
 }
 exports.pullRepo$ = pullRepo$;
@@ -164,7 +171,7 @@ function checkoutRepoAtDate$(repoPath, date, options) {
         if (!sha) {
             console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
             console.error(`!!!!!!!!!!!!!!! No commit found at date: ${date}`);
-            const _error = new git_errors_1.CheckoutError(`No commit found at date: ${date}`, repoPath, `git checkout`, sha);
+            const _error = new git_errors_1.CheckoutError(`No commit found at date: ${date} for repo: ${repoPath}`, repoPath, `git checkout`, sha);
             throw _error;
         }
         return (0, commit_1.checkout$)(repoPath, sha, options).pipe((0, rxjs_1.map)(() => {
@@ -178,7 +185,7 @@ function checkoutRepoAtDate$(repoPath, date, options) {
             }
             throw err;
         }));
-    }), (0, rxjs_1.last)(), (0, rxjs_1.map)(({ repoPath, sha, commitDate }) => {
+    }), (0, rxjs_1.map)(({ repoPath, sha, commitDate }) => {
         return { repoPath, sha, commitDate };
     }));
 }
@@ -212,23 +219,29 @@ function checkoutAllReposAtDate$(folderPath, date, options) {
     options.concurrency = options.concurrency || 1;
     const checkedOutRepos = [];
     const erroredRepos = [];
+    const outDir = options.outDir || process.cwd();
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     console.log(`Number of repos to be checkedout: ${repoPaths.length}`);
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
         return checkoutRepoAtDate$(repoPath, date, options).pipe((0, rxjs_1.catchError)((err) => {
-            if (err instanceof git_errors_1.CheckoutError) {
-                erroredRepos.push({ repo: err.repoPath, sha: err.sha, command: err.command, message: err.message });
-                return rxjs_1.EMPTY;
-            }
-            throw err;
+            erroredRepos.push({ repo: err.repoPath, sha: err.sha, command: err.command, message: err.message });
+            return rxjs_1.EMPTY;
+            ;
         }));
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
             checkedOutRepos.push({ repo: val.repoPath, sha: val.sha, command: `checkout ${val.sha}` });
         },
-    }), (0, rxjs_1.last)(), (0, rxjs_1.map)(() => {
-        console.log(`Checked out ${repoPaths.length - erroredRepos.length} repos of ${repoPaths.length}`);
+    }), (0, rxjs_1.last)(), (0, rxjs_1.concatMap)(() => (0, execute_command_1.writeCmdLogs$)(options, outDir)), (0, rxjs_1.map)(() => {
+        console.log(`Tried to check out ${repoPaths.length} repos`);
+        console.log(`Checked out ${checkedOutRepos.length} repos of ${repoPaths.length}`);
+        for (const repo of checkedOutRepos) {
+            console.log(`- ${repo.repo} checked out at ${repo.sha}`);
+        }
         console.log(`Errored repos: ${erroredRepos.length}`);
+        for (const repo of erroredRepos) {
+            console.log(`- ${repo.repo} error: ${repo.message}`);
+        }
         return { checkedOutRepos, erroredRepos };
     }));
 }
@@ -339,4 +352,51 @@ function repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath) {
     }));
 }
 exports.repoPathAndFromDates$ = repoPathAndFromDates$;
+function resetHardAllRepos$(folderPath, options) {
+    const { excludeRepoPaths, } = options;
+    options.concurrency = options.concurrency || 1;
+    const resetRepos = [];
+    const resetErroredRepos = [];
+    const outDir = options.outDir || process.cwd();
+    const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
+    console.log(`Number of repos to be reset hard: ${repoPaths.length}`);
+    return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
+        return resetHardRepo$(repoPath, options).pipe((0, rxjs_1.catchError)((err) => {
+            resetErroredRepos.push({ repo: err.repoPath, command: err.command, message: err.message });
+            return rxjs_1.EMPTY;
+            ;
+        }));
+    }, options.concurrency), (0, rxjs_1.tap)({
+        next: (repoPath) => {
+            resetRepos.push({ repo: repoPath, command: `reset ${repoPath}` });
+        },
+    }), (0, rxjs_1.concatMap)(() => (0, execute_command_1.writeCmdLogs$)(options, outDir)), (0, rxjs_1.map)(() => {
+        console.log(`Tried to reset hard ${repoPaths.length} repos`);
+        console.log(`Reset hard ${resetRepos.length} repos of ${repoPaths.length}`);
+        for (const repo of resetRepos) {
+            console.log(`- ${repo.repo} reset hard`);
+        }
+        console.log(`Errored repos: ${resetErroredRepos.length}`);
+        for (const repo of resetErroredRepos) {
+            console.log(`- ${repo.repo} error: ${repo.message}`);
+        }
+        return { resetRepos, resetErroredRepos };
+    }));
+}
+exports.resetHardAllRepos$ = resetHardAllRepos$;
+function resetHardRepo$(repoPath, options) {
+    if (!repoPath)
+        throw new Error(`Path is mandatory`);
+    return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => {
+        return resetHard$(repoPath, branch, options);
+    }), (0, rxjs_1.map)(() => {
+        return repoPath;
+    }));
+}
+exports.resetHardRepo$ = resetHardRepo$;
+function resetHard$(repoPath, branchName, options) {
+    const gitCommand = `cd ${repoPath} && git reset --hard origin/${branchName}`;
+    return (0, execute_command_1.executeCommandObs$)(`reset --hard in ${repoPath}`, gitCommand, options);
+}
+exports.resetHard$ = resetHard$;
 //# sourceMappingURL=repo.js.map

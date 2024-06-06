@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toClocFileDict = exports.buildOutfileName = exports.clocByfileHeaderWithRepo = exports.clocByfileHeader = exports.writeClocByFileForRepos$ = exports.clocByFileForRepos$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnFolderNoGit$ = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
+exports.toClocFileDict = exports.buildOutfileName = exports.clocByfileHeaderWithRepo = exports.clocByfileHeader = exports.writeClocByFileForRepos$ = exports.clocByFileForRepos$ = exports.writeClocByFile$ = exports.writeClocByfile = exports.clocByfileAtDate$ = exports.clocByfile$ = exports.writeClocSummary$ = exports.writeClocSummary = exports.clocSummaryOnFolderNoGit$ = exports.clocSummaryOnGitRepo$ = exports.clocSummaryCsvRaw$ = exports.clocSummary$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const observable_fs_1 = require("observable-fs");
@@ -13,6 +13,7 @@ const repo_path_1 = require("../git-functions/repo-path");
 const ignore_up_to_1 = require("../tools/rxjs-operators/ignore-up-to");
 const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensions/delete-file-ignore-if-missing");
 const fs_utils_1 = require("../tools/fs-utils/fs-utils");
+const repo_1 = require("../git-functions/repo");
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
 //********************************************************************************************************************** */
@@ -178,6 +179,13 @@ function clocByfile$(params, action = 'calculate cloc', writeFile = true, _optio
     return (0, rxjs_1.merge)(..._streams);
 }
 exports.clocByfile$ = clocByfile$;
+function clocByfileAtDate$(params, date, action = 'calculate cloc at date', writeFile = true, _options) {
+    return (0, repo_1.checkoutRepoAtDate$)(params.folderPath, date, _options).pipe((0, rxjs_1.catchError)((err) => {
+        console.error(`Error checking out repo at date ${date.toDateString()}: ${err.message}`);
+        return rxjs_1.EMPTY;
+    }), (0, rxjs_1.concatMap)(() => clocByfile$(params, action, writeFile, _options)));
+}
+exports.clocByfileAtDate$ = clocByfileAtDate$;
 /**
  * Runs the cloc command with the by-file option and writes the result to a file.
  * The result is per file, showing the number of lines in each file.
@@ -221,18 +229,21 @@ exports.writeClocByFile$ = writeClocByFile$;
  * @param excludeRepoPaths An optional array of paths to exclude from the search.
  * @returns An Observable that emits the cloc info for all the Git repositories in the given folder.
  */
-function clocByFileForRepos$(folderPath, excludeRepoPaths = []) {
+function clocByFileForRepos$(folderPath, date = new Date(), // default to today
+languages = [], excludeRepoPaths = [], options = {}) {
     const repos = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     const cloc$ = (0, rxjs_1.from)(repos).pipe((0, rxjs_1.concatMap)((repoPath) => {
         const params = {
             folderPath: repoPath,
             vcs: 'git',
+            languages
         };
         // remove the folderPath string from the repoPath string so that the repoPath string represents just the relevant repo info
         // for instance, if folderPath is /home/enrico/code/git-metrics/repos and repoPath is /home/enrico/code/git-metrics/repos/dbm,
         // then repoPath will be /dbm
         const repo = repoPath.replace(folderPath, '');
-        return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPath, false).pipe(
+        const _action = 'clocByFileForRepos$ running on ' + repoPath + 'for date' + date.toDateString();
+        return clocByfileAtDate$(params, date, _action, false, options).pipe(
         // remove the first line which contains the csv header form all the streams representing
         // the output of the cloc command execution on each repo
         (0, rxjs_1.skip)(1), 
@@ -259,13 +270,14 @@ exports.clocByFileForRepos$ = clocByFileForRepos$;
  * @param excludeRepoPaths An array of repository paths to exclude from the calculation.
  * @returns An Observable that emits the name of the file where the cloc info is saved.
  */
-function writeClocByFileForRepos$(folderPath, outDir = './', excludeRepoPaths = []) {
+function writeClocByFileForRepos$(folderPath, date = new Date(), // default to today
+outDir = './', languages = [], excludeRepoPaths = [], options = {}) {
     const outFile = buildOutfileName('', folderPath, 'cloc-', '-byfile.csv');
     const outFilePath = path_1.default.join(outDir, outFile);
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocByFileForRepos$(folderPath, excludeRepoPaths)), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocByFileForRepos$(folderPath, date, languages, excludeRepoPaths, options)), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
-    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
+    }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.concatMap)(() => (0, execute_command_1.writeCmdLogs$)(options, outDir)), (0, rxjs_1.tap)({
         next: (outFilePath) => {
             console.log(`====>>>> cloc info saved on file ${outFilePath}`);
         },

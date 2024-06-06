@@ -35,7 +35,7 @@ function clocAtDateByFile$(repoPath, date, options) {
             notMatch: options === null || options === void 0 ? void 0 : options.notMatch,
             languages: options === null || options === void 0 ? void 0 : options.languages,
         };
-        return (0, cloc_1.clocByfile$)(params, 'clocByFileForRepos$ running on ' + repoPathSha.repoPath, false, options).pipe((0, rxjs_1.map)((line) => {
+        return (0, cloc_1.clocByfile$)(params, 'checkoutRepoAtDate$ running on ' + repoPathSha.repoPath, false, options).pipe((0, rxjs_1.map)((line) => {
             return {
                 line,
                 sha: repoPathSha.sha,

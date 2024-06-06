@@ -1,6 +1,6 @@
 import path from "path";
 
-import { EMPTY, catchError, concatMap, defaultIfEmpty, ignoreElements, map, tap } from "rxjs";
+import { EMPTY, catchError, concatMap, defaultIfEmpty, ignoreElements, map, of, tap } from "rxjs";
 
 import { appendFileObs } from "observable-fs";
 import { toCsvObs } from "@enrico.piccinin/csv-tools";
@@ -103,7 +103,10 @@ export function clocDiffWithAllCommits$(
         }),
         // then read the commits in the given time range and pass them down the pipe together with the cloc dictionary
         concatMap((clocFileDict) => {
-            return defaultBranchName$(pathToRepo, options).pipe(
+            // if the option useDefaultBranch is true, then we read the commits from the default branch
+            // otherwise we read the commits from all the branches including those from origin
+            const _branchName$ = options.useDefaultBranch ? defaultBranchName$(pathToRepo, options) : of('')
+            return _branchName$.pipe(
                 concatMap(branchName => {
                     return readCommitCompactWithUrlAndParentDate$(pathToRepo, fromDate, toDate, true, branchName, options)
                 }),

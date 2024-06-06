@@ -34,7 +34,7 @@ export function clocAtDateByFile$(repoPath: string, date: Date, options?: ClocOp
                 notMatch: options?.notMatch,
                 languages: options?.languages,
             };
-            return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPathSha.repoPath, false, options).pipe(
+            return clocByfile$(params, 'checkoutRepoAtDate$ running on ' + repoPathSha.repoPath, false, options).pipe(
                 map((line) => {
                     return {
                         line,

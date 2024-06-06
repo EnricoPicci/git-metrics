@@ -1,8 +1,8 @@
 import path from 'path';
 
-import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignoreElements, defaultIfEmpty, of, last, } from 'rxjs';
+import { tap, map, catchError, EMPTY, concatMap, from, mergeMap, toArray, ignoreElements, defaultIfEmpty, of, last } from 'rxjs';
 
-import { CmdErrored, CmdExecuted, ExecuteCommandObsOptions, executeCommandObs$ } from '../tools/execute-command/execute-command';
+import { CmdErrored, CmdExecuted, ExecuteCommandObsOptions, executeCommandObs$, writeCmdLogs$ } from '../tools/execute-command/execute-command';
 
 import { RepoCompact } from './repo.model';
 import { checkout$, commitAtDateOrBefore$, readCommitCompact$ } from './commit';
@@ -50,25 +50,36 @@ export function cloneRepo$(url: string, repoPath: string) {
  * @returns An Observable that emits the path of the pulled repository once the pull is completed.
  * @throws An error if the repoPath parameter is not provided.
  */
-export function pullRepo$(repoPath: string) {
+export function pullRepo$(repoPath: string, options?: ExecuteCommandObsOptions) {
     if (!repoPath) throw new Error(`Path is mandatory`);
 
     const repoName = path.basename(repoPath);
     let command: string
 
     command = `cd ${repoPath} && git pull`;
-    return executeCommandObs$(`Pull ${repoName}`, command).pipe(
-        tap(() => `${repoName} pulled`),
-        ignoreElements(),
-        defaultIfEmpty(repoPath),
+
+    return defaultBranchName$(repoPath, options).pipe(
         catchError((err) => {
-            console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
+            console.error(`!!!!!!!!!!!!!!! Error: while fetching default branch name for repo "${repoPath}"`);
             console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
-            console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
-            const _error = new PullError(err, repoPath, command);
-            return of(_error);
+            return EMPTY;
         }),
-    )
+        concatMap(branch => {
+            command = `cd ${repoPath} && git pull origin ${branch}`;
+            return executeCommandObs$(`Pull ${repoName}`, command, options).pipe(
+                tap(() => `${repoName} pulled`),
+                ignoreElements(),
+                defaultIfEmpty(repoPath),
+                catchError((err) => {
+                    console.error(`!!!!!!!!!!!!!!! Error: while pulling repo "${repoName}" - error code: ${err.code}`);
+                    console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
+                    console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
+                    const _error = new PullError(err, repoPath, command);
+                    return of(_error);
+                }),
+            )
+        }),
+    );
 }
 /**
  * Pulls all the Git repositories in a given folder and returns an Observable that emits the paths of the pulled repositories.
@@ -197,7 +208,11 @@ export function checkoutRepoAtDate$(
             if (!sha) {
                 console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
                 console.error(`!!!!!!!!!!!!!!! No commit found at date: ${date}`);
-                const _error = new CheckoutError(`No commit found at date: ${date}`, repoPath, `git checkout`, sha);
+                const _error = new CheckoutError(
+                    `No commit found at date: ${date} for repo: ${repoPath}`,
+                    repoPath, `git checkout`,
+                    sha
+                );
                 throw _error;
             }
             return checkout$(repoPath, sha, options).pipe(
@@ -215,7 +230,6 @@ export function checkoutRepoAtDate$(
                 }),
             )
         }),
-        last(),
         map(({ repoPath, sha, commitDate }) => {
             return { repoPath, sha, commitDate };
         }),
@@ -260,6 +274,7 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, options:
     type ErroredRepo = { repo: string, sha: string } & CmdErrored;
     const checkedOutRepos: CheckedOutRepo[] = [];
     const erroredRepos: ErroredRepo[] = [];
+    const outDir = options.outDir || process.cwd();
 
     const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
     console.log(`Number of repos to be checkedout: ${repoPaths.length}`);
@@ -279,9 +294,17 @@ export function checkoutAllReposAtDate$(folderPath: string, date: Date, options:
             },
         }),
         last(),
+        concatMap(() => writeCmdLogs$(options, outDir)),
         map(() => {
-            console.log(`Checked out ${repoPaths.length - erroredRepos.length} repos of ${repoPaths.length}`);
+            console.log(`Tried to check out ${repoPaths.length} repos`);
+            console.log(`Checked out ${checkedOutRepos.length} repos of ${repoPaths.length}`);
+            for (const repo of checkedOutRepos) {
+                console.log(`- ${repo.repo} checked out at ${repo.sha}`);
+            }
             console.log(`Errored repos: ${erroredRepos.length}`);
+            for (const repo of erroredRepos) {
+                console.log(`- ${repo.repo} error: ${repo.message}`);
+            }
             return { checkedOutRepos, erroredRepos }
         }),
     );
@@ -423,3 +446,71 @@ export function repoPathAndFromDates$(repoPaths: string[], fromDate: Date, creat
     );
 }
 
+export function resetHardAllRepos$(folderPath: string, options: ResetHardAllReposOptions) {
+    const { excludeRepoPaths, } = options;
+    options.concurrency = options.concurrency || 1;
+    type ResetRepo = { repo: string } & CmdExecuted;
+    type ResetErroredRepo = { repo: string } & CmdErrored;
+    const resetRepos: ResetRepo[] = [];
+    const resetErroredRepos: ResetErroredRepo[] = [];
+    const outDir = options.outDir || process.cwd();
+
+    const repoPaths = gitRepoPaths(folderPath, excludeRepoPaths);
+    console.log(`Number of repos to be reset hard: ${repoPaths.length}`);
+
+    return from(repoPaths).pipe(
+        mergeMap((repoPath) => {
+            return resetHardRepo$(repoPath, options).pipe(
+                catchError((err) => {
+                    resetErroredRepos.push({ repo: err.repoPath, command: err.command, message: err.message });
+                    return EMPTY;;
+                }),
+            );
+        }, options.concurrency),
+        tap({
+            next: (repoPath) => {
+                resetRepos.push({ repo: repoPath, command: `reset ${repoPath}` });
+            },
+        }),
+        concatMap(() => writeCmdLogs$(options, outDir)),
+        map(() => {
+            console.log(`Tried to reset hard ${repoPaths.length} repos`);
+            console.log(`Reset hard ${resetRepos.length} repos of ${repoPaths.length}`);
+            for (const repo of resetRepos) {
+                console.log(`- ${repo.repo} reset hard`);
+            }
+            console.log(`Errored repos: ${resetErroredRepos.length}`);
+            for (const repo of resetErroredRepos) {
+                console.log(`- ${repo.repo} error: ${repo.message}`);
+            }
+            return { resetRepos, resetErroredRepos }
+        }),
+    );
+}
+export type ResetHardAllReposOptions = {
+    concurrency?: number,
+    excludeRepoPaths?: string[],
+    outDir?: string,
+} & ExecuteCommandObsOptions
+
+
+export function resetHardRepo$(
+    repoPath: string,
+    options?: ExecuteCommandObsOptions
+) {
+    if (!repoPath) throw new Error(`Path is mandatory`);
+
+    return defaultBranchName$(repoPath, options).pipe(
+        concatMap(branch => {
+            return resetHard$(repoPath, branch, options)
+        }),
+        map(() => {
+            return repoPath;
+        }),
+    );
+}
+
+export function resetHard$(repoPath: string, branchName: string, options?: ExecuteCommandObsOptions) {
+    const gitCommand = `cd ${repoPath} && git reset --hard origin/${branchName}`
+    return executeCommandObs$(`reset --hard in ${repoPath}`, gitCommand, options)
+}

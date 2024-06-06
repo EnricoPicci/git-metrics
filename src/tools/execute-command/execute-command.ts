@@ -62,7 +62,7 @@ export type ExecuteCommandObsOptions = {
     stdErrorHandler?: (stderr: string) => Error | null;
     cmdExecutedLog?: CmdExecuted[];
     cmdErroredLog?: CmdErrored[];
-    filePrefix: string;
+    filePrefix?: string;
 }
 
 export type CmdExecuted = { command: string }

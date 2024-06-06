@@ -57,4 +57,5 @@ export type ClocDiffWithCommitOptions = {
     creationDateCsvFilePath?: string;
     notMatchDirectories?: string[];
     languages?: string[],
+    useDefaultBranch?: boolean;
 } & ExecuteCommandObsOptions;
