@@ -370,9 +370,9 @@ describe(`writeClocByFileForRepos$`, () => {
         let _outFile = '';
         let numOfFiles = 0;
 
-        writeClocByFileForRepos$(repoFolder, outDir).pipe(
+        writeClocByFileForRepos$(repoFolder, new Date(), outDir).pipe(
             tap({
-                next: (outFile) => {
+                next: ([outFile, _]) => {
                     _outFile = outFile;
                     expect(outFile.length).gt(1);
                 },
@@ -380,7 +380,7 @@ describe(`writeClocByFileForRepos$`, () => {
             // read the file just written and check that it contains the cloc header
             // save also the number of lines in the file so that later we can check that the file is overwritten
             // when we call writeClocByFileForRepos$ again
-            concatMap((outFile) => readLinesObs(outFile)),
+            concatMap(([outFile, _]) => readLinesObs(outFile)),
             tap({
                 next: (lines) => {
                     numOfFiles = lines.length;
@@ -389,7 +389,7 @@ describe(`writeClocByFileForRepos$`, () => {
                 },
             }),
             // now call writeClocByFileForRepos$ again and check that the file name is the same as the one returned in the first call
-            concatMap(() => writeClocByFileForRepos$(repoFolder, outDir)),
+            concatMap(() => writeClocByFileForRepos$(repoFolder, new Date(), outDir)),
             tap({
                 next: (outFile) => {
                     expect(outFile).equal(_outFile);
@@ -397,7 +397,7 @@ describe(`writeClocByFileForRepos$`, () => {
             }),
             // now read the file written the second time and check that it has overwritten by comparing the number of lines
             // if the number of lines is the same as the first time, it means that the file has  been overwritten
-            concatMap((outFile) => {
+            concatMap(([outFile, _]) => {
                 return readLinesObs(outFile)
             }),
             tap({

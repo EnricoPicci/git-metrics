@@ -1,3 +1,4 @@
+import { CONFIG } from "../config";
 import { GIT_CONFIG } from "./config";
 import { renamedFilePath } from "./file-path";
 
@@ -75,7 +76,7 @@ ${commitRecDataLine} (length ${commitData.length})`,
         authorName: commitData[3],
         committerName: commitData[4],
         committerDate: new Date(commitData[5]),
-        subject: commitData[6],
+        subject: commitData[6].replaceAll(CONFIG.CSV_SEP, CONFIG.CVS_SEP_SUBSTITUE),
         parents: commitData[7].split(' '),
     };
     return commit;

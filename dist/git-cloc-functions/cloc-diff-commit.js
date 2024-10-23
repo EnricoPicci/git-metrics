@@ -147,13 +147,13 @@ function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate 
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     const creationDateCsvFilePath = options.creationDateCsvFilePath;
     return (0, commit_1.countCommits$)(repoPaths, fromDate, toDate, creationDateCsvFilePath).pipe((0, rxjs_1.concatMap)((totNumOfCommits) => {
-        const progess = {
+        const progress = {
             totNumOfCommits,
             commitCounter: 0,
             errorCounter: 0,
         };
         return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
-            return clocDiffWithAllCommits$(repoPath, _fromDate, toDate, options, progess);
+            return clocDiffWithAllCommits$(repoPath, _fromDate, toDate, options, progress);
         }));
     }));
 }
@@ -205,7 +205,8 @@ function writeCodeTurnover$(folderPath, options = { filePrefix: 'code-turnover' 
     const toDate = options.toDate || new Date(Date.now());
     const excludeRepoPaths = options.excludeRepoPaths || [];
     const folderName = path_1.default.basename(folderPath);
-    const outFile = `${folderName}-code-turnover-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
+    const ts = new Date().toISOString();
+    const outFile = `${folderName}-code-turnover-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}-${ts}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
     let noCommitsFound = true;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);

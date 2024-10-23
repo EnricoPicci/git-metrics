@@ -323,8 +323,8 @@ describe(`writeClocByFileForRepos$`, () => {
         const outDir = './temp';
         let _outFile = '';
         let numOfFiles = 0;
-        (0, cloc_1.writeClocByFileForRepos$)(repoFolder, outDir).pipe((0, rxjs_1.tap)({
-            next: (outFile) => {
+        (0, cloc_1.writeClocByFileForRepos$)(repoFolder, new Date(), outDir).pipe((0, rxjs_1.tap)({
+            next: ([outFile, _]) => {
                 _outFile = outFile;
                 (0, chai_1.expect)(outFile.length).gt(1);
             },
@@ -332,7 +332,7 @@ describe(`writeClocByFileForRepos$`, () => {
         // read the file just written and check that it contains the cloc header
         // save also the number of lines in the file so that later we can check that the file is overwritten
         // when we call writeClocByFileForRepos$ again
-        (0, rxjs_1.concatMap)((outFile) => (0, observable_fs_1.readLinesObs)(outFile)), (0, rxjs_1.tap)({
+        (0, rxjs_1.concatMap)(([outFile, _]) => (0, observable_fs_1.readLinesObs)(outFile)), (0, rxjs_1.tap)({
             next: (lines) => {
                 numOfFiles = lines.length;
                 (0, chai_1.expect)(lines[0]).equal(cloc_1.clocByfileHeaderWithRepo);
@@ -340,14 +340,14 @@ describe(`writeClocByFileForRepos$`, () => {
             },
         }), 
         // now call writeClocByFileForRepos$ again and check that the file name is the same as the one returned in the first call
-        (0, rxjs_1.concatMap)(() => (0, cloc_1.writeClocByFileForRepos$)(repoFolder, outDir)), (0, rxjs_1.tap)({
+        (0, rxjs_1.concatMap)(() => (0, cloc_1.writeClocByFileForRepos$)(repoFolder, new Date(), outDir)), (0, rxjs_1.tap)({
             next: (outFile) => {
                 (0, chai_1.expect)(outFile).equal(_outFile);
             },
         }), 
         // now read the file written the second time and check that it has overwritten by comparing the number of lines
         // if the number of lines is the same as the first time, it means that the file has  been overwritten
-        (0, rxjs_1.concatMap)((outFile) => {
+        (0, rxjs_1.concatMap)(([outFile, _]) => {
             return (0, observable_fs_1.readLinesObs)(outFile);
         }), (0, rxjs_1.tap)({
             next: (lines) => {

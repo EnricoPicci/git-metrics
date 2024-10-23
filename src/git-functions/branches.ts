@@ -1,6 +1,6 @@
 import path from "path";
 
-import { map } from "rxjs";
+import { concatMap, from, map, take } from "rxjs";
 
 import { ExecuteCommandObsOptions, executeCommand, executeCommandObs$ } from "../tools/execute-command/execute-command";
 
@@ -67,6 +67,38 @@ export function defaultBranchName$(repoPath: string, options?: ExecuteCommandObs
             const branchName = parts[2];
             return branchName;
         })
+    )
+}
+
+// localAndNonLocalBranches$ is a function that returns an Observable that emits each branch of a Git repository
+// considering also the non local branches
+export function localAndNonLocalBranches$(repoPath: string, descending=true, options?: ExecuteCommandObsOptions) {
+    // build the command to fetch the last branch name
+    // git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 1
+    const sort = descending ? '-committerdate' : 'committerdate';
+    const gitCommand = `cd ${repoPath} &&  git branch -va --sort=${sort}  --format='%(committerdate:local) %(refname:short)'`;
+    return executeCommandObs$(`fetch last branch name for ${repoPath}`, gitCommand, options).pipe(
+        concatMap((output) => {
+            return from(output.split('\n'));
+        }),
+        map((output) => {
+            // example of output:
+            // Thu Mar 28 14:11:44 2024 origin/other-stuff
+            const branchData = output.trim();
+            const parts = branchData.split(' ');
+            const branchName = parts[parts.length - 1];
+            const branchDateString = parts.slice(0, 5).join(' ');
+            const branchDate = new Date(branchDateString);
+            return { branchName, branchDate };
+        })
+    )
+}
+
+// lastBranch$ is a function that returns an Observable that emits the last branch of a Git repository
+// considering also the non local branches
+export function lastBranch$(repoPath: string, options?: ExecuteCommandObsOptions) {
+    return localAndNonLocalBranches$(repoPath, true, options).pipe(
+        take(1),
     )
 }
 

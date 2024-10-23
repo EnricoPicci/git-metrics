@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.newCommitWithFileNumstats = exports.newCommit = void 0;
-const config_1 = require("./config");
+const config_1 = require("../config");
+const config_2 = require("./config");
 const file_path_1 = require("./file-path");
 function newGitFileNumstat(fileData) {
     const fileNumstatData = fileData.split('\t');
@@ -19,7 +20,7 @@ function newGitFileNumstat(fileData) {
     };
     return fileNumstat;
 }
-const SEP = config_1.GIT_CONFIG.COMMIT_REC_SEP;
+const SEP = config_2.GIT_CONFIG.COMMIT_REC_SEP;
 function newCommit(commitRecDataLine) {
     if (!commitRecDataLine || commitRecDataLine.length === 0) {
         throw new Error('Commit Record Info null or empty \n' + commitRecDataLine);
@@ -37,7 +38,7 @@ ${commitRecDataLine} (length ${commitData.length})`);
         authorName: commitData[3],
         committerName: commitData[4],
         committerDate: new Date(commitData[5]),
-        subject: commitData[6],
+        subject: commitData[6].replaceAll(config_1.CONFIG.CSV_SEP, config_1.CONFIG.CVS_SEP_SUBSTITUE),
         parents: commitData[7].split(' '),
     };
     return commit;

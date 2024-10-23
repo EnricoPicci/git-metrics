@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { readLinesObs } from "observable-fs";
 
 import { GitCommandParams } from "./git-params";
-import { defaultBranchName$, readBranchesGraph, readBranchesGraphCommand } from "./branches";
+import { defaultBranchName$, lastBranch$, readBranchesGraph, readBranchesGraphCommand } from "./branches";
 
 
 describe(`readBranchesGraph`, () => {
@@ -55,6 +55,21 @@ describe(`defaultBranchName`, () => {
         defaultBranchName$(thisRepoPath).subscribe({
             next: (branchName) => {
                 expect(branchName).equal('main');
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+});
+
+describe(`lastBranch$`, () => {
+    it.only(`read the the last branch, i.e. the branch with the last commit 
+    this repo is used for the test`, (done) => {
+        const thisRepoPath = './';
+
+        lastBranch$(thisRepoPath).subscribe({
+            next: (branch) => {
+                expect(branch.branchName.length).gt(0);
             },
             error: (err) => done(err),
             complete: () => done(),

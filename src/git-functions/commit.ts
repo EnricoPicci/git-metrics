@@ -23,7 +23,7 @@ import { GitError } from './git-errors';
 import { getRemoteOriginUrl$, repoPathAndFromDates$ } from './repo';
 import { toCsvObs } from '@enrico.piccinin/csv-tools';
 import { gitRepoPaths } from './repo-path';
-import { defaultBranchName$ } from './branches';
+
 
 //********************************************************************************************************************** */
 //****************************   APIs                               **************************************************** */
@@ -52,18 +52,19 @@ export function readCommitCompact$(
     const _noMerges = noMerges ? '--no-merges' : '';
     const command = `cd ${repoPath} && git log --pretty=format:"%H,%ad,%an,%s" ${_noMerges}`;
 
-    const options = [
+    const args = [
         'log',
         '--pretty=format:%H,%ad,%an,%s',
         '--after=' + toYYYYMMDD(fromDate), '--before=' + toYYYYMMDD(toDate)
     ]
-    if (noMerges) options.push('--no-merges')
-    options.push(branchName)
+    if (noMerges) args.push('--no-merges')
+    const _branchName = branchName ? branchName : '--all'
+    args.push(_branchName)
 
     return executeCommandNewProcessToLinesObs(
         `Read commits`,
         'git',
-        options,
+        args,
         { cwd: repoPath },
         _options
     ).pipe(
@@ -451,10 +452,7 @@ export function allCommits$(
 ) {
     return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
         concatMap(({ repoPath, _fromDate }) => {
-            return defaultBranchName$(repoPath).pipe(
-                concatMap(branchName => {
-                    return readCommitCompact$(repoPath, _fromDate, toDate, true, branchName)
-                }),
+            return readCommitCompact$(repoPath, _fromDate, toDate, true).pipe(
                 catchError(err => {
                     console.error(`Error: "allCommits" while reading commits from repo "${repoPath}"`)
                     console.error(`error message ${err.message}`)
@@ -650,7 +648,7 @@ export function newCommitCompactFromGitlog(commitDataFromGitlog: string, repo: s
         sha,
         date: new Date(date),
         author: author,
-        subject: comment,
+        subject: comment.replaceAll(CONFIG.CSV_SEP, CONFIG.CVS_SEP_SUBSTITUE),
         repo
     };
     return commit;

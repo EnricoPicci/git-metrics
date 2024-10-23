@@ -407,7 +407,9 @@ function executeClocGitDiff$(
                 const emptyArray: string[] = [];
                 return of(emptyArray)
             }
-            throw err;
+            console.warn(`Unexpected Error executing command ${cmd}`, err.message);
+            const emptyArray: string[] = [];
+            return of(emptyArray)
         }),
     )
 }

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readBranchesGraphCommand = exports.defaultBranchName$ = exports.readBranchesGraph = void 0;
+exports.readBranchesGraphCommand = exports.lastBranch$ = exports.localAndNonLocalBranches$ = exports.defaultBranchName$ = exports.readBranchesGraph = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -66,6 +66,33 @@ function defaultBranchName$(repoPath, options) {
     }));
 }
 exports.defaultBranchName$ = defaultBranchName$;
+// localAndNonLocalBranches$ is a function that returns an Observable that emits each branch of a Git repository
+// considering also the non local branches
+function localAndNonLocalBranches$(repoPath, descending = true, options) {
+    // build the command to fetch the last branch name
+    // git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 1
+    const sort = descending ? '-committerdate' : 'committerdate';
+    const gitCommand = `cd ${repoPath} &&  git branch -va --sort=${sort}  --format='%(committerdate:local) %(refname:short)'`;
+    return (0, execute_command_1.executeCommandObs$)(`fetch last branch name for ${repoPath}`, gitCommand, options).pipe((0, rxjs_1.concatMap)((output) => {
+        return (0, rxjs_1.from)(output.split('\n'));
+    }), (0, rxjs_1.map)((output) => {
+        // example of output:
+        // Thu Mar 28 14:11:44 2024 origin/other-stuff
+        const branchData = output.trim();
+        const parts = branchData.split(' ');
+        const branchName = parts[parts.length - 1];
+        const branchDateString = parts.slice(0, 5).join(' ');
+        const branchDate = new Date(branchDateString);
+        return { branchName, branchDate };
+    }));
+}
+exports.localAndNonLocalBranches$ = localAndNonLocalBranches$;
+// lastBranch$ is a function that returns an Observable that emits the last branch of a Git repository
+// considering also the non local branches
+function lastBranch$(repoPath, options) {
+    return localAndNonLocalBranches$(repoPath, true, options).pipe((0, rxjs_1.take)(1));
+}
+exports.lastBranch$ = lastBranch$;
 //********************************************************************************************************************** */
 //****************************               Internals              **************************************************** */
 //********************************************************************************************************************** */

@@ -8,7 +8,7 @@ import { RepoCompact } from './repo.model';
 import { checkout$, commitAtDateOrBefore$, readCommitCompact$ } from './commit';
 import { gitRepoPaths } from './repo-path';
 import { CheckoutError, FetchError, GitError, PullError } from './git-errors';
-import { defaultBranchName$ } from './branches';
+import { defaultBranchName$, lastBranch$} from './branches';
 import { repoCreationDateDict$ } from './repo-creation-date';
 
 //********************************************************************************************************************** */
@@ -119,6 +119,21 @@ export function pullAllRepos$(folderPath: string, concurrency = 1, excludeRepoPa
         })
     );
 }
+
+// export function pullAllBranches$(repoPath: string, fromDate= new Date(0), options?: ExecuteCommandObsOptions) {
+//     if (!repoPath) throw new Error(`Path is mandatory`);
+
+//     return localAndNonLocalBranches$(repoPath).pipe(
+//         filter(branch => {
+//             return branch.branchDate >= fromDate
+//         }),
+//         map(branch => {
+//             if (branch.branchName.includes('/')) {
+//                 branch.branchName = branch.branchName.split(')')[0]
+//             }
+//         })
+//     )
+// }
 
 /**
  * Fetches a Git repository from a given path and returns an Observable that emits the path of the fetched repository
@@ -255,6 +270,45 @@ export function checkoutRepoAtCommit$(
             throw err;
         }),
     );
+}
+
+
+export function checkoutRepoAtLastBranch$(
+    repoPath: string,
+    options?: ExecuteCommandObsOptions
+) {
+    if (!repoPath) throw new Error(`Path is mandatory`);
+    return lastBranch$(repoPath, options).pipe(
+        concatMap(branch => {
+            const branchName = branch.branchName;
+            let _branchName = ''
+            // a branch name can be "the-branch-name" if local or "origin/the-branch-name" if non local
+            if (branchName.includes('/')) {
+                _branchName = branchName.split('/')[1]
+            } else {
+                _branchName = branchName
+            }
+            if (branchName.includes(')')) {
+                _branchName = branchName.split(')')[0]
+            }
+            return checkout$(repoPath, _branchName, options).pipe(
+                catchError((err) => {
+                    if (err instanceof GitError) {
+                        console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+                        console.error(err.message)
+                        const _error = new CheckoutError(err.message, repoPath, err.command, branchName);
+                        throw _error;
+                    }
+                    throw err;
+                }),
+                map(() => {
+                    return branchName;
+                }),
+            );
+        }),
+    );
+
+    
 }
 
 /**
@@ -438,7 +492,9 @@ export function repoPathAndFromDates$(repoPaths: string[], fromDate: Date, creat
                 )),
                 map(({ repoPath, remoteOriginUrl }) => {
                     const repoCreationDate = dict[remoteOriginUrl];
-                    const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
+                    const creationDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
+                    // if creation date is after from date, then use the creation date as from date
+                    const _fromDate = creationDate > fromDate ? creationDate : fromDate;
                     return { repoPath, _fromDate };
                 })
             );

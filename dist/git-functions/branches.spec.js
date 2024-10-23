@@ -58,4 +58,17 @@ describe(`defaultBranchName`, () => {
         });
     });
 });
+describe(`lastBranch$`, () => {
+    it.only(`read the the last branch, i.e. the branch with the last commit 
+    this repo is used for the test`, (done) => {
+        const thisRepoPath = './';
+        (0, branches_1.lastBranch$)(thisRepoPath).subscribe({
+            next: (branch) => {
+                (0, chai_1.expect)(branch.branchName.length).gt(0);
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+});
 //# sourceMappingURL=branches.spec.js.map

@@ -181,14 +181,14 @@ export function clocDiffWithCommitForRepos$(
 
     return countCommits$(repoPaths, fromDate, toDate, creationDateCsvFilePath).pipe(
         concatMap((totNumOfCommits) => {
-            const progess = {
+            const progress = {
                 totNumOfCommits,
                 commitCounter: 0,
                 errorCounter: 0,
             }
             return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
                 concatMap(({ repoPath, _fromDate }) => {
-                    return clocDiffWithAllCommits$(repoPath, _fromDate, toDate, options, progess)
+                    return clocDiffWithAllCommits$(repoPath, _fromDate, toDate, options, progress)
                 })
             )
         })
@@ -262,7 +262,8 @@ export function writeCodeTurnover$(
     const excludeRepoPaths: string[] = options.excludeRepoPaths || []
 
     const folderName = path.basename(folderPath);
-    const outFile = `${folderName}-code-turnover-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
+    const ts = new Date().toISOString();
+    const outFile = `${folderName}-code-turnover-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}-${ts}.csv`;
     const outFilePath = path.join(outDir, outFile);
 
     let noCommitsFound = true;

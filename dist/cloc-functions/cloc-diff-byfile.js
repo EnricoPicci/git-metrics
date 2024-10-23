@@ -303,7 +303,9 @@ function executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repo
             const emptyArray = [];
             return (0, rxjs_1.of)(emptyArray);
         }
-        throw err;
+        console.warn(`Unexpected Error executing command ${cmd}`, err.message);
+        const emptyArray = [];
+        return (0, rxjs_1.of)(emptyArray);
     }));
 }
 function executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = [], notMatchDirectories, options) {

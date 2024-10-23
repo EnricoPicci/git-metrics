@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetHard$ = exports.resetHardRepo$ = exports.resetHardAllRepos$ = exports.repoPathAndFromDates$ = exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
+exports.resetHard$ = exports.resetHardRepo$ = exports.resetHardAllRepos$ = exports.repoPathAndFromDates$ = exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtLastBranch$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -100,6 +100,19 @@ function pullAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
     }));
 }
 exports.pullAllRepos$ = pullAllRepos$;
+// export function pullAllBranches$(repoPath: string, fromDate= new Date(0), options?: ExecuteCommandObsOptions) {
+//     if (!repoPath) throw new Error(`Path is mandatory`);
+//     return localAndNonLocalBranches$(repoPath).pipe(
+//         filter(branch => {
+//             return branch.branchDate >= fromDate
+//         }),
+//         map(branch => {
+//             if (branch.branchName.includes('/')) {
+//                 branch.branchName = branch.branchName.split(')')[0]
+//             }
+//         })
+//     )
+// }
 /**
  * Fetches a Git repository from a given path and returns an Observable that emits the path of the fetched repository
  * once the fetch is completed.
@@ -204,6 +217,36 @@ function checkoutRepoAtCommit$(repoPath, sha, options) {
     }));
 }
 exports.checkoutRepoAtCommit$ = checkoutRepoAtCommit$;
+function checkoutRepoAtLastBranch$(repoPath, options) {
+    if (!repoPath)
+        throw new Error(`Path is mandatory`);
+    return (0, branches_1.lastBranch$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => {
+        const branchName = branch.branchName;
+        let _branchName = '';
+        // a branch name can be "the-branch-name" if local or "origin/the-branch-name" if non local
+        if (branchName.includes('/')) {
+            _branchName = branchName.split('/')[1];
+        }
+        else {
+            _branchName = branchName;
+        }
+        if (branchName.includes(')')) {
+            _branchName = branchName.split(')')[0];
+        }
+        return (0, commit_1.checkout$)(repoPath, _branchName, options).pipe((0, rxjs_1.catchError)((err) => {
+            if (err instanceof git_errors_1.GitError) {
+                console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+                console.error(err.message);
+                const _error = new git_errors_1.CheckoutError(err.message, repoPath, err.command, branchName);
+                throw _error;
+            }
+            throw err;
+        }), (0, rxjs_1.map)(() => {
+            return branchName;
+        }));
+    }));
+}
+exports.checkoutRepoAtLastBranch$ = checkoutRepoAtLastBranch$;
 /**
  * Checks out all repositories in a folder at a specific date and returns an Observable that emits the path to each repository.
  * If an error occurs during the checkout process, the Observable emits a CheckoutError object.
@@ -346,7 +389,10 @@ function repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath) {
             return { repoPath, remoteOriginUrl };
         }))), (0, rxjs_1.map)(({ repoPath, remoteOriginUrl }) => {
             const repoCreationDate = dict[remoteOriginUrl];
-            const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
+            const creationDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
+            // if creation date is after from date, then use the creation date as from date
+            const _fromDate = creationDate > fromDate ? creationDate : fromDate;
+            // const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
             return { repoPath, _fromDate };
         }));
     }));
