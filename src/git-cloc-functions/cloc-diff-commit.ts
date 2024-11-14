@@ -17,6 +17,7 @@ import { toYYYYMMDD } from "../tools/dates/date-functions";
 
 import { ClocDiffCommitEnriched, ClocDiffCommitEnrichedWithDerivedData, ClocDiffWithCommitOptions } from "./cloc-diff-commit.model";
 import { defaultBranchName$ } from "../git-functions/branches";
+import { writeCmdLogs$ } from "../tools/execute-command/execute-command";
 
 //********************************************************************************************************************** */
 //****************************   Module objectives                               *************************************** */
@@ -294,6 +295,7 @@ export function writeCodeTurnover$(
                 console.log(`\n====>>>> code-turnover info saved on file ${outFilePath}`);
             },
         }),
+        concatMap(() => writeCmdLogs$(options, outDir)),
     )
 }
 export type WriteCodeTurnoverOptions = {
