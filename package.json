@@ -50,6 +50,7 @@
     },
     "dependencies": {
         "@enrico.piccinin/csv-tools": "^1.0.11",
+        "@types/xlsx": "^0.0.36",
         "commander": "^8.1.0",
         "observable-fs": "^2.2.6",
         "observable-mongo": "^2.3.16",
