@@ -1,6 +1,6 @@
 import path from "path";
 
-import { EMPTY, catchError, concatMap, defaultIfEmpty, ignoreElements, map, of, tap } from "rxjs";
+import { EMPTY, Observable, catchError, concatMap, defaultIfEmpty, ignoreElements, map, of, tap } from "rxjs";
 
 import { appendFileObs } from "observable-fs";
 import { toCsvObs } from "@enrico.piccinin/csv-tools";
@@ -91,7 +91,7 @@ export function clocDiffWithAllCommits$(
             commitCounter: 0,
             errorCounter: 0,
         }
-) {
+): Observable<ClocDiffCommitEnrichedWithDerivedData> {
     const languages = options.languages || []
     // first calculate the cloc dictionary and pass it down the pipe
     return clocFileDict$(pathToRepo, languages, options).pipe(
