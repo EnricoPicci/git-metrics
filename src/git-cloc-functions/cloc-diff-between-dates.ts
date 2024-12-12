@@ -15,7 +15,7 @@ import { defaultBranchName$ } from "../git-functions/branches"
 import { ClocFileInfo } from "../cloc-functions/cloc.model"
 import { ClocDiffCommitBetweenDatesEnriched } from "./cloc-diff-commit.model"
 import { ClocOptions, clocFileDictAtCommits$, } from "./cloc-at-date-commit"
-import { writeCmdLogs$ } from "../tools/execute-command/execute-command"
+import { CmdErrored, writeCmdLogs$ } from "../tools/execute-command/execute-command"
 import { newClocDiffByfile } from "../cloc-functions/cloc-diff-byfile.model"
 import { calcArea } from "./derived-fields"
 
@@ -61,6 +61,17 @@ export function clocDiffBetweenDates$(
         concatMap(([fromShaDate, toShaDate]) => {
             const [fromSha, _fromDate] = fromShaDate
             const [toSha, _toDate] = toShaDate
+            // if fromSha and toSha are the same, then we have not found any commit at or before the fromDate
+            // and therefore we respond with an Observable that emits an empty array
+            if (fromSha === toSha) {
+                const errMsg = `No commit found at or before the fromDate "${toYYYYMMDD(fromDate)}" for repo "${repoPath}"`
+                const errObj: CmdErrored = {
+                    command: `no command run because no commit found at or before the fromDate "${toYYYYMMDD(fromDate)}" for repo "${repoPath}"`,
+                    message: errMsg
+                }
+                options?.cmdErroredLog?.push(errObj)
+                return of([])
+            }
             // if both fromSha and toSha are not empty, then we have found the commits at the two dates
             // and therefore we can calculate the cloc diff between the two commits
             if (fromSha && toSha) {

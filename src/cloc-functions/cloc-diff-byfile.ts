@@ -360,7 +360,7 @@ function buildClocDiffByFileCommand(
 ) {
     const cdCommand = `cd ${folderPath}`;
     const strategyCommand = strategy === 'rel' ? '--git-diff-rel' : '--git-diff-all';
-    const clocDiffAllCommand = `cloc ${strategyCommand} --csv --by-file --timeout=${CLOC_CONFIG.TIMEOUT} --quiet`;
+    const clocDiffAllCommand = `cloc ${strategyCommand} --csv --by-file --timeout=${CLOC_CONFIG.TIMEOUT} --quiet --ignore-whitespace`;
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;

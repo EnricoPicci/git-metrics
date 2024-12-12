@@ -17,6 +17,7 @@ const delete_file_ignore_if_missing_1 = require("../tools/observable-fs-extensio
 const fs_utils_1 = require("../tools/fs-utils/fs-utils");
 const date_functions_1 = require("../tools/dates/date-functions");
 const branches_1 = require("../git-functions/branches");
+const execute_command_1 = require("../tools/execute-command/execute-command");
 //********************************************************************************************************************** */
 //****************************   Module objectives                               *************************************** */
 //********************************************************************************************************************** */
@@ -226,7 +227,7 @@ function writeCodeTurnover$(folderPath, options = { filePrefix: 'code-turnover' 
             }
             console.log(`\n====>>>> code-turnover info saved on file ${outFilePath}`);
         },
-    }));
+    }), (0, rxjs_1.concatMap)(() => (0, execute_command_1.writeCmdLogs$)(options, outDir)));
 }
 exports.writeCodeTurnover$ = writeCodeTurnover$;
 //********************************************************************************************************************** */

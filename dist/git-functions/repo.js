@@ -392,7 +392,6 @@ function repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath) {
             const creationDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
             // if creation date is after from date, then use the creation date as from date
             const _fromDate = creationDate > fromDate ? creationDate : fromDate;
-            // const _fromDate = repoCreationDate ? new Date(repoCreationDate) : fromDate;
             return { repoPath, _fromDate };
         }));
     }));
