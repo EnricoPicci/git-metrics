@@ -47,8 +47,20 @@ function clocDiffBetweenDates$(fromDate, toDate, branchName, repoPath = './', re
     const toCommit = (0, commit_1.commitAtDateOrBefore$)(repoPath, toDate, branchName, options);
     const fromToCommits$ = (0, rxjs_1.forkJoin)([fromCommit, toCommit]).pipe((0, rxjs_1.share)());
     return fromToCommits$.pipe((0, rxjs_1.concatMap)(([fromShaDate, toShaDate]) => {
+        var _a;
         const [fromSha, _fromDate] = fromShaDate;
         const [toSha, _toDate] = toShaDate;
+        // if fromSha and toSha are the same, then we have not found any commit at or before the fromDate
+        // and therefore we respond with an Observable that emits an empty array
+        if (fromSha === toSha) {
+            const errMsg = `No commit found at or before the fromDate "${(0, date_functions_1.toYYYYMMDD)(fromDate)}" for repo "${repoPath}"`;
+            const errObj = {
+                command: `no command run because no commit found at or before the fromDate "${(0, date_functions_1.toYYYYMMDD)(fromDate)}" for repo "${repoPath}"`,
+                message: errMsg
+            };
+            (_a = options === null || options === void 0 ? void 0 : options.cmdErroredLog) === null || _a === void 0 ? void 0 : _a.push(errObj);
+            return rxjs_1.EMPTY;
+        }
         // if both fromSha and toSha are not empty, then we have found the commits at the two dates
         // and therefore we can calculate the cloc diff between the two commits
         if (fromSha && toSha) {
@@ -204,7 +216,9 @@ function writeClocDiffBetweenDatesForRepos$(folderPath, fromDate = new Date(0), 
     options.cmdExecutedLog = (_b = options.cmdExecutedLog) !== null && _b !== void 0 ? _b : [];
     let noCommitsFound = true;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)), (0, rxjs_1.tap)((d) => {
+        console.log(`\n====>>>> cloc-diff-between-dates-for-repos info saved on file ${d}`);
+    }), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         noCommitsFound = false;
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.last)(), (0, rxjs_1.catchError)((err) => {

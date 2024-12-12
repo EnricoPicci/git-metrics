@@ -269,7 +269,7 @@ exports.CLOC_DIFF_BYFILE_HEADER = 'File, == blank, != blank, + blank, - blank, =
 function buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languages, folderPath = './', notMatchDirectories, strategy) {
     const cdCommand = `cd ${folderPath}`;
     const strategyCommand = strategy === 'rel' ? '--git-diff-rel' : '--git-diff-all';
-    const clocDiffAllCommand = `cloc ${strategyCommand} --csv --by-file --timeout=${config_1.CLOC_CONFIG.TIMEOUT} --quiet`;
+    const clocDiffAllCommand = `cloc ${strategyCommand} --csv --by-file --timeout=${config_1.CLOC_CONFIG.TIMEOUT} --quiet --ignore-whitespace`;
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;
@@ -278,7 +278,7 @@ function buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languag
         // excludeRegex is a string that contains the strings to be excluded separated by !
         // for instance if notMatch is ['*db*', '*ods*'], then excludeRegex will be '*db*|*ods*'
         const excludeRegex = notMatchDirectories.join('|');
-        notMatchD = `--not-match-d=(${excludeRegex} --fullpath)`;
+        notMatchD = `--not-match-d=${excludeRegex} --fullpath`;
     }
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter} ${notMatchD}`;
 }

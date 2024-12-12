@@ -73,17 +73,19 @@ function writeCmdLogs$(options, outDir) {
     if (!prefix.endsWith('-')) {
         prefix = `${prefix}-`;
     }
+    // timestamp in the format YYYY-MM-DDThh:mm:ss.mmmZ to be used as postfix in the file names
+    const timestamp = new Date().toISOString();
     // if the caller provided the cmdExecutedLog and cmdErroredLog arrays, we transform the
     // entries in the arrays to csv strings and write them to files
     let writeCmdExecutedLog$ = (0, rxjs_1.of)('');
     if (cmdExecutedLog && cmdExecutedLog.length > 0) {
         const cmdExecutedCsv = cmdExecutedLog.map(c => c.command);
-        writeCmdExecutedLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, `${prefix}cmd-executed.log`), cmdExecutedCsv);
+        writeCmdExecutedLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, `${prefix}cmd-executed-${timestamp}.log`), cmdExecutedCsv);
     }
     let writeCmdErroredLog$ = (0, rxjs_1.of)('');
     if (cmdErroredLog && cmdErroredLog.length > 0) {
         const cmdErroredCsv = (0, csv_tools_1.toCsv)(cmdErroredLog);
-        writeCmdErroredLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, `${prefix}cmd-errored.log`), cmdErroredCsv);
+        writeCmdErroredLog$ = (0, observable_fs_1.writeFileObs)(path_1.default.join(outDir, `${prefix}cmd-errored-${timestamp}.log`), cmdErroredCsv);
     }
     return (0, rxjs_1.forkJoin)([writeCmdExecutedLog$, writeCmdErroredLog$]).pipe((0, rxjs_1.map)((resp) => {
         const [cmdExecutedFile, cmdErroredFile] = resp;

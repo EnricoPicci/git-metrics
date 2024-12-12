@@ -58,7 +58,7 @@ exports.clocDiff$ = clocDiff$;
 // these functions may be exported for testing purposes
 function buildClocDiffRelCommand(mostRecentCommit, leastRecentCommit, languages, folderPath = './') {
     const cdCommand = `cd ${folderPath}`;
-    const clocDiffAllCommand = `cloc --git-diff-rel --json --timeout=${config_1.CLOC_CONFIG.TIMEOUT}`;
+    const clocDiffAllCommand = `cloc --git-diff-rel --json --timeout=${config_1.CLOC_CONFIG.TIMEOUT} --ignore-whitespace`;
     const languagesString = languages.join(',');
     const languageFilter = languages.length > 0 ? `--include-lang=${languagesString}` : '';
     const commitsFilter = `${leastRecentCommit} ${mostRecentCommit}`;
