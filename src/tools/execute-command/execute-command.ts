@@ -75,8 +75,8 @@ export function writeCmdLogs$(options: ExecuteCommandObsOptions, outDir: string)
     if (!prefix.endsWith('-')) {
         prefix = `${prefix}-`;
     }
-    // timestamp in the format YYYYMMDD-HHMMSS to be used as postfix in the file names
-    const timestamp = new Date().toISOString().replace(/[-:]/g, '').replace(/T.*/, '');
+    // timestamp in the format YYYY-MM-DDThh:mm:ss.mmmZ to be used as postfix in the file names
+    const timestamp = new Date().toISOString();
     // if the caller provided the cmdExecutedLog and cmdErroredLog arrays, we transform the
     // entries in the arrays to csv strings and write them to files
     let writeCmdExecutedLog$ = of('');
