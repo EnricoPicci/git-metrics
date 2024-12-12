@@ -18,12 +18,15 @@ Executing `npx git-metrics <app-name> -h` prints on the console the help for the
 
 ## apps available
 - [**code-turnover**](./src/apps/code-turnover/README.md): calculates the **code-turnover** on the repos contained in a folder and save it to csv files - **code-turnover** is a measure of the effort spent to develop and maintain a codebase in a certain time window
+- [**cloc-diff-between-dates**](./src/apps/cloc-diff-between-dates/README.md): calculates the differences in the lines of code/comments/blanks between two dates in a set of repos contained in a folder
 - **read-repos-commits**: reads all the commit records of a set of repos and save them on csv files - the result can be used to have an high level idea of how intense is the work on a certain codebase
 - **cloc-byfile-multi-repos**: calculates the lines of code/comments/blanks on all the files in all the repos contained in a certain folder using the [cloc](https://github.com/AlDanial/cloc) command which, by default, works on a single repo
-- [**cloc-monthly-diff-repos**](./src/apps/monthly-cloc-diff/README.md): calculates statistics about the changes that occurred on a codebase on a monthly basis, i.e. calculating the differences in the codebase between the last commit of a month and the last commit of the previous month
-- **reports**: there are different reports that can be run on repos to gather statistics about, for instance, the files that have changed most in a certain period of time, the authors that have contributed more and so on
 - [**fetch-repos**](./src/apps/repos-utils/fetch-repos/README.md): fetches the git repos contained in a folder and its subfolders
 - [**pull-repos**](./src/apps/repos-utils/pull-repos/README.md): pulls the git repos contained in a folder and its subfolders
+
+## apps deprecated
+- [**cloc-monthly-diff-repos**](./src/apps/monthly-cloc-diff/README.md): calculates statistics about the changes that occurred on a codebase on a monthly basis, i.e. calculating the differences in the codebase between the last commit of a month and the last commit of the previous month - use [**code-turnover**](./src/apps/code-turnover/README.md) instead to have the real picture of the changes in a period of time
+- **reports**: there are different reports that can be run on repos to gather statistics about, for instance, the files that have changed most in a certain period of time, the authors that have contributed more and so on - [**code-turnover**](./src/apps/code-turnover/README.md) instead and then build the desired pivots using the data generated
 
 ## libraries
 The apps use [git](https://git-scm.com/) and [cloc](https://github.com/AlDanial/cloc) commands to calculate their statistics.
