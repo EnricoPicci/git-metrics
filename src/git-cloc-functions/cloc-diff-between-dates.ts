@@ -320,7 +320,9 @@ export function writeClocDiffBetweenDatesForRepos$(
     }
 ) {
     const folderName = path.basename(folderPath);
-    const outFile = `${folderName}-cloc-diff-between-dates-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
+    // timestamp in format YYYYMMDD-hhmmss.mmm to append to the file name
+    const timestamp = new Date().toISOString();
+    const outFile = `${folderName}-cloc-diff-between-dates-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.${timestamp}.csv`;
     const outFilePath = path.join(outDir, outFile);
 
     options.cmdErroredLog = options.cmdErroredLog ?? [];

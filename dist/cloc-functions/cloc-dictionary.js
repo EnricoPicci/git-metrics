@@ -81,7 +81,11 @@ function toClocFileDict(folder, clocLogPath) {
         return lines.reduce((dict, line) => {
             const clocInfo = line.trim().split(',');
             if (clocInfo.length !== 5) {
-                throw new Error(`Format of cloc line not as expected: ${line} ${clocFileMsg}`);
+                // do not throw an error since very rarely and randomly the cloc command may produce a line with not exactly 5 fields
+                // For instance this is the message received during a massive code-turnover processing
+                // Format of cloc line not as expected: TypeScript,./projects/rgi/passpro-next-core-ui/src/lib/app/content-lock/lock-history,.modal.ts,10,0,96
+                console.error(`Format of cloc line not as expected: ${line} ${clocFileMsg}`);
+                return dict;
             }
             const [language, file, blank, comment, code] = clocInfo;
             if (file.trim().length === 0) {
