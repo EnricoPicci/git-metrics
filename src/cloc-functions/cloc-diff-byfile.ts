@@ -369,7 +369,7 @@ function buildClocDiffByFileCommand(
         // excludeRegex is a string that contains the strings to be excluded separated by !
         // for instance if notMatch is ['*db*', '*ods*'], then excludeRegex will be '*db*|*ods*'
         const excludeRegex = notMatchDirectories.join('|');
-        notMatchD = `--not-match-d=(${excludeRegex} --fullpath)`;
+        notMatchD = `--not-match-d=${excludeRegex} --fullpath`;
     }
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter} ${notMatchD}`;
 }
