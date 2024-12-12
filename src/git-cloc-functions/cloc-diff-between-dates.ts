@@ -70,7 +70,7 @@ export function clocDiffBetweenDates$(
                     message: errMsg
                 }
                 options?.cmdErroredLog?.push(errObj)
-                return of([])
+                return EMPTY
             }
             // if both fromSha and toSha are not empty, then we have found the commits at the two dates
             // and therefore we can calculate the cloc diff between the two commits
@@ -332,6 +332,9 @@ export function writeClocDiffBetweenDatesForRepos$(
 
     return deleteFile$(outFilePath).pipe(
         concatMap(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)),
+        tap((d) => {
+            console.log(`\n====>>>> cloc-diff-between-dates-for-repos info saved on file ${d}`);
+        }),
         toCsvObs(),
         concatMap((line) => {
             noCommitsFound = false;
