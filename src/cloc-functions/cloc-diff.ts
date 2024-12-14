@@ -1,6 +1,6 @@
 import { map, catchError, of } from 'rxjs';
 
-import { executeCommandObs$ } from '../tools/execute-command/execute-command';
+import { executeCommandObs$, ExecuteCommandObsOptions } from '../tools/execute-command/execute-command';
 
 import { ClocDiffLanguageStats, ClocDiffState, ClocDiffStats, newClocDiffStatsWithError, newClocDiffStatsZeroed } from './cloc-diff.model';
 import { CLOC_CONFIG } from './config';
@@ -24,10 +24,11 @@ export function clocDiff$(
     leastRecentCommit: string,
     repoFolderPath = './',
     languages: string[] = [],
+    options: ExecuteCommandObsOptions = {}
 ) {
     const cmd = buildClocDiffRelCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
 
-    return executeCommandObs$('run cloc --git-diff-rel', cmd).pipe(
+    return executeCommandObs$('run cloc --git-diff-rel', cmd, options).pipe(
         map((output) => {
             let diffs: { [state in ClocDiffState]: ClocDiffLanguageStats; };
             try {

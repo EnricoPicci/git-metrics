@@ -1,5 +1,5 @@
 import { catchError, map, } from "rxjs";
-import { executeCommandObs$ } from "../tools/execute-command/execute-command";
+import { executeCommandObs$, ExecuteCommandObsOptions } from "../tools/execute-command/execute-command";
 import { GitDiffFileDict } from "./diff-file.model";
 import { isUnknownRevisionError } from "./errors";
 
@@ -22,9 +22,10 @@ export function diff$(
     leastRecentCommit: string,
     repoFolderPath = './',
     similarityIndex = 50,
+    options: ExecuteCommandObsOptions = {}
 ) {
     const cmd = buildDiffCommand(mostRecentCommit, leastRecentCommit, repoFolderPath, similarityIndex);
-    return executeCommandObs$('run git diff', cmd).pipe(
+    return executeCommandObs$('run git diff', cmd, options).pipe(
         catchError((error) => {
             if (isUnknownRevisionError(error)) {
                 console.warn(`Error in fetchOneCommit for repo "${repoFolderPath} and commit ${mostRecentCommit}"`)
@@ -67,8 +68,9 @@ export function copyRenamesDict$(
     leastRecentCommit: string,
     repoFolderPath = './',
     similarityIndex = 50,
+    options: ExecuteCommandObsOptions = {}
 ) {
-    return diff$(mostRecentCommit, leastRecentCommit, repoFolderPath, similarityIndex).pipe(
+    return diff$(mostRecentCommit, leastRecentCommit, repoFolderPath, similarityIndex, options).pipe(
         map((diffs) => {
             const copyRenamesDict: GitDiffFileDict = {};
             for (const diff of diffs) {

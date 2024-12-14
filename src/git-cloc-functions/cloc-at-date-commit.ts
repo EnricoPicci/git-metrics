@@ -25,7 +25,7 @@ import { calcArea } from "./derived-fields";
  * @param {ClocOptions} options - An object containing options for the cloc calculation. Includes 'notMatch', an array of directories to exclude, and 'languages', an array of programming languages to filter by.
  * @returns {Observable} An Observable that emits the cloc for each file at the specified date.
  */
-export function clocAtDateByFile$(repoPath: string, date: Date, options?: ClocOptions) {
+export function clocAtDateByFile$(repoPath: string, date: Date, options: ClocOptions) {
     return checkoutRepoAtDate$(repoPath, date, options).pipe(
         concatMap((repoPathSha) => {
             const params: ClocParams = {
@@ -58,7 +58,7 @@ export function clocAtDateByFile$(repoPath: string, date: Date, options?: ClocOp
  * @param {ClocOptions} options - An optional object containing options for the cloc calculation. Includes 'notMatch', an array of directories to exclude, and 'languages', an array of programming languages to filter by.
  * @returns {Observable} An Observable that emits the cloc for each file at the specified commit.
  */
-export function clocAtCommitByFile$(repoPath: string, sha: string, options?: ClocOptions) {
+export function clocAtCommitByFile$(repoPath: string, sha: string, options: ClocOptions) {
     return checkoutRepoAtCommit$(repoPath, sha, options).pipe(
         concatMap(() => {
             const params: ClocParams = {
@@ -67,7 +67,7 @@ export function clocAtCommitByFile$(repoPath: string, sha: string, options?: Clo
                 notMatch: options?.notMatch,
                 languages: options?.languages,
             };
-            return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPath, false)
+            return clocByfile$(params, 'clocByFileForRepos$ running on ' + repoPath, false, options)
         }),
     )
 }
@@ -155,7 +155,7 @@ export function clocAtDateByFileForRepos$(
  * @param {ClocOptions} options - An object containing options for the cloc calculation. Includes 'notMatch', an array of directories to exclude, and 'languages', an array of programming languages to filter by.
  * @returns {Observable} An Observable that emits a dictionary with the cloc info for each file at the specified date or an error if the checkout fails.
  */
-export function clocFileDictAtDate$(repoPath: string, date: Date, options?: ClocOptions) {
+export function clocFileDictAtDate$(repoPath: string, date: Date, options: ClocOptions) {
     let _sha = '';
     let _commitDate = ''
     return clocAtDateByFile$(repoPath, date, options).pipe(
@@ -188,7 +188,7 @@ export function clocFileDictAtDate$(repoPath: string, date: Date, options?: Cloc
  * @param {ClocOptions} options - An optional object containing options for the cloc calculation. Includes 'notMatch', an array of directories to exclude, and 'languages', an array of programming languages to filter by.
  * @returns {Observable} An Observable that emits a dictionary with the cloc info for each file at the specified commit.
  */
-export function clocFileDictAtCommit$(repoPath: string, sha: string, options?: ClocOptions) {
+export function clocFileDictAtCommit$(repoPath: string, sha: string, options: ClocOptions) {
     return clocAtCommitByFile$(repoPath, sha, options).pipe(
         toArray(),
         toClocFileDict(repoPath),
@@ -209,7 +209,7 @@ export function clocFileDictAtCommit$(repoPath: string, sha: string, options?: C
  * @param {ClocOptions} options - An object containing options for the cloc calculation. Includes 'notMatch', an array of directories to exclude, and 'languages', an array of programming languages to filter by.
  * @returns {Observable} An Observable that emits a dictionary with the cloc info for each file at each specified date.
  */
-export function clocFileDictAtDates$(repoPath: string, dates: Date[], options?: ClocOptions) {
+export function clocFileDictAtDates$(repoPath: string, dates: Date[], options: ClocOptions) {
     const clocDictAtDates$ = dates.map(date => clocFileDictAtDate$(repoPath, date, options));
     return concat(...clocDictAtDates$);
 }
@@ -225,7 +225,7 @@ export function clocFileDictAtDates$(repoPath: string, dates: Date[], options?: 
  * @param {ClocOptions} options - An optional object containing options for the cloc calculation. Includes 'notMatch', an array of directories to exclude, and 'languages', an array of programming languages to filter by.
  * @returns {Observable} An Observable that emits a dictionary with the cloc info for each file at each specified commit.
  */
-export function clocFileDictAtCommits$(repoPath: string, shas: string[], options?: ClocOptions) {
+export function clocFileDictAtCommits$(repoPath: string, shas: string[], options: ClocOptions) {
     const clocDictAtCommit$ = shas.map(sha => clocFileDictAtCommit$(repoPath, sha, options));
     return concat(...clocDictAtCommit$);
 }

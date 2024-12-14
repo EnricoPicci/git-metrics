@@ -32,7 +32,7 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
     it(`the data notified by the observable contains something`, (done) => {
         let dataReceived: string;
         const cmd = process.platform === 'win32' ? 'dir' : 'ls';
-        executeCommandObs$('Test-1', cmd).subscribe({
+        executeCommandObs$('Test-1', cmd, {}).subscribe({
             next: (data) => {
                 dataReceived = data;
                 expect(data.length).gt(0);
@@ -47,7 +47,7 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
         });
     });
     it(`the Observable errors if the command is wrong`, (done) => {
-        executeCommandObs$('Test-12', 'NotACommand').subscribe({
+        executeCommandObs$('Test-12', 'NotACommand', {}).subscribe({
             next: (data) => {
                 done(`should not arrive here with data: ${data}`);
             },
@@ -66,7 +66,7 @@ describe(`executeCommandNewProcessObs`, () => {
     it(`the data notified is of type Buffer`, (done) => {
         const cmd = process.platform === 'win32' ? 'dir' : 'ls';
         const args = process.platform === 'win32' ? [] : ['-l'];
-        executeCommandNewProcessObs('Test-1', cmd, args).subscribe({
+        executeCommandNewProcessObs('Test-1', cmd, args, {}).subscribe({
             next: (data) => {
                 expect(data).not.undefined;
                 expect(data instanceof Buffer).true;
@@ -85,7 +85,7 @@ describe(`executeCommandNewProcessToLinesObs`, () => {
     it(`the data notified is of type string`, (done) => {
         const cmd = process.platform === 'win32' ? 'dir' : 'ls';
         const args = process.platform === 'win32' ? [] : ['-l'];
-        executeCommandNewProcessToLinesObs('Test-1', cmd, args).subscribe({
+        executeCommandNewProcessToLinesObs('Test-1', cmd, args, {}).subscribe({
             next: (data) => {
                 expect(data).not.undefined;
                 expect(typeof data).equal('string');
@@ -116,7 +116,7 @@ describe(`executeCommandInShellNewProcessObs`, () => {
                     }
                     throw new Error(err);
                 }),
-                concatMap(() => executeCommandInShellNewProcessObs('Test-2', cmd)),
+                concatMap(() => executeCommandInShellNewProcessObs('Test-2', cmd, {})),
                 defaultIfEmpty(defaultIfEmptyValue),
                 tap({
                     next: (valueNotified) => {

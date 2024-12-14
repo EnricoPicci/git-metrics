@@ -187,7 +187,7 @@ export function clocDiffWithCommitForRepos$(
                 commitCounter: 0,
                 errorCounter: 0,
             }
-            return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
+            return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null, options).pipe(
                 concatMap(({ repoPath, _fromDate }) => {
                     return clocDiffWithAllCommits$(repoPath, _fromDate, toDate, options, progress)
                 })

@@ -20,7 +20,7 @@ import { ExecuteCommandObsOptions } from '../tools/execute-command/execute-comma
  * @param folderPath The path to the folder to search for files.
  * @returns An Observable that emits a dictionary of cloc info for all files in the given folder and its subfolders.
  */
-export function clocFileDict$(folderPath: string, languages: string[] = [], options?: ExecuteCommandObsOptions) {
+export function clocFileDict$(folderPath: string, languages: string[] = [], options: ExecuteCommandObsOptions = {}) {
     const clocParams = {
         folderPath,
         vcs: 'git',

@@ -8,7 +8,7 @@ import { ExecuteCommandObsOptions } from "../tools/execute-command/execute-comma
  * @param commitSha The SHA of the commit.
  * @returns An Observable that emits the GitLab commit URL for the given Git repository and commit SHA.
  */
-export function getGitlabCommitUrl$(repoPath: string, commitSha: string, options?: ExecuteCommandObsOptions) {
+export function getGitlabCommitUrl$(repoPath: string, commitSha: string, options: ExecuteCommandObsOptions = {}) {
     return getRemoteOriginUrl$(repoPath, options).pipe(
         map((remoteOriginUrl) => {
             return getGitlabCommitUrl(remoteOriginUrl, commitSha)
@@ -42,7 +42,7 @@ export function getGitlabCommitUrl(remoteOriginUrl: string, commitSha: string) {
  * @param options - Optional parameters for the getRemoteOriginUrl$ function.
  * @returns An Observable that emits the GitLab comparison URL.
  */
-export function getGitlabCommitCompareUrl$(repoPath: string, mostRecentSha: string, leastRecentSha: string, options?: ExecuteCommandObsOptions) {
+export function getGitlabCommitCompareUrl$(repoPath: string, mostRecentSha: string, leastRecentSha: string, options: ExecuteCommandObsOptions = {}) {
     return getRemoteOriginUrl$(repoPath, options).pipe(
         map((remoteOriginUrl) => {
             return getGitlabCommitCompareUrl(remoteOriginUrl, mostRecentSha, leastRecentSha)

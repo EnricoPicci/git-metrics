@@ -2,7 +2,7 @@ import { tap, toArray } from "rxjs";
 import { clocDiffWithAllCommits$, writeClocDiffWithCommit$ } from "./cloc-diff-commit";
 import { expect } from "chai";
 
-describe(`clocDiffWithCommit$`, () => {
+describe(`clocDiffWithAllCommits$`, () => {
     it(`calculates the differences between all commits in a certain timeframe for this repo`, (done) => {
         const pathToRepo = './'
         const fromDate = new Date('2023-10-11')
@@ -14,34 +14,31 @@ describe(`clocDiffWithCommit$`, () => {
                 tap({
                     next: (arrayOfClocDiffCommitEnriched) => {
                         expect(arrayOfClocDiffCommitEnriched.length).gt(0);
-
-                        // take the first diff for a certain file - since it is the first one it is not going to change
-                        // over time since the git history is immutable - being sure that it does not change over time
-                        // allows us to write a test for it
-                        // WARNING: it seems that the number of lines of code added, removed, modified, and same may change
-                        // in contraddiction what I had just written above. 
-                        // Apparently cloc --git-diff-rel may return different results for the same commit
-                        // The file diff belongs to this commit
+                        // in the period considered there the file src/lib/command.ts has been modified only once
+                        // therefore there should be only one diff for this file.
+                        // The diff belongs to this commit
                         // https://github.com/EnricoPicci/git-metrics/commit/ce8ccf86c9dd954c2210bb1f2171bc827bb2566a
-                        // as by 2023-10-25 the test is green
-                        // as by 2023-10-26 the test is red again and I have to change the assertions
+                        // see image at assets/images/git-diff-command.ts.png
+                        // the clocc git diffs are calculated by the cloc command - if we change the parameters (e.g. 
+                        // if --ignore-whitespaces is added) the results can be different
                         const diffsInCommandTsFile = arrayOfClocDiffCommitEnriched.filter(
                             (clocDiffCommitEnriched) => clocDiffCommitEnriched.file === ('src/lib/command.ts')
                         );
+                        expect(diffsInCommandTsFile.length).equal(1);
                         const commandTs = diffsInCommandTsFile[0];
                         expect(commandTs).not.undefined;
                         // for reasons not very well understood, for the same commit we can have 2 different results
                         // therefore the assertions consider both cases
                         const codeAdded = commandTs?.code_added;
-                        expect(codeAdded == 6 || codeAdded === 9).true;
+                        expect(codeAdded).equal(1);
                         const codeRemoved = commandTs?.code_removed;
-                        expect(codeRemoved == 5 || codeRemoved === 30).true;
+                        expect(codeRemoved).equal(0);
                         const codeModified = commandTs?.code_modified;
-                        expect(codeModified == 0 || codeModified === 9).true;
+                        expect(codeModified).equal(1);
                         const codeSame = commandTs?.code_same;
-                        expect(codeSame == 23 || codeSame === 10).true;
+                        expect(codeSame).equal(27);
                         const blankAdded = commandTs?.blank_added;
-                        expect(blankAdded == 1 || blankAdded === 4).true;
+                        expect(blankAdded).equal(1);
                         expect(commandTs?.blank_removed).equal(0);
                         expect(commandTs?.blank_modified).equal(0);
                         expect(commandTs?.blank_same).equal(0);
@@ -50,7 +47,8 @@ describe(`clocDiffWithCommit$`, () => {
                         expect(commandTs?.comment_modified).equal(0);
                         expect(commandTs?.comment_same).equal(0);
                         expect(commandTs?.file).equal('src/lib/command.ts');
-                        // this file can mutate in terms of lines of code, blank and comment over time, hence we only
+                        // the code, blank and comment fields are calculated based on the current state of the file
+                        // this file can mutate over time in terms of lines of code, blank and comment, hence we only
                         // check that the values of code, blank and comment are numbers 
                         expect(commandTs?.code).gte(0);
                         expect(commandTs?.blank).gte(0);

@@ -51,8 +51,8 @@ import { checkoutRepoAtDate$ } from '../git-functions/repo';
  * @param outfile An optional file path to write the output of the cloc command to.
  * @returns An Observable that emits a ClocLanguageStats array.
  */
-export function clocSummary$(path = './', vcs?: string, outfile = '') {
-    return clocSummaryCsvRaw$(path, vcs).pipe(
+export function clocSummary$(path = './', vcs?: string, outfile = '', options: ExecuteCommandObsOptions = {}) {
+    return clocSummaryCsvRaw$(path, vcs, options).pipe(
         concatMap((output) => {
             return outfile ? writeFileObs(outfile, output).pipe(map(() => output)) : of(output);
         }),
@@ -102,13 +102,14 @@ export function clocSummary$(path = './', vcs?: string, outfile = '') {
  * @param vcs An optional version control system to use with the cloc command.
  * @returns An Observable that emits an array of strings, each containing the CSV-formatted cloc summary info.
  */
-export function clocSummaryCsvRaw$(path = './', vcs?: string) {
+export function clocSummaryCsvRaw$(path = './', vcs?: string, options: ExecuteCommandObsOptions = {}) {
     const _vcs = vcs ? `--vcs=${vcs}` : '';
 
     const executable = CLOC_CONFIG.USE_NPX ? 'npx cloc' : 'cloc';
     return executeCommandObs$(
         'run cloc summary',
         `${executable} --csv ${_vcs} --timeout=${CLOC_CONFIG.TIMEOUT} ${path}`,
+        options
     ).pipe(
         map((output) => {
             return output.split('\n').filter((l) => l.trim().length > 0);
@@ -181,10 +182,10 @@ export function writeClocSummary$(params: ClocParams) {
  * @param writeFile Whether or not to write the output of the cloc command to a file (the file name is derived from the params).
  * @returns An Observable that emits the lines output of the cloc command execution.
  */
-export function clocByfile$(params: ClocParams, action = 'calculate cloc', writeFile = true, _options?: ExecuteCommandObsOptions) {
+export function clocByfile$(params: ClocParams, action = 'calculate cloc', writeFile = true, _options: ExecuteCommandObsOptions = {}) {
     // execute the cloc command in a new process and return the stream of lines output of the cloc command execution
     const { cmd, args, options } = clocByfileCommandWithArgs(params);
-    const _cloc = executeCommandNewProcessToLinesObs(action, cmd, args, options, _options).pipe(
+    const _cloc = executeCommandNewProcessToLinesObs(action, cmd, args,_options, options, ).pipe(
         map((line) => {
             return line.trim()
         }),
@@ -227,7 +228,7 @@ export function clocByfileAtDate$(
     date: Date,
     action = 'calculate cloc at date',
     writeFile = true,
-    _options?: ExecuteCommandObsOptions) {
+    _options: ExecuteCommandObsOptions = {}) {
     return checkoutRepoAtDate$(params.folderPath, date, _options).pipe(
         catchError((err) => {
             console.error(`Error checking out repo at date ${date.toDateString()}: ${err.message}`);
@@ -260,10 +261,10 @@ export function writeClocByfile(params: ClocParams, action = 'writeClocByFile') 
  * @param action A comment describing the action we are going to perform.
  * @returns An Observable that emits the name of the file written once the cloc command execution is finished.
  */
-export function writeClocByFile$(params: ClocParams, action = 'cloc') {
+export function writeClocByFile$(params: ClocParams, action = 'cloc', options: ExecuteCommandObsOptions = {}) {
     const [cmd, out] = clocByFileCommand(params);
 
-    return executeCommandInShellNewProcessObs(action, cmd).pipe(
+    return executeCommandInShellNewProcessObs(action, cmd, options).pipe(
         ignoreElements(),
         defaultIfEmpty(out),
         tap({
@@ -328,13 +329,16 @@ export function clocByFileForRepos$(
 }
 
 /**
- * Writes the cloc info for all the Git repositories in a given folder to a file.
- * The file name is derived from the folder path.
- * Returns an Observable that notifies the name of the file where the cloc info is saved once the cloc command execution is finished.
- * @param folderPath The path to the folder to search for Git repositories.
- * @param outDir The path to the folder where the output file should be saved. Defaults to the current directory.
- * @param excludeRepoPaths An array of repository paths to exclude from the calculation.
- * @returns An Observable that emits the name of the file where the cloc info is saved.
+ * Writes the CLOC (Count Lines of Code) information by file for repositories in the specified folder.
+ * 
+ * @param folderPath - The path to the folder containing the repositories.
+ * @param date - The date for which to generate the CLOC information. Defaults to the current date.
+ * @param outDir - The directory where the output file will be saved. Defaults to './'.
+ * @param languages - An array of programming languages to include in the CLOC analysis. Defaults to an empty array.
+ * @param excludeRepoPaths - An array of repository paths to exclude from the CLOC analysis. Defaults to an empty array.
+ * @param options - Additional options for executing the command.
+ * @returns An observable that emits the path to the output file, as well as the paths of the files where the logs 
+ * of executed and errored commands are written.
  */
 export function writeClocByFileForRepos$(
     folderPath: string,
@@ -354,7 +358,14 @@ export function writeClocByFileForRepos$(
         }),
         ignoreElements(),
         defaultIfEmpty(outFilePath),
-        concatMap(() => writeCmdLogs$(options, outDir)),
+        concatMap((outFilePath) => {
+            return writeCmdLogs$(options, outDir).pipe(
+                map(([cmdExecutedLog, cmdErroredLog]) => {
+                    return { outFilePath, cmdExecutedLog, cmdErroredLog };
+                }),
+            )
+
+        }),
         tap({
             next: (outFilePath) => {
                 console.log(`====>>>> cloc info saved on file ${outFilePath}`);

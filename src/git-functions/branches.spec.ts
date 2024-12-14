@@ -63,7 +63,7 @@ describe(`defaultBranchName`, () => {
 });
 
 describe(`lastBranch$`, () => {
-    it.only(`read the the last branch, i.e. the branch with the last commit 
+    it(`read the the last branch, i.e. the branch with the last commit 
     this repo is used for the test`, (done) => {
         const thisRepoPath = './';
 

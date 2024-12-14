@@ -43,7 +43,7 @@ export function clocDiffBetweenDates$(
     reposFolderPath = './',
     languages: string[] = [],
     notMatchDirectories: string[] = [],
-    options?: ClocOptions
+    options: ClocOptions
 ) {
     // if fromDate is after toDate, swap the two dates
     if (fromDate > toDate) {
@@ -104,7 +104,7 @@ function calcDiffBetweenTwoCommits$(
     toShaDate: [string, Date],
     languages: string[] = [],
     notMatchDirectories: string[] = [],
-    options?: ClocOptions
+    options: ClocOptions
 ) {
     const [fromSha] = fromShaDate
     const [toSha] = toShaDate
@@ -183,7 +183,7 @@ function calcDiffWithOneCommit$(
     reposFolderPath: string,
     toDate: Date,
     sha: string,
-    options?: ClocOptions
+    options: ClocOptions
 ) {
     return clocFileDictAtCommits$(repoPath, [sha], options).pipe(
         toArray(),
@@ -244,7 +244,7 @@ export function clocDiffBetweenDatesForRepos$(
     const { excludeRepoPaths, creationDateCsvFilePath, notMatch } = options;
     const repoPaths = gitRepoPaths(reposFolderPath, excludeRepoPaths);
 
-    return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null).pipe(
+    return repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath || null, options).pipe(
         concatMap(({ repoPath, _fromDate }) => {
             return defaultBranchName$(repoPath, options).pipe(
                 map((branchName) => ({ repoPath, _fromDate, branchName })),
@@ -283,7 +283,8 @@ export function writeClocDiffBetweenDates$(
     fromDate = new Date(0),
     toDate = new Date(Date.now()),
     outDir = './',
-    languages: string[] = []
+    languages: string[] = [],
+    options: ClocOptions
 ) {
     const pathToRepoName = path.basename(pathToRepo);
     const outFile = `${pathToRepoName}-cloc-diff-between-${toYYYYMMDD(fromDate)}-${toYYYYMMDD(toDate)}.csv`;
@@ -292,7 +293,7 @@ export function writeClocDiffBetweenDates$(
     createDirIfNotExisting(outDir);
 
     return deleteFile$(outFilePath).pipe(
-        concatMap(() => clocDiffBetweenDates$(fromDate, toDate, branchName, pathToRepo, '', languages)),
+        concatMap(() => clocDiffBetweenDates$(fromDate, toDate, branchName, pathToRepo, '', languages, [], options)),
         toCsvObs(),
         concatMap((line) => {
             return appendFileObs(outFilePath, `${line}\n`);
@@ -334,9 +335,6 @@ export function writeClocDiffBetweenDatesForRepos$(
 
     return deleteFile$(outFilePath).pipe(
         concatMap(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)),
-        tap((d) => {
-            console.log(`\n====>>>> cloc-diff-between-dates-for-repos info saved on file ${d}`);
-        }),
         toCsvObs(),
         concatMap((line) => {
             noCommitsFound = false;

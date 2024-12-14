@@ -28,7 +28,7 @@ export function executeCommand(action: string, command: string) {
  * @returns An Observable that emits the standard output of the command.
  * @throws An error if the command execution fails or if the stdErrorHandler function returns an Error object.
  */
-export function executeCommandObs$(action: string, command: string, options?: ExecuteCommandObsOptions) {
+export function executeCommandObs$(action: string, command: string, options: ExecuteCommandObsOptions) {
     return new Observable((subscriber: Subscriber<string>) => {
         console.log(`====>>>> Action: ${action} -- Executing command with Observable`);
         console.log(`====>>>> ${command}`);
@@ -111,8 +111,8 @@ export function executeCommandNewProcessObs(
     action: string,
     command: string,
     args: string[],
+    _options: ExecuteCommandObsOptions,
     options?: SpawnOptionsWithoutStdio,
-    _options?: ExecuteCommandObsOptions,
 ) {
     return new Observable((subscriber: Subscriber<Buffer>) => {
         console.log(`====>>>> Action: ${action} -- Executing command in new process`);
@@ -155,10 +155,10 @@ export function executeCommandNewProcessToLinesObs(
     action: string,
     command: string,
     args: string[],
+    _options: ExecuteCommandObsOptions,
     options?: SpawnOptionsWithoutStdio,
-    _options?: ExecuteCommandObsOptions,
 ) {
-    return executeCommandNewProcessObs(action, command, args, options, _options).pipe(bufferToLines());
+    return executeCommandNewProcessObs(action, command, args, _options, options,).pipe(bufferToLines());
 }
 
 // custom operator that converts a buffer to lines, i.e. splits on \n to emit each line
@@ -195,9 +195,9 @@ function bufferToLines() {
 export function executeCommandInShellNewProcessObs(
     action: string,
     command: string,
+    _options: ExecuteCommandObsOptions,
     options?: SpawnOptionsWithoutStdio,
-    _options?: ExecuteCommandObsOptions,
 ) {
     const _opt = { ...options, shell: true };
-    return executeCommandNewProcessObs(action, command, [], _opt, _options);
+    return executeCommandNewProcessObs(action, command, [], _options, _opt, );
 }

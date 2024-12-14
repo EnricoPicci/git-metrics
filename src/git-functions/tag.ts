@@ -17,7 +17,7 @@ export const SEP = GIT_CONFIG.COMMIT_REC_SEP;
 
 export function readTags$(config: GitCommandParams) {
     const cmd = readTagsCommand(config);
-    return executeCommandObs$('readTags', cmd).pipe(
+    return executeCommandObs$('readTags', cmd, {}).pipe(
         map((out) => {
             return out.split('\n').filter((line) => line.trim().length > 0);
         }),
