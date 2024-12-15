@@ -1,6 +1,6 @@
 import { fromCsvObs, toCsvObs } from "@enrico.piccinin/csv-tools";
 import { appendFileObs, readLineObs } from "observable-fs";
-import { last, map, mergeMap, tap } from "rxjs";
+import { concatMap, from, last, map, mergeMap, tap } from "rxjs";
 
 export function markCsv$(
     csvFilePath: string, 
@@ -22,9 +22,18 @@ export function markCsv$(
     )
 }
 
-export function markFilesWithKeywords$(csvFilePath: string, keywords: string[], markFieldName: string, counter: {count: number}) {
+export function markFilesWithKeywords$(
+    csvFilePath: string, 
+    searchFieldName: string,
+    markFieldName: string,
+    keywords: string[],  
+    counter: {count: number}
+) {
     const markValueFunction = (csvRec: {[key: string]: string}) => {
-        const shouldMark = keywords.some(keyword => csvRec.file.includes(keyword));
+        if (!csvRec[searchFieldName]) {
+            throw new Error(`Field ${searchFieldName} not found in record ${JSON.stringify(csvRec)}`);
+        }
+        const shouldMark = keywords.some(keyword => csvRec[searchFieldName].includes(keyword));
         if (shouldMark) {
             counter.count++;
         }
@@ -34,12 +43,17 @@ export function markFilesWithKeywords$(csvFilePath: string, keywords: string[], 
     return markCsv$(csvFilePath, markValueFunction, markFieldName);
 }
 
-export function writeAfterMarkingOutFilesWithKeywords$(csvFilePath: string, keywords: string[], markFieldName: string) {
+export function writeAfterMarkingFilesWithKeywords$(
+    csvFilePath: string, 
+    searchFieldName: string,
+    markFieldName: string, 
+    keywords: string[]
+) {
     const tinmestamp = new Date().toISOString();
     const outputFilePath = csvFilePath.replace('.csv', `-marked-${tinmestamp}.csv`);
     const counter = {count: 0};
     let countLinesWritten = 0;
-    return markFilesWithKeywords$(csvFilePath, keywords, markFieldName, counter).pipe(
+    return markFilesWithKeywords$(csvFilePath, searchFieldName, markFieldName, keywords, counter).pipe(
         toCsvObs(),
         mergeMap(csvLine => {
             // every 1000 records, log the progress
@@ -54,5 +68,45 @@ export function writeAfterMarkingOutFilesWithKeywords$(csvFilePath: string, keyw
             console.log(`Marked ${counter.count} files with keywords "${keywords.join(', ')}" in field "${markFieldName}"`);
         }),
         map(() => outputFilePath),
+    )
+}
+
+// structure to hold the instructions for marking
+// - searchFieldName: the field to search for the keywords
+// - markFieldName: the field to hold the value 'true' or 'false' if the keywords are found
+// - keywords: the keywords to search for in the searchFieldName
+export type MarkForKeywordsInstruction = {
+    searchFieldName: string,
+    markFieldName: string,
+    keywords: string[],
+}
+export function writeAfterAddingMarkFieldsForKeywords$(
+    csvFilePath: string, 
+    markForKeywordsInstructions: MarkForKeywordsInstruction[]
+) {
+    const tinmestamp = new Date().toISOString();
+    const outputFilePath = csvFilePath.replace('.csv', `-marked-${tinmestamp}.csv`);
+    const counter = {count: 0};
+    let countLinesWritten = 0;
+    return from(markForKeywordsInstructions).pipe(
+        concatMap(markForKeywordsInstruction => {
+            return markFilesWithKeywords$(
+                csvFilePath,  
+                markForKeywordsInstruction.searchFieldName, 
+                markForKeywordsInstruction.markFieldName, 
+                markForKeywordsInstruction.keywords,
+                counter
+            ).pipe(
+                toCsvObs(),
+                mergeMap(csvLine => {
+                    // every 1000 records, log the progress
+                    countLinesWritten++;
+                    if (countLinesWritten % 1000 === 0) {
+                        console.log(`${countLinesWritten} records written`);
+                    }
+                    return appendFileObs(outputFilePath, csvLine + '\n');
+                }, 100),  // appent to file cocurrently up to 100 lines in parallel
+            )
+        })
     )
 }

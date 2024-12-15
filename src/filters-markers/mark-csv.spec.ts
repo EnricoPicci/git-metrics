@@ -43,8 +43,9 @@ describe(`markFilesWithKeywords$`, () => {
         const csvFileName = 'a-cloc-diff-between-dates.csv'
         const csvFilePath = path.join(process.cwd(), 'test-data', 'csv', csvFileName);
 
-        const keywords = ['generated', 'metadata'];
+        const searchFieldName = 'file';
         const markFieldName = 'contains_generated_or_metadata';
+        const keywords = ['generated', 'metadata'];
 
         const counter = {count: 0};
 
@@ -53,7 +54,7 @@ describe(`markFilesWithKeywords$`, () => {
         const csvLines = csvFile.split('\n');
         const numOfRecords = csvLines.length - 1;  // we don't count the header
 
-        markFilesWithKeywords$(csvFilePath, keywords, markFieldName, counter).pipe(
+        markFilesWithKeywords$(csvFilePath, searchFieldName, markFieldName, keywords, counter).pipe(
             toArray(),
             tap(records => {
                 // check that the number of records is the same
