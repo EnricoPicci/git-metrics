@@ -1,5 +1,7 @@
 import { expect } from 'chai'
-import { getRemoteOriginUrl$, gitHttpsUrlFromGitUrl, reposCompactInFolder$ } from './repo'
+import { checkoutRepoAtBranch$, getRemoteOriginUrl$, gitHttpsUrlFromGitUrl, reposCompactInFolder$ } from './repo'
+import { currentBranchName$ } from './branches';
+import { concatMap } from 'rxjs';
 
 describe('reposCompactInFolderObs', () => {
     it('should return notify a stream of values since the difference between the commits is performed on this repo', (done) => {
@@ -71,3 +73,31 @@ describe('getRemoteOriginUrl', () => {
     })
 
 })
+
+describe('checkoutRepoAtBranch$', () => {
+    it('should checkout the current branch - the test tests simply that the function does not error', (done) => {
+        const repoPath = './';
+
+        let currentBranchName: string;
+
+        currentBranchName$(repoPath).pipe(
+            concatMap((branchName) => {
+                currentBranchName = branchName;
+                return checkoutRepoAtBranch$(repoPath, branchName);
+            }),
+            concatMap(() => {
+                return currentBranchName$(repoPath);
+            })
+        ).subscribe({
+            next: (branchName) => {
+                // test simply that the branch name is the same as the current branch name calculated before
+                // test that the function does not throw an error
+                expect(branchName).equal(currentBranchName);
+                done();
+            },
+            error: (err) => {
+                done(err);
+            },
+        })
+    });
+});

@@ -273,6 +273,27 @@ export function checkoutRepoAtCommit$(
 }
 
 
+export function checkoutRepoAtBranch$(
+    repoPath: string,
+    branchName: string,
+    options: ExecuteCommandObsOptions = {}
+) {
+    if (!repoPath) throw new Error(`Path is mandatory`);
+
+    return checkout$(repoPath, branchName, options).pipe(
+        catchError((err) => {
+            if (err instanceof GitError) {
+                console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+                console.error(err.message)
+                const _error = new CheckoutError(err.message, repoPath, err.command, branchName);
+                throw _error;
+            }
+            throw err;
+        }),
+    );
+}
+
+
 export function checkoutRepoAtLastBranch$(
     repoPath: string,
     options: ExecuteCommandObsOptions = {}

@@ -70,6 +70,16 @@ export function defaultBranchName$(repoPath: string, options: ExecuteCommandObsO
     )
 }
 
+export function currentBranchName$(repoPath: string, options: ExecuteCommandObsOptions = {}) {
+    // build the command to fetch the current branch name
+    const gitCommand = `cd ${repoPath} && git branch --show-current`;
+    return executeCommandObs$(`fetch current branch name for ${repoPath}`, gitCommand, options).pipe(
+        map((output) => {
+            return output.trim();
+        })
+    )
+}
+
 // localAndNonLocalBranches$ is a function that returns an Observable that emits each branch of a Git repository
 // considering also the non local branches
 export function localAndNonLocalBranches$(repoPath: string, descending=true, options: ExecuteCommandObsOptions = {}) {

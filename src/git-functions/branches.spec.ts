@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { readLinesObs } from "observable-fs";
 
 import { GitCommandParams } from "./git-params";
-import { defaultBranchName$, lastBranch$, readBranchesGraph, readBranchesGraphCommand } from "./branches";
+import { currentBranchName$, defaultBranchName$, lastBranch$, readBranchesGraph, readBranchesGraphCommand } from "./branches";
 
 
 describe(`readBranchesGraph`, () => {
@@ -76,3 +76,18 @@ describe(`lastBranch$`, () => {
         });
     });
 });
+
+describe(`currentBranchName$`, () => {
+    it(`read current branch name for this repo`, (done) => {
+        const thisRepoPath = './';
+
+        currentBranchName$(thisRepoPath).subscribe({
+            next: (branchName) => {
+                expect(branchName).equal('main');
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+});
+
