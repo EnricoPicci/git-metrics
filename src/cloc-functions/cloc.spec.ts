@@ -344,7 +344,6 @@ describe(`clocByFileForRepos$`, () => {
                 },
                 // we do not handle the error here since we want to reset the repo to the branch at which it was before the test
                 // error: (err) => done(err),
-                complete: () => done(),
             }),
             concatMap(() => {
                 // reset the repo to the branch at which it was before the test
@@ -357,7 +356,9 @@ describe(`clocByFileForRepos$`, () => {
                     })
                 );
             }),
-        ).subscribe();
+        ).subscribe({
+            complete: () => done(),
+        });
     }).timeout(200000);
     it(`it should throw and error since the folder does not exist`, () => {
         const repoFolder = './folder-that-does-not-exist';
@@ -390,7 +391,13 @@ describe(`writeClocByFileForRepos$`, () => {
         let _outFile = '';
         let numOfFiles = 0;
 
-        writeClocByFileForRepos$(repoFolder, new Date(), outDir).pipe(
+        let currentBranchName: string;
+
+        currentBranchName$(repoFolder).pipe(
+            concatMap((branchName) => {
+                currentBranchName = branchName;
+                return writeClocByFileForRepos$(repoFolder, new Date(), outDir);
+            }),
             tap({
                 next: ({outFilePath}) => {
                     _outFile = outFilePath;
@@ -424,10 +431,23 @@ describe(`writeClocByFileForRepos$`, () => {
                 next: (lines) => {
                     expect(lines.length).equal(numOfFiles);
                 },
-                error: (err) => done(err),
-                complete: () => done(),
+                // we do not handle the error here since we want to reset the repo to the branch at which it was before the test
+                // error: (err) => done(err),
             }),
-        ).subscribe();
+            concatMap(() => {
+                // reset the repo to the branch at which it was before the test
+                return checkoutRepoAtBranch$(repoFolder, 'main');
+            }),
+            catchError((err) => {
+                return checkoutRepoAtBranch$(repoFolder, currentBranchName).pipe(
+                    tap(() => {
+                        done(err);
+                    })
+                );
+            }),
+        ).subscribe({
+            complete: () => done(),
+        });
     }).timeout(200000);
     it(`it should throw and error since the folder does not exist`, () => {
         const repoFolder = './folder-that-does-not-exist';
