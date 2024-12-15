@@ -1,4 +1,5 @@
 import fs from "fs"
+import { MarkForKeywordsInstruction } from "../../filters-markers/mark-csv"
 
 // ClocDiffBetweenDatesParamsClass is a class that implements the parameters for the cloc-diff-between-dates app
 // it has a static method fromJSON that takes a json object and returns an instance of the class
@@ -12,7 +13,19 @@ import fs from "fs"
     "toDate": "2024-12-11",
     "languages": ["Java", "TypeScript", "Kotlin"],
     "creationDateCsvFilePath": "./creation-date.csv",
-    "excludeRepoPaths": ["*db*", "*node_modules*"]
+    "excludeRepoPaths": ["*db*", "*node_modules*"],
+    "markForKeywordsInstruction": [
+        {
+            "searchFieldName": "file",
+            "markFieldName": "contains_generated",
+            "keywords": ["generated", "metadata"]
+        },
+        {
+            "searchFieldName": "file",
+            "markFieldName": "contains_impl_stub",
+            "keywords": ["impl", "stub"]
+        }
+    ]
 }
 */
 export class ClocDiffBetweenDatesParams {
@@ -23,8 +36,18 @@ export class ClocDiffBetweenDatesParams {
     languages: string[] = []
     creationDateCsvFilePath: string = ''
     excludeRepoPaths: string[] = []
+    markForKeywordsInstruction: MarkForKeywordsInstruction[] = []
 
-    constructor(folderPath: string, outDir: string, fromDate: string, toDate: string, languages: string[], creationDateCsvFilePath: string, excludeRepoPaths: string[]) {
+    constructor(
+        folderPath: string,
+        outDir: string, 
+        fromDate: string, 
+        toDate: string, 
+        languages: string[], 
+        creationDateCsvFilePath: string, 
+        excludeRepoPaths: string[],
+        markForKeywordsInstruction: MarkForKeywordsInstruction[]
+    ) {
         this.folderPath = folderPath;
         this.outDir = outDir;
         this.fromDate = fromDate;
@@ -32,6 +55,7 @@ export class ClocDiffBetweenDatesParams {
         this.languages = languages;
         this.creationDateCsvFilePath = creationDateCsvFilePath;
         this.excludeRepoPaths = excludeRepoPaths;
+        this.markForKeywordsInstruction = markForKeywordsInstruction;
     }
 
     static fromJSON(json: any) {
@@ -42,7 +66,8 @@ export class ClocDiffBetweenDatesParams {
             json.toDate,
             json.languages,
             json.creationDateCsvFilePath,
-            json.excludeRepoPaths
+            json.excludeRepoPaths,
+            json.markForKeywordsInstruction
         );
         return instance;
     }

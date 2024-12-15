@@ -2,7 +2,18 @@ import { fromCsvObs, toCsvObs } from "@enrico.piccinin/csv-tools";
 import { appendFileObs, readLineObs } from "observable-fs";
 import { concatMap, from, last, map, mergeMap, tap } from "rxjs";
 
-export function markCsv$(
+export function markRecordWithInstructions(instructions: MarkForKeywordsInstruction[], record: {[key: string]: any}) {
+    for (const instruction of instructions) {
+        if (!record[instruction.searchFieldName]) {
+            throw new Error(`Field ${instruction.searchFieldName} not found in record ${JSON.stringify(record)}`);
+        }
+        const shouldMark = instruction.keywords.some(keyword => record[instruction.searchFieldName].includes(keyword));
+        const markValue = shouldMark ? 'true' : 'false';
+        record[instruction.markFieldName] = markValue;
+    }
+}
+
+export function markFileCsv$(
     csvFilePath: string, 
     markValueFunction: (csvRec: {[key: string]: string}) => string,
     markFieldName: string
@@ -40,7 +51,7 @@ export function markFilesWithKeywords$(
         const markValue = shouldMark ? 'true' : 'false';
         return markValue;
     }
-    return markCsv$(csvFilePath, markValueFunction, markFieldName);
+    return markFileCsv$(csvFilePath, markValueFunction, markFieldName);
 }
 
 export function writeAfterMarkingFilesWithKeywords$(

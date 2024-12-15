@@ -21,7 +21,7 @@ describe(`markCsv$`, () => {
         const csvFile = fs_1.default.readFileSync(csvFilePath, 'utf8');
         const csvLines = csvFile.split('\n');
         const numOfRecords = csvLines.length - 1; // we don't count the header
-        (0, mark_csv_1.markCsv$)(csvFilePath, markValueFunction, markFieldName).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)(records => {
+        (0, mark_csv_1.markFileCsv$)(csvFilePath, markValueFunction, markFieldName).pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)(records => {
             // check that the number of records is the same
             (0, chai_1.expect)(records.length).equal(numOfRecords);
             // check that the records that have the file field containing 'generated' have the mark_field set to true 

@@ -18,6 +18,7 @@ import { ClocOptions, clocFileDictAtCommits$, } from "./cloc-at-date-commit"
 import { CmdErrored, writeCmdLogs$ } from "../tools/execute-command/execute-command"
 import { newClocDiffByfile } from "../cloc-functions/cloc-diff-byfile.model"
 import { calcArea } from "./derived-fields"
+import { MarkForKeywordsInstruction, markRecordWithInstructions } from "../filters-markers/mark-csv"
 
 
 /**
@@ -318,7 +319,8 @@ export function writeClocDiffBetweenDatesForRepos$(
         excludeRepoPaths: [],
         notMatch: [],
         filePrefix: 'cloc-diff-between-dates',
-    }
+    },
+    markForKeywordsInstruction: MarkForKeywordsInstruction[] = []
 ) {
     const folderName = path.basename(folderPath);
     // timestamp in format YYYYMMDD-hhmmss.mmm to append to the file name
@@ -335,6 +337,10 @@ export function writeClocDiffBetweenDatesForRepos$(
 
     return deleteFile$(outFilePath).pipe(
         concatMap(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)),
+        tap((clocDiff) => {
+            console.log(`\n====>>>> clocDiff: ${JSON.stringify(clocDiff)}`);
+            markRecordWithInstructions(markForKeywordsInstruction, clocDiff)
+        }),
         toCsvObs(),
         concatMap((line) => {
             noCommitsFound = false;

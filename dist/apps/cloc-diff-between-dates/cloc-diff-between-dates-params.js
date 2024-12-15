@@ -17,11 +17,23 @@ const fs_1 = __importDefault(require("fs"));
     "toDate": "2024-12-11",
     "languages": ["Java", "TypeScript", "Kotlin"],
     "creationDateCsvFilePath": "./creation-date.csv",
-    "excludeRepoPaths": ["*db*", "*node_modules*"]
+    "excludeRepoPaths": ["*db*", "*node_modules*"],
+    "markForKeywordsInstruction": [
+        {
+            "searchFieldName": "file",
+            "markFieldName": "contains_generated",
+            "keywords": ["generated", "metadata"]
+        },
+        {
+            "searchFieldName": "file",
+            "markFieldName": "contains_impl_stub",
+            "keywords": ["impl", "stub"]
+        }
+    ]
 }
 */
 class ClocDiffBetweenDatesParams {
-    constructor(folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths) {
+    constructor(folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths, markForKeywordsInstruction) {
         this.folderPath = '';
         this.outDir = '';
         this.fromDate = '';
@@ -29,6 +41,7 @@ class ClocDiffBetweenDatesParams {
         this.languages = [];
         this.creationDateCsvFilePath = '';
         this.excludeRepoPaths = [];
+        this.markForKeywordsInstruction = [];
         this.folderPath = folderPath;
         this.outDir = outDir;
         this.fromDate = fromDate;
@@ -36,9 +49,10 @@ class ClocDiffBetweenDatesParams {
         this.languages = languages;
         this.creationDateCsvFilePath = creationDateCsvFilePath;
         this.excludeRepoPaths = excludeRepoPaths;
+        this.markForKeywordsInstruction = markForKeywordsInstruction;
     }
     static fromJSON(json) {
-        const instance = new ClocDiffBetweenDatesParams(json.folderPath, json.outDir, json.fromDate, json.toDate, json.languages, json.creationDateCsvFilePath, json.excludeRepoPaths);
+        const instance = new ClocDiffBetweenDatesParams(json.folderPath, json.outDir, json.fromDate, json.toDate, json.languages, json.creationDateCsvFilePath, json.excludeRepoPaths, json.markForKeywordsInstruction);
         return instance;
     }
     static fromJSONFile(filePath) {

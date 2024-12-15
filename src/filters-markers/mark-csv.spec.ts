@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import path from 'path';
 import fs from 'fs';
 import { tap, toArray } from 'rxjs';
-import { markCsv$, markFilesWithKeywords$ } from './mark-csv';
+import { markFileCsv$, markFilesWithKeywords$ } from './mark-csv';
 
 describe(`markCsv$`, () => {
     it(`marks the records that contain certain substrings in their "file" field`, (done) => {
@@ -20,7 +20,7 @@ describe(`markCsv$`, () => {
         const csvLines = csvFile.split('\n');
         const numOfRecords = csvLines.length - 1;  // we don't count the header
 
-        markCsv$(csvFilePath, markValueFunction, markFieldName).pipe(
+        markFileCsv$(csvFilePath, markValueFunction, markFieldName).pipe(
             toArray(),
             tap(records => {
                 // check that the number of records is the same

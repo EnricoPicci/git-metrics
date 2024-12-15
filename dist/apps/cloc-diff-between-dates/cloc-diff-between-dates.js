@@ -7,10 +7,10 @@ const cloc_diff_between_dates_params_1 = require("./cloc-diff-between-dates-para
 function launchDiffBetweenDatesMultiRepos() {
     console.log('====>>>> Launching Diff Between Dates For Repos');
     const params = readParams();
-    const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths } = params;
+    const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths, markForKeywordsInstruction } = params;
     const options = { excludeRepoPaths, languages, creationDateCsvFilePath, filePrefix: 'cloc-diff-between-dates' };
     console.log(`Paramters: folderPath: ${folderPath}, outDir: ${outDir}, fromDate: ${fromDate}, toDate: ${toDate}, languages: ${languages}, creationDateCsvFilePath: ${creationDateCsvFilePath}, excludeRepoPaths: ${excludeRepoPaths}`);
-    (0, cloc_diff_between_dates_1.writeClocDiffBetweenDatesForRepos$)(folderPath, new Date(fromDate), new Date(toDate), outDir, options).subscribe();
+    (0, cloc_diff_between_dates_1.writeClocDiffBetweenDatesForRepos$)(folderPath, new Date(fromDate), new Date(toDate), outDir, options, markForKeywordsInstruction).subscribe();
 }
 exports.launchDiffBetweenDatesMultiRepos = launchDiffBetweenDatesMultiRepos;
 function readParams() {
@@ -48,6 +48,7 @@ function readParams() {
     const languages = _options.languages || (params === null || params === void 0 ? void 0 : params.languages) || [];
     const creationDateCsvFilePath = _options.creationDateCsvFilePath || (params === null || params === void 0 ? void 0 : params.creationDateCsvFilePath) || '';
     const excludeRepoPaths = _options.excludeRepoPaths || (params === null || params === void 0 ? void 0 : params.excludeRepoPaths) || [];
-    return new cloc_diff_between_dates_params_1.ClocDiffBetweenDatesParams(folderPath, outDir, fromDate.toISOString(), toDate.toISOString(), languages, creationDateCsvFilePath, excludeRepoPaths);
+    const markForKeywordsInstruction = (params === null || params === void 0 ? void 0 : params.markForKeywordsInstruction) || [];
+    return new cloc_diff_between_dates_params_1.ClocDiffBetweenDatesParams(folderPath, outDir, fromDate.toISOString(), toDate.toISOString(), languages, creationDateCsvFilePath, excludeRepoPaths, markForKeywordsInstruction);
 }
 //# sourceMappingURL=cloc-diff-between-dates.js.map

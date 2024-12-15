@@ -7,7 +7,7 @@ export function launchDiffBetweenDatesMultiRepos() {
     console.log('====>>>> Launching Diff Between Dates For Repos')
 
     const params = readParams();
-    const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths } = params;
+    const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths, markForKeywordsInstruction } = params;
     const options: ClocOptions = { excludeRepoPaths, languages, creationDateCsvFilePath, filePrefix: 'cloc-diff-between-dates' };
     console.log(`Paramters: folderPath: ${folderPath}, outDir: ${outDir}, fromDate: ${fromDate}, toDate: ${toDate}, languages: ${languages}, creationDateCsvFilePath: ${creationDateCsvFilePath}, excludeRepoPaths: ${excludeRepoPaths}`)
     writeClocDiffBetweenDatesForRepos$(
@@ -16,6 +16,7 @@ export function launchDiffBetweenDatesMultiRepos() {
         new Date(toDate),
         outDir,
         options,
+        markForKeywordsInstruction
     ).subscribe()
 }
 
@@ -81,6 +82,16 @@ function readParams() {
     const languages = _options.languages || params?.languages || [];
     const creationDateCsvFilePath = _options.creationDateCsvFilePath || params?.creationDateCsvFilePath || '';
     const excludeRepoPaths = _options.excludeRepoPaths || params?.excludeRepoPaths || [];
+    const markForKeywordsInstruction = params?.markForKeywordsInstruction || [];
 
-    return new ClocDiffBetweenDatesParams(folderPath, outDir, fromDate.toISOString(), toDate.toISOString(), languages, creationDateCsvFilePath, excludeRepoPaths);
+    return new ClocDiffBetweenDatesParams(
+        folderPath, 
+        outDir, 
+        fromDate.toISOString(), 
+        toDate.toISOString(), 
+        languages, 
+        creationDateCsvFilePath, 
+        excludeRepoPaths,
+        markForKeywordsInstruction
+    );
 }

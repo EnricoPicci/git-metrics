@@ -20,6 +20,7 @@ const cloc_at_date_commit_1 = require("./cloc-at-date-commit");
 const execute_command_1 = require("../tools/execute-command/execute-command");
 const cloc_diff_byfile_model_1 = require("../cloc-functions/cloc-diff-byfile.model");
 const derived_fields_1 = require("./derived-fields");
+const mark_csv_1 = require("../filters-markers/mark-csv");
 /**
  * This function calculates the difference in lines of code (cloc) between two dates for each file in a Git repository
  * and returns an Observable that emits the cloc difference.
@@ -207,7 +208,7 @@ function writeClocDiffBetweenDatesForRepos$(folderPath, fromDate = new Date(0), 
     excludeRepoPaths: [],
     notMatch: [],
     filePrefix: 'cloc-diff-between-dates',
-}) {
+}, markForKeywordsInstruction = []) {
     var _a, _b;
     const folderName = path_1.default.basename(folderPath);
     // timestamp in format YYYYMMDD-hhmmss.mmm to append to the file name
@@ -218,7 +219,10 @@ function writeClocDiffBetweenDatesForRepos$(folderPath, fromDate = new Date(0), 
     options.cmdExecutedLog = (_b = options.cmdExecutedLog) !== null && _b !== void 0 ? _b : [];
     let noCommitsFound = true;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)), (0, rxjs_1.tap)((clocDiff) => {
+        console.log(`\n====>>>> clocDiff: ${JSON.stringify(clocDiff)}`);
+        (0, mark_csv_1.markRecordWithInstructions)(markForKeywordsInstruction, clocDiff);
+    }), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         noCommitsFound = false;
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.last)(), (0, rxjs_1.catchError)((err) => {

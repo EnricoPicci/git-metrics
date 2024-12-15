@@ -1,10 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeAfterAddingMarkFieldsForKeywords$ = exports.writeAfterMarkingFilesWithKeywords$ = exports.markFilesWithKeywords$ = exports.markCsv$ = void 0;
+exports.writeAfterAddingMarkFieldsForKeywords$ = exports.writeAfterMarkingFilesWithKeywords$ = exports.markFilesWithKeywords$ = exports.markFileCsv$ = exports.markRecordWithInstructions = void 0;
 const csv_tools_1 = require("@enrico.piccinin/csv-tools");
 const observable_fs_1 = require("observable-fs");
 const rxjs_1 = require("rxjs");
-function markCsv$(csvFilePath, markValueFunction, markFieldName) {
+function markRecordWithInstructions(instructions, record) {
+    for (const instruction of instructions) {
+        if (!record[instruction.searchFieldName]) {
+            throw new Error(`Field ${instruction.searchFieldName} not found in record ${JSON.stringify(record)}`);
+        }
+        const shouldMark = instruction.keywords.some(keyword => record[instruction.searchFieldName].includes(keyword));
+        const markValue = shouldMark ? 'true' : 'false';
+        record[instruction.markFieldName] = markValue;
+    }
+}
+exports.markRecordWithInstructions = markRecordWithInstructions;
+function markFileCsv$(csvFilePath, markValueFunction, markFieldName) {
     let counterForConsole = 0;
     return (0, observable_fs_1.readLineObs)(csvFilePath).pipe((0, csv_tools_1.fromCsvObs)(), (0, rxjs_1.map)(rec => {
         // every 1000 records, log the progress
@@ -16,7 +27,7 @@ function markCsv$(csvFilePath, markValueFunction, markFieldName) {
         return Object.assign(Object.assign({}, rec), { [markFieldName]: markValue });
     }));
 }
-exports.markCsv$ = markCsv$;
+exports.markFileCsv$ = markFileCsv$;
 function markFilesWithKeywords$(csvFilePath, searchFieldName, markFieldName, keywords, counter) {
     const markValueFunction = (csvRec) => {
         if (!csvRec[searchFieldName]) {
@@ -29,7 +40,7 @@ function markFilesWithKeywords$(csvFilePath, searchFieldName, markFieldName, key
         const markValue = shouldMark ? 'true' : 'false';
         return markValue;
     };
-    return markCsv$(csvFilePath, markValueFunction, markFieldName);
+    return markFileCsv$(csvFilePath, markValueFunction, markFieldName);
 }
 exports.markFilesWithKeywords$ = markFilesWithKeywords$;
 function writeAfterMarkingFilesWithKeywords$(csvFilePath, searchFieldName, markFieldName, keywords) {
