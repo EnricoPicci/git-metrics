@@ -338,7 +338,6 @@ export function writeClocDiffBetweenDatesForRepos$(
     return deleteFile$(outFilePath).pipe(
         concatMap(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)),
         tap((clocDiff) => {
-            console.log(`\n====>>>> clocDiff: ${JSON.stringify(clocDiff)}`);
             markRecordWithInstructions(markForKeywordsInstruction, clocDiff)
         }),
         toCsvObs(),
