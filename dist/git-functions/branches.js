@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readBranchesGraphCommand = exports.lastBranch$ = exports.localAndNonLocalBranches$ = exports.defaultBranchName$ = exports.readBranchesGraph = void 0;
+exports.readBranchesGraphCommand = exports.lastBranch$ = exports.localAndNonLocalBranches$ = exports.currentBranchName$ = exports.defaultBranchName$ = exports.readBranchesGraph = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -66,6 +66,14 @@ function defaultBranchName$(repoPath, options = {}) {
     }));
 }
 exports.defaultBranchName$ = defaultBranchName$;
+function currentBranchName$(repoPath, options = {}) {
+    // build the command to fetch the current branch name
+    const gitCommand = `cd ${repoPath} && git branch --show-current`;
+    return (0, execute_command_1.executeCommandObs$)(`fetch current branch name for ${repoPath}`, gitCommand, options).pipe((0, rxjs_1.map)((output) => {
+        return output.trim();
+    }));
+}
+exports.currentBranchName$ = currentBranchName$;
 // localAndNonLocalBranches$ is a function that returns an Observable that emits each branch of a Git repository
 // considering also the non local branches
 function localAndNonLocalBranches$(repoPath, descending = true, options = {}) {

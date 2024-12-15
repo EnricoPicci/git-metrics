@@ -71,4 +71,16 @@ describe(`lastBranch$`, () => {
         });
     });
 });
+describe(`currentBranchName$`, () => {
+    it(`read current branch name for this repo`, (done) => {
+        const thisRepoPath = './';
+        (0, branches_1.currentBranchName$)(thisRepoPath).subscribe({
+            next: (branchName) => {
+                (0, chai_1.expect)(branchName).equal('main');
+            },
+            error: (err) => done(err),
+            complete: () => done(),
+        });
+    });
+});
 //# sourceMappingURL=branches.spec.js.map

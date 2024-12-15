@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const repo_1 = require("./repo");
+const branches_1 = require("./branches");
+const rxjs_1 = require("rxjs");
 describe('reposCompactInFolderObs', () => {
     it('should return notify a stream of values since the difference between the commits is performed on this repo', (done) => {
         const repoPath = './';
@@ -61,6 +63,28 @@ describe('getRemoteOriginUrl', () => {
             complete: () => {
                 done('should not complete');
             }
+        });
+    });
+});
+describe('checkoutRepoAtBranch$', () => {
+    it('should checkout the current branch - the test tests simply that the function does not error', (done) => {
+        const repoPath = './';
+        let currentBranchName;
+        (0, branches_1.currentBranchName$)(repoPath).pipe((0, rxjs_1.concatMap)((branchName) => {
+            currentBranchName = branchName;
+            return (0, repo_1.checkoutRepoAtBranch$)(repoPath, branchName);
+        }), (0, rxjs_1.concatMap)(() => {
+            return (0, branches_1.currentBranchName$)(repoPath);
+        })).subscribe({
+            next: (branchName) => {
+                // test simply that the branch name is the same as the current branch name calculated before
+                // test that the function does not throw an error
+                (0, chai_1.expect)(branchName).equal(currentBranchName);
+                done();
+            },
+            error: (err) => {
+                done(err);
+            },
         });
     });
 });

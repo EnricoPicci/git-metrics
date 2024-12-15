@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetHard$ = exports.resetHardRepo$ = exports.resetHardAllRepos$ = exports.repoPathAndFromDates$ = exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtLastBranch$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
+exports.resetHard$ = exports.resetHardRepo$ = exports.resetHardAllRepos$ = exports.repoPathAndFromDates$ = exports.getRemoteOriginUrl$ = exports.gitHttpsUrlFromGitUrl = exports.repoCompact$ = exports.reposCompactInFolder$ = exports.checkoutAllReposAtDate$ = exports.checkoutRepoAtLastBranch$ = exports.checkoutRepoAtBranch$ = exports.checkoutRepoAtCommit$ = exports.checkoutRepoAtDate$ = exports.fetchAllRepos$ = exports.fetchRepo$ = exports.pullAllRepos$ = exports.pullRepo$ = exports.cloneRepo$ = void 0;
 const path_1 = __importDefault(require("path"));
 const rxjs_1 = require("rxjs");
 const execute_command_1 = require("../tools/execute-command/execute-command");
@@ -217,6 +217,20 @@ function checkoutRepoAtCommit$(repoPath, sha, options = {}) {
     }));
 }
 exports.checkoutRepoAtCommit$ = checkoutRepoAtCommit$;
+function checkoutRepoAtBranch$(repoPath, branchName, options = {}) {
+    if (!repoPath)
+        throw new Error(`Path is mandatory`);
+    return (0, commit_1.checkout$)(repoPath, branchName, options).pipe((0, rxjs_1.catchError)((err) => {
+        if (err instanceof git_errors_1.GitError) {
+            console.error(`!!!!!!!!!!!!!!! Error: while checking out repo "${repoPath}" `);
+            console.error(err.message);
+            const _error = new git_errors_1.CheckoutError(err.message, repoPath, err.command, branchName);
+            throw _error;
+        }
+        throw err;
+    }));
+}
+exports.checkoutRepoAtBranch$ = checkoutRepoAtBranch$;
 function checkoutRepoAtLastBranch$(repoPath, options = {}) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
