@@ -6,8 +6,8 @@ const chai_1 = require("chai");
 describe(`clocDiffWithAllCommits$`, () => {
     it(`calculates the differences between all commits in a certain timeframe for this repo`, (done) => {
         const pathToRepo = './';
-        const fromDate = new Date('2023-10-11');
-        const toDate = new Date('2023-10-12');
+        const fromDate = new Date('2023-10-12');
+        const toDate = new Date('2023-10-13');
         (0, cloc_diff_commit_1.clocDiffWithAllCommits$)(pathToRepo, fromDate, toDate)
             .pipe((0, rxjs_1.toArray)(), (0, rxjs_1.tap)({
             next: (arrayOfClocDiffCommitEnriched) => {

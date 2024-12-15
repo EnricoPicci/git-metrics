@@ -1,6 +1,6 @@
 {
     "name": "git-metrics",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "description": "tools to calculate some metrics out of git repos",
     "main": "index.js",
     "bin": {
