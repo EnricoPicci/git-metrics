@@ -34,7 +34,7 @@ const repo_path_1 = require("./repo-path");
  * @returns An Observable of CommitCompact objects representing the commits within the specified date range.
  * @throws An error if `repoPath` is not provided.
  */
-function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, branchName = '', _options) {
+function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, branchName = '', _options = {}) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const _noMerges = noMerges ? '--no-merges' : '';
@@ -48,7 +48,7 @@ function readCommitCompact$(repoPath, fromDate = new Date(0), toDate = new Date(
         args.push('--no-merges');
     const _branchName = branchName ? branchName : '--all';
     args.push(_branchName);
-    return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', args, { cwd: repoPath }, _options).pipe((0, rxjs_1.map)((commits) => {
+    return (0, execute_command_1.executeCommandNewProcessToLinesObs)(`Read commits`, 'git', args, _options, { cwd: repoPath }).pipe((0, rxjs_1.map)((commits) => {
         return commits.split('\n');
     }), (0, rxjs_1.concatMap)((commits) => {
         return (0, rxjs_1.from)(commits);
@@ -71,7 +71,7 @@ exports.readCommitCompact$ = readCommitCompact$;
  * @param noMerges A boolean indicating whether to exclude merge commits. Defaults to true.
  * @returns An Observable of CommitCompactWithUrlAndParentDate objects.
  */
-function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, branchName = '', options) {
+function readCommitCompactWithUrlAndParentDate$(repoPath, fromDate = new Date(0), toDate = new Date(Date.now()), noMerges = true, branchName = '', options = {}) {
     return readCommitCompact$(repoPath, fromDate, toDate, noMerges, branchName, options).pipe((0, rxjs_1.concatMap)((commit) => {
         return (0, commit_url_1.getGitlabCommitUrl$)(repoPath, commit.sha, options).pipe((0, rxjs_1.map)((commitUrl) => {
             return { commit, commitUrl };
@@ -158,7 +158,7 @@ function readCommitWithFileNumstat$(params, outFile = '') {
     // _readCommitsData$ is a stream of lines which represent the result of the git log command (i.e. data about the commits)
     // it is shared since it is the upstream for two streams which are merged at the end of the function
     // if we do not share it, then the git log command is executed twice
-    const _readCommitsData$ = (0, execute_command_1.executeCommandNewProcessToLinesObs)('readCommits', 'git', args).pipe((0, rxjs_1.share)());
+    const _readCommitsData$ = (0, execute_command_1.executeCommandNewProcessToLinesObs)('readCommits', 'git', args, {}).pipe((0, rxjs_1.share)());
     // _readCommitWithFileNumstat$ is a stream that derives from the upstream of lines notified by _readCommitsData$
     // and transform it into a stream of CommitWithFileNumstat objects
     const _readCommitWithFileNumstat$ = _readCommitsData$.pipe(toCommitsWithFileNumstatdata());
@@ -183,9 +183,9 @@ exports.readCommitWithFileNumstat$ = readCommitWithFileNumstat$;
  * @param params An object containing the parameters to pass to the `writeCommitLogCommand` function.
  * @returns An Observable that emits the name of the file where the output is saved.
  */
-function writeCommitWithFileNumstat$(params) {
+function writeCommitWithFileNumstat$(params, options = {}) {
     const [cmd, out] = writeCommitWithFileNumstatCommand(params);
-    return (0, execute_command_1.executeCommandObs$)('write commit enriched log', cmd).pipe((0, rxjs_1.tap)({
+    return (0, execute_command_1.executeCommandObs$)('write commit enriched log', cmd, options).pipe((0, rxjs_1.tap)({
         complete: () => {
             console.log(`====>>>> Commits read from repo in folder ${params.repoFolderPath ? params.repoFolderPath : path_1.default.parse(process.cwd()).name}`);
             console.log(`====>>>> Output saved on file ${out}`);
@@ -218,7 +218,7 @@ exports.newEmptyCommitCompact = newEmptyCommitCompact;
  * @param branchName The branch to fetch the commit SHA from.
  * @returns An Observable that emits the commit SHA for the repository at the specified date..
  */
-function commitAtDateOrBefore$(repoPath, date, branchName, options) {
+function commitAtDateOrBefore$(repoPath, date, branchName, options = {}) {
     // convert date to YYYY-MM-DD format
     const dateString = (0, date_functions_1.toYYYYMMDD)(date);
     const gitCommand = `cd ${repoPath} && git log -n 1 --before="${dateString}-23:59:59" --format=%H%ci ${branchName}`;
@@ -253,7 +253,7 @@ exports.commitAtDateOrBefore$ = commitAtDateOrBefore$;
  * @param {string} branchName - The name of the branch for which to fetch the commit SHA.
  * @returns {Observable} An Observable that emits the commit SHA and the date of the commit at or after the specified date.
  */
-function commitAtDateOrAfter$(repoPath, date, branchName) {
+function commitAtDateOrAfter$(repoPath, date, branchName, options = {}) {
     // convert date to YYYY-MM-DD format
     const dateString = (0, date_functions_1.toYYYYMMDD)(date);
     // to find the first commit after a certain date we have to get the commits in reverse order and then take the first one
@@ -262,7 +262,7 @@ function commitAtDateOrAfter$(repoPath, date, branchName) {
     // the result that we get the last commit and not the first commit after the date
     // https://stackoverflow.com/a/5188990/5699993
     const gitCommand = `cd ${repoPath} && git log --reverse --after="${dateString}-00:00:00" --format=%H%ci ${branchName}`;
-    return (0, execute_command_1.executeCommandObs$)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand).pipe((0, rxjs_1.map)(commitSha => {
+    return (0, execute_command_1.executeCommandObs$)(`read the commit sha at date ${dateString} for branch ${branchName}`, gitCommand, options).pipe((0, rxjs_1.map)(commitSha => {
         return commitSha.trim();
     }), (0, rxjs_1.tap)((commitsInfo) => {
         if (!commitsInfo) {
@@ -292,9 +292,9 @@ exports.commitAtDateOrAfter$ = commitAtDateOrAfter$;
  * @param {boolean} beforeWhenEqual - A flag indicating whether to fetch the commit before the date when the distances to the date are equal.
  * @returns {Observable} An Observable that emits the commit SHA and the date of the commit closest to the specified date.
  */
-function commitClosestToDate$(repoPath, date, branchName, beforeWhenEqual = true) {
-    const commitBeforeDate$ = commitAtDateOrBefore$(repoPath, date, branchName);
-    const commitAfterDate$ = commitAtDateOrAfter$(repoPath, date, branchName);
+function commitClosestToDate$(repoPath, date, branchName, beforeWhenEqual = true, options = {}) {
+    const commitBeforeDate$ = commitAtDateOrBefore$(repoPath, date, branchName, options);
+    const commitAfterDate$ = commitAtDateOrAfter$(repoPath, date, branchName, options);
     return (0, rxjs_1.forkJoin)([commitBeforeDate$, commitAfterDate$]).pipe((0, rxjs_1.map)(([[beforeSha, beforeDate], [afterSha, afterDate]]) => {
         // calculate the distance between the date and the dates of the commits
         const beforeDateDistance = Math.abs(new Date(beforeDate).getTime() - date.getTime());
@@ -329,7 +329,7 @@ const splitShaDate = (commitInfoString) => {
  * @returns An Observable that emits when the operation is complete.
  * @throws An error if the checkout operation fails.
  */
-function checkout$(repoPath, commitSha, executeCommandOptions) {
+function checkout$(repoPath, commitSha, options = {}) {
     const defaultStdErrorHandler = (stderr) => {
         console.log(`Message on stadard error:\n${stderr}`);
         let retVal = null;
@@ -341,9 +341,8 @@ function checkout$(repoPath, commitSha, executeCommandOptions) {
     };
     const repoName = path_1.default.basename(repoPath);
     const gitCommand = `cd ${repoPath} && git checkout ${commitSha}`;
-    executeCommandOptions = executeCommandOptions || {};
-    executeCommandOptions.stdErrorHandler = executeCommandOptions.stdErrorHandler || defaultStdErrorHandler;
-    return (0, execute_command_1.executeCommandObs$)(`checkout ${repoName} at commit ${commitSha}`, gitCommand, executeCommandOptions);
+    options.stdErrorHandler = options.stdErrorHandler || defaultStdErrorHandler;
+    return (0, execute_command_1.executeCommandObs$)(`checkout ${repoName} at commit ${commitSha}`, gitCommand, options);
 }
 exports.checkout$ = checkout$;
 /**
@@ -356,8 +355,8 @@ exports.checkout$ = checkout$;
  * contains the creation date - we probably have read the creation date from that server).
  * @returns An Observable that emits each commit in the repositories within the date range.
  */
-function allCommits$(repoPaths, fromDate = new Date(0), toDate = new Date(Date.now()), creationDateCsvFilePath) {
-    return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
+function allCommits$(repoPaths, fromDate = new Date(0), toDate = new Date(Date.now()), creationDateCsvFilePath, options = {}) {
+    return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null, options).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
         return readCommitCompact$(repoPath, _fromDate, toDate, true).pipe((0, rxjs_1.catchError)(err => {
             console.error(`Error: "allCommits" while reading commits from repo "${repoPath}"`);
             console.error(`error message ${err.message}`);
@@ -390,7 +389,7 @@ exports.countCommits$ = countCommits$;
  * @param options - Optional parameters for the executeCommandObs function.
  * @returns An Observable stream of commit objects. Each commit object includes the commit data and an array of files that were changed in that commit.
  */
-function diffBetweenCommits$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', options) {
+function diffBetweenCommits$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', options = {}) {
     const command = `cd ${repoFolderPath} && git log --pretty=format:${exports.SEP}%h${exports.SEP}%ad${exports.SEP}%aN${exports.SEP}%cN${exports.SEP}%cd${exports.SEP}%f${exports.SEP}%p` +
         ` --numstat --date=short ${leastRecentCommit}...${mostRecentCommit}`;
     const diffCmd$ = (0, execute_command_1.executeCommandObs$)(`diff between ${mostRecentCommit} and ${leastRecentCommit}`, command, options).pipe((0, rxjs_1.catchError)(err => {

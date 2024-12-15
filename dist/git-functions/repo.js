@@ -23,14 +23,14 @@ const repo_creation_date_1 = require("./repo-creation-date");
  * @returns An Observable that emits the path of the cloned repository.
  * @throws An error if the URL or repoPath parameters are not provided.
  */
-function cloneRepo$(url, repoPath) {
+function cloneRepo$(url, repoPath, options = {}) {
     if (!url)
         throw new Error(`url is mandatory`);
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const repoName = path_1.default.basename(repoPath);
     const command = `git clone ${url} ${repoPath.replaceAll(' ', '_')}`;
-    return (0, execute_command_1.executeCommandObs$)(`Clone ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} cloned`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+    return (0, execute_command_1.executeCommandObs$)(`Clone ${repoName}`, command, options).pipe((0, rxjs_1.tap)(() => `${repoName} cloned`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
         console.error(`!!!!!!!!!!!!!!! Error: while cloning repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
         return rxjs_1.EMPTY;
@@ -44,7 +44,7 @@ exports.cloneRepo$ = cloneRepo$;
  * @returns An Observable that emits the path of the pulled repository once the pull is completed.
  * @throws An error if the repoPath parameter is not provided.
  */
-function pullRepo$(repoPath, options) {
+function pullRepo$(repoPath, options = {}) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const repoName = path_1.default.basename(repoPath);
@@ -73,7 +73,7 @@ exports.pullRepo$ = pullRepo$;
  * @param excludeRepoPaths An array of repository names to exclude. Wildcards can be used. Defaults to an empty array.
  * @returns An Observable that emits the paths of the pulled repositories.
  */
-function pullAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
+function pullAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = [], options = {}) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     console.log(`Repos to be pulled: ${repoPaths.length}`);
     let counter = 0;
@@ -82,7 +82,7 @@ function pullAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
         console.log(`Repo to be pulled: ${repoPath}`);
     });
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
-        return pullRepo$(repoPath);
+        return pullRepo$(repoPath, options);
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
             if (val instanceof git_errors_1.PullError) {
@@ -120,12 +120,12 @@ exports.pullAllRepos$ = pullAllRepos$;
  * @returns An Observable that emits the path of the fetched repository once the fetch is completed.
  * @throws An error if the repoPath parameter is not provided.
  */
-function fetchRepo$(repoPath) {
+function fetchRepo$(repoPath, options = {}) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     const repoName = path_1.default.basename(repoPath);
     const command = `cd ${repoPath} && git fetch --all`;
-    return (0, execute_command_1.executeCommandObs$)(`Fetch ${repoName}`, command).pipe((0, rxjs_1.tap)(() => `${repoName} fetched`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
+    return (0, execute_command_1.executeCommandObs$)(`Fetch ${repoName}`, command, options).pipe((0, rxjs_1.tap)(() => `${repoName} fetched`), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(repoPath), (0, rxjs_1.catchError)((err) => {
         console.error(`!!!!!!!!!!!!!!! Error: while fetching repo "${repoName}" - error code: ${err.code}`);
         console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
         console.error(`!!!!!!!!!!!!!!! Command erroring: "${command}"`);
@@ -141,7 +141,7 @@ exports.fetchRepo$ = fetchRepo$;
  * @param excludeRepoPaths An array of repository names to exclude. Wildcards can be used. Defaults to an empty array.
  * @returns An Observable that emits the paths of the fetched repositories.
  */
-function fetchAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
+function fetchAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = [], options = {}) {
     const repoPaths = (0, repo_path_1.gitRepoPaths)(folderPath, excludeRepoPaths);
     console.log(`Repos to be fetched: ${repoPaths.length}`);
     let counter = 0;
@@ -150,7 +150,7 @@ function fetchAllRepos$(folderPath, concurrency = 1, excludeRepoPaths = []) {
         console.log(`Repo to be fetched: ${repoPath}`);
     });
     return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.mergeMap)((repoPath) => {
-        return fetchRepo$(repoPath);
+        return fetchRepo$(repoPath, options);
     }, concurrency), (0, rxjs_1.tap)({
         next: (val) => {
             if (val instanceof git_errors_1.FetchError) {
@@ -177,7 +177,7 @@ exports.fetchAllRepos$ = fetchAllRepos$;
  * @param date The date to check out the repository at.
  * @returns An Observable that emits the path to the repository or a CheckoutError if an error occurs during the checkout process.
  */
-function checkoutRepoAtDate$(repoPath, date, options) {
+function checkoutRepoAtDate$(repoPath, date, options = {}) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => (0, commit_1.commitAtDateOrBefore$)(repoPath, date, branch, options)), (0, rxjs_1.concatMap)(([sha, commitDate]) => {
@@ -203,7 +203,7 @@ function checkoutRepoAtDate$(repoPath, date, options) {
     }));
 }
 exports.checkoutRepoAtDate$ = checkoutRepoAtDate$;
-function checkoutRepoAtCommit$(repoPath, sha, options) {
+function checkoutRepoAtCommit$(repoPath, sha, options = {}) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     return (0, commit_1.checkout$)(repoPath, sha, options).pipe((0, rxjs_1.catchError)((err) => {
@@ -217,7 +217,7 @@ function checkoutRepoAtCommit$(repoPath, sha, options) {
     }));
 }
 exports.checkoutRepoAtCommit$ = checkoutRepoAtCommit$;
-function checkoutRepoAtLastBranch$(repoPath, options) {
+function checkoutRepoAtLastBranch$(repoPath, options = {}) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     return (0, branches_1.lastBranch$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => {
@@ -361,7 +361,7 @@ exports.gitHttpsUrlFromGitUrl = gitHttpsUrlFromGitUrl;
  * @param repoPath The path to the Git repository folder.
  * @returns An Observable that emits the remote origin url of the Git repository.
  */
-function getRemoteOriginUrl$(repoPath, options) {
+function getRemoteOriginUrl$(repoPath, options = {}) {
     const cmd = `cd ${repoPath} && git config --get remote.origin.url`;
     return (0, execute_command_1.executeCommandObs$)('run git  config --get remote.origin.url', cmd, options).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n')[0];
@@ -381,11 +381,11 @@ exports.getRemoteOriginUrl$ = getRemoteOriginUrl$;
  * @returns An Observable that emits objects of the form { repoPath: string, _fromDate: Date }.
  *          Each emitted object represents a repository and the start date for fetching commits.
  */
-function repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath) {
+function repoPathAndFromDates$(repoPaths, fromDate, creationDateCsvFilePath, options = {}) {
     const _repoCreationDateDict$ = creationDateCsvFilePath ?
         (0, repo_creation_date_1.repoCreationDateDict$)(creationDateCsvFilePath) : (0, rxjs_1.of)({});
     return _repoCreationDateDict$.pipe((0, rxjs_1.concatMap)((dict) => {
-        return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => getRemoteOriginUrl$(repoPath).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
+        return (0, rxjs_1.from)(repoPaths).pipe((0, rxjs_1.concatMap)((repoPath) => getRemoteOriginUrl$(repoPath, options).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
             return { repoPath, remoteOriginUrl };
         }))), (0, rxjs_1.map)(({ repoPath, remoteOriginUrl }) => {
             const repoCreationDate = dict[remoteOriginUrl];
@@ -429,7 +429,7 @@ function resetHardAllRepos$(folderPath, options) {
     }));
 }
 exports.resetHardAllRepos$ = resetHardAllRepos$;
-function resetHardRepo$(repoPath, options) {
+function resetHardRepo$(repoPath, options = {}) {
     if (!repoPath)
         throw new Error(`Path is mandatory`);
     return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.concatMap)(branch => {
@@ -439,7 +439,7 @@ function resetHardRepo$(repoPath, options) {
     }));
 }
 exports.resetHardRepo$ = resetHardRepo$;
-function resetHard$(repoPath, branchName, options) {
+function resetHard$(repoPath, branchName, options = {}) {
     const gitCommand = `cd ${repoPath} && git reset --hard origin/${branchName}`;
     return (0, execute_command_1.executeCommandObs$)(`reset --hard in ${repoPath}`, gitCommand, options);
 }

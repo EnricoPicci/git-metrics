@@ -8,14 +8,14 @@ describe('buildClocDiffAllCommand', () => {
         const mostRecentCommit = 'abc123';
         const leastRecentCommit = 'def456';
         const languages = ['JavaScript', 'TypeScript'];
-        const expectedCommand = `cd ${folderPath} && cloc --git-diff-rel --json --timeout=10 --include-lang=JavaScript,TypeScript ${leastRecentCommit} ${mostRecentCommit}`;
+        const expectedCommand = `cd ${folderPath} && cloc --git-diff-rel --json --timeout=10 --ignore-whitespace --include-lang=JavaScript,TypeScript ${leastRecentCommit} ${mostRecentCommit}`;
         const command = (0, cloc_diff_1.buildClocDiffRelCommand)(mostRecentCommit, leastRecentCommit, languages, folderPath);
         (0, chai_1.expect)(command).equal(expectedCommand);
     });
     it('should return a command string with default folder path and language filters if not provided', () => {
         const mostRecentCommit = 'abc123';
         const leastRecentCommit = 'def456';
-        const expectedCommand = `cd ./ && cloc --git-diff-rel --json --timeout=10 --include-lang=JavaScript ${leastRecentCommit} ${mostRecentCommit}`;
+        const expectedCommand = `cd ./ && cloc --git-diff-rel --json --timeout=10 --ignore-whitespace --include-lang=JavaScript ${leastRecentCommit} ${mostRecentCommit}`;
         const command = (0, cloc_diff_1.buildClocDiffRelCommand)(mostRecentCommit, leastRecentCommit, ['JavaScript']);
         (0, chai_1.expect)(command).equal(expectedCommand);
     });

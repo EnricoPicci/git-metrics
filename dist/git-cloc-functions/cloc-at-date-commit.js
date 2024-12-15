@@ -64,7 +64,7 @@ function clocAtCommitByFile$(repoPath, sha, options) {
             notMatch: options === null || options === void 0 ? void 0 : options.notMatch,
             languages: options === null || options === void 0 ? void 0 : options.languages,
         };
-        return (0, cloc_1.clocByfile$)(params, 'clocByFileForRepos$ running on ' + repoPath, false);
+        return (0, cloc_1.clocByfile$)(params, 'clocByFileForRepos$ running on ' + repoPath, false, options);
     }));
 }
 exports.clocAtCommitByFile$ = clocAtCommitByFile$;

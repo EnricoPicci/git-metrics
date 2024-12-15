@@ -105,7 +105,7 @@ function writeCmdLogs$(options, outDir) {
     }));
 }
 exports.writeCmdLogs$ = writeCmdLogs$;
-function executeCommandNewProcessObs(action, command, args, options, _options) {
+function executeCommandNewProcessObs(action, command, args, _options, options) {
     return new rxjs_1.Observable((subscriber) => {
         console.log(`====>>>> Action: ${action} -- Executing command in new process`);
         console.log(`====>>>> Command: ${command}`);
@@ -138,8 +138,8 @@ function executeCommandNewProcessObs(action, command, args, options, _options) {
 }
 exports.executeCommandNewProcessObs = executeCommandNewProcessObs;
 // executes a command in a separate process and returns an Observable which is the stream of lines output of the command execution
-function executeCommandNewProcessToLinesObs(action, command, args, options, _options) {
-    return executeCommandNewProcessObs(action, command, args, options, _options).pipe(bufferToLines());
+function executeCommandNewProcessToLinesObs(action, command, args, _options, options) {
+    return executeCommandNewProcessObs(action, command, args, _options, options).pipe(bufferToLines());
 }
 exports.executeCommandNewProcessToLinesObs = executeCommandNewProcessToLinesObs;
 // custom operator that converts a buffer to lines, i.e. splits on \n to emit each line
@@ -172,9 +172,9 @@ function bufferToLines() {
         });
     };
 }
-function executeCommandInShellNewProcessObs(action, command, options, _options) {
+function executeCommandInShellNewProcessObs(action, command, _options, options) {
     const _opt = Object.assign(Object.assign({}, options), { shell: true });
-    return executeCommandNewProcessObs(action, command, [], _opt, _options);
+    return executeCommandNewProcessObs(action, command, [], _options, _opt);
 }
 exports.executeCommandInShellNewProcessObs = executeCommandInShellNewProcessObs;
 //# sourceMappingURL=execute-command.js.map

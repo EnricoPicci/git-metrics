@@ -36,7 +36,7 @@ describe('readOneCommitCompact$', () => {
     it('should throw an error if an not existing sha is provided', (done) => {
         const notExistingCommitSha = 'abc';
         const repoPath = './';
-        (0, commit_1.readOneCommitCompact$)(notExistingCommitSha, repoPath, undefined, false).subscribe({
+        (0, commit_1.readOneCommitCompact$)(notExistingCommitSha, repoPath, {}, false).subscribe({
             next: () => {
                 done('should not return a value');
             },
@@ -52,7 +52,7 @@ describe('readOneCommitCompact$', () => {
     it('should notify the first commit object of this repo', (done) => {
         const firstCommitOfThisRepo = '8767d5864e7d72df0f25915fe8e0652244eee5fa';
         const repoPath = './';
-        (0, commit_1.readOneCommitCompact$)(firstCommitOfThisRepo, repoPath, undefined, false).subscribe({
+        (0, commit_1.readOneCommitCompact$)(firstCommitOfThisRepo, repoPath, {}, false).subscribe({
             next: (commitCompact) => {
                 (0, chai_1.expect)(commitCompact.sha).equal(firstCommitOfThisRepo);
                 done();
@@ -425,12 +425,11 @@ describe('commitAtDateOrAfter$', () => {
     it(`test the case when there is a commit at the date specified`, (done) => {
         const repoPath = './';
         const branch = 'main';
-        const date = new Date('2021-12-11');
+        const date = new Date('2024-11-18');
         (0, commit_1.commitAtDateOrAfter$)(repoPath, date, branch).subscribe(([sha, commitDate]) => {
-            // sometimes sha is 274b760e7a5e871dfd13993bdb08b936b6314299 sometime is 9369eb39af383a2894362d0008b7380d8cf454dd
-            // both commits are at the same date
-            (0, chai_1.expect)(sha).equals('9369eb39af383a2894362d0008b7380d8cf454dd');
-            (0, chai_1.expect)(commitDate).equal('2021-12-13 18:18:05 +0100');
+            // At this date there is only one commit
+            (0, chai_1.expect)(sha).equals('b740c14ce8e17a883c458667f10c4136f42ab963');
+            (0, chai_1.expect)(commitDate).equal("2024-11-18 10:52:28 +0100");
             done();
         });
     });
@@ -464,12 +463,11 @@ describe('commitClosestToDate$', () => {
     it(`test the case when there is a commit at the date specified`, (done) => {
         const repoPath = './';
         const branch = 'main';
-        const date = new Date('2021-12-11');
+        const date = new Date('2024-11-18');
         (0, commit_1.commitClosestToDate$)(repoPath, date, branch).subscribe(([sha, commitDate]) => {
-            // sometimes sha is 274b760e7a5e871dfd13993bdb08b936b6314299 sometime is 189adaa55ccb905a7b2f01797457d3caa16a5630
-            // both commits are at the same date
-            (0, chai_1.expect)(sha === '274b760e7a5e871dfd13993bdb08b936b6314299' || sha === '189adaa55ccb905a7b2f01797457d3caa16a5630').true;
-            (0, chai_1.expect)(commitDate === '2021-12-11 12:01:52 +0100' || commitDate === '2021-12-11 11:04:28 +0100').true;
+            // At this date there is only one commit
+            (0, chai_1.expect)(sha).equals('b740c14ce8e17a883c458667f10c4136f42ab963');
+            (0, chai_1.expect)(commitDate).equal("2024-11-18 10:52:28 +0100");
             done();
         });
     });
@@ -547,7 +545,7 @@ describe('countCommits$', () => {
         });
     });
 });
-describe.only(`diffBetweenCommits$`, () => {
+describe(`diffBetweenCommits$`, () => {
     it(`returns diffs between 2 commits`, (done) => {
         const mostRecentCommit = 'v3.1.1';
         const leastRecentCommit = 'v2.1.1';

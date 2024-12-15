@@ -28,7 +28,7 @@ function clocDiffRelByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath 
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
-}, notMatchDirectories = [], options) {
+}, notMatchDirectories = [], options = {}) {
     return executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories, options).pipe((0, rxjs_1.tap)({
         next: (lines) => {
             // log progress
@@ -80,7 +80,7 @@ function clocDiffRelByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath 
     // At the same time, marking the diffs which are copies improves the accuracy of the code turnover calculation because
     // we may decide to filter such diffs when we run the analysis
     (0, rxjs_1.concatMap)(arrayOfClocDiffByfile => {
-        return (0, diff_file_1.copyRenamesDict$)(mostRecentCommit, leastRecentCommit, repoFolderPath).pipe((0, rxjs_1.map)(copyRenameDict => {
+        return (0, diff_file_1.copyRenamesDict$)(mostRecentCommit, leastRecentCommit, repoFolderPath, 50, options).pipe((0, rxjs_1.map)(copyRenameDict => {
             const addDataWithCopyInfo = arrayOfClocDiffByfile.map((diff) => {
                 const diffWithIsCopy = Object.assign(Object.assign({}, diff), { isCopy: false });
                 if (copyRenameDict[diff.file]) {
@@ -121,7 +121,7 @@ function clocDiffAllByfile$(mostRecentCommit, leastRecentCommit, repoFolderPath 
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
-}, notMatchDirectories = [], options) {
+}, notMatchDirectories = [], options = {}) {
     return executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages, notMatchDirectories, options).pipe((0, rxjs_1.tap)({
         next: (lines) => {
             // log progress
@@ -208,7 +208,7 @@ exports.clocDiffAllByfile$ = clocDiffAllByfile$;
  * @param languages An array of languages for which to calculate the cloc diff. Defaults to an empty array.
  * @returns An Observable stream of objects of type ClocDiffByfileWithCommitDiffs.
  */
-function clocDiffRelByfileWithCommitData$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], notMatchDirectories = [], options, progress = {
+function clocDiffRelByfileWithCommitData$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], notMatchDirectories = [], options = {}, progress = {
     totNumOfCommits: 0,
     commitCounter: 0,
     errorCounter: 0,
@@ -282,7 +282,7 @@ function buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languag
     }
     return `${cdCommand} && ${clocDiffAllCommand} ${languageFilter} ${commitsFilter} ${notMatchD}`;
 }
-function executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages = [], notMatchDirectories, options) {
+function executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages = [], notMatchDirectories, options = {}) {
     const cmd = buildClocDiffByFileCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath, notMatchDirectories, strategy);
     return (0, execute_command_1.executeCommandObs$)(`run cloc --git-diff-${strategy} --by-file --quiet`, cmd, options).pipe((0, rxjs_1.map)((output) => {
         return output.split('\n');
@@ -308,11 +308,11 @@ function executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repo
         return (0, rxjs_1.of)(emptyArray);
     }));
 }
-function executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = [], notMatchDirectories, options) {
+function executeClocGitDiffRel$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = [], notMatchDirectories, options = {}) {
     const strategy = 'rel';
     return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories, options);
 }
-function executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = [], notMatchDirectories, options) {
+function executeClocGitDiffAll$(mostRecentCommit, leastRecentCommit, repoFolderPath, languages = [], notMatchDirectories, options = {}) {
     const strategy = 'all';
     return executeClocGitDiff$(mostRecentCommit, leastRecentCommit, strategy, repoFolderPath, languages, notMatchDirectories, options);
 }

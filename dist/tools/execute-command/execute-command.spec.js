@@ -28,7 +28,7 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
     it(`the data notified by the observable contains something`, (done) => {
         let dataReceived;
         const cmd = process.platform === 'win32' ? 'dir' : 'ls';
-        (0, execute_command_1.executeCommandObs$)('Test-1', cmd).subscribe({
+        (0, execute_command_1.executeCommandObs$)('Test-1', cmd, {}).subscribe({
             next: (data) => {
                 dataReceived = data;
                 (0, chai_1.expect)(data.length).gt(0);
@@ -43,7 +43,7 @@ describe(`When executing a command with executeCommandObs (i.e. async)`, () => {
         });
     });
     it(`the Observable errors if the command is wrong`, (done) => {
-        (0, execute_command_1.executeCommandObs$)('Test-12', 'NotACommand').subscribe({
+        (0, execute_command_1.executeCommandObs$)('Test-12', 'NotACommand', {}).subscribe({
             next: (data) => {
                 done(`should not arrive here with data: ${data}`);
             },
@@ -61,7 +61,7 @@ describe(`executeCommandNewProcessObs`, () => {
     it(`the data notified is of type Buffer`, (done) => {
         const cmd = process.platform === 'win32' ? 'dir' : 'ls';
         const args = process.platform === 'win32' ? [] : ['-l'];
-        (0, execute_command_1.executeCommandNewProcessObs)('Test-1', cmd, args).subscribe({
+        (0, execute_command_1.executeCommandNewProcessObs)('Test-1', cmd, args, {}).subscribe({
             next: (data) => {
                 (0, chai_1.expect)(data).not.undefined;
                 (0, chai_1.expect)(data instanceof Buffer).true;
@@ -79,7 +79,7 @@ describe(`executeCommandNewProcessToLinesObs`, () => {
     it(`the data notified is of type string`, (done) => {
         const cmd = process.platform === 'win32' ? 'dir' : 'ls';
         const args = process.platform === 'win32' ? [] : ['-l'];
-        (0, execute_command_1.executeCommandNewProcessToLinesObs)('Test-1', cmd, args).subscribe({
+        (0, execute_command_1.executeCommandNewProcessToLinesObs)('Test-1', cmd, args, {}).subscribe({
             next: (data) => {
                 (0, chai_1.expect)(data).not.undefined;
                 (0, chai_1.expect)(typeof data).equal('string');
@@ -105,7 +105,7 @@ describe(`executeCommandInShellNewProcessObs`, () => {
                 return (0, rxjs_1.of)(null);
             }
             throw new Error(err);
-        }), (0, rxjs_1.concatMap)(() => (0, execute_command_1.executeCommandInShellNewProcessObs)('Test-2', cmd)), (0, rxjs_1.defaultIfEmpty)(defaultIfEmptyValue), (0, rxjs_1.tap)({
+        }), (0, rxjs_1.concatMap)(() => (0, execute_command_1.executeCommandInShellNewProcessObs)('Test-2', cmd, {})), (0, rxjs_1.defaultIfEmpty)(defaultIfEmptyValue), (0, rxjs_1.tap)({
             next: (valueNotified) => {
                 numberOfNotifications++;
                 (0, chai_1.expect)(valueNotified).equal(defaultIfEmptyValue);

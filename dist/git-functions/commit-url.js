@@ -9,7 +9,7 @@ const repo_1 = require("./repo");
  * @param commitSha The SHA of the commit.
  * @returns An Observable that emits the GitLab commit URL for the given Git repository and commit SHA.
  */
-function getGitlabCommitUrl$(repoPath, commitSha, options) {
+function getGitlabCommitUrl$(repoPath, commitSha, options = {}) {
     return (0, repo_1.getRemoteOriginUrl$)(repoPath, options).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
         return getGitlabCommitUrl(remoteOriginUrl, commitSha);
     }));
@@ -42,7 +42,7 @@ exports.getGitlabCommitUrl = getGitlabCommitUrl;
  * @param options - Optional parameters for the getRemoteOriginUrl$ function.
  * @returns An Observable that emits the GitLab comparison URL.
  */
-function getGitlabCommitCompareUrl$(repoPath, mostRecentSha, leastRecentSha, options) {
+function getGitlabCommitCompareUrl$(repoPath, mostRecentSha, leastRecentSha, options = {}) {
     return (0, repo_1.getRemoteOriginUrl$)(repoPath, options).pipe((0, rxjs_1.map)((remoteOriginUrl) => {
         return getGitlabCommitCompareUrl(remoteOriginUrl, mostRecentSha, leastRecentSha);
     }));

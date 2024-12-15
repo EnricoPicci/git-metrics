@@ -163,7 +163,7 @@ function calcDiffWithOneCommit$(repoPath, reposFolderPath, toDate, sha, options)
 function clocDiffBetweenDatesForRepos$(reposFolderPath, fromDate = new Date(0), toDate = new Date(Date.now()), options) {
     const { excludeRepoPaths, creationDateCsvFilePath, notMatch } = options;
     const repoPaths = (0, repo_path_1.gitRepoPaths)(reposFolderPath, excludeRepoPaths);
-    return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
+    return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null, options).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
         return (0, branches_1.defaultBranchName$)(repoPath, options).pipe((0, rxjs_1.map)((branchName) => ({ repoPath, _fromDate, branchName })), (0, rxjs_1.catchError)((err) => {
             console.error(`!!!!!!!!!!!!!!! Error: while calculating default banch name for repo "${repoPath}"`);
             console.error(`!!!!!!!!!!!!!!! error message: ${err.message}`);
@@ -189,12 +189,12 @@ exports.clocDiffBetweenDatesForRepos$ = clocDiffBetweenDatesForRepos$;
  * @param {string[]} languages - An array of programming languages to filter by. Defaults to an empty array (no filtering).
  * @returns {Observable} An Observable that completes when the CSV file has been written and emits the path to the CSV file.
  */
-function writeClocDiffBetweenDates$(pathToRepo, branchName, fromDate = new Date(0), toDate = new Date(Date.now()), outDir = './', languages = []) {
+function writeClocDiffBetweenDates$(pathToRepo, branchName, fromDate = new Date(0), toDate = new Date(Date.now()), outDir = './', languages = [], options) {
     const pathToRepoName = path_1.default.basename(pathToRepo);
     const outFile = `${pathToRepoName}-cloc-diff-between-${(0, date_functions_1.toYYYYMMDD)(fromDate)}-${(0, date_functions_1.toYYYYMMDD)(toDate)}.csv`;
     const outFilePath = path_1.default.join(outDir, outFile);
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDates$(fromDate, toDate, branchName, pathToRepo, '', languages)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDates$(fromDate, toDate, branchName, pathToRepo, '', languages, [], options)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.ignoreElements)(), (0, rxjs_1.defaultIfEmpty)(outFilePath), (0, rxjs_1.tap)({
         next: (outFilePath) => {
@@ -218,9 +218,7 @@ function writeClocDiffBetweenDatesForRepos$(folderPath, fromDate = new Date(0), 
     options.cmdExecutedLog = (_b = options.cmdExecutedLog) !== null && _b !== void 0 ? _b : [];
     let noCommitsFound = true;
     (0, fs_utils_1.createDirIfNotExisting)(outDir);
-    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)), (0, rxjs_1.tap)((d) => {
-        console.log(`\n====>>>> cloc-diff-between-dates-for-repos info saved on file ${d}`);
-    }), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
+    return (0, delete_file_ignore_if_missing_1.deleteFile$)(outFilePath).pipe((0, rxjs_1.concatMap)(() => clocDiffBetweenDatesForRepos$(folderPath, fromDate, toDate, options)), (0, csv_tools_1.toCsvObs)(), (0, rxjs_1.concatMap)((line) => {
         noCommitsFound = false;
         return (0, observable_fs_1.appendFileObs)(outFilePath, `${line}\n`);
     }), (0, rxjs_1.last)(), (0, rxjs_1.catchError)((err) => {

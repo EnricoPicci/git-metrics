@@ -17,9 +17,9 @@ const config_1 = require("./config");
  * @param repoFolderPath The path to the folder containing the Git repository. Defaults to './'.
  * @returns An Observable that emits a `ClocDiffStats` object representing the cloc diff between the two commits.
  */
-function clocDiff$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = []) {
+function clocDiff$(mostRecentCommit, leastRecentCommit, repoFolderPath = './', languages = [], options = {}) {
     const cmd = buildClocDiffRelCommand(mostRecentCommit, leastRecentCommit, languages, repoFolderPath);
-    return (0, execute_command_1.executeCommandObs$)('run cloc --git-diff-rel', cmd).pipe((0, rxjs_1.map)((output) => {
+    return (0, execute_command_1.executeCommandObs$)('run cloc --git-diff-rel', cmd, options).pipe((0, rxjs_1.map)((output) => {
         let diffs;
         try {
             diffs = JSON.parse(output);

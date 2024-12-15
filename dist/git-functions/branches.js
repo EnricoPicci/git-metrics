@@ -32,7 +32,7 @@ exports.readBranchesGraph = readBranchesGraph;
  * @returns An Observable that emits the default branch name for the repository.
  * @throws An error if the output of the git command does not match the expected format.
  */
-function defaultBranchName$(repoPath, options) {
+function defaultBranchName$(repoPath, options = {}) {
     // build the command to fetch the default branch name
     // see https://stackoverflow.com/a/67170894
     const gitCommand = `cd ${repoPath} && git branch --remotes --list '*/HEAD'`;
@@ -68,7 +68,7 @@ function defaultBranchName$(repoPath, options) {
 exports.defaultBranchName$ = defaultBranchName$;
 // localAndNonLocalBranches$ is a function that returns an Observable that emits each branch of a Git repository
 // considering also the non local branches
-function localAndNonLocalBranches$(repoPath, descending = true, options) {
+function localAndNonLocalBranches$(repoPath, descending = true, options = {}) {
     // build the command to fetch the last branch name
     // git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 1
     const sort = descending ? '-committerdate' : 'committerdate';
@@ -89,7 +89,7 @@ function localAndNonLocalBranches$(repoPath, descending = true, options) {
 exports.localAndNonLocalBranches$ = localAndNonLocalBranches$;
 // lastBranch$ is a function that returns an Observable that emits the last branch of a Git repository
 // considering also the non local branches
-function lastBranch$(repoPath, options) {
+function lastBranch$(repoPath, options = {}) {
     return localAndNonLocalBranches$(repoPath, true, options).pipe((0, rxjs_1.take)(1));
 }
 exports.lastBranch$ = lastBranch$;

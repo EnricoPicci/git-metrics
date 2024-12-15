@@ -153,7 +153,7 @@ function clocDiffWithCommitForRepos$(folderPath, fromDate = new Date(0), toDate 
             commitCounter: 0,
             errorCounter: 0,
         };
-        return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
+        return (0, repo_1.repoPathAndFromDates$)(repoPaths, fromDate, creationDateCsvFilePath || null, options).pipe((0, rxjs_1.concatMap)(({ repoPath, _fromDate }) => {
             return clocDiffWithAllCommits$(repoPath, _fromDate, toDate, options, progress);
         }));
     }));

@@ -3,18 +3,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.launchDiffBetweenDatesMultiRepos = void 0;
 const commander_1 = require("commander");
 const cloc_diff_between_dates_1 = require("../../git-cloc-functions/cloc-diff-between-dates");
+const cloc_diff_between_dates_params_1 = require("./cloc-diff-between-dates-params");
 function launchDiffBetweenDatesMultiRepos() {
     console.log('====>>>> Launching Diff Between Dates For Repos');
-    const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths } = readParams();
+    const params = readParams();
+    const { folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath, excludeRepoPaths } = params;
     const options = { excludeRepoPaths, languages, creationDateCsvFilePath, filePrefix: 'cloc-diff-between-dates' };
-    (0, cloc_diff_between_dates_1.writeClocDiffBetweenDatesForRepos$)(folderPath, fromDate, toDate, outDir, options).subscribe();
+    console.log(`Paramters: folderPath: ${folderPath}, outDir: ${outDir}, fromDate: ${fromDate}, toDate: ${toDate}, languages: ${languages}, creationDateCsvFilePath: ${creationDateCsvFilePath}, excludeRepoPaths: ${excludeRepoPaths}`);
+    (0, cloc_diff_between_dates_1.writeClocDiffBetweenDatesForRepos$)(folderPath, new Date(fromDate), new Date(toDate), outDir, options).subscribe();
 }
 exports.launchDiffBetweenDatesMultiRepos = launchDiffBetweenDatesMultiRepos;
 function readParams() {
     const program = new commander_1.Command();
     program
         .description('A command to calculate the differences in a set of repos between 2 dates')
-        .requiredOption('--folderPath <string>', `folder containing the repos to analyze (e.g. ./repos)`)
+        .option('--params-json <string>', `path to the json file containing the parameters for the command (e.g. ./params.json)`)
+        .option('--folderPath <string>', `folder containing the repos to analyze (e.g. ./repos)`)
         .option('--fromDate <string>', `the date of the first commit to consider (e.g. 2021-01-01) - default is the beginning of time`)
         .option('--toDate <string>', `the date of the last commit to consider (e.g. 2021-12-31) - default is the current date`)
         .option('--outdir <string>', `directory where the output files will be written (e.g. ./data) - default is the current directory`)
@@ -27,14 +31,23 @@ function readParams() {
 - either 'http_url_to_repo' or 'ssh_url_to_repo' or both: the url to the repo on the "origin" git server which represents the key of the repo
 - created_at: the date of creation of the repo`);
     const _options = program.parse(process.argv).opts();
-    const outDir = _options.outdir || process.cwd();
-    const fromDate = _options.fromDate ? new Date(_options.fromDate) : new Date(0);
-    const toDate = _options.toDate ? new Date(_options.toDate) : new Date(Date.now());
-    const languages = _options.languages || [];
-    const creationDateCsvFilePath = _options.creationDateCsvFilePath || '';
-    return {
-        folderPath: _options.folderPath, outDir, fromDate, toDate, languages, creationDateCsvFilePath,
-        excludeRepoPaths: _options.excludeRepoPaths
-    };
+    // if the params-json option is provided, read the parameters from the json file
+    let params;
+    if (_options.paramsJson) {
+        params = cloc_diff_between_dates_params_1.ClocDiffBetweenDatesParams.fromJSONFile(_options.paramsJson);
+    }
+    const folderPath = _options.folderPath || (params === null || params === void 0 ? void 0 : params.folderPath);
+    if (!folderPath) {
+        throw new Error('The folderPath parameter is required');
+    }
+    const outDir = _options.outdir || (params === null || params === void 0 ? void 0 : params.outDir) || process.cwd();
+    const fromDateString = _options.fromDate || (params === null || params === void 0 ? void 0 : params.fromDate);
+    const fromDate = fromDateString ? new Date(fromDateString) : new Date(0);
+    const toDateString = _options.toDate || (params === null || params === void 0 ? void 0 : params.toDate);
+    const toDate = toDateString ? new Date(toDateString) : new Date(Date.now());
+    const languages = _options.languages || (params === null || params === void 0 ? void 0 : params.languages) || [];
+    const creationDateCsvFilePath = _options.creationDateCsvFilePath || (params === null || params === void 0 ? void 0 : params.creationDateCsvFilePath) || '';
+    const excludeRepoPaths = _options.excludeRepoPaths || (params === null || params === void 0 ? void 0 : params.excludeRepoPaths) || [];
+    return new cloc_diff_between_dates_params_1.ClocDiffBetweenDatesParams(folderPath, outDir, fromDate.toISOString(), toDate.toISOString(), languages, creationDateCsvFilePath, excludeRepoPaths);
 }
 //# sourceMappingURL=cloc-diff-between-dates.js.map

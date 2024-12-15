@@ -15,7 +15,7 @@ exports.SEP = config_1.GIT_CONFIG.COMMIT_REC_SEP;
 //********************************************************************************************************************** */
 function readTags$(config) {
     const cmd = readTagsCommand(config);
-    return (0, execute_command_1.executeCommandObs$)('readTags', cmd).pipe((0, rxjs_1.map)((out) => {
+    return (0, execute_command_1.executeCommandObs$)('readTags', cmd, {}).pipe((0, rxjs_1.map)((out) => {
         return out.split('\n').filter((line) => line.trim().length > 0);
     }));
 }
